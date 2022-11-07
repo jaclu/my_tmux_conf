@@ -16,6 +16,12 @@
 #  suck in from here, but this is the canonical place to observe the
 #  code.
 #
+#  Admittedly the level of version checking done here is way beyond what
+#  would be needed in any normal case. Since I often try to make plugins
+#  as backwards compatible as possible, it was convenient to also have
+#  a setup that can run on any available tmux version.
+#  This is tested to work without issues all the way back to version 1.7
+#
 #  Alternate session
 #  -----------------
 #  If the env variable T2_ENV is set this will generate an "alternate"
