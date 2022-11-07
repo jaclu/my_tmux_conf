@@ -27,9 +27,12 @@ class JacMacConfig(SB):
     # use_embedded_scripts = False
 
     def plugin_packet_loss(self):  # 1.9
+        min_vers = 1.9
+        if self.is_tmate():
+            min_vers = 99
         return [
             "jaclu/tmux-packet-loss",
-            1.9,
+            min_vers,
             """
             set -g @packet-loss-ping_host "8.8.4.4"
 
@@ -77,9 +80,13 @@ class JacMacConfig(SB):
         #
         #   #{mullvad_city}#{mullvad_country}#{mullvad_status}
         #
+        if self.is_tmate():
+            min_vers = 99
+        else:
+            min_vers = 2.2
         return [
             "jaclu/tmux-mullvad",
-            2.2,
+            min_vers,
             """
             set -g @mullvad_cache_time ''
 
@@ -117,12 +124,15 @@ class JacMacConfig(SB):
         #
         #  Ensure this is only used on MacOS
         #
+        #
         name = "jaclu/tmux-spotify-info"
         if sys.platform == "darwin":
             min_v = 1.8
         else:
             min_v = 99
             name = name + "-requires-MacOS"
+        if self.is_tmate():
+            min_v = 99
         #
         #  Only meaningful for local tmux!     Only works on MacOS
         #
@@ -160,10 +170,13 @@ class JacMacConfig(SB):
         #
         #  #{battery_smart}
         #
+        min_vers = 2.2
+        if self.is_tmate():
+            min_vers = 99
 
         return [
             "jaclu/tmux-battery",
-            2.2,  # 1.8 accd to orig devel, but i get issues below 2.2
+            min_vers,  # 1.8 accd to orig devel, but i get issues below 2.2
             """
             set -g @batt_remain_short 'true'
             """,
