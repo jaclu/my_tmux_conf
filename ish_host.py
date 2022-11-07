@@ -77,7 +77,7 @@ class ishHost(SB):
         #
         #  Default trigger: <prefix> y
         #
-        return ["tmux-plugins/tmux-yank", 99, ""]
+        return ["jaclu/tmux-yank", 99, ""]
 
     def not_plugin_resurrect(self):  # 1.9
         #
@@ -87,10 +87,10 @@ class ishHost(SB):
         #  devices. so no point enabling tmux-resurrect & tmux-continuum
         #  on iSH
         #
-        return ["tmux-plugins/tmux-resurrect", 99, ""]
+        return ["jaclu/tmux-resurrect", 99, ""]
 
     def not_plugin_zz_continuum(self):  # 1.9
-        return ["tmux-plugins/tmux-continuum", 99, ""]
+        return ["jaclu/tmux-continuum", 99, ""]
 
 
 if __name__ == "__main__":
