@@ -1,6 +1,7 @@
 # Various
 
-## Introduciton
+## Dependency
+pip install [tmux-conf](https://github.com/jaclu/tmux-conf)
 
 ## Purpose of my setup style
 
