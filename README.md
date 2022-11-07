@@ -79,35 +79,3 @@ In most cases I just ~~soft-link~~ (weird no longer works, now I need to copy th
 styling depending on host role.
 
 Most of my actual hosts are filtered out for privacy reasons, I have left a few in here, as examples.
-
-## tmate
-
-tmux-conf can automatically build tmate suitable configs, all that is needed is to build with `-t tmate`
-This will automatically build for v 2.4 with the tmate limitations and save to ~/.tmate.conf
-Using manual plugin handling.
-
-Be aware that unless the plugin is using $TMUX_BIN it will get confused and depend on any tmux bin found!
-I have cloned a few to make this change, see [tmux-conf](https://github.com/jaclu/tmux-conf/) for details
-on what is available
-
-## Backticks
-
-The main thing to be aware of is that if embedded scripts are used,
-some considerations about handling backticks must be made.
-
-Any un-escaped backticks in the conf file will cause embedded scripts to
-fail. This is the case both for tmux code and comments.
-
-Any backtick must use \\\` notation in the final conf file.
-Not "\`" or '\`' otherwise the embedded script will fail to run,
-reporting an error.
-
-This means you have to double escape it in your Python code to ensure
-the resulting tmux conf code is correctly escaped.
-
-Probably the simplest thing to do is to just avoid using backticks. 
-The number of attempts it took me to write this before I got all the escaping to 
-generate the intended code was pure pain.
-
-For external scripts there is no backtick issue with the tmux.conf file
-
