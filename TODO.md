@@ -1,0 +1,2 @@
+
+investigate detach-on-destroy

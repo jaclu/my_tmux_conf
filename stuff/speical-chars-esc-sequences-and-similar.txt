@@ -1,0 +1,93 @@
+#
+#  tmux recognizes F1 - F12
+#
+#  For F1 to F12 there is universal consensus of what esc-chars to use
+#  Function keys beyond that differs somewhat depending on context.
+#  Here is one table describing it and where it differs:
+#  http://aperiodic.net/phil/archives/Geekery/term-function-keys.html
+#
+#  All the below keys can be bound in tmux, however sometimes you need to
+#  help your terminal emulator to generate the right keys.
+#  This is an incomplete list of esq-sequences.
+#
+#  In MacOS the tmux meta (M-) prefix is Alt, in Windows it is the Win key,
+#  Thus for MacOS Cmd and for Windows Alt keys can not be bound directly
+#  in tmux.
+#
+#  If you want to use them in a key sequence, you have to bind that keypress
+#  to something tmux can understand, and that you don't otherwise use.
+#  Example, for a while I used Cmd-[Right|Left] to move between windows.
+#  In order to send something that tmux would get, I made my terminal prog
+#  send the sequence for Alt-S-[Right|Left]
+
+#  Below I am talking from the perspective of a Mac keyboard, for a Win keyboard
+#  replace MacOS-Alt with the Win key & MacOS-Cmd with Windows-Alt
+#
+
+#  Helpers in case your terminal cant generate the keys directly:
+#  The esc-sequences below are including the esc char, if your terminal app
+#  allows you to define Esc sequences and it will send the esc char
+#  itself, just remove the initial ^[
+#
+#  In most unix/linux like envs you can run xxd to see what chars
+#  a given key press generates.
+#
+#  Key in
+#  tmux         Esc seq
+#  notation     inc Esc     Hex-sequence
+#  --------     -------     ------------
+#  Btab         ~[[Z        0x1B 0x5B 0x5A
+#  F1           ^[OP        0x1B 0x4F 0x50
+#  F2           ^[OQ        0x1B 0x4F 0x51
+#  F3           ^[OR        0x1B 0x4F 0x52
+#  F4           ^[OS        0x1B 0x4F 0x53
+#  F5           ^[[15~      0x1B 0x5B 0x31 0x35 0x7E
+#  F6           ^[[17~      0x1B 0x5B 0x31 0x37 0x7E
+#  F7           ^[[18~      0x1B 0x5B 0x31 0x38 0x7E
+#  F8           ^[[19~      0x1B 0x5B 0x31 0x39 0x7E
+
+#  F9           ^[[20~      0x1B 0x5B 0x32 0x30 0x7E
+#  F10          ^[[21~      0x1B 0x5B 0x32 0x31 0x7E
+
+#  F11          ^[[23~      0x1B 0x5B 0x32 0x33 0x7E
+#  F12          ^[[24~      0x1B 0x5B 0x32 0x34 0x7E
+
+#  C-R          ^[[1;5C     0x1B 0x5B 0x31 0x3B 0x35 0x43
+#  C-L          ^[[1;5D     0x1B 0x5B 0x31 0x3B 0x35 0x44
+#
+#  C-S-Right    ^[[1;6C     0x1B 0x5B 0x31 0x3B 0x36 0x43
+#  C-S-Left     ^[[1;6D     0x1B 0x5B 0x31 0x3B 0x36 0x44
+
+#  M-Right      ^[[1;3C     0x1B 0x5B 0x31 0x3B 0x33 0x43
+#  M-Left       ^[[1;3D     0x1B 0x5B 0x31 0x3B 0x33 0x44
+
+#  M-S-Right    ^[[1;10C    0x1B 0x5B 0x31 0x3B 0x31 0x30 0x43
+#  M-S-Left     ^[[1;10D    0x1B 0x5B 0x31 0x3B 0x31 0x30 0x44
+
+#  M-C-S-Right  ^[[1;14C    0x1B 0x5B 0x31 0x3B 0x31 0x34 0x43
+#  M-C-S-Left   ^[[1;14D    0x1B 0x5B 0x31 0x3B 0x31 0x34 0x44
+
+
+#alt-S
+
+
+# --------
+
+#  Cmd-Right    ^[[C        0x1B 0x5B 0x43
+#  Cmd-Left     ^[[D        0x1B 0x5B 0x44
+
+#  Cmd-S-Right  ^[[1;2C     0x1B 0x5B 0x31 0x3B 0x32 0x43
+#  Cmd-S-Left   ^[[1;2D     0x1B 0x5B 0x31 0x3B 0x32 0x44
+
+#  Cmd-Alt-R    ^[[1;9C     0x1B 0x5B 0x31 0x3B 0x39 0x43
+#  Cmd-Alt-L    ^[[1;9D     0x1B 0x5B 0x31 0x3B 0x39 0x44
+#
+
+
+#  prev window: Shift-Alt-Left
+#              Send Escape (^[) Sequence: [1;4D
+#              Hex: 0x1B 0x5B 0x31 0x3B 0x34 0x44
+#  next window: Shift-Alt-Right
+#              Send Escape (^[) Sequence: [1;4C
+#              Hex: 0x1B 0x5B 0x31 0x3B 0x34 0x43
+#

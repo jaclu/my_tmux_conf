@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sudo cp -av tools/myt /usr/local/bin
+#sudo cp -av tools/rt /usr/local/bin

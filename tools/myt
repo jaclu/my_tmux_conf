@@ -1,0 +1,114 @@
+#!/bin/sh
+#
+#  Copyright (c) 2022: Jacob.Lundqvist@gmail.com see __version
+#  License: MIT
+#
+#  Part of https://github.com/jaclu/my_tmux_conf
+#
+#  Auto-generates new .tmux.conf and starts it
+#
+#  -2 generates a secondary env, I use this for testing changes and plugins
+#  using asdf to potentially run this with a different tmux version
+#
+
+my_tmux_conf_location="/usr/local/my_tmux_conf"
+
+regular_tmux() {
+    if [ -z "$profile" ]; then
+        profile="$(hostname | cut -d. -f 1 | tr '[:upper:]' '[:lower:]').py"
+    fi
+    
+    if [ ! -f "${my_tmux_conf_location}/${profile}" ]; then
+        echo
+	echo "*** Warning: no profile found for: $profile"
+	echo "***          using default profile"
+	echo
+	profile="default_plugins.py"
+    fi
+
+    TMUX_BIN="$(command -v tmux)"
+    if [ -z "$TMUX_BIN" ]; then
+        echo "ERROR: no tmux in PATH!"
+	exit 1
+    fi
+    # echo ">> tmux bin [$TMUX_BIN]"
+
+    #
+    #  generate a fresh .tmux.conf
+    #
+    if [ "$quick_mode" -eq 0 ]; then
+        ! "${my_tmux_conf_location}/${profile}" -r && exit 2
+    fi
+    "$TMUX_BIN" -u new-session -ADs main
+}
+
+
+tmux_2() {
+    if [ -z "$profile" ]; then
+        profile="t2"
+    fi
+
+    #  Needs to be $HOME not ~ since it is sent into tmux_conf
+    conf_file="$HOME/t2/tmux/tmux.conf"
+
+    # run from this location to pick up alternate tmux versions
+    # defined in this location
+    mkdir -p "$HOME"/t2
+    cd  ~/t2 || exit
+
+
+    if [ "$quick_mode" -eq 0 ]; then
+        #  ensure previously used tmux bin is not picked up
+        rm -f "$conf_file"
+        ! T2_ENV=1 "${my_tmux_conf_location}/${profile}.py" -r "$conf_file" && exit 2
+    fi
+
+    tmux -f ~/t2/tmux/tmux.conf -L serv2
+}
+
+display_help() {
+    cat << EOF
+myt, version $version
+
+Usage: myt [-q] [-2] [profile]
+
+Generates config and starts tmux
+Default profile is hostname
+Options can be given in any order.
+
+Availlable options:
+
+-h  --help  Print this help and exit.
+-q          Dont generate config, start tmux direcly
+-2          Run in T2_ENV (inner tmux, other prefix)
+profile     Run using specific profile
+EOF
+    exit 0
+}
+
+
+quick_mode=0
+t2_env=0
+
+while [ -n "$1" ]; do
+    case "$1" in
+
+        "-h" | "--help" ) display_help ;;
+
+        "-q") quick_mode=1 ;;
+
+        "-2") t2_env=1 ;;
+
+        *)
+            profile="$1"
+            ;;
+    esac
+
+    shift
+done
+
+if [ "$t2_env" -eq 1 ]; then
+    tmux_2
+else
+    regular_tmux
+fi

@@ -1,0 +1,270 @@
+#!/usr/bin/env python3
+#
+#
+# Copyright (c) 2022: Jacob.Lundqvist@gmail.com
+# License: MIT
+#
+# Part of https://github.com/jaclu/my_tmux_conf
+#
+#  running myt (triggering tmux) on remote hosts, to ensure I start tmux there with a current config
+
+import argparse
+import inspect
+import os
+import sys
+
+
+_version = '0.4.2   2022-10-04'
+
+
+bounce_key = '/'  # separator for bounce hosts
+
+
+class Host:
+    connection_name = ''  # A common name for this connection
+    server = ''           # server to connect to
+    remote_user = ''      # If not given ~/.ssh/config setting will be used
+
+    tmux = '/usr/local/bin/myt'  # override with full path if not auto-found
+
+    use_mosh = False
+    mosh_client = 'mosh'  # local mosh command
+    mosh_server = ''      # default: 'mosh-server'
+    mosh_ports = ''       # default: '60000:61000'
+
+    #
+    # if going indirectly run this command again on bounce host
+    # next destination will be appended. This assumes that this command
+    # is located at the same location on the jump-host
+    #
+    bounce_cmd = __file__
+
+    def __init__(self, server, connection_name='', remote_user='',
+                 remote_command='',
+                 use_mosh=False, mosh_client='mosh',
+                 mosh_server='', mosh_ports=''):
+        if not server:
+            print('ERROR! No server given')
+            sys.exit(1)
+        self.server = server
+
+        if connection_name:
+            self.connection_name = connection_name
+        else:
+            self.connection_name = server
+        if remote_user:
+            self.remote_user = remote_user
+        if remote_command:
+            self.rem_cmd = remote_command
+        else:
+            self.rem_cmd = f'"{self.tmux}"'
+        if not self.rem_cmd:
+            print("ERROR: remote_command can't be empty!")
+            sys.exit(1)
+        if use_mosh:
+            self.use_mosh = True
+        if mosh_client:
+            self.mosh_client = mosh_client
+        if mosh_server:
+            self.mosh_server = mosh_server
+        if mosh_ports:
+            self.mosh_ports = mosh_ports
+
+    def bounce_to(self, bounce_host):
+        self.rem_cmd = f'{self.bounce_cmd} {bounce_host}'
+
+    def show_info(self):
+        print('---  session details  ---')
+        if self.connection_name != self.server:
+            print(f'Connection: {self.connection_name}')
+        print(f'server:     {self.server}')
+        if self.remote_user:
+            print(f'remote user:  {self.remote_user}')
+        print(f'rem_cmd:    {self.rem_cmd}')
+
+        print(f'mosh:       {self.mosh_client} - '
+              f'{self.mosh_server} {self.mosh_ports}')
+        print(f'cmd line:   {self.full_command_line()}')
+
+    def full_command_line(self):
+        if self.use_mosh:
+            cmd = f'{self.mosh_client} '
+            if self.mosh_server:
+                cmd += f'--server {self.mosh_server} '
+            if self.mosh_ports:
+                cmd += f'--port={self.mosh_ports} '
+            cmd += f'{self.remote_session()} --'
+        else:
+            cmd = f'ssh -t {self.remote_session()}'
+        return f'{cmd} {self.rem_cmd}'
+
+    def remote_session(self):
+        if self.remote_user:
+            s = f'{self.remote_user}@{self.server}'
+        else:
+            s = self.server
+        return s
+
+
+def get_host_class(server, connection_name='', remote_user='',
+                   remote_command='',
+                   use_mosh=False, mosh_client='',
+                   mosh_server='', mosh_ports=''):
+    #
+    #  Handle bounce connections
+    #
+    if server.find(bounce_key) > -1:
+        if remote_command:
+            print(f'ERROR: a{bounce_key}b and -c param can not be combined!')
+            sys.exit(1)
+
+        parts = server.split(bounce_key)
+        host_remainder = bounce_key.join(parts[1:])
+        bounce_host = parts[0]
+        bounce_node = get_host_class(
+            server=bounce_host,
+            connection_name=server,
+            remote_user=remote_user,
+            use_mosh=use_mosh,
+            mosh_client=mosh_client,
+            mosh_server=mosh_server,
+            mosh_ports=mosh_ports)
+        bounce_node.bounce_to(host_remainder)
+        return bounce_node
+
+    #
+    #  Match host to custom class if any matching
+    #
+    clsmembers = inspect.getmembers(sys.modules[__name__], inspect.isclass)
+    host_class = None
+    for cls_name, cls in clsmembers:
+        if cls_name == server:
+            host_class = cls(
+                server=server,
+                connection_name=connection_name,
+                remote_user=remote_user,
+                remote_command=remote_command,
+                use_mosh=use_mosh,
+                mosh_client=mosh_client,
+                mosh_server=mosh_server,
+                mosh_ports=mosh_ports)
+            break
+    if not host_class:
+        #
+        #  Use the default base class
+        #
+        host_class = Host(
+            server=server,
+            connection_name=connection_name,
+            remote_user=remote_user,
+            remote_command=remote_command,
+            use_mosh=use_mosh,
+            mosh_client=mosh_client,
+            mosh_server=mosh_server,
+            mosh_ports=mosh_ports)
+    return host_class
+
+
+def parse_cmd_line():
+    parser = argparse.ArgumentParser(
+        description='Main purpose is to make remote tmux connections, '
+                    'but you can override the\nremote command. '
+                    'If you use -m the connection will be using mosh.\nIt is '
+                    'assumed you have set up all needed host details '
+                    'like\nhostname/ip#, sshd port etc in ~/.ssh/conf',
+        formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument(
+        'server',
+        help='connect to this host\n'
+             f'host1{bounce_key}host2 will connect to host1 and there run\n'
+             'this command connecting to host2\n'
+             'This can extend multiple jumps: '
+             f'a{bounce_key}b{bounce_key}c{bounce_key}d ...\n'
+             'This command must be present on all jump-hosts.\n'
+             'If -m is used, mosh will be used when connecting to\n'
+             'the first jump-host.\n'
+             f'>> a{bounce_key}b can not be combined with option -c <<\n')
+    parser.add_argument(
+        '-v', '--version', action='version', version=f'%(prog)s {_version}')
+    parser.add_argument(
+        '-d', '--display', action='store_true',
+        help="Display what will be done and exit")
+    parser.add_argument(
+        '-u', '--user',
+        help='User to connect as to the server.\n'
+        'If not given, ~/.ssh/config decides')
+    parser.add_argument(
+        '-c', '--command',
+        help='Command to run on remote host\n'
+             'default: "tmux -u new-session -ADs #SESSION"')
+    parser.add_argument(
+        '-m', '--use_mosh', action='store_true',
+        help='Connect with mosh, otherwise ssh will be used')
+    parser.add_argument(
+        '-M', '--mosh-client',
+        help='local mosh cmd to use, default: mosh')
+    parser.add_argument(
+        '-S', '--mosh-server',
+        help='mosh server cmd on remote machine, default: mosh-server')
+    parser.add_argument(
+        '-p', '--ports',
+        help='port span to use for mosh connection\n'
+             'example: 60500:60510')
+    return parser.parse_args()
+
+
+def main():
+    args = parse_cmd_line()
+    hc = get_host_class(
+        server=args.server,
+        remote_user=args.user,
+        remote_command=args.command,
+        use_mosh=args.use_mosh,
+        mosh_client=args.mosh_client,
+        mosh_server=args.mosh_server,
+        mosh_ports=args.ports)
+    if args.display:
+        hc.show_info()
+    else:
+        msg = f'Connecting to {hc.server} using '
+        if hc.use_mosh:
+            msg += 'mosh'
+        else:
+            msg += 'ssh'
+        print(msg + '...')
+        os.system(hc.full_command_line())
+
+
+#
+#  Some host types, pre-defining where tmux can be found
+#
+class HomeBrewHost(Host):
+    tmux = '/usr/local/bin/tmux -u new-session -ADs'
+
+
+class LinuxBrewHost(Host):
+    tmux = '/home/linuxbrew/.linuxbrew/bin/tmux -u new-session -ADs'
+
+
+class AsdfHost(Host):
+    tmux = '/home/jaclu/.asdf/shims/tmux -u new-session -ADs'
+
+
+#
+#  Custom Hosts, to preset some stuff
+#  class name should match hostname you use when connecting
+#
+class ubu(Host):
+    mosh_ports = '62020:62021'
+
+
+class win10(Host):
+    mosh_ports = '62000:62001'
+
+
+class hetz1(Host):
+    mosh_ports = '60300:60399'
+
+
+if __name__ == '__main__':
+    main()
