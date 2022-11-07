@@ -90,17 +90,24 @@ Be aware that unless the plugin is using $TMUX_BIN it will get confused and depe
 I have cloned a few to make this change, see [tmux-conf](https://github.com/jaclu/tmux-conf/) for details
 on what is available
 
-## emedded scripts
+## Backticks
 
-If embedded scripts are used, some considrations about the rest of
-the resulting conf file must be made.
+The main thing to be aware of is that if embedded scripts are used,
+some considerations about handling backticks must be made.
 
-### backticks
+Any un-escaped backticks in the conf file will cause embedded scripts to
+fail. This is the case both for tmux code and comments.
 
-Un-escaped backticks in the conf file will cause embedded scripts to fail, this goes both for 
-tmux commands and comments.
+Any backtick must use \\\` notation in the final conf file.
+Not "\`" or '\`' otherwise the embedded script will fail to run,
+reporting an error.
 
-They must always be escaped with \\
+This means you have to double escape it in your Python code to ensure
+the resulting tmux conf code is correctly escaped.
 
-Just quoting it inside "" or '' will work for tmux, but will cause embedded scripts to fail, reporting an error.
+Probably the simplest thing to do is to just avoid using backticks. 
+The number of attempts it took me to write this before I got all the escaping to 
+generate the intended code was pure pain.
+
+For external scripts there is no backtick issue with the tmux.conf file
 
