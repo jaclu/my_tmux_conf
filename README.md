@@ -97,10 +97,10 @@ the resulting conf file must be made.
 
 ### backticks
 
-Un-escaped backticks in the conf file will cause embedded scripts to fail.
+Un-escaped backticks in the conf file will cause embedded scripts to fail, this goes both for 
+tmux commands and comments.
 
-Any bind using a backtick must use ` \ ` notation.
-Not "`" or '`' otherwise the emedded script will fail to run, reporting an error.
+They must always be escaped with \\
 
-Unescaped Bacticks can also not be present in comments.
+Just quoting it inside "" or '' will work for tmux, but will cause embedded scripts to fail, reporting an error.
 
