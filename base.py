@@ -40,7 +40,7 @@ from pydoc import locate
 
 import __main__
 
-TMUX_CONF_NEEDED = "0.15.1"
+TMUX_CONF_NEEDED = "0.15.3"
 
 cfb = os.environ.get("__CFBundleIdentifier")
 if cfb and (cfb.find("sublime") > -1 or cfb.find("VSCode") > -1):
