@@ -244,7 +244,7 @@ class DefaultPlugins(IshConsole):
         #  directly
         #
         return [
-            "MunifTanjim/tmux-suspend",
+            "jaclu/tmux-suspend",
             2.4,
             """
             set -g @suspend_key  M-z
