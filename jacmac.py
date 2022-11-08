@@ -29,7 +29,7 @@ class JacMacConfig(SB):
     def plugin_packet_loss(self):  # 1.9
         min_vers = 1.9
         if self.is_tmate():
-            min_vers = 99
+            min_vers = 99  # disable for tmate
         return [
             "jaclu/tmux-packet-loss",
             min_vers,
@@ -80,10 +80,9 @@ class JacMacConfig(SB):
         #
         #   #{mullvad_city}#{mullvad_country}#{mullvad_status}
         #
+        min_vers = 2.2
         if self.is_tmate():
-            min_vers = 99
-        else:
-            min_vers = 2.2
+            min_vers = 99  # disable for tmate
         return [
             "jaclu/tmux-mullvad",
             min_vers,
@@ -172,7 +171,7 @@ class JacMacConfig(SB):
         #
         min_vers = 2.2
         if self.is_tmate():
-            min_vers = 99
+            min_vers = 99  # disable for tmate
 
         return [
             "jaclu/tmux-battery",

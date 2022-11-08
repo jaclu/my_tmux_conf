@@ -263,7 +263,8 @@ class DefaultPlugins(IshConsole):
         #
         min_vers = 2.1
         if self.is_tmate():
-            min_vers = 99
+            min_vers = 99  # disable for tmate
+
         return [
             "jaclu/tmux-better-mouse-mode",
             min_vers,
@@ -320,10 +321,9 @@ class DefaultPlugins(IshConsole):
         #
         #  copies text from the command line to the clipboard.
         #
+        min_vers = 1.5
         if self.is_tmate():
-            min_vers = 99
-        else:
-            min_vers = 1.5
+            min_vers = 99  # disable for tmate
         return [
             "jaclu/tmux-yank",
             min_vers,

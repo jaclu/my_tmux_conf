@@ -19,7 +19,7 @@
 #  filtering out or replacing incompatible syntax.
 #
 
-from sb_virtualbox import SB
+from sb.sb_virtualbox import SB
 
 # from sb_muted import MutedConfig as SB
 
@@ -30,8 +30,8 @@ class Win10Config(SB):
         #  #{packet_loss}
         #
         return [
-            1.9,
             "jaclu/tmux-packet-loss",
+            1.9,
             """
             set -g @packet-loss-ping_host "8.8.4.4"
             set -g @packet-loss-ping_count "6"
