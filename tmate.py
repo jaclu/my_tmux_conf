@@ -22,11 +22,11 @@ class Tmate(SB):
             tag = f"<P> {self.prefix_key} "
             self.sb_left = f"#[fg=green,bg=black]{tag}#[default]{self.sb_left}"
 
-        used_plugins = self.plugins.found()
+        used_plugins = self.plugins.found(short_name=True)
 
-        if "jaclu/tmux-packet-loss" in used_plugins:
+        if "tmux-packet-loss" in used_plugins:
             self.sb_right = "#{packet_loss}" + self.sb_right
-        if "jaclu/tmux-prefix-highlight" in used_plugins:
+        if "tmux-prefix-highlight" in used_plugins:
             self.sb_right += "#{prefix_highlight}"
         return True
 
