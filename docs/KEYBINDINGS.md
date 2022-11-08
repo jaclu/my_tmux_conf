@@ -72,7 +72,7 @@ Key | Alt key(-s) | Description
 `<p>` M-L | C-M-S Right | Split window right
 `<p>` * | | Toggle synchronized tabs
 `<p>` W | | Rename window
-`<p>` X | | Kill window
+`<p>` & | `<p>` X | Kill window ***
 
 ### Pane handling
 

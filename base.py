@@ -846,11 +846,12 @@ class BaseConfig(TmuxConfig):
         #  If last window of current session is killed, the session
         #  is destroyed and focus is moved to another session
         #
-        w(
-            'bind -N "Kill window in focus"    X  confirm-before -p '
+        for c in ("&", "X"):
+            w(
+            f'bind -N "Kill window in focus"    {c}  confirm-before -p '
             '"kill current window \\"#W\\"? (y/n)" '
             '"set -s detach-on-destroy off \\; kill-window"'
-        )
+            )
         w()  # spacer between sections
 
     def pane_handling(self):
