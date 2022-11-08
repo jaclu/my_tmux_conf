@@ -65,26 +65,26 @@ class DefaultPlugins(IshConsole):
         #
         #  Plugin-hooks for status-bar, enable an item if that plugin is used
         #
-        used_plugins = self.plugins.found()
-        if "tmux-plugins/tmux-prefix-highlight" in used_plugins:
+        used_plugins = self.plugins.found(short_name=True)
+        if "tmux-prefix-highlight" in used_plugins:
             self.sb_right += "#{prefix_highlight}"
 
-        if "jaclu/tmux-packet-loss" in used_plugins:
+        if "tmux-packet-loss" in used_plugins:
             self.sb_right = "#{packet_loss}" + self.sb_right
 
-        if "MunifTanjim/tmux-suspend" in used_plugins:
+        if "tmux-suspend" in used_plugins:
             self.sb_right += "#{@mode_indicator_custom_prompt}"
 
-        if "jaclu/tmux-mullvad" in used_plugins:
+        if "tmux-mullvad" in used_plugins:
             self.sb_left += "#{mullvad_city}#{mullvad_country}" "#{mullvad_status}"
 
-        if "jaclu/tmux-keyboard-type" in used_plugins:
+        if "tmux-keyboard-type" in used_plugins:
             self.sb_right = "#{keyboard_type}" + self.sb_right
 
-        if "jaclu/tmux-battery" in used_plugins:
+        if "tmux-battery" in used_plugins:
             self.sb_right = "#{battery_smart} " + self.sb_right
 
-        if "jaclu/tmux-spotify-info" in used_plugins:
+        if "tmux-spotify-info" in used_plugins:
             self.sb_right = (
                 "#[bg=colour28]#(tmux-spotify-info)#[default] " f"{self.sb_right}"
             )
@@ -167,7 +167,7 @@ class DefaultPlugins(IshConsole):
         set -g @prefix_highlight_show_sync_mode  on
         set -g @prefix_highlight_sync_mode_attr "fg=black,bg=orange,blink,bold"
         """
-        return ["tmux-plugins/tmux-prefix-highlight", 0.0, conf]
+        return ["jaclu/tmux-prefix-highlight", 0.0, conf]
 
     def plugin_menus(self):  # 3.0
         conf = "set -g @menus_config_overrides  1"
@@ -212,7 +212,7 @@ class DefaultPlugins(IshConsole):
         #
         #   Zooms to separate Window, to allow for adding support panes
         #
-        if self.is_limited_host:
+        if self.is_limited_host or self.is_tmate():
             # make sure this is never used on a host flagged as limited
             vers_min = 99
         else:
@@ -261,9 +261,12 @@ class DefaultPlugins(IshConsole):
         #  Can scroll in non-active 'mouse over-ed' panes.
         #  Can adjust scroll-sensitivity.
         #
+        min_vers = 2.1
+        if self.is_tmate():
+            min_vers = 99
         return [
-            "nhdaly/tmux-better-mouse-mode",
-            2.1,
+            "jaclu/tmux-better-mouse-mode",
+            min_vers,
             """
             #  Scroll events are sent to moused-over pane.
             set -g @scroll-without-changing-pane  on
@@ -291,7 +294,7 @@ class DefaultPlugins(IshConsole):
         #  Default trigger: <prefix> j
         #
         k = "-n  M-j"
-        if self.is_limited_host:
+        if self.is_limited_host or self.is_tmate():
             # make sure this is never used, generates to much lag
             vers_min = 99
             self.write(
@@ -301,7 +304,7 @@ class DefaultPlugins(IshConsole):
         else:
             vers_min = 1.8
         return [
-            "Lenbok/tmux-jump",
+            "jaclu/tmux-jump",  # was Lenbok
             vers_min,
             #
             #  The weird jump key syntax below is how I both sneak in
@@ -317,9 +320,13 @@ class DefaultPlugins(IshConsole):
         #
         #  copies text from the command line to the clipboard.
         #
+        if self.is_tmate():
+            min_vers = 99
+        else:
+            min_vers = 1.5
         return [
-            "tmux-plugins/tmux-yank",
-            1.5,
+            "jaclu/tmux-yank",
+            min_vers,
             """#  Default trigger: <prefix> y
             # seems to only work on local system
             """,
@@ -337,7 +344,7 @@ class DefaultPlugins(IshConsole):
         #  devices. so no point enabling tmux-resurrect & tmux-continuum
         #  on iSH
         #
-        if self.is_limited_host:
+        if self.is_limited_host or self.is_tmate():
             return ["tmux-plugins/tmux-resurrect", 99, ""]
 
         conf = """
@@ -362,7 +369,7 @@ class DefaultPlugins(IshConsole):
         #  Env dependent settings for tmux-plugins/tmux-resurrect
         set -g @resurrect-dir "{resurect_dir}"
         """
-        return ["tmux-plugins/tmux-resurrect", 1.9, conf]
+        return ["jaclu/tmux-resurrect", 1.9, conf]
 
     def plugin_zz_continuum(self):  # 1.9
         #
@@ -373,7 +380,7 @@ class DefaultPlugins(IshConsole):
         #  typically for testing purposes, being able to manually restore
         #  a session makes sense, but auto-resuming does not.
         #
-        if self.is_limited_host or self.t2_env:
+        if self.is_limited_host or self.t2_env or self.is_tmate():
             vers_min = 99  # make sure this is never used
         else:
             vers_min = 1.9
@@ -406,7 +413,7 @@ class DefaultPlugins(IshConsole):
             conf += """
             set -g @continuum-restore        off
             set -g @continuum-save-interval  15"""
-        return ["tmux-plugins/tmux-continuum", vers_min, conf]
+        return ["jaclu/tmux-continuum", vers_min, conf]
 
 
 if __name__ == "__main__":
