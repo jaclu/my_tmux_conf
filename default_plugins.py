@@ -76,7 +76,7 @@ class DefaultPlugins(IshConsole):
             self.sb_right += "#{@mode_indicator_custom_prompt}"
 
         if "tmux-mullvad" in used_plugins:
-            self.sb_left += "#{mullvad_city}#{mullvad_country}" "#{mullvad_status}"
+            self.sb_left += "#{mullvad_city}#{mullvad_country}#{mullvad_status}"
 
         if "tmux-keyboard-type" in used_plugins:
             self.sb_right = "#{keyboard_type}" + self.sb_right
