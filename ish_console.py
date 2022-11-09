@@ -87,10 +87,10 @@ class IshConsole(BaseConfig):
         #
 
         # generic BT Keyb
-        # self.ic_multiKey()
+        self.ic_multiKey()
 
         # specific keybs
-        self.ic_keyb_Yoozon3()
+        # self.ic_keyb_Yoozon3()
 
     def ic_unbind_range(self, start, stop):
         # Use range logic, and give stop as one higher than last expected
