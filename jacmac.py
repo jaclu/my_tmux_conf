@@ -96,8 +96,6 @@ class JacMacConfig(SB):
             #  Since this will negatively impact bandwidth and lag, its good to
             #  have a visual reminder.
             #
-            # set -g @mullvad_excluded_country 'Sweden'
-            # set -g @mullvad_excluded_city    'Stockholm'
             set -g @mullvad_excluded_country 'Netherlands'
             set -g @mullvad_excluded_city    'Amsterdam'
 
