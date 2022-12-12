@@ -40,8 +40,11 @@ from pydoc import locate
 
 import __main__
 
-TMUX_CONF_NEEDED = "0.15.3"
+TMUX_CONF_NEEDED = "0.15.8"
 
+#
+#  Special import handling for debugging, is ignored in normal usage
+#
 cfb = os.environ.get("__CFBundleIdentifier")
 if cfb and (cfb.find("sublime") > -1 or cfb.find("VSCode") > -1):
     #  Makes debugging easier, being able to use the lib without deployment
@@ -51,7 +54,7 @@ else:
     # import as package
     try:
         # pyright: reportMissingImports=false,reportGeneralTypeIssues=false
-        from tmux_conf import TmuxConfig
+        from tmux_conf.tmux_conf import TmuxConfig
     except ModuleNotFoundError:
         print("Dependency tmux_conf not installed!")
         sys.exit(1)
