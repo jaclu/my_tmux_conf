@@ -36,11 +36,25 @@
 import os
 import subprocess  # nosec
 import sys
+from pydoc import locate
 
 import __main__
-from tmux_conf.tmux_conf import TmuxConfig
 
 TMUX_CONF_NEEDED = "0.15.3"
+
+cfb = os.environ.get("__CFBundleIdentifier")
+if cfb and (cfb.find("sublime") > -1 or cfb.find("VSCode") > -1):
+    #  Makes debugging easier, being able to use the lib without deployment
+    #  assumes tmux-conf is checked out inside this repository
+    TmuxConfig = locate("local_tmux_conf.src.tmux_conf.tmux_conf.TmuxConfig")
+else:
+    # import as package
+    try:
+        # pyright: reportMissingImports=false,reportGeneralTypeIssues=false
+        from tmux_conf import TmuxConfig
+    except ModuleNotFoundError:
+        print("Dependency tmux_conf not installed!")
+        sys.exit(1)
 
 
 class BaseConfig(TmuxConfig):
