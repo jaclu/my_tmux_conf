@@ -76,46 +76,55 @@ class JacMacConfig(SB):
             """,
         ]
 
-    def plugin_mullvad(self):  # 2.2  local
-        #
-        #   #{mullvad_city}#{mullvad_country}#{mullvad_status}
-        #
-        min_vers = 2.2
-        if self.is_tmate():
-            min_vers = 99  # disable for tmate
-        return [
-            "jaclu/tmux-mullvad",
-            min_vers,
-            """
-            set -g @mullvad_cache_time ''
+    # def plugin_mullvad(self):  # 2.2  local
+    #     #
+    #     #   #{mullvad_city}#{mullvad_country}#{mullvad_status}
+    #     #
+    #     min_vers = 2.2
+    #     if self.is_tmate():
+    #         min_vers = 99  # disable for tmate
+    #     return [
+    #         "jaclu/tmux-mullvad",
+    #         min_vers,
+    #         """
+    #         set -g @mullvad_cache_time ''
 
-            #
-            #  I only want to be notified about where the VPN is connected if
-            #  not connected to my normal location, typically when avoiding Geo
-            #  blocks.
-            #  Since this will negatively impact bandwidth and lag, its good to
-            #  have a visual reminder.
-            #
-            set -g @mullvad_excluded_country 'Netherlands'
-            set -g @mullvad_excluded_city    'Amsterdam'
+    #         #
+    #         #  I only want to be notified about where the VPN is connected if
+    #         #  not connected to my normal location, typically when avoiding Geo
+    #         #  blocks.
+    #         #  Since this will negatively impact bandwidth and lag, its good to
+    #         #  have a visual reminder.
+    #         #
+    #         set -g @mullvad_excluded_country 'Netherlands'
+    #         set -g @mullvad_excluded_city    'Amsterdam'
 
-            #  No colors wanted for disconnected status, just distracting.
-            set -g @mullvad_disconnected_bg_color ' '
+    #         #  No colors wanted for disconnected status, just distracting.
+    #         set -g @mullvad_disconnected_bg_color ' '
 
-            #  Since nothing is printed when connected, we don't need to
-            #  bother with the colors
-            set -g @mullvad_connected_text ' '
+    #         #  Since nothing is printed when connected, we don't need to
+    #         #  bother with the colors
+    #         set -g @mullvad_connected_text ' '
 
-            #  When city/country is printed, use comma as separator
-            set -g @mullvad_city_suffix ','
+    #         #  When city/country is printed, use comma as separator
+    #         set -g @mullvad_city_suffix ','
 
-            #
-            #  Keep separation if items are displayed
-            #
-            set -g @mullvad_country_no_color_suffix 1
-            set -g @mullvad_status_no_color_suffix 1
-            """,
-        ]
+    #         #
+    #         #  Keep separation if items are displayed
+    #         #
+    #         set -g @mullvad_country_no_color_suffix 1
+    #         set -g @mullvad_status_no_color_suffix 1
+    #         """,
+    #     ]
+
+
+    # def plugin_nordvpn(self):
+    #     return [ 'maxrodrigo/tmux-nordvpn', 0.0, """
+    #     set -g @nordvpn_connected_text=""
+    #     set -g @nordvpn_connecting_text="🔒"
+    #     set -g @nordvpn_disconnected_text="🔓"
+    #     """]
+
 
     def plugin_spotify(self):  # 1.8  local
         #
