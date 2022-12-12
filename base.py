@@ -36,27 +36,11 @@
 import os
 import subprocess  # nosec
 import sys
-from pydoc import locate
 
 import __main__
+from tmux_conf.tmux_conf import TmuxConfig
 
 TMUX_CONF_NEEDED = "0.15.3"
-
-cfb = os.environ.get("__CFBundleIdentifier")
-if cfb and (cfb.find("sublime") > -1 or cfb.find("VSCode") > -1):
-    #  Makes debugging easier, being able to use the lib without
-    #  deployment assumes tmux-conf is checked out inside this
-    #  repository
-    print(">> Debug env direct import of TmuxConf")
-    TmuxConfig = locate("local_tmux_conf.src.tmux_conf.tmux_conf.TmuxConfig")
-else:
-    # import as package
-    try:
-        # pyright: reportMissingImports=false,reportGeneralTypeIssues=false
-        from tmux_conf import TmuxConfig
-    except ModuleNotFoundError:
-        print("Dependency tmux_conf not installed!")
-        sys.exit(1)
 
 
 class BaseConfig(TmuxConfig):
@@ -848,9 +832,9 @@ class BaseConfig(TmuxConfig):
         #
         for c in ("&", "X"):
             w(
-            f'bind -N "Kill window in focus"    {c}  confirm-before -p '
-            '"kill current window \\"#W\\"? (y/n)" '
-            '"set -s detach-on-destroy off \\; kill-window"'
+                f'bind -N "Kill window in focus"    {c}  confirm-before -p '
+                '"kill current window \\"#W\\"? (y/n)" '
+                '"set -s detach-on-destroy off \\; kill-window"'
             )
         w()  # spacer between sections
 
