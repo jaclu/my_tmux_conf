@@ -22,7 +22,7 @@
 # from sb.sb_muted import SB
 # from sb.sb_virtualbox import SB
 
-from sb.sb_test import SB
+from sb.sb_tst import SB
 
 # from sb.sb_acceptance import SB
 # from sb.sb_production import SB
@@ -30,7 +30,7 @@ from sb.sb_test import SB
 
 class T2(SB):
 
-    #plugin_handler = "manual"
+    # plugin_handler = "manual"
     # bind_meta = False
     # use_embedded_scripts = False
 
