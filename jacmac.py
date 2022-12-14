@@ -38,8 +38,8 @@ class JacMacConfig(SB):
 
             #  Weighted average last 30 seconds
             # set -g @packet-loss-ping_count "6"
-            # set -g @packet-loss-history_size "6"
-            # set -g @packet-loss_weighted_average "1"
+            set -g @packet-loss-history_size "7"
+            set -g @packet-loss_weighted_average "0"
 
             # set -g @packet-loss_level_disp "0.1"
             set -g @packet-loss_level_alert "17"
@@ -117,14 +117,12 @@ class JacMacConfig(SB):
     #         """,
     #     ]
 
-
     # def plugin_nordvpn(self):
     #     return [ 'maxrodrigo/tmux-nordvpn', 0.0, """
     #     set -g @nordvpn_connected_text=""
     #     set -g @nordvpn_connecting_text="🔒"
     #     set -g @nordvpn_disconnected_text="🔓"
     #     """]
-
 
     def plugin_spotify(self):  # 1.8  local
         #
