@@ -365,7 +365,7 @@ class DefaultPlugins(IshConsole):
         conf += "mysql glow sqlite sqlite3 top htop  ~packet_loss "
         conf += "~common_pull ~sysload_tracker ~Mbrew ~Mapt'\n"
 
-        plugins_dir = self.plugins.get_deploy_dir()
+        plugins_dir = self.plugins.get_plugin_dir()
         # go up one and put it beside plugins_dir
         resurect_dir = f"{os.path.dirname(plugins_dir)}/resurrect"
         conf += f"""
