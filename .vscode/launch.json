@@ -5,13 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "args": ["-r" "~/t2/tmux/tmux.conf"],
             "name": "Python: t2.py",
+            "args": ["-r" "~/t2/tmux/tmux.conf"],
             "type": "python",
             "request": "launch",
             "program": "/usr/local/my_tmux_conf/t2.py",
             "console": "integratedTerminal",
             "justMyCode": false
-        }
+        },
+        {
+            "name": "Python: foo_plugins.py",
+            "args": ["-r" "/tmp/foo.conf"],
+            "type": "python",
+            "request": "launch",
+            "program": "/usr/local/my_tmux_conf/local_tmux_conf/tests/foo_plugins.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+
     ]
 }
