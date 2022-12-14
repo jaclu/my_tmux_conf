@@ -1,5 +1,4 @@
 {
-  "python.testing.pytestArgs": ["local_tmux_conf"],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true
 }
