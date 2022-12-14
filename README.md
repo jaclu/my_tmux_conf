@@ -71,6 +71,15 @@ If you want to you can use the version controlled plugin handling, replacing it
 with the plugins you use. Otherwise just drop your current plugin handling
 into the content method along the rest of your current setup.
 
+## Test/Devel env
+
+If this env variable is set: `T2_ENV=1` the config file created will use
+C-W as prefix and not accept ~/tmux.conf as config file, you would have to
+supply an alternate config file.
+This tmux instance will be able to run independent of the main tmux,
+either inside or standalone. Ideal for testing out new configs,
+and even run a different version of tmux for compatiblity tests.
+
 ## host name based config
 
 I normally start tmux with myt (in tools) it compiles a fresh tmux.conf based on hostname.
