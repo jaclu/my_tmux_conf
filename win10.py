@@ -26,28 +26,30 @@ from sb.sb_virtualbox import SB
 
 class Win10Config(SB):
     def plugin_packet_loss(self):  # 1.9
-        #
-        #  #{packet_loss}
-        #
+        min_vers = 1.9
+        if self.is_tmate():
+            min_vers = 99  # disable for tmate
         return [
             "jaclu/tmux-packet-loss",
-            1.9,
+            min_vers,
             """
             set -g @packet-loss-ping_host "8.8.4.4"
-            set -g @packet-loss-ping_count "6"
-            set -g @packet-loss-history_size "6"
-            set -g @packet-loss_weighted_average "1"
 
-            set -g @packet-loss_level_disp "0.1"
-            set -g @packet-loss_level_alert "16"
+            #  Weighted average last 30 seconds
+            # set -g @packet-loss-ping_count "6"
+            set -g @packet-loss-history_size "7"
+            set -g @packet-loss_weighted_average "0"
+
+            # set -g @packet-loss_level_disp "0.1"
+            set -g @packet-loss_level_alert "17"
             set -g @packet-loss_level_crit "40"
 
-            #set -g @packet-loss_color_alert "colour181"
-            #set -g @packet-loss_color_crit "red"
-            #set -g @packet-loss_color_bg "black"
+            # set -g @packet-loss_color_alert "colour181"
+            # set -g @packet-loss_color_crit "red"
+            # set -g @packet-loss_color_bg "black"
 
-            set -g @packet-loss_prefix " | pkt loss: "
-            set -g @packet-loss_suffix " | "
+            set -g @packet-loss_prefix "|"
+            set -g @packet-loss_suffix "|"
             """,
         ]
 
