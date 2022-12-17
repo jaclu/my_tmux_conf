@@ -45,8 +45,8 @@ class ishHost(SB):
         left & right without a pointless reassignment.
 
         Since I run both iSH and more often iSH-AOK, I keep them
-        separated by referring to an AOK node by hostname, and an iSH node
-        by hostname-i
+        separated by referring to an regular iSH nodes by hostname,
+        and an iSH-AOK node by hostname-aok
         """
         super().status_bar_customization(print_header=print_header)
         if os.path.isfile("/proc/ish/defaults/enable_multicore"):
