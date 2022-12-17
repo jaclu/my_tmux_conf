@@ -159,18 +159,66 @@ class DefaultPlugins(IshConsole):
     #
     # -----------------------------------------------------------
 
-    def plugin_prefix_highlight(self):  # 0.0
+    def plugin_better_mouse_mode(self):  # 2.1
         #
-        #  Highlights when you press tmux prefix key and
-        #  when copy/sync mode is active.
+        #  A tmux plugin to better manage the mouse.
+        #  Emulate mouse scrolling for full-screen programs that doesn't
+        #  provide built in mouse support, such as man, less, vi.
+        #  Can scroll in non-active 'mouse over-ed' panes.
+        #  Can adjust scroll-sensitivity.
         #
-        conf = """
-        set -g @prefix_highlight_show_copy_mode  on
-        set -g @prefix_highlight_copy_mode_attr  "fg=black,bg=yellow,bold"
-        set -g @prefix_highlight_show_sync_mode  on
-        set -g @prefix_highlight_sync_mode_attr "fg=black,bg=orange,blink,bold"
-        """
-        return ["jaclu/tmux-prefix-highlight", 0.0, conf]
+        min_vers = 2.1
+        if self.is_tmate():
+            min_vers = 99  # disable for tmate
+
+        return [
+            "jaclu/tmux-better-mouse-mode",
+            min_vers,
+            """
+            #  Scroll events are sent to moused-over pane.
+            set -g @scroll-without-changing-pane  on
+
+            #  Scroll speed, lines per tic
+            set -g @scroll-speed-num-lines-per-scroll  1
+
+            #
+            #  Scroll wheel is able to send up & down keys for alternate
+            #  screen apps that lacks inherent mouse support
+            #
+            set -g @emulate-scroll-for-no-mouse-alternate-buffer  on
+            """,
+        ]
+
+    def plugin_jump(self):  # 1.8
+        #
+        #  Jump to word(-s) on the screen that you want to copy,
+        #  without having to use the mouse.
+        #
+        #
+        #  Default trigger: <prefix> j
+        #
+        k = "-n  M-j"
+        if self.is_limited_host or self.is_tmate():
+            # make sure this is never used, generates to much lag
+            vers_min = 99
+            self.write(
+                f"bind -N 'tmux-jump'  {k}  display "
+                "'tmux-jump disabled on limited hosts'"
+            )
+        else:
+            vers_min = 1.8
+        return [
+            "jaclu/tmux-jump",  # was Lenbok
+            vers_min,
+            #
+            #  The weird jump key syntax below is how I both sneak in
+            #  a note and make the key not to depend on prefix :)
+            #
+            f"""#  Additional dependency: ruby >= 2.3
+            set -g @jump-key "-N plugin_Lenbok/tmux-jump {k}"
+            set -g @jump-keys-position 'off_left'
+            """,
+        ]
 
     def plugin_menus(self):  # 3.0
         conf = "set -g @menus_config_overrides  1"
@@ -232,108 +280,18 @@ class DefaultPlugins(IshConsole):
             """,
         ]
 
-    def plugin_suspend(self):  # 2.4
+    def plugin_prefix_highlight(self):  # 0.0
         #
-        #  {@mode_indicator_custom_prompt}
+        #  Highlights when you press tmux prefix key and
+        #  when copy/sync mode is active.
         #
-        #  I use this mostly in order to be able to send root keys
-        #  into an inner T2_ENV
-        #
-        #  Since this key will active in the outer tmux in order to reenable
-        #  the only way to use this in an inner tmux is if the inner is using
-        #  a different trigger key.
-        #
-        #  Can't use M-Z since ish_console is not able to generate that
-        #  directly
-        #
-        return [
-            "jaclu/tmux-suspend",
-            2.4,
-            """
-            set -g @suspend_key  M-z
-            """
-            "set -g @suspend_suspended_options "
-            '"@mode_indicator_custom_prompt::#[bg=yellow]💤#[default], "\n',
-        ]
-
-    def plugin_better_mouse_mode(self):  # 2.1
-        #
-        #  A tmux plugin to better manage the mouse.
-        #  Emulate mouse scrolling for full-screen programs that doesn't
-        #  provide built in mouse support, such as man, less, vi.
-        #  Can scroll in non-active 'mouse over-ed' panes.
-        #  Can adjust scroll-sensitivity.
-        #
-        min_vers = 2.1
-        if self.is_tmate():
-            min_vers = 99  # disable for tmate
-
-        return [
-            "jaclu/tmux-better-mouse-mode",
-            min_vers,
-            """
-            #  Scroll events are sent to moused-over pane.
-            set -g @scroll-without-changing-pane  on
-
-            #  Scroll speed, lines per tic
-            set -g @scroll-speed-num-lines-per-scroll  1
-
-            #
-            #  Scroll wheel is able to send up & down keys for alternate
-            #  screen apps that lacks inherent mouse support
-            #
-            set -g @emulate-scroll-for-no-mouse-alternate-buffer  on
-            """,
-        ]
-
-    def plugin_session_wizard(self):  # 3.2
-        return ["27medkamal/tmux-session-wizard", 3.2, "#  Default trigger: <prefix> T"]
-
-    def plugin_jump(self):  # 1.8
-        #
-        #  Jump to word(-s) on the screen that you want to copy,
-        #  without having to use the mouse.
-        #
-        #
-        #  Default trigger: <prefix> j
-        #
-        k = "-n  M-j"
-        if self.is_limited_host or self.is_tmate():
-            # make sure this is never used, generates to much lag
-            vers_min = 99
-            self.write(
-                f"bind -N 'tmux-jump'  {k}  display "
-                "'tmux-jump disabled on limited hosts'"
-            )
-        else:
-            vers_min = 1.8
-        return [
-            "jaclu/tmux-jump",  # was Lenbok
-            vers_min,
-            #
-            #  The weird jump key syntax below is how I both sneak in
-            #  a note and make the key not to depend on prefix :)
-            #
-            f"""#  Additional dependency: ruby >= 2.3
-            set -g @jump-key "-N plugin_Lenbok/tmux-jump {k}"
-            set -g @jump-keys-position 'off_left'
-            """,
-        ]
-
-    def plugin_yank(self):  # 1.5
-        #
-        #  copies text from the command line to the clipboard.
-        #
-        min_vers = 1.5
-        if self.is_tmate():
-            min_vers = 99  # disable for tmate
-        return [
-            "jaclu/tmux-yank",
-            min_vers,
-            """#  Default trigger: <prefix> y
-            # seems to only work on local system
-            """,
-        ]
+        conf = """
+        set -g @prefix_highlight_show_copy_mode  on
+        set -g @prefix_highlight_copy_mode_attr  "fg=black,bg=yellow,bold"
+        set -g @prefix_highlight_show_sync_mode  on
+        set -g @prefix_highlight_sync_mode_attr "fg=black,bg=orange,blink,bold"
+        """
+        return ["jaclu/tmux-prefix-highlight", 0.0, conf]
 
     def plugin_resurrect(self):  # 1.9
         #
@@ -373,6 +331,48 @@ class DefaultPlugins(IshConsole):
         set -g @resurrect-dir "{resurect_dir}"
         """
         return ["jaclu/tmux-resurrect", 1.9, conf]
+
+    def plugin_session_wizard(self):  # 3.2
+        return ["27medkamal/tmux-session-wizard", 3.2, "#  Default trigger: <prefix> T"]
+
+    def plugin_suspend(self):  # 2.4
+        #
+        #  {@mode_indicator_custom_prompt}
+        #
+        #  I use this mostly in order to be able to send root keys
+        #  into an inner T2_ENV
+        #
+        #  Since this key will active in the outer tmux in order to reenable
+        #  the only way to use this in an inner tmux is if the inner is using
+        #  a different trigger key.
+        #
+        #  Can't use M-Z since ish_console is not able to generate that
+        #  directly
+        #
+        return [
+            "jaclu/tmux-suspend",
+            2.4,
+            """
+            set -g @suspend_key  M-z
+            """
+            "set -g @suspend_suspended_options "
+            '"@mode_indicator_custom_prompt::#[bg=yellow]💤#[default], "\n',
+        ]
+
+    def plugin_yank(self):  # 1.5
+        #
+        #  copies text from the command line to the clipboard.
+        #
+        min_vers = 1.5
+        if self.is_tmate():
+            min_vers = 99  # disable for tmate
+        return [
+            "jaclu/tmux-yank",
+            min_vers,
+            """#  Default trigger: <prefix> y
+            # seems to only work on local system
+            """,
+        ]
 
     def plugin_zz_continuum(self):  # 1.9
         #
