@@ -34,9 +34,8 @@ class JacMacConfig(SB):
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            set -g @packet-loss-ping_host "8.8.4.4"
+            # set -g @packet-loss-ping_host "8.8.4.4"
 
-            #  Weighted average last 30 seconds
             # set -g @packet-loss-ping_count "6"
             set -g @packet-loss-history_size "7"
             set -g @packet-loss_weighted_average "0"
