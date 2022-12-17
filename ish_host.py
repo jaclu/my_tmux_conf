@@ -56,41 +56,39 @@ class ishHost(SB):
 
         return print_header
 
+    #
+    #  Plugins not suitable for limited hosts, iSH being classed as such,
+    #  are set to require tmux version 99 in default_plugins.py
+    #  Thereby not making them available for iSH hosts
+    #
+
     def plugin_packet_loss(self):  # 1.9
         return [
             "jaclu/tmux-packet-loss",
+            #
+            #  I sometimes experiment with this plugin on iSH
+            #  When not using it, I set the min version to way above
+            #  what will be found.
+            #
             99,
+            # 1.9,
             """
-                set -g @packet-loss_level_alert 17
-                set -g @packet-loss_level_crit  "50"
-                # debug lvl, to always show packet-loss
-                # set -g @packet-loss_level_disp 0.0
+            # set -g @packet-loss-ping_count "6"
+            set -g @packet-loss-history_size "7"
+            set -g @packet-loss_weighted_average "0"
 
-                set -g @packet-loss_prefix "|"
-                set -g @packet-loss_suffix "|"
+            # set -g @packet-loss_level_disp "0.1"
+            set -g @packet-loss_level_alert "17"
+            set -g @packet-loss_level_crit "40"
+
+            # set -g @packet-loss_color_alert "colour181"
+            # set -g @packet-loss_color_crit "red"
+            # set -g @packet-loss_color_bg "black"
+
+            set -g @packet-loss_prefix "|"
+            set -g @packet-loss_suffix "|"
                 """,
         ]
-
-    def plugin_yank(self):  # 1.9
-        #
-        #  copies text from the command line to the clipboard.
-        #
-        #  Default trigger: <prefix> y
-        #
-        return ["jaclu/tmux-yank", 99, ""]
-
-    def not_plugin_resurrect(self):  # 1.9
-        #
-        #  Does not work on: iSH
-        #
-        #  This plugins fails to restore sessions in iSH, at least on my
-        #  devices. so no point enabling tmux-resurrect & tmux-continuum
-        #  on iSH
-        #
-        return ["jaclu/tmux-resurrect", 99, ""]
-
-    def not_plugin_zz_continuum(self):  # 1.9
-        return ["jaclu/tmux-continuum", 99, ""]
 
 
 if __name__ == "__main__":
