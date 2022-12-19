@@ -1227,7 +1227,7 @@ class BaseConfig(TmuxConfig):
             note_prefix = ""
         w(
             f'bind -N "{note_prefix}List all plugins defined"  {M_P}  '
-            f'run -b "echo \\"Generating response\\" ; sleep 10 ; {__main__.__file__} {self.conf_file} -p2"'
+            f'run -b "echo \\"Generating response\\" ; sleep 10 ; {__main__.__file__} {self.conf_file} -p2 &"'
         )
 
     def kill_tmux_server_UK(self, M_X: str = "M-X"):
