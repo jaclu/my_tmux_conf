@@ -198,7 +198,12 @@ class IshConsole(BaseConfig):
                 # Doesn't work on Omnitype,Yoozon3, generates ~
                 ("39", "+"),
             ):
-                w(f'bind -N "Enables M={c}" -n  User{i}  send "M-{c}"')
+                if c == "N":
+                    #  Special case to avoid cutof at second -N
+                    #  on tmux < 3.1
+                    w(f"bind -n  User{i}  send M-{c}")
+                else:
+                    w(f'bind -N "Enables M-{c}" -n  User{i}  send "M-{c}"')
 
             if not fn_keys_mapped:
                 #  Collides with F1 - F10 remapping
