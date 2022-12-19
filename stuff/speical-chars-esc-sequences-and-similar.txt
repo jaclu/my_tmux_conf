@@ -36,36 +36,36 @@
 #  tmux         Esc seq
 #  notation     inc Esc     Hex-sequence
 #  --------     -------     ------------
-#  Btab         ~[[Z        0x1B 0x5B 0x5A
-#  F1           ^[OP        0x1B 0x4F 0x50
-#  F2           ^[OQ        0x1B 0x4F 0x51
-#  F3           ^[OR        0x1B 0x4F 0x52
-#  F4           ^[OS        0x1B 0x4F 0x53
-#  F5           ^[[15~      0x1B 0x5B 0x31 0x35 0x7E
-#  F6           ^[[17~      0x1B 0x5B 0x31 0x37 0x7E
-#  F7           ^[[18~      0x1B 0x5B 0x31 0x38 0x7E
-#  F8           ^[[19~      0x1B 0x5B 0x31 0x39 0x7E
+#  Btab         ~[[Z        1B 5B 5A
+#  F1           ^[OP        1B 4F 50
+#  F2           ^[OQ        1B 4F 51
+#  F3           ^[OR        1B 4F 52
+#  F4           ^[OS        1B 4F 53
+#  F5           ^[[15~      1B 5B 31 35 7E
+#  F6           ^[[17~      1B 5B 31 37 7E
+#  F7           ^[[18~      1B 5B 31 38 7E
+#  F8           ^[[19~      1B 5B 31 39 7E
 
-#  F9           ^[[20~      0x1B 0x5B 0x32 0x30 0x7E
-#  F10          ^[[21~      0x1B 0x5B 0x32 0x31 0x7E
+#  F9           ^[[20~      1B 5B 32 30 7E
+#  F10          ^[[21~      1B 5B 32 31 7E
 
-#  F11          ^[[23~      0x1B 0x5B 0x32 0x33 0x7E
-#  F12          ^[[24~      0x1B 0x5B 0x32 0x34 0x7E
+#  F11          ^[[23~      1B 5B 32 33 7E
+#  F12          ^[[24~      1B 5B 32 34 7E
 
-#  C-R          ^[[1;5C     0x1B 0x5B 0x31 0x3B 0x35 0x43
-#  C-L          ^[[1;5D     0x1B 0x5B 0x31 0x3B 0x35 0x44
+#  C-R          ^[[1;5C     1B 5B 31 3B 35 43
+#  C-L          ^[[1;5D     1B 5B 31 3B 35 44
 #
-#  C-S-Right    ^[[1;6C     0x1B 0x5B 0x31 0x3B 0x36 0x43
-#  C-S-Left     ^[[1;6D     0x1B 0x5B 0x31 0x3B 0x36 0x44
+#  C-S-Right    ^[[1;6C     1B 5B 31 3B 36 43
+#  C-S-Left     ^[[1;6D     1B 5B 31 3B 36 44
 
-#  M-Right      ^[[1;3C     0x1B 0x5B 0x31 0x3B 0x33 0x43
-#  M-Left       ^[[1;3D     0x1B 0x5B 0x31 0x3B 0x33 0x44
+#  M-Right      ^[[1;3C     1B 5B 31 3B 33 43
+#  M-Left       ^[[1;3D     1B 5B 31 3B 33 44
 
-#  M-S-Right    ^[[1;10C    0x1B 0x5B 0x31 0x3B 0x31 0x30 0x43
-#  M-S-Left     ^[[1;10D    0x1B 0x5B 0x31 0x3B 0x31 0x30 0x44
+#  M-S-Right    ^[[1;10C    1B 5B 31 3B 31 30 43
+#  M-S-Left     ^[[1;10D    1B 5B 31 3B 31 30 44
 
-#  M-C-S-Right  ^[[1;14C    0x1B 0x5B 0x31 0x3B 0x31 0x34 0x43
-#  M-C-S-Left   ^[[1;14D    0x1B 0x5B 0x31 0x3B 0x31 0x34 0x44
+#  M-C-S-Right  ^[[1;14C    1B 5B 31 3B 31 34 43
+#  M-C-S-Left   ^[[1;14D    1B 5B 31 3B 31 34 44
 
 
 #alt-S
@@ -73,21 +73,21 @@
 
 # --------
 
-#  Cmd-Right    ^[[C        0x1B 0x5B 0x43
-#  Cmd-Left     ^[[D        0x1B 0x5B 0x44
+#  Cmd-Right    ^[[C        1B 5B 43
+#  Cmd-Left     ^[[D        1B 5B 44
 
-#  Cmd-S-Right  ^[[1;2C     0x1B 0x5B 0x31 0x3B 0x32 0x43
-#  Cmd-S-Left   ^[[1;2D     0x1B 0x5B 0x31 0x3B 0x32 0x44
+#  Cmd-S-Right  ^[[1;2C     1B 5B 31 3B 32 43
+#  Cmd-S-Left   ^[[1;2D     1B 5B 31 3B 32 44
 
-#  Cmd-Alt-R    ^[[1;9C     0x1B 0x5B 0x31 0x3B 0x39 0x43
-#  Cmd-Alt-L    ^[[1;9D     0x1B 0x5B 0x31 0x3B 0x39 0x44
+#  Cmd-Alt-R    ^[[1;9C     1B 5B 31 3B 39 43
+#  Cmd-Alt-L    ^[[1;9D     1B 5B 31 3B 39 44
 #
 
 
 #  prev window: Shift-Alt-Left
 #              Send Escape (^[) Sequence: [1;4D
-#              Hex: 0x1B 0x5B 0x31 0x3B 0x34 0x44
+#              Hex: 1B 5B 31 3B 34 44
 #  next window: Shift-Alt-Right
 #              Send Escape (^[) Sequence: [1;4C
-#              Hex: 0x1B 0x5B 0x31 0x3B 0x34 0x43
+#              Hex: 1B 5B 31 3B 34 43
 #
