@@ -352,7 +352,7 @@ class BaseConfig(TmuxConfig):
             )
             w()
 
-        if self.vers_ok(2.8):
+        if self.vers_ok(2.8) and not self.is_ish_console:
             w('bind Any display "This key is not bound to any action"\n')
 
         #
