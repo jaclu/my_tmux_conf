@@ -82,12 +82,13 @@ class IshConsole(BaseConfig):
         #
         self.ic_fn_keys()
         self.ic_alt_upper_case(fn_keys_mapped=True)
+
         #
         #  Depending on BT Keyb, only one should be active
         #
 
         # generic BT Keyb
-        self.ic_multiKey()
+        # self.ic_multiKey()
 
         # specific keybs
         # self.ic_keyb_Yoozon3()
