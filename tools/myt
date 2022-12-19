@@ -27,7 +27,7 @@ regular_tmux() {
 	profile="${my_tmux_conf_location}/default_plugins.py"
     else
     	# handle soft links to other directories
-    	profile="$(realpath $profile)"
+    	profile="$(realpath "$profile")"
     fi
 
     TMUX_BIN="$(command -v tmux)"
