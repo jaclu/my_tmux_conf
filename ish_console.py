@@ -198,7 +198,7 @@ class IshConsole(BaseConfig):
                 # Doesn't work on Omnitype,Yoozon3, generates ~
                 ("39", "+"),
             ):
-                w(f'bind -N "Enables M-{c}" -n  User{i}  send "M-{c}"')
+                w(f'bind -N "Enables M={c}" -n  User{i}  send "M-{c}"')
 
             if not fn_keys_mapped:
                 #  Collides with F1 - F10 remapping
