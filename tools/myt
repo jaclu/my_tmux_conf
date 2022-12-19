@@ -11,6 +11,7 @@
 #  using asdf to potentially run this with a different tmux version
 #
 
+version="1.1.0"
 my_tmux_conf_location="/usr/local/my_tmux_conf"
 
 regular_tmux() {
@@ -71,8 +72,6 @@ tmux_2() {
 
 display_help() {
     cat << EOF
-myt, version $version
-
 Usage: myt [-q] [-2] [profile]
 
 Generates config and starts tmux
@@ -81,10 +80,11 @@ Options can be given in any order.
 
 Availlable options:
 
--h  --help  Print this help and exit.
--q          Dont generate config, start tmux direcly
--2          Run in T2_ENV (inner tmux, other prefix)
-profile     Run using specific profile
+-h  --help      Print this help and exit.
+-v  --version   Print version and exit.
+-q              Dont generate config, start tmux direcly
+-2              Run in T2_ENV (inner tmux, other prefix)
+profile         Run using specific profile
 EOF
     exit 0
 }
@@ -97,6 +97,11 @@ while [ -n "$1" ]; do
     case "$1" in
 
         "-h" | "--help" ) display_help ;;
+
+        "-v" | "--version" )
+            echo "myt $version"
+            exit 0
+            ;;
 
         "-q") quick_mode=1 ;;
 
