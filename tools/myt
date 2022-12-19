@@ -16,7 +16,8 @@ my_tmux_conf_location="/usr/local/my_tmux_conf"
 
 regular_tmux() {
     if [ -z "$profile" ]; then
-        profile="${my_tmux_conf_location}/$(hostname | cut -d. -f 1 | tr '[:upper:]' '[:lower:]').py"
+        profile="${my_tmux_conf_location}/$(hostname | cut -d. -f 1 "
+        "| tr '[:upper:]' '[:lower:]').py"
     fi
 
     if [ ! -f "${profile}" ]; then
