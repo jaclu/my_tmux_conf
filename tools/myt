@@ -94,6 +94,7 @@ EOF
 
 quick_mode=0
 t2_env=0
+profile=""
 
 while [ -n "$1" ]; do
     case "$1" in
