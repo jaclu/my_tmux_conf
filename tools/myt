@@ -15,12 +15,12 @@ version="1.1.0"
 my_tmux_conf_location="/usr/local/my_tmux_conf"
 
 regular_tmux() {
-    echo "-> running regular_tmux($profile) [$(hostname)]"
+    # echo "-> running regular_tmux($profile) [$(hostname)]"
     if [ -z "$profile" ]; then
         detected_hostname="$(hostname | cut -d. -f 1 | tr '[:upper:]' '[:lower:]')"
-        echo "-> detected hostname [$detected_hostname]"
+        # echo "-> detected hostname [$detected_hostname]"
         profile="${my_tmux_conf_location}/${detected_hostname}.py"
-        echo "-> Automatically built profile-name: [$profile]"
+        # echo "-> Automatically built profile-name: [$profile]"
     fi
 
     if [ ! -f "${profile}" ]; then
