@@ -18,6 +18,7 @@ regular_tmux() {
     if [ -z "$profile" ]; then
         profile="${my_tmux_conf_location}/$(hostname | cut -d. -f 1 "
         "| tr '[:upper:]' '[:lower:]').py"
+        echo "-> Automatically built profile-name: [$profile]"
     fi
 
     if [ ! -f "${profile}" ]; then
