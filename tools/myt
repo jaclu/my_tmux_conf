@@ -15,7 +15,7 @@ version="1.1.0"
 my_tmux_conf_location="/usr/local/my_tmux_conf"
 
 regular_tmux() {
-    echo "-> running regular_tmux($profile)"
+    echo "-> running regular_tmux($profile) [$(hostname)]"
     if [ -z "$profile" ]; then
         profile="${my_tmux_conf_location}/$(hostname | cut -d. -f 1 "
         "| tr '[:upper:]' '[:lower:]').py"
