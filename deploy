@@ -1,4 +1,10 @@
 #!/bin/sh
 
-sudo cp -av tools/myt /usr/local/bin
-#sudo cp -av tools/rt /usr/local/bin
+CURRENT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+
+sudo cp -av "$CURRENT_DIR"/tools/myt /usr/local/bin
+
+#
+#  Rt is used via  https://github.com/jaclu/helpfull_scripts.git
+#
+#sudo cp -av "$CURRENT_DIR"/tools/rt /usr/local/bin
