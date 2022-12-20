@@ -25,10 +25,10 @@ regular_tmux() {
 
     if [ ! -f "${profile}" ]; then
         echo
-	echo "*** Warning: no profile found for: $profile"
-	echo "***          using default profile"
-	echo
-	profile="${my_tmux_conf_location}/default_plugins.py"
+        echo "*** Warning: no profile found for: $profile"
+        echo "***          using default profile"
+        echo
+        profile="${my_tmux_conf_location}/default_plugins.py"
     else
     	# handle soft links to other directories
     	profile="$(realpath "$profile")"
@@ -37,7 +37,7 @@ regular_tmux() {
     TMUX_BIN="$(command -v tmux)"
     if [ -z "$TMUX_BIN" ]; then
         echo "ERROR: no tmux in PATH!"
-	exit 1
+    	exit 1
     fi
 
     echo ">> profile used: $profile"
