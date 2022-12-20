@@ -88,7 +88,7 @@ class IshConsole(BaseConfig):
         #
 
         # generic BT Keyb
-        # self.ic_multiKey()
+        self.ic_multiKey()
 
         # specific keybs
         # self.ic_keyb_Yoozon3()
