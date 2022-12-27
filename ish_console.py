@@ -22,7 +22,7 @@ from base import BaseConfig
 
 
 def check_if_ish_console():
-    if os.path.isdir("/proc/ish") and not os.environ.get("SSH_CLIENT"):
+    if os.popen("uname -a | grep -i ish").read():
         return True
     else:
         return False
@@ -31,8 +31,10 @@ def check_if_ish_console():
 class IshConsole(BaseConfig):
     """When run at an iSH console this redefines the rather limited
     keyboard in order to make it more useful
+    
+    Step one, if this is iSH, start by asuming this is an iSH console
+    Step two, if logged in through ssh, cancel this assumption
     """
-
     is_ish_console = check_if_ish_console()
 
     def local_overides(self):
@@ -42,7 +44,8 @@ class IshConsole(BaseConfig):
         #
         if self.is_ish_console:
             #
-            #  Only remap keyboard if running on the iSH console
+            #  If running on iSH and logged in via ssh, unbind console 
+            #  specific keys
             #
             self.is_ish_console = not os.environ.get("SSH_CLIENT")
             self.ic_setup()
