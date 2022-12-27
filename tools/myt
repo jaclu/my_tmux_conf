@@ -40,7 +40,7 @@ regular_tmux() {
     	exit 1
     fi
 
-    echo ">> profile used: $profile"
+    # echo ">> profile used: $profile"
     #
     #  generate a fresh .tmux.conf
     #
