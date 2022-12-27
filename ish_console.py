@@ -62,17 +62,6 @@ class IshConsole(BaseConfig):
         #
         print(f"use iSH console keys: {self.is_ish_console}")
 
-        w(
-            """
-        #
-        #  Navigate using Alt-hjkl
-        #"""
-        )
-        w("bind -N 'Select pane left'  -n  M-h  select-pane -L")
-        w("bind -N 'Select pane down'  -n  M-j  select-pane -D")
-        w("bind -N 'Select pane up'    -n  M-k  select-pane -U")
-        w("bind -N 'Select pane right' -n  M-l  select-pane -R")
-
         #
         #  Setup iSH keyb adaptions
         #
