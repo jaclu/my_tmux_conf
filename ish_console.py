@@ -22,6 +22,7 @@ from base import BaseConfig
 
 
 def check_if_ish_console():
+    #  Do quicker check first
     if os.path.exists("/etc/alpine-release") and os.popen("uname -a | grep -i ish").read():
         return True
     else:
@@ -29,10 +30,11 @@ def check_if_ish_console():
 
 
 class IshConsole(BaseConfig):
-    """When run at an iSH console this redefines the rather limited
-    keyboard in order to make it more useful
+    """When running Alpine at an iSH console this redefines the rather limited
+    keyboard in order to make it more useful. Same kernel running Debian, does
+    not have a limited keyb, so might be more of an Alpine than an iSH issue...
     
-    Step one, if this is iSH, start by asuming this is an iSH console
+    Step one, if this is Alpine iSH, start by asuming this is an iSH console
     Step two, if logged in through ssh, cancel this assumption
     """
     is_ish_console = check_if_ish_console()
