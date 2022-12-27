@@ -22,8 +22,7 @@ from base import BaseConfig
 
 
 def check_if_ish_console():
-    if os.path.exists("/etc/alpine-release") 
-            and os.popen("uname -a | grep -i ish").read():
+    if os.path.exists("/etc/alpine-release") and os.popen("uname -a | grep -i ish").read():
         return True
     else:
         return False
