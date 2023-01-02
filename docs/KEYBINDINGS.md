@@ -49,8 +49,8 @@ Key | Description
 
 Key | Alt key(-s) | Description
 -|-|-
-`<p>` ( | M-( / M-Up | Previous session **
-`<p>` ) | M-) / M-Down | Next session **
+`<p>` ( | M-( | Previous session **
+`<p>` ) | M-) | Next session **
 `<p>` _ | M-_ | Last session
 `<p>` + | M-+ | Create named session
 `<p>` S | | Rename session
@@ -60,8 +60,8 @@ Key | Alt key(-s) | Description
 
 Key | Alt key(-s) | Description
 -|-|-
-`<p>` 9 | M-9 / M-Left | Previous window
-`<p>` 0 | M-0 / M-Right | Next window
+`<p>` 9 | M-9 | Previous window
+`<p>` 0 | M-0 | Next window
 `<p>` - | M-- | Last window
 `<p>` = | M-=| New window
 `<p>` < | M-< | Swap window left

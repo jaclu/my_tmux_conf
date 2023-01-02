@@ -33,17 +33,14 @@
 - pane resize   -  M-S    Arrows
 - window split  -  C-M-S  Arrows
 
-- next-prew win -  M      90 / Left/Right
+- next-prew win -  M      90
 - last window   -  M      -
 - swap window   -  M      < >
 - new  window   -  M      =
 
-- next-prev ses -  M      () / Up/Down
+- next-prev ses -  M      ()
 - last session  -  M      _
 - new  session  -  M      +
-
-- Suspend       -  M      z
-- Plugin jump   -  M      J
 
 - kill session  -  M      x
 - kill server   -  M      X
