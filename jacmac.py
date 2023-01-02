@@ -38,10 +38,10 @@ class JacMacConfig(SB):
 
             # set -g @packet-loss-ping_count "6"
             set -g @packet-loss-history_size "7"
-            set -g @packet-loss_weighted_average "0"
+            set -g @packet-loss_weighted_average "1"
 
             # set -g @packet-loss_level_disp "0.1"
-            set -g @packet-loss_level_alert "11"
+            set -g @packet-loss_level_alert "17"
             set -g @packet-loss_level_crit "40"
 
             # set -g @packet-loss_color_alert "colour181"
