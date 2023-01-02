@@ -755,6 +755,41 @@ class BaseConfig(TmuxConfig):
                   """
                 )
 
+        #
+        #  I tend to bind ^[9 & ^[0 to Alt-Left/Right in my terminal apps
+        #
+        if self.bind_meta:
+            w(
+                """# adv key win nav
+            bind -N "Previous window  - P 9" -n  M-9  previous-window
+            bind -N "Next window - P 0"      -n  M-0  next-window
+            bind -N "Last Window - P -"      -n  M--  last-window"""
+            )
+            if self.vers_ok(2.1):
+                w2 = "window"  # hackish strings to make sure
+                cm = "-T copy-mode -n M-"  # line is not to long
+                w(
+                    f"""# Overide odd behaviour in copy-mode
+                  bind -N "Previous {w2}  - P 9" {cm}9  previous-{w2}
+                  bind -N "Next {w2} - P 0"      {cm}0  next-{w2}
+                  """
+                )
+        else:
+            w(
+                """#  skipping adv keys, if resourced
+            unbind -n  M-9
+            unbind -n  M-0
+            unbind -n  M--"""
+            )
+            if self.vers_ok(2.4):
+                # TODO: Why can this be bound but not unbound at 2.1?
+                w(
+                    """
+                  unbind -T copy-mode -n M-9
+                  unbind -T copy-mode -n M-0
+                  """
+                )
+
         if self.vers_ok(1.8):
             #
             #  Swap window left/right <prefix>  < / >
