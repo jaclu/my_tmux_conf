@@ -1339,8 +1339,8 @@ class BaseConfig(TmuxConfig):
                 f"needs: {maj_vers_needed}",
             )
 
-        min_vers_found = lib_vers_found.split(".")[2]
-        min_vers_needed = TMUX_CONF_NEEDED.split(".")[2]
+        min_vers_found = int(lib_vers_found.split(".")[2])
+        min_vers_needed = int(TMUX_CONF_NEEDED.split(".")[2])
         if min_vers_found < min_vers_needed:
             self.incompatible_tmux_conf(lib_vers_found, "Version to old!")
 
