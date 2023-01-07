@@ -14,6 +14,15 @@
 version="1.1.0"
 my_tmux_conf_location="/usr/local/my_tmux_conf"
 
+select_tmux_bin() {
+    TMUX_BIN="$(command -v $tmux_bin)"
+    echo ">> myt tmux_bin [$TMUX_BIN]"
+    if [ -z "$TMUX_BIN" ]; then
+        echo "ERROR: no tmux in PATH!"
+    	exit 1
+    fi
+}
+
 regular_tmux() {
     # echo "-> running regular_tmux($profile) [$(hostname)]"
     if [ -z "$profile" ]; then
@@ -34,18 +43,14 @@ regular_tmux() {
     	profile="$(realpath "$profile")"
     fi
 
-    TMUX_BIN="$(command -v tmux)"
-    if [ -z "$TMUX_BIN" ]; then
-        echo "ERROR: no tmux in PATH!"
-    	exit 1
-    fi
+    select_tmux_bin
 
     # echo ">> profile used: $profile"
     #
     #  generate a fresh .tmux.conf
     #
     if [ "$quick_mode" -eq 0 ]; then
-        ! "${profile}" -r && exit 2
+        ! "${profile}" -r -t "$TMUX_BIN" && exit 2
     fi
     "$TMUX_BIN" -u new-session -ADs main
 }
@@ -55,6 +60,8 @@ tmux_2() {
     if [ -z "$profile" ]; then
         profile="t2"
     fi
+
+    select_tmux_bin
 
     #  Needs to be $HOME not ~ since it is sent into tmux_conf
     conf_file="$HOME/t2/tmux/tmux.conf"
@@ -68,10 +75,10 @@ tmux_2() {
     if [ "$quick_mode" -eq 0 ]; then
         #  ensure previously used tmux bin is not picked up
         rm -f "$conf_file"
-        ! T2_ENV=1 "${my_tmux_conf_location}/${profile}.py" -r "$conf_file" && exit 2
+        ! T2_ENV=1 "${my_tmux_conf_location}/${profile}.py"  -t "$TMUX_BIN" -r "$conf_file" && exit 2
     fi
 
-    tmux -f ~/t2/tmux/tmux.conf -L serv2
+    "$TMUX_BIN" -f ~/t2/tmux/tmux.conf -L serv2
 }
 
 display_help() {
@@ -86,6 +93,7 @@ Availlable options:
 
 -h  --help      Print this help and exit.
 -v  --version   Print version and exit.
+-c  --command   Use this tmux binary (default tmux)
 -q              Dont generate config, start tmux direcly
 -2              Run in T2_ENV (inner tmux, other prefix)
 profile         Run using specific profile
@@ -97,6 +105,7 @@ EOF
 quick_mode=0
 t2_env=0
 profile=""
+tmux_bin="tmux"
 
 while [ -n "$1" ]; do
     case "$1" in
@@ -107,6 +116,11 @@ while [ -n "$1" ]; do
             echo "myt $version"
             exit 0
             ;;
+
+	"-c" | "--command" )
+	    shift
+	    tmux_bin="$1"
+	    ;;
 
         "-q") quick_mode=1 ;;
 
