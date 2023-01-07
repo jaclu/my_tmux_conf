@@ -34,6 +34,8 @@ class DefaultPlugins(IshConsole):
     If you never plan to use iSH you can subclass BaseConfig directly
     """
 
+    # plugin_handler = "tmux-plugins/tpm"
+
     #
     #  Don't do auto-resume session in t2_env
     #  Manual reload with <prefix> C-R is still available
