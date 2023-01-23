@@ -52,6 +52,8 @@ class JacMacConfig(SB):
 
             set -g @packet-loss_prefix "|"
             set -g @packet-loss_suffix "|"
+
+            # set -g @packet-loss_hook_idx "11"
             """,
         ]
 

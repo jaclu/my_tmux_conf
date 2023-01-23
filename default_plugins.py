@@ -261,7 +261,7 @@ class DefaultPlugins(IshConsole):
             """,
         ]
 
-    def plugin_power_zoom(self):  # 2.6
+    def plugin_power_zoom(self):  # 2.0
         #
         #   Zooms to separate Window, to allow for adding support panes
         #
@@ -277,8 +277,6 @@ class DefaultPlugins(IshConsole):
             """
             set -g @power_zoom_trigger  Z
             set -g @power_zoom_mouse_action "S-DoubleClick3Pane"
-            #  Obsolete param, should no longer be used!
-            # set -g @power_zoom_mouse yes
             """,
         ]
 
