@@ -318,11 +318,16 @@ class BaseConfig(TmuxConfig):
         )
         w(
             """
-        set -g  display-time 4000
-        set -g  repeat-time 750   # I want it a bit longer than 500')
-        set-option -s escape-time 0
-        set-option -g history-limit 50000
-        set-option -g status-keys emacs
+        set -g display-time 4000
+        set -g repeat-time 750   # I want it a bit longer than 500')
+        set -s escape-time 0
+        set -g history-limit 50000
+        set -g status-keys emacs
+        
+        # not sure about this one...
+        # set -g detach-on-destroy no-detached")
+        
+
         """
         )
 
