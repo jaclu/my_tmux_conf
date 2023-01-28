@@ -83,6 +83,9 @@ class ishHost(SB):
             set -g @packet-loss_level_alert "17"
             set -g @packet-loss_level_crit "40"
 
+            set -g @packet-loss_hist_avg_display 1
+            set -g @packet-loss_hist_avg_display 60
+            
             # set -g @packet-loss_color_alert "colour181"
             # set -g @packet-loss_color_crit "red"
             # set -g @packet-loss_color_bg "black"
