@@ -70,14 +70,16 @@ class ishHost(SB):
             #  When not using it, I set the min version to way above
             #  what will be found.
             #
-            99,
-            # 1.9,
+            #99,
+            1.9,
             """
+            # set -g @packet-loss-ping_host "8.8.4.4"
+
             # set -g @packet-loss-ping_count "6"
             set -g @packet-loss-history_size "7"
-            set -g @packet-loss_weighted_average "0"
+            set -g @packet-loss_weighted_average "1"
 
-            # set -g @packet-loss_level_disp "0.1"
+            set -g @packet-loss_level_disp "3.4"
             set -g @packet-loss_level_alert "17"
             set -g @packet-loss_level_crit "40"
 
@@ -87,7 +89,9 @@ class ishHost(SB):
 
             set -g @packet-loss_prefix "|"
             set -g @packet-loss_suffix "|"
-                """,
+
+            # set -g @packet-loss_hook_idx "11"
+            """,
         ]
 
 
