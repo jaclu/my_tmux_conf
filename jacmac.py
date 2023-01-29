@@ -41,12 +41,12 @@ class JacMacConfig(SB):
             set -g @packet-loss-history_size     7
             set -g @packet-loss_weighted_average 1
 
-            set -g @packet-loss_level_disp  3.4
-            set -g @packet-loss_level_alert 17
+            set -g @packet-loss_level_disp  4
+            set -g @packet-loss_level_alert 18
             set -g @packet-loss_level_crit  40
 
             set -g @packet-loss_hist_avg_display 1
-            set -g @packet-loss_hist_avg_minutes 60
+            set -g @packet-loss_hist_avg_minutes 30
 
             set -g @packet-loss_color_alert  "colour181"
             set -g @packet-loss_color_alert  "yellow"
