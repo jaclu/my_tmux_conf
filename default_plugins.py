@@ -71,9 +71,6 @@ class DefaultPlugins(IshConsole):
         if "tmux-prefix-highlight" in used_plugins:
             self.sb_right += "#{prefix_highlight}"
 
-        if "tmux-packet-loss" in used_plugins:
-            self.sb_right = "#{packet_loss}" + self.sb_right
-
         if "tmux-suspend" in used_plugins:
             self.sb_right += "#{@mode_indicator_custom_prompt}"
 
@@ -93,6 +90,9 @@ class DefaultPlugins(IshConsole):
             self.sb_right = (
                 "#[bg=colour28]#(tmux-spotify-info)#[default] " f"{self.sb_right}"
             )
+
+        if "tmux-packet-loss" in used_plugins:
+            self.sb_right = "#{packet_loss}" + self.sb_right
 
         return True  # request footer to be printed
 
