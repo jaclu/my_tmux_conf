@@ -36,28 +36,17 @@ class JacMacConfig(SB):
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            # set -g @packet-loss-ping_host 8.8.4.4
-
-            # set -g @packet-loss-ping_count     6
             set -g @packet-loss-history_size     7
             set -g @packet-loss_weighted_average 1
 
-            set -g @packet-loss_level_disp  4
+            set -g @packet-loss_level_disp  3
             set -g @packet-loss_level_alert 18
             set -g @packet-loss_level_crit  40
 
             set -g @packet-loss_hist_avg_display 1
-            set -g @packet-loss_hist_avg_minutes 30
-
-            set -g @packet-loss_color_alert  "colour181"
-            set -g @packet-loss_color_alert  "yellow"
-            # set -g @packet-loss_color_crit "red"
-            # set -g @packet-loss_color_bg   "black"
-
-            set -g @packet-loss_prefix "|"
-            set -g @packet-loss_suffix "|"
-
-            # set -g @packet-loss_hook_idx "11"
+            
+            set -g @packet-loss_prefix |
+            set -g @packet-loss_suffix |
             """,
         ]
 
