@@ -122,7 +122,6 @@ class BaseConfig(TmuxConfig):
         plugins_display: int = 0,  # Display info about plugins
     ):
         self.check_libs_compatible()
-
         super().__init__(
             parse_cmd_line=parse_cmd_line,
             conf_file=conf_file,
@@ -323,10 +322,10 @@ class BaseConfig(TmuxConfig):
         set -s escape-time 0
         set -g history-limit 50000
         set -g status-keys emacs
-        
+
         # not sure about this one...
         # set -g detach-on-destroy no-detached")
-        
+
 
         """
         )
