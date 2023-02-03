@@ -19,6 +19,7 @@
 import sys
 
 from sb.sb_local import SB
+
 # from sb.sb_muted import SB
 # from default_plugins import DefaultPlugins as SB
 
@@ -44,7 +45,7 @@ class JacMacConfig(SB):
             set -g @packet-loss_level_crit  40
 
             set -g @packet-loss_hist_avg_display 1
-            
+
             set -g @packet-loss_prefix |
             set -g @packet-loss_suffix |
             """,
