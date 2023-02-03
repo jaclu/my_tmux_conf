@@ -30,6 +30,8 @@ from sb.sb_tst import SB
 
 class T2(SB):
 
+    t2_env = "1"
+
     # plugin_handler = "manual"
     # bind_meta = False
     # use_embedded_scripts = False
