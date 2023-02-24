@@ -41,24 +41,28 @@ class T2(SB):
     #  not_ prefix is when I temp allow them, but keeping the opt out
     #  in case I want them gone again
     #
-    #  wont work in an inner tmux, outer is capturimg key
-    #  in both states
+
+    #
+    #  wont work in an inner tmux, outer is capturing key
+    #  in both states. If this is really needed in the inner tmux
+    #  a separate capture key for t2 could be defined
+    #
     def plugin_suspend(self):
-        return ["suspend", 99, ""]
+        return ["jaclu/tmux-suspend", 99, ""]
 
     def plugin_mouse_swipe(self):  # 3.0
-        return ["mouse-swipe", 99, ""]
+        return ["jaclu/tmux-mouse-swipe", 99, ""]
 
     #  Handled by outer tmux
     def plugin_jump(self):
-        return ["jump", 99, ""]
+        return ["jaclu/tmux-jump", 99, ""]
 
     def not_plugin_yank(self):
-        return ["yank", 99, ""]
+        return ["jaclu/tmux-yank", 99, ""]
 
     def plugin_zz_continuum(self):
         # T2_ENV is a test env, so we do not want auto save/restore of env
-        return ["continuum", 99, ""]
+        return ["jaclu/tmux-continuum", 99, ""]
 
 
 if __name__ == "__main__":
