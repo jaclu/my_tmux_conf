@@ -51,7 +51,7 @@ class JacMacConfig(SB):
             """,
         ]
 
-    def plugin_keyboard_type(self):  # local
+    def plugin_keyboard_type(self):  # 1.9  local
         #
         #  When displaying takes 0.8 s to process...
         #
@@ -62,7 +62,7 @@ class JacMacConfig(SB):
         #
         return [
             "jaclu/tmux-keyboard-type",
-            990.0,
+            1.9,
             """
             set -g @keyboard_type_hidden  "ABC|U.S.|USInternational-PC"
             set -g @keyboard_type_aliases "Swe=Swedish-Pro|Swe=Swedish|US=U.S."
