@@ -29,7 +29,6 @@ from sb.sb_tst import SB
 
 
 class T2(SB):
-
     t2_env = "1"
 
     # plugin_handler = "manual"
@@ -46,6 +45,28 @@ class T2(SB):
     #  in both states
     def plugin_suspend(self):
         return ["suspend", 99, ""]
+
+    def plugin_keyboard_type(self):  # local
+        #
+        #  When displaying takes 0.8 s to process...
+        #
+        #  Only meaningful for local tmux!
+        #   Tested envs: Darwin, Linux
+        #
+        #  Display in status-bar with:  #{keyboard_type}
+        #
+        return [
+            "jaclu/tmux-keyboard-type",
+            1.0,
+            """
+            set -g @keyboard_type_hidden  "ABC|U.S.|USInternational-PC"
+            set -g @keyboard_type_aliases "Swe=Swedish-Pro|Swe=Swedish|US=U.S."
+            set -g @keyboard_type_fg ""
+            set -g @keyboard_type_bg "green"
+            set -g @keyboard_type_prefix ""
+            set -g @keyboard_type_suffix " "
+            """,
+        ]
 
     def not_plugin_better_mouse_mode(self):
         return ["better_mouse_mode", 99, ""]
