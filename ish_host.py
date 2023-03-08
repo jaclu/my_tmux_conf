@@ -70,8 +70,8 @@ class ishHost(SB):
             #  When not using it, I set the min version to way above
             #  what will be found.
             #
-            99,
-            #1.9,
+            # 99,
+            1.9,
             """
             # set -g @packet-loss-ping_host 8.8.4.4
 
