@@ -38,9 +38,9 @@ class ishHost(SB):
 
     # plugin_handler = "manual"
 
-    # use_embedded_scripts = False
+    use_embedded_scripts = True
 
-    def status_bar_customization(self, print_header: bool = True) -> bool:
+    def not_status_bar_customization(self, print_header: bool = True) -> bool:
         """This is called just before the status bar is rendered,
         local_overides() is called later so can not modify status bar
         left & right without a pointless reassignment.
