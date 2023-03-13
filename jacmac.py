@@ -59,6 +59,9 @@ class JacMacConfig(SB):
 
             set -g @packet-loss_hist_avg_display 1
 
+            set -g @packet-loss_color_alert colour21
+            set -g @packet-loss_color_crit  colour196
+            set -g @packet-loss_color_bg    colour226
             set -g @packet-loss_prefix |
             set -g @packet-loss_suffix |
             """,
