@@ -50,8 +50,10 @@ class JacMacConfig(SB):
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            set -g @packet-loss-history_size     7
+            # set -g @packet-loss-history_size     7
             set -g @packet-loss_weighted_average 1
+
+            set -g @packet-loss_display_trend 1
 
             set -g @packet-loss_level_disp  3
             set -g @packet-loss_level_alert 18
