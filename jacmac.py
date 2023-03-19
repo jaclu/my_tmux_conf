@@ -51,21 +51,21 @@ class JacMacConfig(SB):
             min_vers,
             """
             # set -g @packet-loss-history_size     7
-            set -g @packet-loss_weighted_average 1
+            set -g @packet-loss-weighted_average 1
 
-            set -g @packet-loss_display_trend 1
+            set -g @packet-loss-display_trend 1
 
-            set -g @packet-loss_level_disp  3
-            set -g @packet-loss_level_alert 18
-            set -g @packet-loss_level_crit  40
+            set -g @packet-loss-level_disp  3
+            set -g @packet-loss-level_alert 18
+            set -g @packet-loss-level_crit  40
 
-            set -g @packet-loss_hist_avg_display 1
+            set -g @packet-loss-hist_avg_display 1
 
-            set -g @packet-loss_color_alert colour21
-            set -g @packet-loss_color_crit  colour196
-            set -g @packet-loss_color_bg    colour226
-            set -g @packet-loss_prefix |
-            set -g @packet-loss_suffix |
+            set -g @packet-loss-color_alert colour21
+            set -g @packet-loss-color_crit  colour196
+            set -g @packet-loss-color_bg    colour226
+            set -g @packet-loss-prefix |
+            set -g @packet-loss-suffix |
             """,
         ]
 
