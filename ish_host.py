@@ -76,21 +76,21 @@ class ishHost(SB):
             """
             # set -g @packet-loss-ping_host 8.8.4.4
 
-            set -g @packet-loss_display_trend 1
+            set -g @packet-loss-level_disp 2
+            # set -g @packet-loss-level_alert 17
+            # set -g @packet-loss-level_crit 40
 
-            set -g @packet-loss_level_disp 2
-            set -g @packet-loss_level_alert 17
-            set -g @packet-loss_level_crit 40
+            set -g @packet-loss-display_trend 1
 
-            set -g @packet-loss_hist_avg_display 1
-            set -g @packet-loss_hist_avg_minutes 30
+            set -g @packet-loss-hist_avg_display 1
+            set -g @packet-loss-hist_avg_minutes 30
             
-            # set -g @packet-loss_color_alert colour181
-            # set -g @packet-loss_color_crit red
-            # set -g @packet-loss_color_bg black
+            # set -g @packet-loss-color_alert colour181
+            # set -g @packet-loss-color_crit red
+            # set -g @packet-loss-color_bg black
 
-            set -g @packet-loss_prefix "|"
-            set -g @packet-loss_suffix "|"
+            set -g @packet-loss-prefix "|"
+            set -g @packet-loss-suffix "|"
             """,
         ]
 
