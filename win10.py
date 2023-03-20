@@ -25,6 +25,9 @@ from sb.sb_virtualbox import SB
 
 
 class Win10Config(SB):
+
+    is_limited_host = True  # So slow it deserves thia classification :(
+
     def plugin_packet_loss(self):  # 1.9
         min_vers = 1.9
         if self.is_tmate():
