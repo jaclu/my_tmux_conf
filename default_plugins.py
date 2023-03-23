@@ -65,7 +65,9 @@ class DefaultPlugins(IshConsole):
         super().status_bar_customization(print_header=print_header)
 
         #
-        #  Plugin-hooks for status-bar, enable an item if that plugin is used
+        #  Plugin-hooks for status-bar, enable an item if that plugin
+        #  is used, in order to get a consistent status-bar order,
+        #  I also include plugins only used on some nodes here.
         #
         used_plugins = self.plugins.found(short_name=True)
         if "tmux-prefix-highlight" in used_plugins:
