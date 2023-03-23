@@ -29,19 +29,6 @@ class JacMacConfig(SB):
 
     # use_embedded_scripts = False
 
-    def local_overides(self):
-        """Local overrides applied last in the config, not related to
-        status bar, for that see status_bar_customization()
-        """
-        w = self.write
-        w(
-            """
-        #  Bootup settings for continuum
-        set -g @continuum-boot 'on'
-        set -g @continuum-boot-options 'iterm,fullscreen'
-        """
-        )
-
     def plugin_packet_loss(self):  # 1.9
         min_vers = 1.9
         if self.is_tmate():
