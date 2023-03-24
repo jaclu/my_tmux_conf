@@ -56,6 +56,21 @@ class JacMacConfig(SB):
             """,
         ]
 
+    def plugin_1password(self):    # ?.?  local
+        #
+        #  Plugin for 1password CLI tool op
+        #
+        return ["yardnsm/tmux-1password",
+                1.0,
+                """
+                # set -g @1password-key 'u' # default 'u'
+                # set -g @1password-account 'acme' # default 'my'
+                # set -g @1password-vault 'work' # default '' (all)
+                # set -g @1password-copy-to-clipboard 'on' # default 'off'
+                # set -g @1password-filter-tags 'development,servers' # default '' (no tag filtering)
+                # set -g @1password-debug 'on' # default 'off'
+                """]
+
     def plugin_keyboard_type(self):  # 1.9  local
         #
         #  When displaying takes 0.8 s to process...
