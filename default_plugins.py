@@ -267,8 +267,7 @@ class DefaultPlugins(IshConsole):
         #
         #   Zooms to separate Window, to allow for adding support panes
         #
-        if self.is_limited_host or self.is_tmate():
-            # make sure this is never used on a host flagged as limited
+        if self.is_tmate():
             vers_min = 99
         else:
             vers_min = 2.0
