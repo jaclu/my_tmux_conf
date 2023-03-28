@@ -4,12 +4,14 @@
 
 ## Basics no keyb deps, allways available
 
-- pane navigate -  Pfix  hjkl (r)
+For actions not avilable without the M-key, use tmux-menus
+
+- pane navigate -  Pfix  hjkl (r) / Pfix Arrows
 - pane split    -  Pfix  C-hjkl
 - pane resize   -  Pfix  HJKL (r)
-- window split  -  Pfix  M-HJKL
+- pane swap     -  Pfix  {}
 
-- next-prew win -  Pfix  90 (r)  /  Pfix np
+- next-prew win -  Pfix  90 (r)
 - last window   -  Pfix  -
 - swap window      Pfix  < >
 - new  window   -  Pfix  c / =
