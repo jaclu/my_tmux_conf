@@ -261,16 +261,18 @@ class BaseConfig(TmuxConfig):
             else:
                 # Default TERM
                 w("set -s  default-terminal tmux-256color")
-        else:
-            if self.vers_ok(2.1):
-                #
-                #  this became a server option starting with 2.0
-                #  according to tmux-sensible plugin
-                #
-                def_term_context = "s"
-            else:
-                def_term_context = "g"
-            w(f"set -{def_term_context} default-terminal screen-256color")
+        #  Source needed for this, I found it somewhere, but
+        #  have long forgotten where I saw this, disabled for now
+        # else:
+        #     if self.vers_ok(2.1):
+        #         #
+        #         #  this became a server option starting with 2.1
+        #         #  according to tmux-sensible plugin
+        #         #
+        #         def_term_context = "s"
+        #     else:
+        #         def_term_context = "g"
+        #     w(f"set -{def_term_context} default-terminal screen-256color")
 
         #
         #  For old tmux versions, this is needed to support modifiers for
