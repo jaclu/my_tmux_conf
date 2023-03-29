@@ -30,7 +30,6 @@ import socket
 
 from ish_host import ishHost
 
-
 class Pad5(ishHost):
 
     def plugin_power_zoom(self):

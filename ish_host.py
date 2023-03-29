@@ -28,8 +28,8 @@
 import os
 import socket
 
-from sb.sb_muted import SB
-
+#from sb.sb_muted import SB
+from sb.sb_ish import SB
 
 class ishHost(SB):
 
