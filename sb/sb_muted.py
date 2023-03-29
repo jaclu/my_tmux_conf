@@ -5,12 +5,13 @@
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
 #
-#  Template giving the status bar a somewhat more advanced look
+#  Template giving the status bar a somewhat muted look, this template
+#  follow the style used in  https://waylonwalker.com/tmux-status-bar/
 #
 
 from default_plugins import DefaultPlugins
 
-theme_text = "colour135"  # lilaish
+theme_text = "colour135"  # lilac / magenta, not sure how to label this
 muted_text = "colour242"  # grey
 
 
