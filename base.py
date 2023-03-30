@@ -252,12 +252,12 @@ class BaseConfig(TmuxConfig):
         #
         #  24-bit color for older versions
         #
-        #  This fails colors completely on mosh connections, so I usually
-        #  keep it disabled
+        #  This causes colors to completely fail on mosh connections,
+        #  so I usually keep it disabled
         #
         # if self.vers_ok(2.2) and not self.vers_ok(3.1):
-        #     # This breaks colors on MacOS Term.app
         #     if os.environ.get("TERM_PROGRAM") != "Apple_Terminal":
+        #         # This causes most colors on MacOS Term.app, to fail
         #         w("set -ga terminal-overrides ',*:Tc'")
 
         #
