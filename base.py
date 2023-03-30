@@ -257,7 +257,7 @@ class BaseConfig(TmuxConfig):
         #
         # if self.vers_ok(2.2) and not self.vers_ok(3.1):
         #     if os.environ.get("TERM_PROGRAM") != "Apple_Terminal":
-        #         # This causes most colors on MacOS Term.app, to fail
+        #         # This causes most colors on MacOS Term.app to fail
         #         w("set -ga terminal-overrides ',*:Tc'")
 
         #
