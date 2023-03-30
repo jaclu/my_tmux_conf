@@ -28,11 +28,12 @@
 import os
 import socket
 
-#from sb.sb_muted import SB
-from sb.sb_ish import SB
+from sb.sb_muted import SB
+
+# from sb.sb_ish import SB
+
 
 class ishHost(SB):
-
     is_limited_host = True  # Indicates this host has low performance
     status_interval = 5
 
@@ -84,7 +85,7 @@ class ishHost(SB):
 
             set -g @packet-loss-hist_avg_display 1
             set -g @packet-loss-hist_avg_minutes 30
-            
+
             # set -g @packet-loss-color_alert colour181
             # set -g @packet-loss-color_crit red
             # set -g @packet-loss-color_bg black
