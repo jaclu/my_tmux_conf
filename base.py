@@ -235,44 +235,30 @@ class BaseConfig(TmuxConfig):
         )
 
         #
-        #    Select TERM based on tmux version and terminal application.
-        #
-        #
         #  If LC_TERMINAL is not passed through, add this to the servers
         #  /etc/ssh/sshd_config:
         #
         # # Allow client to pass locale environment variables
         # AcceptEnv LANG LC_*
         #
-        if self.vers_ok(2.6):
-            if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
-                w("set -s  default-terminal screen-256color")
-                #
-                #  Makes 24-bit colors fail utterly on mosh connections.
-                #  So I keep it off.
-                #
-                #  Without it 24-bit is used on ssh connections
-                #  and displayed as 256 colours when using mosh
-                #  If you connect first using mosh, then later re-connect using
-                #  ssh, previou output will still be 256 colors, but any new
-                #  output will use 24-bit
-                #
-                # w('set -ga terminal-overrides ,*256col*:Tc')
-            else:
-                # Default TERM
-                w("set -s  default-terminal tmux-256color")
-        #  Source needed for this, I found it somewhere, but
-        #  have long forgotten where I saw this, disabled for now
-        # else:
-        #     if self.vers_ok(2.1):
-        #         #
-        #         #  this became a server option starting with 2.1
-        #         #  according to tmux-sensible plugin
-        #         #
-        #         def_term_context = "s"
-        #     else:
-        #         def_term_context = "g"
-        #     w(f"set -{def_term_context} default-terminal screen-256color")
+        #  Dont remember why, but at some point I limited this from 2.6
+        # if self.vers_ok(2.6):
+        if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
+            w("set -s  default-terminal screen-256color")
+        else:
+            # Default TERM
+            w("set -s  default-terminal tmux-256color")
+
+        #
+        #  24-bit color for older versions
+        #
+        #  This fails colors completely on mosh connections, so I usually
+        #  keep it disabled
+        #
+        # if self.vers_ok(2.2) and not self.vers_ok(3.1):
+        #     # This breaks colors on MacOS Term.app
+        #     if os.environ.get("TERM_PROGRAM") != "Apple_Terminal":
+        #         w("set -ga terminal-overrides ',*:Tc'")
 
         #
         #  For old tmux versions, this is needed to support modifiers for
