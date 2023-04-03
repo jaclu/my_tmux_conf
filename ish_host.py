@@ -65,6 +65,11 @@ class ishHost(SB):
     #
 
     def plugin_packet_loss(self):  # 1.9
+        if os.path.isdir("/etc/debian_version"):
+            # Ish Debian tends to fail on this plugin on my (oldish) iPads
+            min_vers = 99.0
+        else:
+            min_vers = 1.9
         return [
             "jaclu/tmux-packet-loss",
             #
@@ -72,8 +77,7 @@ class ishHost(SB):
             #  When not using it, I set the min version to way above
             #  what will be found.
             #
-            # 99,
-            1.9,
+            min_vers,
             """
             # set -g @packet-loss-ping_host 8.8.4.4
 
