@@ -26,6 +26,33 @@ class UbuConfig(SB):
 
     # do_continuum = False
 
+    def plugin_packet_loss(self):  # 1.9
+        min_vers = 1.9
+        if self.is_tmate():
+            min_vers = 99  # disable for tmate
+        return [
+            "jaclu/tmux-packet-loss",
+            min_vers,
+            """
+            # set -g @packet-loss-history_size     7
+            set -g @packet-loss-weighted_average 1
+
+            set -g @packet-loss-display_trend 1
+
+            set -g @packet-loss-level_disp  3
+            set -g @packet-loss-level_alert 18
+            set -g @packet-loss-level_crit  40
+
+            set -g @packet-loss-hist_avg_display 1
+
+            set -g @packet-loss-color_alert colour21
+            set -g @packet-loss-color_crit  colour196
+            set -g @packet-loss-color_bg    colour226
+            set -g @packet-loss-prefix |
+            set -g @packet-loss-suffix |
+            """,
+        ]
+
     def plugin_mullvad(self):  # 2.2  local
         #
         #   #{mullvad_city}#{mullvad_country}#{mullvad_status}
