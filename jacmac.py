@@ -53,7 +53,7 @@ class JacMacConfig(SB):
             """,
         ]
 
-    def plugin_1password(self):    # ?.?  local
+    def not_plugin_1password(self):    # ?.?  local
         #
         #  Plugin for 1password CLI tool op
         #
