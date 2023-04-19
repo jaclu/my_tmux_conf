@@ -242,12 +242,12 @@ class BaseConfig(TmuxConfig):
         # AcceptEnv LANG LC_*
         #
         #  Dont remember why, but at some point I limited this from 2.6
-        # if self.vers_ok(2.6):
-        if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
-            w("set -s  default-terminal screen-256color")
-        else:
-            # Default TERM
-            w("set -s  default-terminal tmux-256color")
+        if self.vers_ok(2.1):
+            if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
+                w("set -s  default-terminal screen-256color")
+            else:
+                # Default TERM
+                w("set -s  default-terminal tmux-256color")
 
         #
         #  24-bit color for older versions
