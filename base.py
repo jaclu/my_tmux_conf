@@ -234,20 +234,22 @@ class BaseConfig(TmuxConfig):
         """
         )
 
-        #
+        if self.vers_ok(2.1):
+            param_span = "-s"
+        else:
+            param_span = "-g"
+
         #  If LC_TERMINAL is not passed through, add this to the servers
         #  /etc/ssh/sshd_config:
         #
         # # Allow client to pass locale environment variables
         # AcceptEnv LANG LC_*
         #
-        #  Dont remember why, but at some point I limited this from 2.6
-        if self.vers_ok(2.1):
-            if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
-                w("set -s  default-terminal screen-256color")
-            else:
-                # Default TERM
-                w("set -s  default-terminal tmux-256color")
+        if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
+            w(f"set {param_span}  default-terminal screen-256color")
+        else:
+            # Default TERM
+            w(f"set {param_span}  default-terminal tmux-256color")
 
         #
         #  24-bit color for older versions
