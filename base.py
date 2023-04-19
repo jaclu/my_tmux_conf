@@ -365,7 +365,6 @@ class BaseConfig(TmuxConfig):
         )
 
         nav_key = "N"
-        w("\n# Navigate to find ses/pane")
         if self.vers_ok(2.7):
             w(
                 f'bind -N "Navigate ses/win/pane"     {nav_key}    '
@@ -373,7 +372,7 @@ class BaseConfig(TmuxConfig):
             )
         else:
             w(
-                f'bind -N "Navigate not available warning"  {nav_key}  '
+                f'bind -N "Navigate ses/win/pane not available warning"  {nav_key}  '
                 'display "Navigate needs 2.7"'
             )
         w()  # Spacer
@@ -1213,6 +1212,10 @@ class BaseConfig(TmuxConfig):
         user keys will be given
         """
         w = self.write
+        if not self.vers_ok(1.9):
+            # There is no plugin support...
+            return
+
         if M_P != "M-P":
             note_prefix = "M-P - "
         else:
