@@ -565,7 +565,7 @@ class BaseConfig(TmuxConfig):
         #  non-obvious to override it, hint local_overides()
         #
         if self.t2_env:
-            t2_tag = f"T2_ENV {self.prefix_key} "
+            t2_tag = f"{self.vers.get()} {self.prefix_key} "
             self.sb_left = f"#[fg=green,bg=black]{t2_tag}#[default]{self.sb_left}"
 
         self.filter_me_from_sb_right()
