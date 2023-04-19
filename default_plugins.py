@@ -354,7 +354,7 @@ class DefaultPlugins(IshConsole):
             "jaclu/tmux-suspend",
             2.4,
             """
-            set -g @suspend_key  M-z
+            set -g @suspend_key  M-Z
             """
             "set -g @suspend_suspended_options "
             '"@mode_indicator_custom_prompt::#[bg=yellow]💤#[default], "\n',
