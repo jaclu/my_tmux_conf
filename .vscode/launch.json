@@ -6,7 +6,8 @@
   "configurations": [
     {
       "name": "Python: t2.py",
-      "args": ["-r", "~/t2/tmux/tmux.conf"],
+      "cwd": "/Users/jaclu/t2",
+      "args": ["-r", "$HOME/t2/tmux/tmux.conf"],
       "type": "python",
       "request": "launch",
       "program": "/usr/local/my_tmux_conf/t2.py",
