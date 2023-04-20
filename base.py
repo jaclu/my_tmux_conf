@@ -664,7 +664,8 @@ class BaseConfig(TmuxConfig):
 
     def windows_handling(self):
         w = self.write
-        w("""
+        w(
+            """
         #======================================================
         #
         #   Windows handling
@@ -672,7 +673,7 @@ class BaseConfig(TmuxConfig):
         #======================================================
 
         set -g  base-index 1
-        set-window-option -g aggressive-resize on"""
+        set-window-option -g aggressive-resize on
 
         set -g  renumber-windows on
         set -g  allow-rename off
@@ -700,7 +701,8 @@ class BaseConfig(TmuxConfig):
         # window navigation
         bind -N "Previous Window"        -r  9    previous-window
         bind -N "Next Window"            -r  0    next-window
-        bind -N "Last Window"                -    last-window"""
+        bind -N "Last Window"                -    last-window
+        """
         )
 
         #
