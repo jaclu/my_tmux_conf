@@ -664,8 +664,7 @@ class BaseConfig(TmuxConfig):
 
     def windows_handling(self):
         w = self.write
-        w(
-            """
+        w("""
         #======================================================
         #
         #   Windows handling
