@@ -674,20 +674,10 @@ class BaseConfig(TmuxConfig):
 
         set -g  base-index 1
         set-window-option -g aggressive-resize on"""
-        )
 
-        if self.vers_ok(1.7):
-            #  Renumber windows when a window is closed
-            w("set -g  renumber-windows on")
-
-        #
-        #  Apps should not be allowed to rename windows
-        #
-        if self.vers_ok(1.6):
-            w("set -g  allow-rename off")
-
-        w(
-            """set -wg automatic-rename off
+        set -g  renumber-windows on
+        set -g  allow-rename off
+        set -wg automatic-rename off
 
         set -g set-titles on
         set -g set-titles-string "#{host_short} #{session_name}:#{window_name}"
