@@ -511,7 +511,6 @@ class BaseConfig(TmuxConfig):
                 unlimited = 0
             else:
                 unlimited = 999
-
             w(
                 f"""set -g  status-left-length  {unlimited}
                   set -g  status-right-length {unlimited}
