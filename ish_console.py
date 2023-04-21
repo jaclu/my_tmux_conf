@@ -26,10 +26,7 @@ def check_if_ish_console():
     #  Do quicker check first, since theese changes dont seem to be needed
     #  on Debian, they are only used for Alpine
     #
-    if (
-        os.path.exists("/etc/alpine-release")
-        and os.popen("uname -a | grep -i ish").read()
-    ):
+    if os.path.exists("/proc/ish"):
         return True
     else:
         return False
@@ -120,14 +117,20 @@ class IshConsole(BaseConfig):
         #  map cursr keys to Shift-arrow
         #  Atm only iSH-AOK supports S-arrows...
         #
-        w(
-            """
-        tmux bind -N "S-Up = PageUp"     -n  S-Up     send-keys PageUp
-        tmux bind -N "S-Down = PageDown" -n  S-down   send-keys PageDown
-        tmux bind -N "S-Left = Home"     -n  S-Left   send-keys Home
-        tmux bind -N "S-Right = End"     -n  S-Right  send-keys End
-        """
-        )
+        if self.is_ish_console:
+            w("""
+            bind -N "S-Up = PageUp"     -n  S-Up     send-keys PageUp
+            bind -N "S-Down = PageDown" -n  S-down   send-keys PageDown
+            bind -N "S-Left = Home"     -n  S-Left   send-keys Home
+            bind -N "S-Right = End"     -n  S-Right  send-keys End
+            """)
+        else:
+            w("""
+            unbind -n S-Up
+            unbind -n S-Down
+            unbind -n S-Left
+            unbind -n S-Right
+            """)
             
     def ic_alt_upper_case(self, fn_keys_mapped: bool):
         w = self.write
