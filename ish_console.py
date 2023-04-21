@@ -74,6 +74,25 @@ class IshConsole(BaseConfig):
         #
         #  Setup iSH keyb adaptions
         #
+        if os.path.exists("/proc/loadavg"):
+            #
+            #  iSH-AOK  supports S-arrows
+            #
+            self.ic_cursor_keys()
+        else:
+            #
+            #  Regular iSH
+            #
+            #  Depending on BT Keyb, only one should be active
+            #  cursor keys via esc-arrow
+            #
+            
+            # generic BT Keyb
+            self.ic_multiKey()
+            
+            # specific keybs
+            # self.ic_keyb_Yoozon3()
+
 
         #
         #  Since iSH console is limited to only M-numbers and M-S-numbers
@@ -82,17 +101,9 @@ class IshConsole(BaseConfig):
         #  To avoid this collision, set fn_keys_mapped accordingly
         #
         self.ic_fn_keys()
+        
         self.ic_alt_upper_case(fn_keys_mapped=True)
 
-        #
-        #  Depending on BT Keyb, only one should be active
-        #
-
-        # generic BT Keyb
-        self.ic_multiKey()
-
-        # specific keybs
-        # self.ic_keyb_Yoozon3()
 
     def ic_unbind_range(self, start, stop):
         # Use range logic, and give stop as one higher than last expected
@@ -102,6 +113,22 @@ class IshConsole(BaseConfig):
             w(f"unbind -n  User{i}")
             w(f"set -ug user-keys[{i}]")
 
+    def ic_cursor_keys(self):
+        w = self.write
+        #
+        #  iPad Keyboards tend to only have arrow keys, 
+        #  map cursr keys to Shift-arrow
+        #  Atm only iSH-AOK supports S-arrows...
+        #
+        w(
+            """
+        tmux bind -N "S-Up = PageUp"     -n  S-Up     send-keys PageUp
+        tmux bind -N "S-Down = PageDown" -n  S-down   send-keys PageDown
+        tmux bind -N "S-Left = Home"     -n  S-Left   send-keys Home
+        tmux bind -N "S-Right = End"     -n  S-Right  send-keys End
+        """
+        )
+            
     def ic_alt_upper_case(self, fn_keys_mapped: bool):
         w = self.write
         if self.is_ish_console:
