@@ -673,7 +673,6 @@ class BaseConfig(TmuxConfig):
         #======================================================
 
         set -g  base-index 1
-        set-window-option -g aggressive-resize on
 
         set -g  renumber-windows on
         set -g  allow-rename off
@@ -683,6 +682,12 @@ class BaseConfig(TmuxConfig):
         set -g set-titles-string "#{host_short} #{session_name}:#{window_name}"
         """
         )
+
+        if self.vers_ok(3.2):
+            w("set -g aggressive-resize on")
+        else:
+            w("set-window-option -g aggressive-resize on")
+        w()  # spacer
 
         cmd_new_win_named = (
             'command-prompt -I "?" -p "Name of new window: "'
@@ -992,7 +997,7 @@ class BaseConfig(TmuxConfig):
                 #
                 w(
                     "set-hook -g window-layout-changed "
-                    '"set-window -F pane-border-status '
+                    '"set -w -F pane-border-status '
                     '\\"#{?#{==:#{window_panes},1},off,top}\\""'
                 )
                 w(
