@@ -265,5 +265,9 @@ class hetz1(Host):
     mosh_ports = '60300:60399'
 
 
+class hetz2(Host):
+    mosh_ports = '60300:60399'
+
+
 if __name__ == '__main__':
     main()
