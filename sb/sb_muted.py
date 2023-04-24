@@ -9,6 +9,23 @@
 #  follow the style used in  https://waylonwalker.com/tmux-status-bar/
 #
 
+import sys
+import os
+ 
+# getting the name of the directory
+# where the this file is present.
+current = os.path.dirname(os.path.realpath(__file__))
+ 
+# Getting the parent directory name
+# where the current directory is present.
+parent = os.path.dirname(current)
+ 
+# adding the parent directory to
+# the sys.path.
+sys.path.append(parent)
+ 
+# now we can import the module in the parent
+# directory.
 from default_plugins import DefaultPlugins
 
 theme_text = "colour135"  # lilac / magenta, not sure how to label this
