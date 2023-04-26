@@ -86,7 +86,6 @@ class ishHost(SB):
             # set -g @packet-loss-level_crit 40
 
             set -g @packet-loss-display_trend 1
-
             set -g @packet-loss-hist_avg_display 1
             set -g @packet-loss-hist_avg_minutes 30
 
