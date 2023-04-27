@@ -417,7 +417,8 @@ class DefaultPlugins(IshConsole):
             conf += """
             set -g @continuum-restore        off
             set -g @continuum-save-interval  15"""
-        return ["jaclu/tmux-continuum", vers_min, conf]
+        # return ["jaclu/tmux-continuum", vers_min, conf]
+        return ["tmux-plugins/tmux-continuum", vers_min, conf]
 
 
 if __name__ == "__main__":
