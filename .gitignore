@@ -5,11 +5,13 @@
 __pycache__/
 .tool-versions
 dist/
-*.code-workspace
 src/tmux_conf.egg-info/
 local_tmux_conf/
 
 .venv/
+
+# vscode
+*.code-workspace
 
 ### VisualStudioCode ###
 .vscode/*      # Maybe .vscode/**/* instead - see comments

@@ -5,6 +5,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Python: jacmac",
+      "args": ["-r"],
+      "type": "python",
+      "request": "launch",
+      "program": "/usr/local/my_tmux_conf/jacmac.py",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
       "name": "Python: t2.py",
       "cwd": "/Users/jaclu/t2",
       "args": ["-r", "$HOME/t2/tmux/tmux.conf"],
