@@ -80,6 +80,15 @@ class BaseConfig(TmuxConfig):
     bind_meta = True
 
     #
+    #  This causes most colors on MacOS Term.app to fail
+    #
+    use_24bit_color = os.environ.get("TERM_PROGRAM") != "Apple_Terminal"
+    #
+    #  Tc is more commonly supported by terminals
+    #  RGB may provide more accurate color representation
+    #
+    color_tag_24bit = "RGB"
+
     #  Default templates for the status bar, so that they can easily be
     #  modified using status_bar_customization()
     #
@@ -239,6 +248,7 @@ class BaseConfig(TmuxConfig):
         else:
             param_span = "-g"
 
+        #
         #  If LC_TERMINAL is not passed through, add this to the servers
         #  /etc/ssh/sshd_config:
         #
@@ -248,7 +258,6 @@ class BaseConfig(TmuxConfig):
         if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
             w(f"set {param_span}  default-terminal screen-256color")
         else:
-            # Default TERM
             w(f"set {param_span}  default-terminal tmux-256color")
 
         #
@@ -256,9 +265,8 @@ class BaseConfig(TmuxConfig):
         #
         #  This causes colors to completely fail on mosh < 1.4 connections,
         #
-        if self.vers_ok(2.2) and os.environ.get("TERM_PROGRAM") != "Apple_Terminal":
-            # This causes most colors on MacOS Term.app to fail
-            w("set -ga terminal-overrides ',*:Tc'")
+        if self.vers_ok(2.2) and self.use_24bit_color:
+            w(f"set -ga terminal-overrides ',*:{self.color_tag_24bit}'")
 
         #
         #  For old tmux versions, this is needed to support modifiers for
