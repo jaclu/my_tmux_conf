@@ -266,6 +266,11 @@ class BaseConfig(TmuxConfig):
         #  This causes colors to completely fail on mosh < 1.4 connections,
         #
         if self.vers_ok(2.2) and self.use_24bit_color:
+            if not self.vers_ok(2.7) and self.color_tag_24bit == "RGB":
+                #
+                # RGB not supported until 2.7
+                #
+                self.color_tag_24bit = "Tc"
             w(f"set -ga terminal-overrides ',*:{self.color_tag_24bit}'")
 
         #
