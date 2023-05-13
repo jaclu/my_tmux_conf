@@ -252,15 +252,13 @@ class BaseConfig(TmuxConfig):
             w(f"set {param_span}  default-terminal tmux-256color")
 
         #
-        #  24-bit color for older versions
+        #  24-bit color
         #
-        #  This causes colors to completely fail on mosh connections,
-        #  so I usually keep it disabled
+        #  This causes colors to completely fail on mosh < 1.4 connections,
         #
-        # if self.vers_ok(2.2) and not self.vers_ok(3.1):
-        #     if os.environ.get("TERM_PROGRAM") != "Apple_Terminal":
-        #         # This causes most colors on MacOS Term.app to fail
-        #         w("set -ga terminal-overrides ',*:Tc'")
+        if self.vers_ok(2.2) and os.environ.get("TERM_PROGRAM") != "Apple_Terminal":
+            # This causes most colors on MacOS Term.app to fail
+            w("set -ga terminal-overrides ',*:Tc'")
 
         #
         #  For old tmux versions, this is needed to support modifiers for
