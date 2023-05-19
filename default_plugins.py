@@ -245,7 +245,7 @@ class DefaultPlugins(IshConsole):
             set -g @menus_location_x  C
             set -g @menus_location_y  C
             """
-        return ["jaclu/tmux-menus", 3.0, conf]
+        return ["jaclu/tmux-menus", 1.8, conf]
 
     def plugin_mouse_swipe(self):  # 3.0
         #

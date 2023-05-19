@@ -31,8 +31,8 @@ For actions not avilable without the M-key, use tmux-menus
 ## Adv keys for nav, can be disabled to force basic keys to be remembered
 
 - pane navigate -  M      Arrows
-- pane split    -  C-M    Arrows
-- pane resize   -  M-S    Arrows
+- pane split    -  M-S    Arrows
+- pane resize   -  C-M    Arrows
 - window split  -  C-M-S  Arrows
 
 - next-prew win -  M      90

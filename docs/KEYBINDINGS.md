@@ -86,14 +86,14 @@ Key | Alt key | Description
 `<p>` j | M-Down | Select pane below
 `<p>` k | M-Up | Select pane above
 `<p>` l | M-Right | Select pane to the right
-`<p>` C-h | C-M-Left | Split pane to the left
-`<p>` C-j | C-M-Down | Split pane below
-`<p>` C-k | C-M-Up | Split pane above
-`<p>` C-l | C-M-Right | Split pane to the right
-`<p>` H | M-S-Left | Resize the pane left
-`<p>` J | M-S-Down | Resize the pane down
-`<p>` K | M-S-Up | Resize the pane up
-`<p>` L | M-S-Right | Resize the pane right
+`<p>` C-h | M-S-Left | Split pane to the left
+`<p>` C-j | M-S-Down | Split pane below
+`<p>` C-k | M-S-Up | Split pane above
+`<p>` C-l | M-S-Right | Split pane to the right
+`<p>` H | C-M-Left | Resize the pane left
+`<p>` J | C-M-Down | Resize the pane down
+`<p>` K | C-M-Up | Resize the pane up
+`<p>` L | C-M-Right | Resize the pane right
 `<p>` s | | Set pane size (w x h)
 `<p>` P | | Set pane title
 `<p>` x | | Kill pane ***
