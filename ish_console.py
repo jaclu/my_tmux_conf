@@ -26,7 +26,7 @@ def check_if_ish_console(ish_nav_key):
     #  Do quicker check first, since theese changes dont seem to be needed
     #  on Debian, they are only used for Alpine
     #
-    if ish_nav_key == "None":
+    if ish_nav_key in ("None", ""):
         return False
     else:
         return True
