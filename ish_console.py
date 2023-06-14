@@ -7,14 +7,16 @@
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
 #
-#  This checks if this is running on an iSH system, and if so if this is
-#  running on the iSH console, or is an ssh session.
+#  This checks if the session running this originates from an iSH node.
 #  The iSH console has a very limited keyboard, very few keys are
 #  defined, and most of the ALT keys are incorrect. So here ALT
 #  uppercase is remapped and things bound to such keys are overridden to
 #  use redefined keys, since a key configured to send the correct
 #  sequence to applications inside tmux will not trigger actions bound
 #  to those keys.
+#
+#  Find key codes using for example:  showkey -a and examine the output
+#  in the 2nd collumn (octal)
 #
 import os
 
@@ -41,19 +43,6 @@ class IshConsole(BaseConfig):
         self.ic_setup()
 
     def ic_setup(self):
-        w = self.write
-        #
-        #  If using the built in iSH console, workarounds for missing keys
-        #  otherwise unbind those workarounds, for when first starting
-        #  tmux at the console, later sshing in, new config is generated when
-        #  tmux starts, just refresh config and  normal key-binds are back
-        #
-        # Find key codes using:  showkey -a
-        #
-
-        #
-        #  Use nav-key adoption if defined
-        #
         if self.ish_nav_key == "shift":
             self.ic_nav_key_mod('S')
         elif self.ish_nav_key == "ctrl":
@@ -68,7 +57,6 @@ class IshConsole(BaseConfig):
         #  To avoid this collision, set fn_keys_mapped accordingly
         #
         self.ic_fn_keys()
-
         self.ic_alt_upper_case(fn_keys_mapped=True)
 
     def ic_nav_key_mod(self, mod_char):
