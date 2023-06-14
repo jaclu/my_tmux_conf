@@ -31,6 +31,7 @@ def check_if_ish_console(ish_nav_key):
     else:
         return True
 
+
 class IshConsole(BaseConfig):
     """When running Alpine at an iSH console this redefines the rather limited
     keyboard in order to make it more useful. Same kernel running Debian, does
@@ -60,9 +61,8 @@ class IshConsole(BaseConfig):
                 self.is_ish_console = not os.environ.get("SSH_CLIENT")
             if not self.is_ish_console:
                 print(f">> ish_console cancelled")
-                return #  dont do ish_console setup
+                return  # dont do ish_console setup
             self.ic_setup()
-
 
     def ic_setup(self):
         w = self.write
@@ -79,7 +79,9 @@ class IshConsole(BaseConfig):
         #
         #  Use nav-key adoption if defined
         #
-        if self.ish_nav_key == "shift":
+        if self.ish_nav_key == "None":
+            return
+        elif self.ish_nav_key == "shift":
             self.nav_key_mod('S')
         elif self.ish_nav_key == "ctrl":
             self.nav_key_mod('C')
@@ -92,10 +94,9 @@ class IshConsole(BaseConfig):
         #  able to use keys like M-(
         #  To avoid this collision, set fn_keys_mapped accordingly
         #
-        # self.ic_fn_keys()
+        self.ic_fn_keys()
 
-        # self.ic_alt_upper_case(fn_keys_mapped=True)
-
+        self.ic_alt_upper_case(fn_keys_mapped=True)
 
     def nav_key_mod(self, mod_char):
         w = self.write
