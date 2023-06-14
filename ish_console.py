@@ -21,12 +21,12 @@ import os
 from base import BaseConfig
 
 
-def check_if_ish_console():
+def check_if_ish_console(ish_nav_key):
     #
     #  Do quicker check first, since theese changes dont seem to be needed
     #  on Debian, they are only used for Alpine
     #
-    if os.path.exists("/proc/ish"):
+    if os.path.exists("/proc/ish") or ish_nav_key:
         return True
     else:
         return False
@@ -41,7 +41,8 @@ class IshConsole(BaseConfig):
     Step two, if logged in through ssh, cancel this assumption
     """
 
-    is_ish_console = check_if_ish_console()
+    ish_nav_key = os.environ.get('ISH_NAV_KEY') or ''
+    is_ish_console = check_if_ish_console(ish_nav_key)
 
     def local_overides(self):
         super().local_overides()
@@ -51,10 +52,13 @@ class IshConsole(BaseConfig):
         if self.is_ish_console:
             #
             #  If running on iSH and logged in via ssh, unbind console
-            #  specific keys
+            #  specific keys unless logged in from another ish with
+            #  nav key defined
             #
-            self.is_ish_console = not os.environ.get("SSH_CLIENT")
+            if os.path.exists("/proc/ish") and not self.ish_nav_key:
+                self.is_ish_console = not os.environ.get("SSH_CLIENT")
             self.ic_setup()
+
 
     def ic_setup(self):
         w = self.write
@@ -69,27 +73,14 @@ class IshConsole(BaseConfig):
         print(f"use iSH console keys: {self.is_ish_console}")
 
         #
-        #  Setup iSH keyb adaptions
+        #  Use nav-key adoption if defined
         #
-        if os.path.exists("/proc/loadavg"):
-            #
-            #  iSH-AOK  supports S-arrows
-            #
-            self.ic_cursor_keys()
-        else:
-            #
-            #  Regular iSH
-            #
-            #  Depending on BT Keyb, only one should be active
-            #  cursor keys via esc-arrow
-            #
-            
-            # generic BT Keyb
-            self.ic_multiKey()
-            
-            # specific keybs
-            # self.ic_keyb_Yoozon3()
-
+        if self.ish_nav_key == "shift":
+            self.nav_key_mod('S')
+        elif self.ish_nav_key == "ctrl":
+            self.nav_key_mod('C')
+        elif self.ish_nav_key:
+            self.nav_key_esc_prefix()
 
         #
         #  Since iSH console is limited to only M-numbers and M-S-numbers
@@ -97,12 +88,55 @@ class IshConsole(BaseConfig):
         #  able to use keys like M-(
         #  To avoid this collision, set fn_keys_mapped accordingly
         #
-        self.ic_fn_keys()
-        
-        self.ic_alt_upper_case(fn_keys_mapped=True)
+        # self.ic_fn_keys()
+
+        # self.ic_alt_upper_case(fn_keys_mapped=True)
 
 
-    def ic_unbind_range(self, start, stop):
+    def nav_key_mod(self, mod_char):
+        w = self.write
+        w(f"""
+        bind -N "S-Up = PageUp"     -n  {mod_char}-Up     send-keys PageUp
+        bind -N "S-Down = PageDown" -n  {mod_char}-down   send-keys PageDown
+        bind -N "S-Left = Home"     -n  {mod_char}-Left   send-keys Home
+        bind -N "S-Right = End"     -n  {mod_char}-Right  send-keys End
+        """)
+
+    def nav_key_esc_prefix(self):  # default is Escape char
+        w = self.write
+        #
+        #  This console keyboard is pretty poor in generating key-codes
+        #  My workaround is to first bind top left key
+        #  and make it a multi-key binding, then binding various stuff
+        #  to this. Main drawback is having to double-tap to get escape
+        #  but gaining the other keys makes it worth it.
+        #
+        if self.is_ish_console:
+            s = self.ish_nav_key.replace("\\", "\\\\")
+            w(
+                f"""
+            set -s user-keys[200]  "{s}"  # multiKeyBT
+
+            bind -n User200 switch-client -T multiKeyBT
+
+            bind -T multiKeyBT  Down     send PageDown
+            bind -T multiKeyBT  Up       send PageUp
+            bind -T multiKeyBT  Left     send Home
+            bind -T multiKeyBT  Right    send End
+            bind -T multiKeyBT  User200  send Escape
+
+            """
+            )
+        else:
+            w(
+                """
+            unbind -n User200
+            set -ug user-keys[200]
+            """
+            )
+            # TODO: unbind the entire multiKeyBT group
+
+    def not_ic_unbind_range(self, start, stop):
         # Use range logic, and give stop as one higher than last expected
         w = self.write
         for i in range(start, stop):
@@ -110,28 +144,6 @@ class IshConsole(BaseConfig):
             w(f"unbind -n  User{i}")
             w(f"set -ug user-keys[{i}]")
 
-    def ic_cursor_keys(self):
-        w = self.write
-        #
-        #  iPad Keyboards tend to only have arrow keys, 
-        #  map cursr keys to Shift-arrow
-        #  Atm only iSH-AOK supports S-arrows...
-        #
-        if self.is_ish_console:
-            w("""
-            bind -N "S-Up = PageUp"     -n  S-Up     send-keys PageUp
-            bind -N "S-Down = PageDown" -n  S-down   send-keys PageDown
-            bind -N "S-Left = Home"     -n  S-Left   send-keys Home
-            bind -N "S-Right = End"     -n  S-Right  send-keys End
-            """)
-        else:
-            w("""
-            unbind -n S-Up
-            unbind -n S-Down
-            unbind -n S-Left
-            unbind -n S-Right
-            """)
-            
     def ic_alt_upper_case(self, fn_keys_mapped: bool):
         w = self.write
         if self.is_ish_console:
@@ -338,72 +350,6 @@ class IshConsole(BaseConfig):
             w('bind -N "M-0 -> F10" -n  User110  send-keys F10')
         else:
             self.ic_unbind_range(101, 111)
-
-    #
-    #  Generic keyboard definitions
-    #
-    def ic_multiKey(self, key_oct: str = "\\033"):  # default is Escape char
-        w = self.write
-        #
-        #  This console keyboard is pretty poor in generating key-codes
-        #  My workaround is to first bind top left key
-        #  and make it a multi-key binding, then binding various stuff
-        #  to this. Main drawback is having to double-tap to get escape
-        #  but gaining the other keys makes it worth it.
-        #
-        if self.is_ish_console:
-            w(
-                f"""
-            set -s user-keys[200]  "{key_oct}"  # multiKeyBT
-
-            bind -T multiKeyBT  User200  send Escape
-            bind -T multiKeyBT  Down     send PageDown
-            bind -T multiKeyBT  Up       send PageUp
-            bind -T multiKeyBT  Left     send Home
-            bind -T multiKeyBT  Right    send End
-
-            bind -n User200 switch-client -T multiKeyBT
-
-            """
-            )
-        else:
-            w(
-                """
-            unbind -n User200
-            set -ug user-keys[200]
-            """
-            )
-            # TODO: unbind the entire multiKeyBT group
-
-    #
-    #  Yoozon 3.0
-    #
-    def ic_keyb_Yoozon3(self):
-        """Yoozon 3.0 Keyboard"""
-        w = self.write
-        # self.ic_multiKey('§')
-        self.ic_multiKey("\\302\\247")
-        if self.is_ish_console:
-            w(
-                """
-            set -s user-keys[201]  '±'  # ~
-            #
-            #  Send back-tick by shifting the key the 2nd time, ie
-            #  pressing what normally would be ~ in order not to collide
-            #  with Escape
-            #
-            bind -T multiKeyBT   User201  send \\`
-            bind -N "± -> ~" -n  User201  send '~'
-            """
-            )
-        else:
-            w(
-                """
-            unbind -n User201
-
-            set -ug user-keys[201]
-            """
-            )
 
 
 #
