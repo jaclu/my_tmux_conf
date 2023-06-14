@@ -26,11 +26,10 @@ def check_if_ish_console(ish_nav_key):
     #  Do quicker check first, since theese changes dont seem to be needed
     #  on Debian, they are only used for Alpine
     #
-    if os.path.exists("/proc/ish") or ish_nav_key:
-        return True
-    else:
+    if ish_nav_key == "None":
         return False
-
+    else:
+        return True
 
 class IshConsole(BaseConfig):
     """When running Alpine at an iSH console this redefines the rather limited
@@ -49,6 +48,8 @@ class IshConsole(BaseConfig):
         #
         #  Only use this if running on iSH
         #
+        print(f">> initial is_ish_console: {self.is_ish_console}")
+        print(f">> nav_key: [{self.ish_nav_key}]")
         if self.is_ish_console:
             #
             #  If running on iSH and logged in via ssh, unbind console
@@ -57,6 +58,9 @@ class IshConsole(BaseConfig):
             #
             if os.path.exists("/proc/ish") and not self.ish_nav_key:
                 self.is_ish_console = not os.environ.get("SSH_CLIENT")
+            if not self.is_ish_console:
+                print(f">> ish_console cancelled")
+                return #  dont do ish_console setup
             self.ic_setup()
 
 
