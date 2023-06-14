@@ -112,10 +112,10 @@ class IshConsole(BaseConfig):
         #  but gaining the other keys makes it worth it.
         #
         if self.is_ish_console:
-            s = self.ish_nav_key.replace("\\", "\\\\")
             w(
                 f"""
-            set -s user-keys[200]  "{s}"  # multiKeyBT
+            #  Use Esc as prefix for nav-keys
+            set -s user-keys[200]  "{self.ish_nav_key}"  # multiKeyBT
 
             bind -n User200 switch-client -T multiKeyBT
 
