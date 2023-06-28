@@ -224,8 +224,12 @@ class DefaultPlugins(IshConsole):
             """,
         ]
 
-    def plugin_menus(self):  # 3.0
-        conf = "set -g @menus_config_overrides  1"
+    def plugin_menus(self):  # 1.8
+        conf = """
+        set -g @menus_config_overrides 1
+        # set -g @menus_force_whiptail Yes
+        """
+
         #
         #  Popup menus that can be helpful default trigger:  <prefix> \
         #
