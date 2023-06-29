@@ -227,7 +227,6 @@ class DefaultPlugins(IshConsole):
     def plugin_menus(self):  # 1.8
         conf = """
         set -g @menus_config_overrides 1
-        # set -g @menus_force_whiptail Yes
         """
 
         #
@@ -285,7 +284,7 @@ class DefaultPlugins(IshConsole):
             """,
         ]
 
-    def plugin_prefix_highlight(self):  # 0.0
+    def plugin_prefix_highlight(self):  # 1.8
         #
         #  Highlights when you press tmux prefix key and
         #  when copy/sync mode is active.
@@ -296,7 +295,7 @@ class DefaultPlugins(IshConsole):
         set -g @prefix_highlight_show_sync_mode  on
         set -g @prefix_highlight_sync_mode_attr "fg=black,bg=orange,blink,bold"
         """
-        return ["jaclu/tmux-prefix-highlight", 0.0, conf]
+        return ["jaclu/tmux-prefix-highlight", 1.8, conf]
 
     def plugin_resurrect(self):  # 1.9
         #
@@ -364,11 +363,11 @@ class DefaultPlugins(IshConsole):
             '"@mode_indicator_custom_prompt::#[bg=yellow]💤#[default], "\n',
         ]
 
-    def plugin_yank(self):  # 1.5
+    def plugin_yank(self):  # 1.8
         #
         #  copies text from the command line to the clipboard.
         #
-        min_vers = 1.5
+        min_vers = 1.8
         if self.is_tmate():
             min_vers = 99  # disable for tmate
         return [
