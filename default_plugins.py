@@ -284,7 +284,7 @@ class DefaultPlugins(IshConsole):
             """,
         ]
 
-    def plugin_prefix_highlight(self):  # 1.8
+    def plugin_prefix_highlight(self):  # 2.0
         #
         #  Highlights when you press tmux prefix key and
         #  when copy/sync mode is active.
@@ -295,7 +295,7 @@ class DefaultPlugins(IshConsole):
         set -g @prefix_highlight_show_sync_mode  on
         set -g @prefix_highlight_sync_mode_attr "fg=black,bg=orange,blink,bold"
         """
-        return ["jaclu/tmux-prefix-highlight", 1.8, conf]
+        return ["jaclu/tmux-prefix-highlight", 2.0, conf]
 
     def plugin_resurrect(self):  # 1.9
         #

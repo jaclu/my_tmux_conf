@@ -40,7 +40,7 @@ from pydoc import locate
 
 import __main__
 
-TMUX_CONF_NEEDED = "0.15.13"
+TMUX_CONF_NEEDED = "0.16.0"
 
 #
 #  Special import handling for debugging, is ignored in normal usage
@@ -87,8 +87,9 @@ class BaseConfig(TmuxConfig):
     #  Tc is more commonly supported by terminals
     #  RGB may provide more accurate color representation
     #
-    color_tag_24bit = "RGB"
+    color_tag_24bit = "Tc"
 
+    #
     #  Default templates for the status bar, so that they can easily be
     #  modified using status_bar_customization()
     #
