@@ -87,7 +87,7 @@ class BaseConfig(TmuxConfig):
     #  Tc is more commonly supported by terminals
     #  RGB may provide more accurate color representation
     #
-    color_tag_24bit = "Tc"
+    color_tag_24bit = "RGB"
 
     #
     #  Default templates for the status bar, so that they can easily be
@@ -297,6 +297,17 @@ class BaseConfig(TmuxConfig):
             #  it makes sense to always include it
             #
             w("set -as terminal-features 'xterm*:extkeys'")
+
+        if self.vers_ok(1.2):
+            #
+            #  Making OSC 53 work on mosh connections.
+            #  For this to work the term name used must match
+            #
+            w("""
+            # Ms modifies OSC 52 clipboard handling to work with mosh, see
+            # https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
+            set -ag terminal-overrides "*256col*:XT:Ms=\\\\E]52;c;%p2%s\\\\7"
+            """)
 
         #
         #  Enable focus events for terminals that support them to be passed
