@@ -627,8 +627,8 @@ class BaseConfig(TmuxConfig):
             shell=True,  # nosec: B602
         )
         #  No need for labeling my primary workstation
-        if hostname_cmd.stdout.strip().lower() == "jacmac":
-            self.hostname_template = ""
+        #if hostname_cmd.stdout.strip().lower() == "jacmac":
+        #    self.hostname_template = ""
 
         #  If its my default account dont show username
         if os.getenv("USER") == "jaclu":

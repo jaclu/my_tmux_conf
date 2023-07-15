@@ -28,7 +28,7 @@ class JacMacConfig(SB):
 
     # use_embedded_scripts = False
 
-    def plugin_packet_loss(self):  # 1.9
+    def not_plugin_packet_loss(self):  # 1.9
         min_vers = 1.9
         if self.is_tmate():
             min_vers = 99  # disable for tmate
@@ -68,7 +68,7 @@ class JacMacConfig(SB):
                 # set -g @1password-debug 'on' # default 'off'
                 """]
 
-    def plugin_keyboard_type(self):  # 1.9  local
+    def not_plugin_keyboard_type(self):  # 1.9  local
         #
         #  When displaying takes 0.8 s to process...
         #
@@ -138,7 +138,7 @@ class JacMacConfig(SB):
     #     set -g @nordvpn_disconnected_text="🔓"
     #     """]
 
-    def plugin_spotify(self):  # 1.8  local
+    def not_plugin_spotify(self):  # 1.8  local
         #
         #  Ensure this is only used on MacOS
         #
@@ -172,7 +172,7 @@ class JacMacConfig(SB):
             conf = ""
         return [name, min_v, conf]
 
-    def plugin_battery(self):  # 2.2  local
+    def not_plugin_battery(self):  # 2.2  local
         #
         #  #{battery_smart} takes < 5s ATM
         #
