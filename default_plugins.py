@@ -77,8 +77,7 @@ class DefaultPlugins(IshConsole):
             self.sb_right += "#{@mode_indicator_custom_prompt}"
 
         if "tmux-mullvad" in used_plugins:
-            #self.sb_left += "#{mullvad_city}#{mullvad_country}#{mullvad_status}"
-            self.sb_left += "#{mullvad_status}"
+            self.sb_left += "#{mullvad_city}#{mullvad_country}#{mullvad_status}"
 
         if "tmux-nordvpn" in used_plugins:
             self.sb_left += "#{nordvpn_country}#{nordvpn_status}"
@@ -164,7 +163,7 @@ class DefaultPlugins(IshConsole):
     #
     # -----------------------------------------------------------
 
-    def not_plugin_better_mouse_mode(self):  # 2.1
+    def plugin_better_mouse_mode(self):  # 2.1
         #
         #  A tmux plugin to better manage the mouse.
         #  Emulate mouse scrolling for full-screen programs that doesn't
@@ -194,7 +193,7 @@ class DefaultPlugins(IshConsole):
             """,
         ]
 
-    def not_plugin_jump(self):  # 1.8
+    def plugin_jump(self):  # 1.8
         #
         #  Jump to word(-s) on the screen that you want to copy,
         #  without having to use the mouse.
@@ -251,7 +250,7 @@ class DefaultPlugins(IshConsole):
             """
         return ["jaclu/tmux-menus", 1.8, conf]
 
-    def not_plugin_mouse_swipe(self):  # 3.0
+    def plugin_mouse_swipe(self):  # 3.0
         #
         #  right-click & swipe switches Windows / Sessions
         #
@@ -267,7 +266,7 @@ class DefaultPlugins(IshConsole):
             """,
         ]
 
-    def not_plugin_power_zoom(self):  # 2.0
+    def plugin_power_zoom(self):  # 2.0
         #
         #   Zooms to separate Window, to allow for adding support panes
         #
@@ -285,7 +284,7 @@ class DefaultPlugins(IshConsole):
             """,
         ]
 
-    def not_plugin_prefix_highlight(self):  # 2.0
+    def plugin_prefix_highlight(self):  # 2.0
         #
         #  Highlights when you press tmux prefix key and
         #  when copy/sync mode is active.
@@ -298,7 +297,7 @@ class DefaultPlugins(IshConsole):
         """
         return ["jaclu/tmux-prefix-highlight", 2.0, conf]
 
-    def not_plugin_resurrect(self):  # 1.9
+    def plugin_resurrect(self):  # 1.9
         #
         #  Saves & Restores server sessions
         #
@@ -337,10 +336,10 @@ class DefaultPlugins(IshConsole):
         """
         return ["jaclu/tmux-resurrect", 1.9, conf]
 
-    def not_plugin_session_wizard(self):  # 3.2
+    def plugin_session_wizard(self):  # 3.2
         return ["27medkamal/tmux-session-wizard", 3.2, "#  Default trigger: <prefix> T"]
 
-    def not_plugin_suspend(self):  # 2.4
+    def plugin_suspend(self):  # 2.4
         #
         #  {@mode_indicator_custom_prompt}
         #
@@ -364,7 +363,7 @@ class DefaultPlugins(IshConsole):
             '"@mode_indicator_custom_prompt::#[bg=yellow]💤#[default], "\n',
         ]
 
-    def not_plugin_yank(self):  # 1.8
+    def plugin_yank(self):  # 1.8
         #
         #  copies text from the command line to the clipboard.
         #
@@ -379,7 +378,7 @@ class DefaultPlugins(IshConsole):
             """,
         ]
 
-    def not_plugin_zz_continuum(self):  # 1.9
+    def plugin_zz_continuum(self):  # 1.9
         #
         #  Auto restoring a session just as tmux starts on a limited
         #  host will just lead to painfull lag.
