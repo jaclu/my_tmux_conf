@@ -94,9 +94,9 @@ class BaseConfig(TmuxConfig):
     #  modified using status_bar_customization()
     #
     sb_left = "|#{session_name}| "
-    sb_right = "%a %h-%d %H:%M USERNAME_TEMPLATEHOSTNAME_TEMPLATE"
-    username_template = "#[fg=colour1,bg=colour195]#(whoami)#[default]"
-    hostname_template = "#[fg=colour195,bg=colour1]#h#[default]"
+    sb_right = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
+    username_template = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
+    hostname_template = " #[fg=colour195,bg=colour1]#h#[default]"
 
     handle_iterm2 = True  # Select screen-256color for iTerm2
 
@@ -620,7 +620,7 @@ class BaseConfig(TmuxConfig):
             shell=True,  # nosec: B602
         )
         #  No need for labeling my primary workstation
-        if hostname_cmd.stdout.strip() == "JacMac":
+        if hostname_cmd.stdout.strip().lower() == "jacmac":
             self.hostname_template = ""
 
         #  If its my default account dont show username
