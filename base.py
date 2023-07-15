@@ -96,7 +96,7 @@ class BaseConfig(TmuxConfig):
     sb_left = "|#{session_name}| "
     sb_right = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
-    hostname_template = " #[fg=colour195,bg=colour1]#h#[default]"
+    hostname_template = "#[fg=colour195,bg=colour1]#h#[default]"
 
     handle_iterm2 = True  # Select screen-256color for iTerm2
 
@@ -589,13 +589,20 @@ class BaseConfig(TmuxConfig):
         #
         if self.t2_env:
             #
-            #  max length of vers is 6 chars, in order to 
+            #  max length of vers is 6 chars, in order to
             #  not flood status line
             #
             t2_tag = f"{self.vers.get()[:6]} {self.prefix_key} "
             self.sb_left = f"#[fg=green,bg=black]{t2_tag}#[default]{self.sb_left}"
 
         self.filter_me_from_sb_right()
+
+        if not self.username_template and self.hostname_template:
+            #
+            #  insert spacer after time if no username is displayed
+            #  unless hostname is also empty
+            #
+            self.hostname_template = " " + self.hostname_template
 
         self.sb_right = self.sb_right.replace(
             "USERNAME_TEMPLATE", self.username_template
