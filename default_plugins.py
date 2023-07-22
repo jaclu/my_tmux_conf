@@ -85,8 +85,8 @@ class DefaultPlugins(IshConsole):
         if "tmux-keyboard-type" in used_plugins:
             self.sb_right = "#{keyboard_type}" + self.sb_right
 
-        #if "tmux-battery" in used_plugins:
-        #    self.sb_right = "#{battery_smart} " + self.sb_right
+        if "tmux-battery" in used_plugins:
+            self.sb_right = "#{battery_smart} " + self.sb_right
 
         if "tmux-spotify-info" in used_plugins:
             self.sb_right = (
