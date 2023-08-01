@@ -15,11 +15,11 @@ version="1.1.0"
 my_tmux_conf_location="/usr/local/my_tmux_conf"
 
 select_tmux_bin() {
-    TMUX_BIN="$(command -v $tmux_bin)"
+    TMUX_BIN="$(command -v "$tmux_bin")"
     echo ">> myt tmux_bin [$TMUX_BIN]"
     if [ -z "$TMUX_BIN" ]; then
         echo "ERROR: no tmux in PATH!"
-    	exit 1
+        exit 1
     fi
 }
 
@@ -39,8 +39,8 @@ regular_tmux() {
         echo
         profile="${my_tmux_conf_location}/default_plugins.py"
     else
-    	# handle soft links to other directories
-    	profile="$(realpath "$profile")"
+        # handle soft links to other directories
+        profile="$(realpath "$profile")"
     fi
 
     select_tmux_bin
@@ -55,7 +55,6 @@ regular_tmux() {
     "$TMUX_BIN" -u new-session -ADs main
 }
 
-
 tmux_2() {
     if [ -z "$profile" ]; then
         profile="t2"
@@ -69,20 +68,19 @@ tmux_2() {
     # run from this location to pick up alternate tmux versions
     # defined in this location
     mkdir -p "$HOME"/t2
-    cd  ~/t2 || exit
-
+    cd ~/t2 || exit
 
     if [ "$quick_mode" -eq 0 ]; then
         #  ensure previously used tmux bin is not picked up
         rm -f "$conf_file"
-        ! T2_ENV=1 "${my_tmux_conf_location}/${profile}.py"  -t "$TMUX_BIN" -r "$conf_file" && exit 2
+        ! T2_ENV=1 "${my_tmux_conf_location}/${profile}.py" -t "$TMUX_BIN" -r "$conf_file" && exit 2
     fi
 
     "$TMUX_BIN" -f ~/t2/tmux/tmux.conf -L serv2
 }
 
 display_help() {
-    cat << EOF
+    cat <<EOF
 Usage: myt [-q] [-2] [profile]
 
 Generates config and starts tmux
@@ -101,7 +99,6 @@ EOF
     exit 0
 }
 
-
 quick_mode=0
 t2_env=0
 profile=""
@@ -110,25 +107,25 @@ tmux_bin="tmux"
 while [ -n "$1" ]; do
     case "$1" in
 
-        "-h" | "--help" ) display_help ;;
+    "-h" | "--help") display_help ;;
 
-        "-v" | "--version" )
-            echo "myt $version"
-            exit 0
-            ;;
+    "-v" | "--version")
+        echo "myt $version"
+        exit 0
+        ;;
 
-	"-c" | "--command" )
-	    shift
-	    tmux_bin="$1"
-	    ;;
+    "-c" | "--command")
+        shift
+        tmux_bin="$1"
+        ;;
 
-        "-q") quick_mode=1 ;;
+    "-q") quick_mode=1 ;;
 
-        "-2") t2_env=1 ;;
+    "-2") t2_env=1 ;;
 
-        *)
-            profile="$1"
-            ;;
+    *)
+        profile="$1"
+        ;;
     esac
 
     shift

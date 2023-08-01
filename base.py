@@ -53,14 +53,14 @@ if cfb and (cfb.find("sublime") > -1 or cfb.find("VSCode") > -1):
 else:
     # import as package
     try:
-        # pyright: reportMissingImports=false,reportGeneralTypeIssues=false
+        # pyright: ignore[reportMissingImports]
         from tmux_conf import TmuxConfig
     except ModuleNotFoundError:
         print("Dependency tmux_conf not installed!")
         sys.exit(1)
 
 
-class BaseConfig(TmuxConfig):
+class BaseConfig(TmuxConfig):  # type: ignore
     """Defines the general tmux setup, key binds etc"""
 
     prefix_key = "C-a"
@@ -303,11 +303,13 @@ class BaseConfig(TmuxConfig):
             #  Making OSC 53 work on mosh connections.
             #  For this to work the term name used must match
             #
-            w("""
+            w(
+                """
             # Ms modifies OSC 52 clipboard handling to work with mosh, see
             # https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
             set -ag terminal-overrides "*256col*:XT:Ms=\\\\E]52;c;%p2%s\\\\7"
-            """)
+            """
+            )
 
         #
         #  Enable focus events for terminals that support them to be passed
@@ -356,7 +358,6 @@ class BaseConfig(TmuxConfig):
 
         self.remove_unwanted_default_bindings()
 
-        # pyright: reportImplicitStringConcatenation=false
         if self.prefix_key.lower() != "c-b":
             w(
                 f"""
@@ -627,7 +628,7 @@ class BaseConfig(TmuxConfig):
             shell=True,  # nosec: B602
         )
         #  No need for labeling my primary workstation
-        #if hostname_cmd.stdout.strip().lower() == "jacmac":
+        # if hostname_cmd.stdout.strip().lower() == "jacmac":
         #    self.hostname_template = ""
 
         #  If its my default account dont show username
