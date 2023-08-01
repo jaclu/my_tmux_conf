@@ -39,7 +39,7 @@ class ishHost(SB):
 
     # plugin_handler = "manual"
 
-    use_embedded_scripts = True
+    # use_embedded_scripts = False
 
     def not_status_bar_customization(self, print_header: bool = True) -> bool:
         """This is called just before the status bar is rendered,
