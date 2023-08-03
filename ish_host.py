@@ -41,23 +41,6 @@ class ishHost(SB):
 
     # use_embedded_scripts = False
 
-    def not_status_bar_customization(self, print_header: bool = True) -> bool:
-        """This is called just before the status bar is rendered,
-        local_overides() is called later so can not modify status bar
-        left & right without a pointless reassignment.
-
-        Since I run both iSH and more often iSH-AOK, I keep them
-        separated by referring to an regular iSH nodes by hostname,
-        and an iSH-AOK node by hostname-aok
-        """
-        super().status_bar_customization(print_header=print_header)
-        if os.path.isfile("/proc/ish/defaults/enable_multicore"):
-            self.hostname_template = self.hostname_template.replace(
-                "#h", f"{socket.gethostname()}-aok"
-            )
-
-        return print_header
-
     #
     #  Plugins not suitable for limited hosts, iSH being classed as such,
     #  are set to require tmux version 99 in default_plugins.py
