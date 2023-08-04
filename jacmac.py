@@ -39,17 +39,15 @@ class JacMacConfig(SB):
             set -g @packet-loss-ping_count    4
             set -g @packet-loss-history_size 10
             
-            set -g @packet-loss-weighted_average 1
+            set -g @packet-loss-display_trend     1
+            set -g @packet-loss-hist_avg_display  1
 
-            set -g @packet-loss-display_trend    1
-
-            # set -g @packet-loss-level_disp       3
-
-            set -g @packet-loss-hist_avg_display 1
+            set -g @packet-loss-level_alert      26
 
             set -g @packet-loss-color_alert colour21
             set -g @packet-loss-color_crit  colour196
             set -g @packet-loss-color_bg    colour226
+
             set -g @packet-loss-prefix |
             set -g @packet-loss-suffix |
             """,
