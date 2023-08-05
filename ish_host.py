@@ -37,7 +37,7 @@ class ishHost(SB):
 
     # plugin_handler = "manual"
 
-    use_embedded_scripts = False
+    # use_embedded_scripts = False
 
     #
     #  Plugins not suitable for limited hosts, iSH being classed as such,
@@ -50,7 +50,7 @@ class ishHost(SB):
             # Ish Debian tends to fail on this plugin on my (oldish) iPads
             min_vers = 99.0
         else:
-            min_vers = 99 # 1.9
+            min_vers = 1.9
         return [
             "jaclu/tmux-packet-loss",
             #
