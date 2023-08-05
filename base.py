@@ -34,7 +34,6 @@
 
 
 import os
-import subprocess  # nosec
 import sys
 from pydoc import locate
 
@@ -620,16 +619,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
     def filter_me_from_sb_right(self):
         """Dont display my primary hostname & username."""
-        # pylint: disable=subprocess-run-check
-        hostname_cmd = subprocess.run(  # nosec
-            "hostname | cut -d. -f 1",
-            capture_output=True,
-            text=True,
-            shell=True,  # nosec: B602
-        )
-        #  No need for labeling my primary workstation
-        # if hostname_cmd.stdout.strip().lower() == "jacmac":
-        #    self.hostname_template = ""
 
         #  If its my default account dont show username
         if os.getenv("USER") == "jaclu":
