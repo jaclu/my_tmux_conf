@@ -54,8 +54,9 @@ regular_tmux() {
     #  generate a fresh .tmux.conf
     #
     if [ "$quick_mode" -eq 0 ]; then
-        echo "Will use: $TMUX_BIN"
         ! "${profile}" -r -t "$TMUX_BIN" && exit 2
+    else
+        echo "Will use: $TMUX_BIN"
     fi
     "$TMUX_BIN" -u new-session -ADs main
 }
