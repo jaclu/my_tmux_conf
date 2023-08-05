@@ -1354,7 +1354,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         limited_host_sh = [
             f"""{self._fnc_limited_host}() {{
     sleep 2 #  ensure tpm has time to start
-    while ps ax | grep -v grep | grep -q activate_tpm ; do
+    while [ -n "$($TMUX_BIN showenv -g @tpm-working-indicator 2>/dev/null)" ]; do
         sleep 2
     done
 
