@@ -96,7 +96,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     sb_right = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
     hostname_template = "#[fg=colour195,bg=colour1]#h#[default]"
-    limited_host_startup_indicator = "#[reverse,blink]tpm initializing...#[default]"
+    limited_host_startup_indicator = "#[reverse,blink] tpm initializing...#[default]"
 
     handle_iterm2 = True  # Select screen-256color for iTerm2
 
