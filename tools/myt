@@ -64,15 +64,17 @@ tmux_2() {
         profile="t2"
     fi
 
+    #
+    # run from this location to pick up alternate tmux versions
+    # defined in this location
+    #
+    mkdir -p "$HOME"/t2
+    cd ~/t2 || exit
+
     select_tmux_bin
 
     #  Needs to be $HOME not ~ since it is sent into tmux_conf
     conf_file="$HOME/t2/tmux/tmux.conf"
-
-    # run from this location to pick up alternate tmux versions
-    # defined in this location
-    mkdir -p "$HOME"/t2
-    cd ~/t2 || exit
 
     if [ "$quick_mode" -eq 0 ]; then
         #  ensure previously used tmux bin is not picked up
