@@ -20,11 +20,11 @@ select_tmux_bin() {
     else
         TMUX_BIN="$(command -v "$tmux_bin")"
     fi
-    echo ">> myt tmux_bin [$TMUX_BIN]"
     if [ -z "$TMUX_BIN" ]; then
         echo "ERROR: no tmux in PATH!"
         exit 1
     fi
+    # echo "Will use: $TMUX_BIN"
 }
 
 regular_tmux() {
