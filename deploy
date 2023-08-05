@@ -2,5 +2,9 @@
 
 CURRENT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 
-sudo cp -av "$CURRENT_DIR"/tools/myt /usr/local/bin
-sudo cp -av "$CURRENT_DIR"/tools/rt /usr/local/bin
+if diff "$CURRENT_DIR"/tools/myt /usr/local/bin/myt; then
+    sudo cp -av "$CURRENT_DIR"/tools/myt /usr/local/bin
+fi
+if diff "$CURRENT_DIR"/tools/rt /usr/local/bin/rt; then
+    sudo cp -av "$CURRENT_DIR"/tools/rt /usr/local/bin
+fi
