@@ -38,15 +38,20 @@ class IshConsole(BaseConfig):
         self.ish_nav_key = os.environ.get("ISH_NAV_KEY") or ""
 
         if self.ish_nav_key in ("None", ""):
+            #
+            # This is not running on the iSH console, so no special
+            # handling is needed
+            #
             return
+
         print(f">> nav_key: [{self.ish_nav_key}]")
         self.ic_setup()
 
     def ic_setup(self):
         if self.ish_nav_key == "shift":
-            self.ic_nav_key_mod('S')
+            self.ic_nav_key_mod("S")
         elif self.ish_nav_key == "ctrl":
-            self.ic_nav_key_mod('C')
+            self.ic_nav_key_mod("C")
         else:
             self.ic_nav_key_esc_prefix()
 
@@ -60,12 +65,14 @@ class IshConsole(BaseConfig):
         self.ic_alt_upper_case(fn_keys_mapped=True)
 
     def ic_nav_key_mod(self, mod_char):
-        self.write(f"""
+        self.write(
+            f"""
         bind -N "S-Up = PageUp"     -n  {mod_char}-Up     send-keys PageUp
         bind -N "S-Down = PageDown" -n  {mod_char}-down   send-keys PageDown
         bind -N "S-Left = Home"     -n  {mod_char}-Left   send-keys Home
         bind -N "S-Right = End"     -n  {mod_char}-Right  send-keys End
-        """)
+        """
+        )
 
     def ic_nav_key_esc_prefix(self):
         self.write(
@@ -80,7 +87,8 @@ class IshConsole(BaseConfig):
         bind -T multiKeyBT  Left     send Home
         bind -T multiKeyBT  Right    send End
         bind -T multiKeyBT  User200  send Escape
-        """)
+        """
+        )
 
     def ic_fn_keys(self):
         w = self.write
@@ -279,6 +287,7 @@ class IshConsole(BaseConfig):
                 'bind -N "Split pane above"        -n  User11  '
                 'split-window -vb -c "#{pane_current_path}"'
             )
+
 
 #
 #  If this is run directly
