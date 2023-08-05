@@ -1354,7 +1354,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     $TMUX_BIN set -q status-right \"$($TMUX_BIN display -p "#status-right" | sed s/{self.limited_host_startup_indicator}//)\""
         """,
         ]
-        self._es.create(self._fnc_limited_host, limited_host_sh)
+        self.es.create(self._fnc_limited_host, limited_host_sh)
 
     #
     #  Inspection of tmux-conf version to see if it is compatible
