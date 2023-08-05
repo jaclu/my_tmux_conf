@@ -2,4 +2,5 @@
 
 CURRENT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 
-sudo cp -av "rsync -ahP $CURRENT_DIR"/tools/* /usr/local/bin
+sudo cp -av "$CURRENT_DIR"/tools/myt /usr/local/bin
+sudo cp -av "$CURRENT_DIR"/tools/rt /usr/local/bin
