@@ -1349,7 +1349,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     done
 
     #  removing limited_host startup indicator
-    $TMUX_BIN set -q status-right \"$($TMUX_BIN display -p "#status-right" | sed s/{self.limited_host_startup_indicator}//)\""
+    $TMUX_BIN set -q status-right "$("$TMUX_BIN" display -p "#status-right" | sed s/{self.limited_host_startup_indicator})"
 }}
         """,
         ]
