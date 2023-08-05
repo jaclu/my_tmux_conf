@@ -16,7 +16,7 @@ my_tmux_conf_location="/usr/local/my_tmux_conf"
 
 select_tmux_bin() {
     if [ -n "$ASDF_DIR" ]; then
-        TMUX_BIN="$($ASDF_DIR/bin/asdf which tmux)"
+        TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
     else
         TMUX_BIN="$(command -v "$tmux_bin")"
     fi

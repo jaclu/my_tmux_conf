@@ -26,7 +26,6 @@
 #
 
 import os
-import socket
 
 from sb.sb_muted import SB
 
@@ -64,7 +63,7 @@ class ishHost(SB):
             """
             set -g @packet-loss-ping_count    4
             set -g @packet-loss-history_size 10
-            
+
             set -g @packet-loss-display_trend     1
             set -g @packet-loss-hist_avg_display  1
 
