@@ -96,6 +96,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     sb_right = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
     hostname_template = "#[fg=colour195,bg=colour1]#h#[default]"
+    limited_host_startup_indicator = "spd starting "
 
     handle_iterm2 = True  # Select screen-256color for iTerm2
 
@@ -105,9 +106,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  interfere with my main environment
     #
     t2_env = os.environ.get("T2_ENV")
-
-    #  to avoid typos I use constants for script names
-    fnc_toggle_mouse = "toggle_mouse"
 
     # ======================================================
     #
@@ -158,6 +156,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
         if os.path.isdir("/proc/ish"):
             print("Detected iSH kernel, assuming this to be a limited host")
             self.is_limited_host = True
+
+        #  to avoid typos I use constants for script names
+        self.fnc_toggle_mouse = "toggle_mouse"
+        self._fnc_limited_host = "limited_host_startup"
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """This is called just before the status bar is rendered,
@@ -546,6 +548,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         w("set -g  status-justify left")
 
+        if self.is_limited_host:
+            self.mkscript_limited_host()
+
         if self.monitor_activity:
             w(
                 """#  bell + # on window that had activity,
@@ -580,6 +585,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             self.sb_right += "#[reverse]#{?pane_synchronized,sync,}#[default]"
 
+        if self.is_limited_host:
+            self.sb_right = f"{self.limited_host_startup_indicator}{self.sb_right}"
         if self.status_bar_customization():
             w("\n#---   End of status_bar_customization()   ---")
 
@@ -1330,6 +1337,22 @@ class BaseConfig(TmuxConfig):  # type: ignore
 }}"""
         ]
         self.es.create(self.fnc_toggle_mouse, toggle_mouse_sh)
+
+    def mkscript_limited_host(self):
+        limited_host_sh = [
+            f"""
+{self._fnc_limited_host}() {{
+    sleep 2 #  ensure tpm has time to start
+    while [ ps ax | grep -q tpm ]; then
+        sleep 2
+    done
+
+    #  removing limited_host startup indicator
+    new_s_right=f""
+    $TMUX_BIN set -q status-right \"$($TMUX_BIN display -p "#status-right" | sed s/{self.limited_host_startup_indicator}//)\""
+        """,
+        ]
+        self._es.create(self._fnc_limited_host, limited_host_sh)
 
     #
     #  Inspection of tmux-conf version to see if it is compatible
