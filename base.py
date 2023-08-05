@@ -160,6 +160,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #  to avoid typos I use constants for script names
         self.fnc_toggle_mouse = "toggle_mouse"
         self._fnc_limited_host = "limited_host_startup"
+        self.is_limited_host = True
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """This is called just before the status bar is rendered,
