@@ -1344,7 +1344,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             f"""
 {self._fnc_limited_host}() {{
     sleep 2 #  ensure tpm has time to start
-    while [ ps ax | grep -q tpm ]; then
+    while ps ax | grep -q activate_tpm ; do
         sleep 2
     done
 
