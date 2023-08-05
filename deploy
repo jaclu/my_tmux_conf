@@ -1,10 +1,17 @@
 #!/bin/sh
 
-CURRENT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+CURRENT_DIR=$(cd -- "$(dirname -- "$0")" && pwd)
 
-if diff "$CURRENT_DIR"/tools/myt /usr/local/bin/myt; then
-    sudo cp -av "$CURRENT_DIR"/tools/myt /usr/local/bin
-fi
-if diff "$CURRENT_DIR"/tools/rt /usr/local/bin/rt; then
-    sudo cp -av "$CURRENT_DIR"/tools/rt /usr/local/bin
-fi
+update_if_changed() {
+    item="$1"
+    if [ -z "$item" ]; then
+        echo "ERROR: update_changed() - no param"
+        exit 1
+    fi
+    if ! diff -q "$CURRENT_DIR"/tools/"$item" /usr/local/bin/"$item" >/dev/null 2>&1; then
+        sudo cp -av "$CURRENT_DIR"/tools/"$item" /usr/local/bin
+    fi
+}
+
+update_if_changed myt
+update_if_changed rt
