@@ -54,6 +54,7 @@ regular_tmux() {
     #  generate a fresh .tmux.conf
     #
     if [ "$quick_mode" -eq 0 ]; then
+        echo "Will use: $TMUX_BIN"
         ! "${profile}" -r -t "$TMUX_BIN" && exit 2
     fi
     "$TMUX_BIN" -u new-session -ADs main
@@ -80,6 +81,8 @@ tmux_2() {
         #  ensure previously used tmux bin is not picked up
         rm -f "$conf_file"
         ! T2_ENV=1 "${my_tmux_conf_location}/${profile}.py" -t "$TMUX_BIN" -r "$conf_file" && exit 2
+    else
+        echo "Will use: $TMUX_BIN"
     fi
 
     "$TMUX_BIN" -f ~/t2/tmux/tmux.conf -L serv2
