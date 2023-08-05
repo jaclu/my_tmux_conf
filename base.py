@@ -96,7 +96,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     sb_right = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
     hostname_template = "#[fg=colour195,bg=colour1]#h#[default]"
-    limited_host_startup_indicator = "[reverse,blink]spd-starting#[default]"
+    limited_host_startup_indicator = "#[reverse,blink]spd-starting#[default]"
 
     handle_iterm2 = True  # Select screen-256color for iTerm2
 
@@ -1340,15 +1340,16 @@ class BaseConfig(TmuxConfig):  # type: ignore
         self.es.create(self.fnc_toggle_mouse, toggle_mouse_sh)
 
     def mkscript_limited_host(self):
+        esc_indicator = self.limited_host_startup_indicator.replace("[", "\\[")
         limited_host_sh = [
             f"""{self._fnc_limited_host}() {{
     sleep 2 #  ensure tpm has time to start
-    while ps ax | grep -q activate_tpm ; do
+    while ps ax | grep -v grep | grep -q activate_tpm ; do
         sleep 2
     done
 
     #  removing limited_host startup indicator
-    $TMUX_BIN set -q status-right "$("$TMUX_BIN" display -p '#{{status-right}}' | sed s/{self.limited_host_startup_indicator}//)"
+    $TMUX_BIN set -q status-right "$("$TMUX_BIN" display -p '#{{status-right}}' | sed 's/{esc_indicator}//')"
 }}
         """,
         ]
