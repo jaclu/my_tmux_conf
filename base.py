@@ -96,7 +96,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     sb_right = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
     hostname_template = "#[fg=colour195,bg=colour1]#h#[default]"
-    limited_host_startup_indicator = "#[reverse,blink]spd-starting#[default]"
+    limited_host_startup_indicator = "#[reverse,blink]tpm initializing...#[default]"
 
     handle_iterm2 = True  # Select screen-256color for iTerm2
 
@@ -548,10 +548,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         w("set -g  status-justify left")
 
-        if self.is_limited_host:
-            self.mkscript_limited_host()
-            w(f"{self.es.run_it(self._fnc_limited_host, in_bg=True)}")
-
         if self.monitor_activity:
             w(
                 """#  bell + # on window that had activity,
@@ -586,8 +582,20 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             self.sb_right += "#[reverse]#{?pane_synchronized,sync,}#[default]"
 
-        if self.is_limited_host:
-            self.sb_right = f"{self.limited_host_startup_indicator}{self.sb_right}"
+        if self.is_limited_host and self.plugin_handler not in (None, "", "manual"):
+            #
+            #  This displays self.limited_host_startup_indicator
+            #  on status bar
+            #
+            self.sb_right = f"{self.sb_right}{self.limited_host_startup_indicator}"
+
+            #
+            #  When tpm has completed, this script will remove the
+            #  indicator from the status bar
+            #
+            self.mkscript_limited_host()
+            self.write(f"{self.es.run_it(self._fnc_limited_host, in_bg=True)}")
+
         if self.status_bar_customization():
             w("\n#---   End of status_bar_customization()   ---")
 
@@ -1340,7 +1348,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
         self.es.create(self.fnc_toggle_mouse, toggle_mouse_sh)
 
     def mkscript_limited_host(self):
-        esc_indicator = self.limited_host_startup_indicator.replace("[", "\\[")
+        esc_indicator = self.limited_host_startup_indicator.replace("[", "\\[").replace(
+            "]", "\\]"
+        )
         limited_host_sh = [
             f"""{self._fnc_limited_host}() {{
     sleep 2 #  ensure tpm has time to start
