@@ -37,7 +37,7 @@ class ishHost(SB):
 
     # plugin_handler = "manual"
 
-    # use_embedded_scripts = False
+    use_embedded_scripts = False
 
     #
     #  Plugins not suitable for limited hosts, iSH being classed as such,
