@@ -33,8 +33,8 @@ class T2(SB):
 
     # plugin_handler = "manual"
     # bind_meta = False
-    use_embedded_scripts = False
-    is_limited_host = True
+    # use_embedded_scripts = False
+    # is_limited_host = True
 
     #
     #  Override default plugins with empty stubs for plugins
