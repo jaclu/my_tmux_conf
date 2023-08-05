@@ -550,6 +550,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         if self.is_limited_host:
             self.mkscript_limited_host()
+            w(f"{self.es.run_it(self._fnc_limited_host, in_bg=True)}")
 
         if self.monitor_activity:
             w(
