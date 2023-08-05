@@ -33,8 +33,7 @@ from sb.sb_muted import SB
 
 
 class ishHost(SB):
-    is_limited_host = True  # Indicates this host has low performance
-    status_interval = 5
+    # status_interval = 5
 
     # plugin_handler = "manual"
 
