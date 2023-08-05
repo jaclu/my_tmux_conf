@@ -15,11 +15,14 @@ version="1.1.0"
 my_tmux_conf_location="/usr/local/my_tmux_conf"
 
 select_tmux_bin() {
+    TMUX_BIN=""
     if [ -n "$ASDF_DIR" ]; then
-        TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
-    else
-        TMUX_BIN="$(command -v "$tmux_bin")"
+        if asdf list | grep -q tmux ; then
+            TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
+        fi
     fi
+    [ -z "$TMUX_BIN" ] && TMUX_BIN="$(command -v "$tmux_bin")"
+    
     if [ -z "$TMUX_BIN" ]; then
         echo "ERROR: no tmux in PATH!"
         exit 1
