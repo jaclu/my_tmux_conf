@@ -39,7 +39,7 @@ from pydoc import locate
 
 import __main__
 
-TMUX_CONF_NEEDED = "0.16.4"
+TMUX_CONF_NEEDED = "0.16.5"
 
 #
 #  Special import handling for debugging, is ignored in normal usage
@@ -138,6 +138,13 @@ class BaseConfig(TmuxConfig):  # type: ignore
             plugins_display=plugins_display,
         )
 
+        #
+        #  If tpm is used, this is set once tpm has completed
+        #  initialization, this is used to avoid displaying
+        #  tpm initializing in the statusbar if config is sourced etc
+        #
+        self.tpm_done_incicator = "@tpm-setup-completed"
+
         if self.is_tmate() and (self.show_pane_title or self.show_pane_size):
             print("show_pane_title & show_pane_size disabled for tmate")
             self.show_pane_size = self.show_pane_title = False
@@ -157,8 +164,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
             self.is_limited_host = True
 
         #  to avoid typos I use constants for script names
-        self.fnc_toggle_mouse = "toggle_mouse"
-        self._fnc_limited_host = "limited_host_startup"
+        self._fnc_toggle_mouse = "toggle_mouse"
+        self._fnc_activate_tpm = "activate_tpm"
+        self._fnc_clear_tpm_init = "clear_tpm_initializing"
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """This is called just before the status bar is rendered,
@@ -222,11 +230,52 @@ class BaseConfig(TmuxConfig):  # type: ignore
         """
         )
         self.local_overides()
+        self.__base_overrides()
 
     def local_overides(self):
         """Local overrides applied last in the config, not related to
         status bar, for that see status_bar_customization()
         """
+        return
+
+    def __base_overrides(self):
+        """This should be at the very end of content subclasses
+        should not change this one!"""
+
+        if self.plugin_handler and self.plugin_handler != "manual":
+            self.write(
+                f"""
+    #======================================================
+    #
+    #   Base class overrides
+    #
+    #======================================================
+
+    #
+    #  If tpm has completed, remove initializtion indication
+    #  from sb-right immeditally. Prevemting initialization
+    #  msg from displaying if config is sourced etc
+    #
+    if-shell "[[ -n '#{{{self.tpm_done_incicator}}}' ]]" '{
+        self.es.run_it(self._fnc_clear_tpm_init, in_bg=True)}'"""
+            )
+            #
+            #  This displays self.tpm_initializing
+            #  on status bar, it will be removed once tpm has finished
+            #
+            self.sb_right = f"{self.sb_right}{self.tpm_initializing}"
+
+            #
+            #  Override default script ftom tmux-conf.plugins in order
+            #  to indicate tpm is done
+            #
+            self.mkscript_tpm_deploy()
+
+            #
+            #  Script that when called removes tpm init from SB
+            #
+            self.mkscript_tpm_clear_init()
+
         return
 
     #
@@ -484,7 +533,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             self.mkscript_toggle_mouse()
             w(
                 'bind -N "Toggle mouse on/off"  M  '
-                f"{self.es.run_it(self.fnc_toggle_mouse)}"
+                f"{self.es.run_it(self._fnc_toggle_mouse)}"
             )
         else:
             w(
@@ -581,18 +630,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             self.sb_right += "#[reverse]#{?pane_synchronized,sync,}#[default]"
 
-        if self.plugin_handler and self.plugin_handler != "manual":
-            #
-            #  This displays self.tpm_initializing
-            #  on status bar, it will be removed once tpm has finished
-            #
-            self.sb_right = f"{self.sb_right}{self.tpm_initializing}"
-            #
-            #  Override default script ftom tmux-conf.plugins
-            #
-            self._fnc_activate_tpm = "activate_tpm"
-            self.mkscript_tpm_deploy()
-
+        #
         if self.status_bar_customization():
             w("\n#---   End of status_bar_customization()   ---")
 
@@ -1330,7 +1368,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #  The {} encapsulating the script needs to be doubled to escape them
         toggle_mouse_sh = [
             f"""
-{self.fnc_toggle_mouse}() {{
+{self._fnc_toggle_mouse}() {{
     #  This is so much easier to do in a proper script...
     old_state=$($TMUX_BIN show -gv mouse)
     if [ "$old_state" = "on" ]; then
@@ -1342,7 +1380,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     $TMUX_BIN display "mouse: $new_state"
 }}"""
         ]
-        self.es.create(self.fnc_toggle_mouse, toggle_mouse_sh)
+        self.es.create(self._fnc_toggle_mouse, toggle_mouse_sh)
 
     def mkscript_tpm_deploy(self):
         """If tpm is present, it is started.
@@ -1366,18 +1404,20 @@ class BaseConfig(TmuxConfig):  # type: ignore
         plugins_dir, tpm_env = self.plugins.get_env()
         tpm_location = os.path.join(plugins_dir, "tpm")
         tpm_app = os.path.join(tpm_location, "tpm")
-        tpm_running = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
 
         activate_tpm_sh = [
             f"""
 {self._fnc_activate_tpm}() {{
     #
     #  Initialize already installed tpm if found
+    #  override in base.py
     #
     if [ -x "{tpm_app}" ]; then
         {tpm_env}{tpm_app}
-        #  removing limited_host startup indicator
-        $TMUX_BIN set -q status-right "$("$TMUX_BIN" display -p '#{{status-right}}' | sed 's/{tpm_running}//')"
+
+        #  indicating that tpm has completed setup
+        $TMUX_BIN setenv -u {self.tpm_done_incicator}
+        {self._fnc_clear_tpm_init}
         exit 0
     fi
 
@@ -1419,6 +1459,35 @@ class BaseConfig(TmuxConfig):  # type: ignore
         ]
         self.es.create(self._fnc_activate_tpm, activate_tpm_sh)
         return output
+
+    def mkscript_tpm_clear_init(self):
+        #
+        #  removes self.tpm_initializing (if pressent) from sb-right
+        #
+        purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
+        self.sb_purge_tpm_running = f"""$TMUX_BIN set -q status-right \\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{ purge_seq }//')\\" """
+
+        clear_tpm_init_sh = [
+            f"""
+{self._fnc_clear_tpm_init}() {{
+
+    sb_r_now="$($TMUX_BIN display -p '#{{status-right}}')"
+
+    #
+    #  Remove the tpm initializing notification
+    #
+    sb_r_filtered="$(echo $sb_r_now | sed 's/{purge_seq}//')"
+
+    #
+    #  Update SB-right
+    #
+    $TMUX_BIN set -q status-right "$sb_r_filtered"
+
+}}
+"""
+        ]
+        self.es.create(self._fnc_clear_tpm_init, clear_tpm_init_sh)
+        return
 
     #
     #  Inspection of tmux-conf version to see if it is compatible
