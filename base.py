@@ -1418,7 +1418,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         {tpm_env}{tpm_app}
 
         t_duration="$(($(date +%s) - t_start))"
-        if [ $t_duration -gt 2 ]; then
+        if [ $t_duration -gt 1 ]; then
             #
             #  Logging startup times to for slow hosts
             #
