@@ -1407,15 +1407,42 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #
     if [ -x "{tpm_app}" ]; then
         #
-        #  indicating that tpm is in setup state
+        #  indicate that tpm is initializing
         #
         $TMUX_BIN setenv -gu {self.tpm_done_incicator}
         sb_r_now="$($TMUX_BIN display -p '#{{status-right}}')"
         $TMUX_BIN set -q status-right "$sb_r_now{self.tpm_initializing}"
+    """
+        ]
+
+        if self.is_limited_host:
+            activate_tpm_sh.append(
+                f"""
+        t_start="$(date +%s)"
 
         {tpm_env}{tpm_app}
 
+        #
+        #  Logging startup times to:  /tmp/tmux-startup-times
+        #  for slow hosts
+        #
+        dbt_duration="$(($(date +%s) - t_start))"
+        dte_mins="$((dbt_duration / 60))"
+        dte_seconds="$((dbt_duration - dte_mins * 60))"
+        #  Add zero prefix when < 10
+        [ "$dte_mins" -gt 0 ] && [ "$dte_mins" -lt 10 ] && dte_mins="0$dte_mins"
+        [ "$dte_seconds" -lt 10 ] && dte_seconds="0$dte_seconds"
+        echo "[$dte_mins:$dte_seconds - $dte_label] $TMUX_CONF" >> /tmp/tmux-startup-times"""
+            )
+        else:
+            activate_tpm_sh.append(f"        {tpm_env}{tpm_app}")
+
+        activate_tpm_sh.append(
+            f"""
+
+        #
         #  indicating that tpm has completed setup
+        #
         $TMUX_BIN setenv -g {self.tpm_done_incicator} 1
         {self._fnc_clear_tpm_init}
         exit 0
@@ -1456,7 +1483,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
     $TMUX_BIN display "Plugin setup completed"
 }}"""
-        ]
+        )
         self.es.create(self._fnc_activate_tpm, activate_tpm_sh)
         return output
 
