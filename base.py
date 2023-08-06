@@ -39,7 +39,7 @@ from pydoc import locate
 
 import __main__
 
-TMUX_CONF_NEEDED = "0.16.0"
+TMUX_CONF_NEEDED = "0.16.4"
 
 #
 #  Special import handling for debugging, is ignored in normal usage
