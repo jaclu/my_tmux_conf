@@ -1418,17 +1418,16 @@ class BaseConfig(TmuxConfig):  # type: ignore
         {tpm_env}{tpm_app}
 
         t_duration="$(($(date +%s) - t_start))"
-        if [ $t_duration -gt 0 ]; then
+        if [ $t_duration -gt 2 ]; then
             #
-            #  Logging startup times to:  /tmp/tmux-startup-times
-            #  for slow hosts
+            #  Logging startup times to for slow hosts
             #
             dte_mins="$((t_duration / 60))"
             dte_seconds="$((t_duration - dte_mins * 60))"
             #  Add zero prefix when < 10
             [ "$dte_mins" -gt 0 ] && [ "$dte_mins" -lt 10 ] && dte_mins="0$dte_mins"
             [ "$dte_seconds" -lt 10 ] && dte_seconds="0$dte_seconds"
-            echo "[$(date)] $dte_mins:$dte_seconds $TMUX_CONF" >> /tmp/tmux-startup-times
+            echo "[$(date)] $dte_mins:$dte_seconds $TMUX_CONF"  >> /tmp/tmux-tpm-startup-times
         fi
 
         #
