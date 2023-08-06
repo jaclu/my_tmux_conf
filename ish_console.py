@@ -44,6 +44,11 @@ class IshConsole(BaseConfig):
             #
             return
 
+        if not self.vers_ok(2.6):
+            print("WARNING: tmux < 2.6 does not support user-keys")
+            print("         can not offer esc-prefix on this version")
+            return
+
         print(f">> nav_key: [{self.ish_nav_key}]")
         self.ic_setup()
 
@@ -53,11 +58,7 @@ class IshConsole(BaseConfig):
         elif self.ish_nav_key == "ctrl":
             self.ic_nav_key_mod("C")
         else:
-            if self.vers_ok(2.6):
-                self.ic_nav_key_esc_prefix()
-            else:
-                print("WARNING: tmux < 2.6 does not support user-keys")
-                print("         can not offer esc-prefix on this version")
+            self.ic_nav_key_esc_prefix()
 
         #
         #  Since iSH console is limited to only M-numbers and M-S-numbers
