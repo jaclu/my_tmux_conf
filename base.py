@@ -1412,33 +1412,24 @@ class BaseConfig(TmuxConfig):  # type: ignore
         $TMUX_BIN setenv -gu {self.tpm_done_incicator}
         sb_r_now="$($TMUX_BIN display -p '#{{status-right}}')"
         $TMUX_BIN set -q status-right "$sb_r_now{self.tpm_initializing}"
-    """
-        ]
 
-        if self.is_limited_host:
-            activate_tpm_sh.append(
-                f"""
         t_start="$(date +%s)"
 
         {tpm_env}{tpm_app}
 
-        #
-        #  Logging startup times to:  /tmp/tmux-startup-times
-        #  for slow hosts
-        #
-        dbt_duration="$(($(date +%s) - t_start))"
-        dte_mins="$((dbt_duration / 60))"
-        dte_seconds="$((dbt_duration - dte_mins * 60))"
-        #  Add zero prefix when < 10
-        [ "$dte_mins" -gt 0 ] && [ "$dte_mins" -lt 10 ] && dte_mins="0$dte_mins"
-        [ "$dte_seconds" -lt 10 ] && dte_seconds="0$dte_seconds"
-        echo "[$dte_mins:$dte_seconds - $dte_label] $TMUX_CONF" >> /tmp/tmux-startup-times"""
-            )
-        else:
-            activate_tpm_sh.append(f"        {tpm_env}{tpm_app}")
-
-        activate_tpm_sh.append(
-            f"""
+        t_duration="$(($(date +%s) - t_start))"
+        if [ $t_duration -gt 2 ]; then
+            #
+            #  Logging startup times to:  /tmp/tmux-startup-times
+            #  for slow hosts
+            #
+            dte_mins="$((t_duration / 60))"
+            dte_seconds="$((t_duration - dte_mins * 60))"
+            #  Add zero prefix when < 10
+            [ "$dte_mins" -gt 0 ] && [ "$dte_mins" -lt 10 ] && dte_mins="0$dte_mins"
+            [ "$dte_seconds" -lt 10 ] && dte_seconds="0$dte_seconds"
+            echo "[$dte_mins:$dte_seconds] $TMUX_CONF" >> /tmp/tmux-startup-times
+        fi
 
         #
         #  indicating that tpm has completed setup
@@ -1483,7 +1474,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
     $TMUX_BIN display "Plugin setup completed"
 }}"""
-        )
+        ]
         self.es.create(self._fnc_activate_tpm, activate_tpm_sh)
         return output
 
