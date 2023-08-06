@@ -1420,7 +1420,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         t_duration="$(($(date +%s) - t_start))"
         if [ $t_duration -gt 1 ]; then
             #
-            #  Logging startup times to for slow hosts
+            #  Logging startup times for slow hosts
             #
             dte_mins="$((t_duration / 60))"
             dte_seconds="$((t_duration - dte_mins * 60))"
@@ -1481,7 +1481,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         #  removes self.tpm_initializing (if pressent) from sb-right
         #
-        purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
+        purge_seq = self.tpm_initializing.replace(
+            "[", "\\[").replace("]", "\\]")
         self.sb_purge_tpm_running = f"""$TMUX_BIN set -q status-right \\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{ purge_seq }//')\\" """
 
         clear_tpm_init_sh = [
