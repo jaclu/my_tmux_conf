@@ -19,6 +19,7 @@
 import sys
 
 from sb.sb_local import SB
+
 # from sb.sb_muted import SB
 # from default_plugins import DefaultPlugins as SB
 
@@ -38,7 +39,7 @@ class JacMacConfig(SB):
             """
             set -g @packet-loss-ping_count    4
             set -g @packet-loss-history_size 10
-            
+
             set -g @packet-loss-display_trend     1
             set -g @packet-loss-hist_avg_display  1
 
@@ -53,20 +54,22 @@ class JacMacConfig(SB):
             """,
         ]
 
-    def not_plugin_1password(self):    # ?.?  local
+    def not_plugin_1password(self):  # ?.?  local
         #
         #  Plugin for 1password CLI tool op
         #
-        return ["yardnsm/tmux-1password",
-                1.0,
-                """
+        return [
+            "yardnsm/tmux-1password",
+            1.0,
+            """
                 # set -g @1password-key 'u' # default 'u'
                 # set -g @1password-account 'acme' # default 'my'
                 # set -g @1password-vault 'work' # default '' (all)
                 # set -g @1password-copy-to-clipboard 'on' # default 'off'
                 # set -g @1password-filter-tags 'development,servers' # default '' (no tag filtering)
                 # set -g @1password-debug 'on' # default 'off'
-                """]
+                """,
+        ]
 
     def plugin_keyboard_type(self):  # 1.9  local
         #

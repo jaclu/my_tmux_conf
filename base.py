@@ -52,8 +52,7 @@ if cfb and (cfb.find("sublime") > -1 or cfb.find("VSCode") > -1):
 else:
     # import as package
     try:
-        # pyright: ignore[reportMissingImports]
-        from tmux_conf import TmuxConfig
+        from tmux_conf import TmuxConfig  # type: ignore
     except ModuleNotFoundError:
         print("Dependency tmux_conf not installed!")
         sys.exit(1)
@@ -62,50 +61,50 @@ else:
 class BaseConfig(TmuxConfig):  # type: ignore
     """Defines the general tmux setup, key binds etc"""
 
-    prefix_key = "C-a"
-    prefix_key_T2 = "C-w"  # prefix for inner dev environment
+    prefix_key: str = "C-a"
+    prefix_key_T2: str = "C-w"  # prefix for inner dev environment
 
-    status_interval = 10  # How often the status bar should be updated
+    status_interval: int = 10  # How often the status bar should be updated
 
-    monitor_activity = False  # Notification when other windows change state
+    monitor_activity: bool = False  # Notification when other windows change state
 
-    show_pane_title = True  # If enabled, Set title with <P> P
-    show_pane_size = True  # If enabled pane frane lines will display pane size
+    show_pane_title: bool = True  # If enabled, Set title with <P> P
+    show_pane_size: bool = True  # If enabled pane frane lines will display pane size
 
     #
     #  So that I can disable them and practice the vi keys every now and
     #  then. If Falde, Meta keys are unbound
     #
-    bind_meta = True
+    bind_meta: bool = True
 
     #
     #  This causes most colors on MacOS Term.app to fail
     #
-    use_24bit_color = os.environ.get("TERM_PROGRAM") != "Apple_Terminal"
+    use_24bit_color: bool = os.environ.get("TERM_PROGRAM") != "Apple_Terminal"
     #
     #  Tc is more commonly supported by terminals
     #  RGB may provide more accurate color representation
     #
-    color_tag_24bit = "RGB"
+    color_tag_24bit: str = "RGB"
 
     #
     #  Default templates for the status bar, so that they can easily be
     #  modified using status_bar_customization()
     #
-    sb_left = "|#{session_name}| "
-    sb_right = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
-    username_template = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
-    hostname_template = "#[fg=colour195,bg=colour1]#h#[default]"
-    limited_host_startup_indicator = "#[reverse,blink] tpm initializing...#[default]"
+    sb_left: str = "|#{session_name}| "
+    sb_right: str = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
+    username_template: str = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
+    hostname_template: str = "#[fg=colour195,bg=colour1]#h#[default]"
+    tpm_initializing: str = "#[reverse,blink] tpm initializing...#[default]"
 
-    handle_iterm2 = True  # Select screen-256color for iTerm2
+    handle_iterm2: bool = True  # Select screen-256color for iTerm2
 
     #
     #  Indicates this is a separate tmux env, I use it for testing
     #  plugin compatibility, and changed settings in a way that does not
     #  interfere with my main environment
     #
-    t2_env = os.environ.get("T2_ENV")
+    t2_env: str = os.environ.get("T2_ENV", "")
 
     # ======================================================
     #
@@ -113,7 +112,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #
     # ======================================================
 
-    plugin_handler = "jaclu/tpm"
+    plugin_handler: str = "jaclu/tpm"
 
     def __init__(
         self,
@@ -582,19 +581,17 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             self.sb_right += "#[reverse]#{?pane_synchronized,sync,}#[default]"
 
-        if self.is_limited_host and self.plugin_handler not in (None, "", "manual"):
+        if self.plugin_handler and self.plugin_handler != "manual":
             #
-            #  This displays self.limited_host_startup_indicator
-            #  on status bar
+            #  This displays self.tpm_initializing
+            #  on status bar, it will be removed once tpm has finished
             #
-            self.sb_right = f"{self.sb_right}{self.limited_host_startup_indicator}"
-
+            self.sb_right = f"{self.sb_right}{self.tpm_initializing}"
             #
-            #  When tpm has completed, this script will remove the
-            #  indicator from the status bar
+            #  Override default script ftom tmux-conf.plugins
             #
-            self.mkscript_limited_host()
-            self.write(f"{self.es.run_it(self._fnc_limited_host, in_bg=True)}")
+            self._fnc_activate_tpm = "activate_tpm"
+            self.mkscript_tpm_deploy()
 
         if self.status_bar_customization():
             w("\n#---   End of status_bar_customization()   ---")
@@ -1347,23 +1344,81 @@ class BaseConfig(TmuxConfig):  # type: ignore
         ]
         self.es.create(self.fnc_toggle_mouse, toggle_mouse_sh)
 
-    def mkscript_limited_host(self):
-        esc_indicator = self.limited_host_startup_indicator.replace("[", "\\[").replace(
-            "]", "\\]"
+    def mkscript_tpm_deploy(self):
+        """If tpm is present, it is started.
+        If not, it is installed and requested to install all
+        defined plugins.
+        """
+        #
+        #  Overrides the default instance of this script from Plugins
+        #
+        output = []
+        output.append(
+            """
+        #======================================================
+        #
+        #   Tmux Plugin Manager
+        #
+        #======================================================
+        """
         )
-        limited_host_sh = [
-            f"""{self._fnc_limited_host}() {{
-    sleep 2 #  ensure tpm has time to start
-    while [ -n "$($TMUX_BIN showenv -g @tpm-working-indicator 2>/dev/null)" ]; do
-        sleep 2
-    done
+        #  os.makedirs(plugins_dir, exist_ok=True)
+        plugins_dir, tpm_env = self.plugins.get_env()
+        tpm_location = os.path.join(plugins_dir, "tpm")
+        tpm_app = os.path.join(tpm_location, "tpm")
+        tpm_running = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
 
-    #  removing limited_host startup indicator
-    $TMUX_BIN set -q status-right "$("$TMUX_BIN" display -p '#{{status-right}}' | sed 's/{esc_indicator}//')"
-}}
-        """,
+        activate_tpm_sh = [
+            f"""
+{self._fnc_activate_tpm}() {{
+    #
+    #  Initialize already installed tpm if found
+    #
+    if [ -x "{tpm_app}" ]; then
+        {tpm_env}{tpm_app}
+        #  removing limited_host startup indicator
+        $TMUX_BIN set -q status-right "$("$TMUX_BIN" display -p '#{{status-right}}' | sed 's/{tpm_running}//')"
+        exit 0
+    fi
+
+    #  Create plugin dir if needed
+    mkdir -p "{plugins_dir}"
+
+    #  Remove potentially broken tpm install
+    rm -rf "{tpm_location}"
+
+    $TMUX_BIN display "Cloning {self.plugin_handler} into {tpm_location} ..."
+    git clone https://github.com/{self.plugin_handler} "{tpm_location}"
+    if [ "$?" -ne 0 ]; then
+        echo "Failed to clone tmux plugin handler:"
+        echo "  https://github.com/{self.plugin_handler}"
+        exit 11
+    fi
+
+    $TMUX_BIN display "Running cloned tpm..."
+    {tpm_env}"{tpm_app}"
+    if [ "$?" -ne 0 ]; then
+        echo "Failed to run: {tpm_app}"
+        exit 12
+    fi
+
+    #
+    #  this only triggers plugins install if tpm needed to be installed.
+    #  Otherwise installing missing plugins is delegated to tpm.
+    #  Default trigger is: <prefix> I
+    #
+    $TMUX_BIN display "Installing all plugins..."
+    {tpm_env}"{tpm_location}/bindings/install_plugins"
+    if [ "$?" -ne 0 ]; then
+        echo "Failed to run: {tpm_location}/bindings/install_plugins"
+        exit 12
+    fi
+
+    $TMUX_BIN display "Plugin setup completed"
+}}"""
         ]
-        self.es.create(self._fnc_limited_host, limited_host_sh)
+        self.es.create(self._fnc_activate_tpm, activate_tpm_sh)
+        return output
 
     #
     #  Inspection of tmux-conf version to see if it is compatible

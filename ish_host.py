@@ -45,7 +45,7 @@ class ishHost(SB):
     #  Thereby not making them available for iSH hosts
     #
 
-    def plugin_packet_loss(self):  # 1.9
+    def plugin_packet_loss(self) -> list:  # 1.9
         if os.path.isfile("/etc/debian_version"):
             # Ish Debian tends to fail on this plugin on my (oldish) iPads
             min_vers = 99.0

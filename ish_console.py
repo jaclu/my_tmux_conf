@@ -30,7 +30,7 @@ class IshConsole(BaseConfig):
     If ISH_NAV_KEY is defined and not "None" use it
     """
 
-    def local_overides(self):
+    def local_overides(self) -> None:
         super().local_overides()
         #
         #  Only use this if client is iSH using a nav-key
@@ -47,7 +47,7 @@ class IshConsole(BaseConfig):
         print(f">> nav_key: [{self.ish_nav_key}]")
         self.ic_setup()
 
-    def ic_setup(self):
+    def ic_setup(self) -> None:
         if self.ish_nav_key == "shift":
             self.ic_nav_key_mod("S")
         elif self.ish_nav_key == "ctrl":
@@ -64,7 +64,7 @@ class IshConsole(BaseConfig):
         self.ic_fn_keys()
         self.ic_alt_upper_case(fn_keys_mapped=True)
 
-    def ic_nav_key_mod(self, mod_char):
+    def ic_nav_key_mod(self, mod_char: str) -> None:
         self.write(
             f"""
         bind -N "S-Up = PageUp"     -n  {mod_char}-Up     send-keys PageUp
@@ -74,7 +74,7 @@ class IshConsole(BaseConfig):
         """
         )
 
-    def ic_nav_key_esc_prefix(self):
+    def ic_nav_key_esc_prefix(self) -> None:
         self.write(
             f"""
         #  Use Esc as prefix for nav-keys
@@ -90,7 +90,7 @@ class IshConsole(BaseConfig):
         """
         )
 
-    def ic_fn_keys(self):
+    def ic_fn_keys(self) -> None:
         w = self.write
         #
         #  This will map M-S number to F1 - F10
@@ -113,7 +113,7 @@ class IshConsole(BaseConfig):
             w(f'bind -N "M-S-{i} -> F{i}"  -n  User10{i}  send-keys F{i}')
         w('bind -N "M-0 -> F10" -n  User110  send-keys F10')
 
-    def ic_alt_upper_case(self, fn_keys_mapped: bool):
+    def ic_alt_upper_case(self, fn_keys_mapped: bool) -> None:
         w = self.write
         w(
             """
