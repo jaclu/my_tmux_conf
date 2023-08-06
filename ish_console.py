@@ -75,6 +75,11 @@ class IshConsole(BaseConfig):
         )
 
     def ic_nav_key_esc_prefix(self) -> None:
+        if self.vers_ok(2.1):
+            tbl_opt = "T"
+        else:
+            tbl_opt = "t"
+
         self.write(
             f"""
         #  Use Esc as prefix for nav-keys
@@ -82,11 +87,11 @@ class IshConsole(BaseConfig):
 
         bind -n User200 switch-client -T multiKeyBT
 
-        bind -T multiKeyBT  Down     send PageDown
-        bind -T multiKeyBT  Up       send PageUp
-        bind -T multiKeyBT  Left     send Home
-        bind -T multiKeyBT  Right    send End
-        bind -T multiKeyBT  User200  send Escape
+        bind -{tbl_opt} multiKeyBT  Down     send PageDown
+        bind -{tbl_opt} multiKeyBT  Up       send PageUp
+        bind -{tbl_opt} multiKeyBT  Left     send Home
+        bind -{tbl_opt} multiKeyBT  Right    send End
+        bind -{tbl_opt} multiKeyBT  User200  send Escape
         """
         )
 
