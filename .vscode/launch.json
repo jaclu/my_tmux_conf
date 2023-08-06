@@ -6,17 +6,17 @@
   "configurations": [
     {
       "name": "Python: jacmac",
-      "args": ["-r"],
+      "args": [],
       "type": "python",
       "request": "launch",
       "program": "/usr/local/my_tmux_conf/jacmac.py",
       "console": "integratedTerminal",
-      "justMyCode": true
+      "justMyCode": false
     },
     {
       "name": "Python: t2.py",
       "cwd": "/Users/jaclu/t2",
-      "args": ["-r", "$HOME/t2/tmux/tmux.conf"],
+      "args": ["-r", "$HOME/t2/tmux/tmux.conf"], //, "-p 2"],
       // "args": ["-p1", "$HOME/t2/tmux/tmux.conf"],
       "type": "python",
       "request": "launch",
