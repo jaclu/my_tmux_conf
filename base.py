@@ -1409,14 +1409,14 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         #  indicating that tpm is in setup state
         #
-        $TMUX_BIN setenv -u {self.tpm_done_incicator}
+        $TMUX_BIN setenv -gu {self.tpm_done_incicator}
         sb_r_now="$($TMUX_BIN display -p '#{{status-right}}')"
         $TMUX_BIN set -q status-right "$sb_r_now{self.tpm_initializing}"
 
         {tpm_env}{tpm_app}
 
         #  indicating that tpm has completed setup
-        $TMUX_BIN setenv {self.tpm_done_incicator} 1
+        $TMUX_BIN setenv -g {self.tpm_done_incicator} 1
         {self._fnc_clear_tpm_init}
         exit 0
     fi
