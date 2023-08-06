@@ -243,6 +243,17 @@ class BaseConfig(TmuxConfig):  # type: ignore
         should not change this one!"""
 
         if self.plugin_handler and self.plugin_handler != "manual":
+            #
+            #  Override default script ftom tmux-conf.plugins in order
+            #  to indicate tpm is done
+            #
+            self.mkscript_tpm_deploy()
+
+            #
+            #  Script that when called removes tpm init from SB
+            #
+            self.mkscript_tpm_clear_init()
+
             self.write(
                 f"""
     #======================================================
@@ -259,23 +270,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
     if-shell "[[ -n '#{{{self.tpm_done_incicator}}}' ]]" '{
         self.es.run_it(self._fnc_clear_tpm_init, in_bg=True)}'"""
             )
-            #
-            #  This displays self.tpm_initializing
-            #  on status bar, it will be removed once tpm has finished
-            #
-            self.sb_right = f"{self.sb_right}{self.tpm_initializing}"
-
-            #
-            #  Override default script ftom tmux-conf.plugins in order
-            #  to indicate tpm is done
-            #
-            self.mkscript_tpm_deploy()
-
-            #
-            #  Script that when called removes tpm init from SB
-            #
-            self.mkscript_tpm_clear_init()
-
         return
 
     #
@@ -630,13 +624,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             self.sb_right += "#[reverse]#{?pane_synchronized,sync,}#[default]"
 
-        if self.plugin_handler and self.plugin_handler != "manual":
-            #
-            #  This displays self.tpm_initializing
-            #  on status bar, it will be removed once tpm has finished
-            #
-            self.sb_right = f"{self.sb_right}{self.tpm_initializing}"
-        #
         if self.status_bar_customization():
             w("\n#---   End of status_bar_customization()   ---")
 
@@ -1419,6 +1406,13 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  override in base.py
     #
     if [ -x "{tpm_app}" ]; then
+        #
+        #  indicating that tpm is in setup state
+        #
+        $TMUX_BIN setenv -u {self.tpm_done_incicator}
+        sb_r_now="$($TMUX_BIN display -p '#{{status-right}}')"
+        $TMUX_BIN set -q status-right "$sb_r_now{self.tpm_initializing}"
+
         {tpm_env}{tpm_app}
 
         #  indicating that tpm has completed setup
@@ -1488,7 +1482,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  Update SB-right
     #
     $TMUX_BIN set -q status-right "$sb_r_filtered"
-
 }}
 """
         ]
