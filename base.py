@@ -630,6 +630,12 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             self.sb_right += "#[reverse]#{?pane_synchronized,sync,}#[default]"
 
+        if self.plugin_handler and self.plugin_handler != "manual":
+            #
+            #  This displays self.tpm_initializing
+            #  on status bar, it will be removed once tpm has finished
+            #
+            self.sb_right = f"{self.sb_right}{self.tpm_initializing}"
         #
         if self.status_bar_customization():
             w("\n#---   End of status_bar_customization()   ---")
