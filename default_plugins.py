@@ -171,13 +171,14 @@ class DefaultPlugins(IshConsole):
         #  Can scroll in non-active 'mouse over-ed' panes.
         #  Can adjust scroll-sensitivity.
         #
-        min_vers = 2.1
-        if self.is_tmate():
-            min_vers = 99  # disable for tmate
+        if self.is_limited_host or self.is_tmate():
+            vers_min = 99  # make sure this is never used
+        else:
+            vers_min = 2.1
 
         return [
             "jaclu/tmux-better-mouse-mode",
-            min_vers,
+            vers_min,
             """
             #  Scroll events are sent to moused-over pane.
             set -g @scroll-without-changing-pane  on
@@ -337,7 +338,16 @@ class DefaultPlugins(IshConsole):
         return ["jaclu/tmux-resurrect", 1.9, conf]
 
     def plugin_session_wizard(self) -> list:  # 3.2
-        return ["27medkamal/tmux-session-wizard", 3.2, "#  Default trigger: <prefix> T"]
+        if self.is_limited_host:
+            vers_min = 99  # make sure this is never used
+        else:
+            vers_min = 3.2
+
+        return [
+            "27medkamal/tmux-session-wizard",
+            vers_min,
+            "#  Default trigger: <prefix> T",
+        ]
 
     def plugin_suspend(self) -> list:  # 2.4
         #
