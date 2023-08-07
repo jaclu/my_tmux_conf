@@ -143,7 +143,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #  initialization, this is used to avoid displaying
         #  tpm initializing in the statusbar if config is sourced etc
         #
-        self.tpm_done_incicator = "@tpm-setup-completed"
+        self.tpm_working_incicator = "@tpm-setup-completed"
 
         if self.is_tmate() and (self.show_pane_title or self.show_pane_size):
             print("show_pane_title & show_pane_size disabled for tmate")
@@ -166,7 +166,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #  to avoid typos I use constants for script names
         self._fnc_toggle_mouse = "toggle_mouse"
         self._fnc_activate_tpm = "activate_tpm"
-        self._fnc_clear_tpm_init = "clear_tpm_initializing"
+        self._fnc_tpm_indicator = "tpm_init_indicator"
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """This is called just before the status bar is rendered,
@@ -252,24 +252,24 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             #  Script that when called removes tpm init from SB
             #
-            self.mkscript_tpm_clear_init()
+            self.mkscript_tpm_indicator()
 
-            self.write(
-                f"""
-    #======================================================
-    #
-    #   Base class overrides
-    #
-    #======================================================
+        #         self.write(
+        #             f"""
+        # #======================================================
+        # #
+        # #   Base class overrides
+        # #
+        # #======================================================
 
-    #
-    #  If tpm has completed, remove initializtion indication
-    #  from sb-right immeditally. Prevemting initialization
-    #  msg from displaying if config is sourced etc
-    #
-    if-shell "[[ -n '#{{{self.tpm_done_incicator}}}' ]]" '{
-        self.es.run_it(self._fnc_clear_tpm_init, in_bg=True)}'"""
-            )
+        # #
+        # #  If tpm has completed, remove initializtion indication
+        # #  from sb-right immeditally. Prevemting initialization
+        # #  msg from displaying if config is sourced etc
+        # #
+        # if-shell "[[ -z '#{{{self.tpm_working_incicator}}}' ]]" '{
+        #     self.es.run_it(f"{self._fnc_tpm_indicator} bc_clear", in_bg=True)}'"""
+        #         )
         return
 
     #
@@ -1401,40 +1401,22 @@ class BaseConfig(TmuxConfig):  # type: ignore
         activate_tpm_sh = [
             f"""
 {self._fnc_activate_tpm}() {{
+    timer_start
+    #
+    #  indicate that tpm is initializing
+    #
+    {self._fnc_tpm_indicator} set
+
     #
     #  Initialize already installed tpm if found
     #  override in base.py
     #
     if [ -x "{tpm_app}" ]; then
-        #
-        #  indicate that tpm is initializing
-        #
-        $TMUX_BIN setenv -gu {self.tpm_done_incicator}
-        sb_r_now="$($TMUX_BIN display -p '#{{status-right}}')"
-        $TMUX_BIN set -q status-right "$sb_r_now{self.tpm_initializing}"
-
-        t_start="$(date +%s)"
 
         {tpm_env}{tpm_app}
+        timer_end
 
-        t_duration="$(($(date +%s) - t_start))"
-        if [ $t_duration -gt 1 ]; then
-            #
-            #  Logging startup times for slow hosts
-            #
-            dte_mins="$((t_duration / 60))"
-            dte_seconds="$((t_duration - dte_mins * 60))"
-            #  Add zero prefix when < 10
-            [ "$dte_mins" -gt 0 ] && [ "$dte_mins" -lt 10 ] && dte_mins="0$dte_mins"
-            [ "$dte_seconds" -lt 10 ] && dte_seconds="0$dte_seconds"
-            echo "[$(date)] $dte_mins:$dte_seconds $TMUX_CONF"  >> /tmp/tmux-tpm-startup-times
-        fi
-
-        #
-        #  indicating that tpm has completed setup
-        #
-        $TMUX_BIN setenv -g {self.tpm_done_incicator} 1
-        {self._fnc_clear_tpm_init}
+        {self._fnc_tpm_indicator} clear
         exit 0
     fi
 
@@ -1468,42 +1450,92 @@ class BaseConfig(TmuxConfig):  # type: ignore
     {tpm_env}"{tpm_location}/bindings/install_plugins"
     if [ "$?" -ne 0 ]; then
         echo "Failed to run: {tpm_location}/bindings/install_plugins"
-        exit 12
+        exit 13
     fi
 
+    timer_end "installing plugins"
+    {self._fnc_tpm_indicator} clear
     $TMUX_BIN display "Plugin setup completed"
-}}"""
+}}
+
+#
+#  Two support functions
+#
+timer_start() {{
+    t_start="$(date +%s)"
+
+}}
+
+timer_end() {{
+    lbl="$1"
+    t_duration="$(($(date +%s) - t_start))"
+    if [ $t_duration -gt 1 ]; then
+        #
+        #  Logging startup times for slow hosts
+        #
+        dte_mins="$((t_duration / 60))"
+        dte_seconds="$((t_duration - dte_mins * 60))"
+        #  Add zero prefix when < 10
+        [ "$dte_mins" -gt 0 ] && [ "$dte_mins" -lt 10 ] && dte_mins="0$dte_mins"
+        [ "$dte_seconds" -lt 10 ] && dte_seconds="0$dte_seconds"
+        msg="[$(date)] $dte_mins:$dte_seconds $TMUX_CONF"
+        [ -n "$lbl" ] && msg="$msg - $lbl"
+        echo "$msg"  >> /tmp/tmux-tpm-startup-times
+    fi
+}}
+"""
         ]
         self.es.create(self._fnc_activate_tpm, activate_tpm_sh)
         return output
 
-    def mkscript_tpm_clear_init(self):
+    def mkscript_tpm_indicator(self):
         #
         #  removes self.tpm_initializing (if pressent) from sb-right
         #
-        purge_seq = self.tpm_initializing.replace(
-            "[", "\\[").replace("]", "\\]")
+        purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
         self.sb_purge_tpm_running = f"""$TMUX_BIN set -q status-right \\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{ purge_seq }//')\\" """
 
         clear_tpm_init_sh = [
             f"""
-{self._fnc_clear_tpm_init}() {{
+{self._fnc_tpm_indicator}() {{
+    case "$1" in
+      "set") task="set" ;;
+      "clear") task="clear" ;;
+      *)
+        $TMUX_BIN display -p "{self._fnc_tpm_indicator}($1) bad param"
+        exit 1
+    esac
 
     sb_r_now="$($TMUX_BIN display -p '#{{status-right}}')"
+    if [ -n "$($TMUX_BIN display -p '#{{{self.tpm_working_incicator}}}')" ]; then
+        tpm_working=1
+    else
+        tpm_working=0
+    fi
 
-    #
-    #  Remove the tpm initializing notification
-    #
-    sb_r_filtered="$(echo $sb_r_now | sed 's/{purge_seq}//')"
+    if [ "$task" = "set" ] && [ "$tpm_working" -eq 0 ]; then
+        $TMUX_BIN setenv -g {self.tpm_working_incicator} 1
+        #
+        #  Update SB-right
+        #
+        $TMUX_BIN set -q status-right "$sb_r_now{self.tpm_initializing}"
+    elif [ "$task" = "clear" ] && [ "$tpm_working" -eq 1 ]; then
+        #
+        #  Remove the tpm initializing notification
+        #
+        sb_r_filtered="$(echo $sb_r_now | sed 's/{purge_seq}//')"
 
-    #
-    #  Update SB-right
-    #
-    $TMUX_BIN set -q status-right "$sb_r_filtered"
+        #
+        #  Update SB-right
+        #
+        $TMUX_BIN set -q status-right "$sb_r_filtered"
+
+        $TMUX_BIN setenv -gu {self.tpm_working_incicator}
+    fi
 }}
 """
         ]
-        self.es.create(self._fnc_clear_tpm_init, clear_tpm_init_sh)
+        self.es.create(self._fnc_tpm_indicator, clear_tpm_init_sh)
         return
 
     #
