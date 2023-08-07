@@ -39,7 +39,7 @@ from pydoc import locate
 
 import __main__
 
-TMUX_CONF_NEEDED = "0.16.5"
+TMUX_CONF_NEEDED = "0.16.6"
 
 #
 #  Special import handling for debugging, is ignored in normal usage
@@ -143,7 +143,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #  initialization, this is used to avoid displaying
         #  tpm initializing in the statusbar if config is sourced etc
         #
-        self.tpm_working_incicator = "@tpm-setup-completed"
+        self.tpm_working_incicator = "@tpm-is-active"
 
         if self.is_tmate() and (self.show_pane_title or self.show_pane_size):
             print("show_pane_title & show_pane_size disabled for tmate")
@@ -1402,10 +1402,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             f"""
 {self._fnc_activate_tpm}() {{
     timer_start
-    #
-    #  indicate that tpm is initializing
-    #
-    {self._fnc_tpm_indicator} set
+    {self.es.call_script(self._fnc_tpm_indicator)} set
 
     #
     #  Initialize already installed tpm if found
@@ -1414,9 +1411,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
     if [ -x "{tpm_app}" ]; then
 
         {tpm_env}{tpm_app}
-        timer_end
 
-        {self._fnc_tpm_indicator} clear
+        timer_end
+        {self.es.call_script(self._fnc_tpm_indicator)} clear
         exit 0
     fi
 
@@ -1454,12 +1451,12 @@ class BaseConfig(TmuxConfig):  # type: ignore
     fi
 
     timer_end "installing plugins"
-    {self._fnc_tpm_indicator} clear
+    {self.es.call_script(self._fnc_tpm_indicator)} clear
     $TMUX_BIN display "Plugin setup completed"
 }}
 
 #
-#  Two support functions
+#  Two support functions, not directly handled by my_tmux_conf
 #
 timer_start() {{
     t_start="$(date +%s)"
@@ -1508,26 +1505,23 @@ timer_end() {{
 
     sb_r_now="$($TMUX_BIN display -p '#{{status-right}}')"
     if [ -n "$($TMUX_BIN display -p '#{{{self.tpm_working_incicator}}}')" ]; then
-        tpm_working=1
+        tpm_running=1
     else
-        tpm_working=0
+        tpm_running=0
     fi
 
-    if [ "$task" = "set" ] && [ "$tpm_working" -eq 0 ]; then
+    if [ "$task" = "set" ] && [ "$tpm_running" -eq 0 ]; then
         $TMUX_BIN setenv -g {self.tpm_working_incicator} 1
-        #
-        #  Update SB-right
-        #
-        $TMUX_BIN set -q status-right "$sb_r_now{self.tpm_initializing}"
-    elif [ "$task" = "clear" ] && [ "$tpm_working" -eq 1 ]; then
-        #
-        #  Remove the tpm initializing notification
-        #
-        sb_r_filtered="$(echo $sb_r_now | sed 's/{purge_seq}//')"
 
         #
-        #  Update SB-right
+        #  Add tpm init to SB-right
         #
+        $TMUX_BIN set -q status-right "$sb_r_now{self.tpm_initializing}"
+    elif [ "$task" = "clear" ] && [ "$tpm_running" -eq 1 ]; then
+        #
+        #  Remove tpm init from SB-right
+        #
+        sb_r_filtered="$(echo $sb_r_now | sed 's/{purge_seq}//')"
         $TMUX_BIN set -q status-right "$sb_r_filtered"
 
         $TMUX_BIN setenv -gu {self.tpm_working_incicator}
