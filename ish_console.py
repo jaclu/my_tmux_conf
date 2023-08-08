@@ -39,14 +39,23 @@ class IshConsole(BaseConfig):
         #  handled by a current tmux
         #
         self.ish_nav_key = os.environ.get("ISH_NAV_KEY") or ""
-        already_handled = os.environ.get(handling_ish_console_tag)
-
-        if self.ish_nav_key in ("None", "") or already_handled:
+        if self.ish_nav_key in ("None", ""):
             #
             # This is not running on the iSH console, so no special
             # handling is needed
             #
             return
+        if os.environ.get(handling_ish_console_tag):
+            self.write(
+                f"""#
+                #  parent tmux is handling ISH_NAV_KEY
+                #  this instance can ignore it
+                #
+                {handling_ish_console_tag}=0
+                """
+                )
+            return
+
 
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
@@ -56,7 +65,7 @@ class IshConsole(BaseConfig):
         self.write(
             f"""#
             #  Indicates this tmux is handling ISH_NAV_KEY
-            $
+            #
             {handling_ish_console_tag}=1
             """
         )
