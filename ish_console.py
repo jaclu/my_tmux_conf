@@ -46,7 +46,7 @@ class IshConsole(BaseConfig):
 
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
-            print("         ISH_NAV_KEY not support on this version")
+            print("         ISH_NAV_KEY not supported on this version")
             return
 
         print(f">> nav_key: [{self.ish_nav_key}]")
