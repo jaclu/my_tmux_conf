@@ -22,6 +22,8 @@ import os
 
 from base import BaseConfig
 
+handling_ish_console_tag = "TMUX_HANDLING_ISH_CONSOLE"
+
 
 class IshConsole(BaseConfig):
     """When running tmux from an iSH console this redefines the rather
@@ -33,11 +35,13 @@ class IshConsole(BaseConfig):
     def local_overides(self) -> None:
         super().local_overides()
         #
-        #  Only use this if client is iSH using a nav-key
+        #  Only use this if client is iSH using a nav-key, and it isnt
+        #  handled by a current tmux
         #
         self.ish_nav_key = os.environ.get("ISH_NAV_KEY") or ""
+        already_handled = os.environ.get(handling_ish_console_tag)
 
-        if self.ish_nav_key in ("None", ""):
+        if self.ish_nav_key in ("None", "") or already_handled:
             #
             # This is not running on the iSH console, so no special
             # handling is needed
@@ -46,9 +50,16 @@ class IshConsole(BaseConfig):
 
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
-            print("         ISH_NAV_KEY not supported on this version")
+            print("         ISH_NAV_KEY is not supported on this version")
             return
 
+        self.write(
+            f"""#
+            #  Indicates this tmux is handling ISH_NAV_KEY
+            $
+            {handling_ish_console_tag}=1
+            """
+        )
         print(f">> nav_key: [{self.ish_nav_key}]")
         self.ic_setup()
 
