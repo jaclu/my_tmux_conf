@@ -45,6 +45,7 @@ class IshConsole(BaseConfig):
             # handling is needed
             #
             return
+
         if os.environ.get(handling_ish_console_tag):
             self.write(
                 f"""#
@@ -53,9 +54,8 @@ class IshConsole(BaseConfig):
                 #
                 {handling_ish_console_tag}=0
                 """
-                )
+            )
             return
-
 
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
