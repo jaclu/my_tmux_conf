@@ -1489,7 +1489,8 @@ timer_end() {{
         #
         #  removes self.tpm_initializing (if pressent) from sb-right
         #
-        purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
+        purge_seq = self.tpm_initializing.replace(
+            "[", "\\[").replace("]", "\\]")
         self.sb_purge_tpm_running = f"""$TMUX_BIN set -q status-right \\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{ purge_seq }//')\\" """
 
         clear_tpm_init_sh = [
@@ -1516,13 +1517,13 @@ timer_end() {{
         #
         #  Add tpm init to SB-right
         #
-        $TMUX_BIN set -q status-right "$sb_r_now{self.tpm_initializing}"
+        $TMUX_BIN set -g status-right "$sb_r_now{self.tpm_initializing}"
     elif [ "$task" = "clear" ] && [ "$tpm_running" -eq 1 ]; then
         #
         #  Remove tpm init from SB-right
         #
         sb_r_filtered="$(echo $sb_r_now | sed 's/{purge_seq}//')"
-        $TMUX_BIN set -q status-right "$sb_r_filtered"
+        $TMUX_BIN set -g status-right "$sb_r_filtered"
 
         $TMUX_BIN setenv -gu {self.tpm_working_incicator}
     fi
