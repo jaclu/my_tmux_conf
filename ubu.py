@@ -24,7 +24,7 @@ from sb.sb_virtualbox import SB
 
 class UbuConfig(SB):
 
-    plugin_handler: str = "tmux-plugins/tpm"
+    # plugin_handler: str = "tmux-plugins/tpm"
     status_interval = 5
 
     def plugin_zz_continuum(self) -> list:  # 1.9
@@ -86,7 +86,7 @@ class UbuConfig(SB):
             """
             set -g @packet-loss-ping_count    4
             set -g @packet-loss-history_size 10
-            
+
             set -g @packet-loss-weighted_average 1
             set -g @packet-loss-display_trend    1
             set -g @packet-loss-hist_avg_display 1

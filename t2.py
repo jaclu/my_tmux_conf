@@ -32,6 +32,7 @@ class T2(SB):
     t2_env = "1"
 
     # plugin_handler = "manual"
+    # plugin_handler: str = "tmux-plugins/tpm"
     # bind_meta = False
     # use_embedded_scripts = False
     # is_limited_host = True
