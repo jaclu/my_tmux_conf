@@ -1414,7 +1414,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  Remove potentially broken tpm install
     rm -rf "{tpm_location}"
 
-    $TMUX_BIN display -p "Cloning {self.plugin_handler} into {tpm_location} ..."
+    $TMUX_BIN display "Cloning {self.plugin_handler} into {tpm_location} ..."
     git clone https://github.com/{self.plugin_handler} "{tpm_location}"
     if [ "$?" -ne 0 ]; then
         echo "Failed to clone tmux plugin handler:"
@@ -1422,7 +1422,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         exit 11
     fi
 
-    $TMUX_BIN display -p "Running cloned tpm..."
+    $TMUX_BIN display "Running cloned tpm..."
     {tpm_env}"{tpm_app}"
     if [ "$?" -ne 0 ]; then
         echo "Failed to run: {tpm_app}"
@@ -1434,7 +1434,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  Otherwise installing missing plugins is delegated to tpm.
     #  Default trigger is: <prefix> I
     #
-    $TMUX_BIN display -p "Installing all plugins..."
+    $TMUX_BIN display "Installing all plugins..."
     {tpm_env}"{tpm_location}/bindings/install_plugins"
     if [ "$?" -ne 0 ]; then
         echo "Failed to run: {tpm_location}/bindings/install_plugins"
@@ -1443,7 +1443,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
     timer_end "installing plugins"
     # {self.es.call_script(self._fnc_tpm_indicator)} clear
-    $TMUX_BIN display -p "Plugin setup completed"
+    $TMUX_BIN display "Plugin setup completed"
 }}
 
 #
