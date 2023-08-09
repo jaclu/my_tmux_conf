@@ -1472,7 +1472,8 @@ timer_end() {{
         [ "$dte_seconds" -lt 10 ] && dte_seconds="0$dte_seconds"
         msg="[$(date)] $dte_mins:$dte_seconds $TMUX_CONF"
         [ -n "$lbl" ] && msg="$msg - $lbl"
-        echo "$msg"  >> /tmp/tmux-tpm-startup-times
+        TMPDIR="${{TMPDIR:-/tmp}}" # honour it if set
+        echo "$msg"  >> "$TMPDIR/tmux-tpm-startup-times"
     fi
 }}
 """
