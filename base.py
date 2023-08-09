@@ -1372,7 +1372,11 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
     def mkscript_tpm_deploy(self):
         """Overrides tmux_conf.plugins instance, to add
-        toggling of tpm_initializing."""
+        toggling of tpm_initializing.
+
+        On iSH sometimes tpm never completes, and thus, indicating
+        that condition helps me having to allways check it manually.
+        """
 
         output = []
         output.append(
