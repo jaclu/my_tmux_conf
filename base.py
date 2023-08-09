@@ -254,22 +254,16 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             self.mkscript_tpm_indicator()
 
-        #         self.write(
-        #             f"""
+        #     self.write(
+        #         f"""
         # #======================================================
         # #
         # #   Base class overrides
         # #
         # #======================================================
 
-        # #
-        # #  If tpm has completed, remove initializtion indication
-        # #  from sb-right immeditally. Prevemting initialization
-        # #  msg from displaying if config is sourced etc
-        # #
-        # if-shell "[[ -z '#{{{self.tpm_working_incicator}}}' ]]" '{
-        #     self.es.run_it(f"{self._fnc_tpm_indicator} bc_clear", in_bg=True)}'"""
-        #         )
+        #     """
+        #     )
         return
 
     #
@@ -1448,7 +1442,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     fi
 
     timer_end "installing plugins"
-    {self.es.call_script(self._fnc_tpm_indicator)} clear
+    # {self.es.call_script(self._fnc_tpm_indicator)} clear
     $TMUX_BIN display "Plugin setup completed"
 }}
 
