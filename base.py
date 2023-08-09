@@ -254,22 +254,16 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             self.mkscript_tpm_indicator()
 
-        #         self.write(
-        #             f"""
+        #     self.write(
+        #         f"""
         # #======================================================
         # #
         # #   Base class overrides
         # #
         # #======================================================
 
-        # #
-        # #  If tpm has completed, remove initializtion indication
-        # #  from sb-right immeditally. Prevemting initialization
-        # #  msg from displaying if config is sourced etc
-        # #
-        # if-shell "[[ -z '#{{{self.tpm_working_incicator}}}' ]]" '{
-        #     self.es.run_it(f"{self._fnc_tpm_indicator} bc_clear", in_bg=True)}'"""
-        #         )
+        #     """
+        #     )
         return
 
     #
@@ -1358,6 +1352,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  Utility methods
     #
     def mkscript_toggle_mouse(self):
+        "Toogles mouse handling on/off"
         #  The {} encapsulating the script needs to be doubled to escape them
         toggle_mouse_sh = [
             f"""
@@ -1376,13 +1371,13 @@ class BaseConfig(TmuxConfig):  # type: ignore
         self.es.create(self._fnc_toggle_mouse, toggle_mouse_sh)
 
     def mkscript_tpm_deploy(self):
-        """If tpm is present, it is started.
-        If not, it is installed and requested to install all
-        defined plugins.
+        """Overrides tmux_conf.plugins instance, to add
+        toggling of tpm_initializing.
+
+        On iSH sometimes tpm never completes, and thus, indicating
+        that condition helps me having to allways check it manually.
         """
-        #
-        #  Overrides the default instance of this script from Plugins
-        #
+
         output = []
         output.append(
             """
@@ -1451,7 +1446,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     fi
 
     timer_end "installing plugins"
-    {self.es.call_script(self._fnc_tpm_indicator)} clear
+    # {self.es.call_script(self._fnc_tpm_indicator)} clear
     $TMUX_BIN display "Plugin setup completed"
 }}
 
@@ -1477,7 +1472,8 @@ timer_end() {{
         [ "$dte_seconds" -lt 10 ] && dte_seconds="0$dte_seconds"
         msg="[$(date)] $dte_mins:$dte_seconds $TMUX_CONF"
         [ -n "$lbl" ] && msg="$msg - $lbl"
-        echo "$msg"  >> /tmp/tmux-tpm-startup-times
+        TMPDIR="${{TMPDIR:-/tmp}}" # honour it if set
+        echo "$msg"  >> "$TMPDIR/tmux-tpm-startup-times"
     fi
 }}
 """
@@ -1486,11 +1482,8 @@ timer_end() {{
         return output
 
     def mkscript_tpm_indicator(self):
-        #
-        #  removes self.tpm_initializing (if pressent) from sb-right
-        #
-        purge_seq = self.tpm_initializing.replace(
-            "[", "\\[").replace("]", "\\]")
+        """Changes state for tpm_initializing with params: set clear"""
+        purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
         self.sb_purge_tpm_running = f"""$TMUX_BIN set -q status-right \\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{ purge_seq }//')\\" """
 
         clear_tpm_init_sh = [
@@ -1533,10 +1526,8 @@ timer_end() {{
         self.es.create(self._fnc_tpm_indicator, clear_tpm_init_sh)
         return
 
-    #
-    #  Inspection of tmux-conf version to see if it is compatible
-    #
     def check_libs_compatible(self):
+        """Inspection of tmux-conf version to see if it is compatible"""
         try:
             lib_vers_found = self.lib_version.split()[0]
             # [:len(TMUX_CONF_NEEDED)]

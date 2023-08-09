@@ -24,31 +24,17 @@ from sb.sb_virtualbox import SB
 
 class UbuConfig(SB):
 
+    # plugin_handler: str = "tmux-plugins/tpm"
     status_interval = 5
 
-    def plugin_packet_loss(self):  # 1.9
-        min_vers = 1.9
-        if self.is_tmate():
-            min_vers = 99  # disable for tmate
-        return [
-            "jaclu/tmux-packet-loss",
-            min_vers,
-            """
-            set -g @packet-loss-ping_count    4
-            set -g @packet-loss-history_size 10
-            
-            set -g @packet-loss-weighted_average 1
-            set -g @packet-loss-display_trend    1
-            set -g @packet-loss-hist_avg_display 1
+    def plugin_zz_continuum(self) -> list:  # 1.9
+        #
+        #  Auto restoring a session just as tmux starts on a limited
+        #  host will just lead to painfull lag.
+        #
+        return ["tmux-plugins/tmux-continuum", 99, ""]
 
-            set -g @packet-loss-color_bg    colour27
-
-            set -g @packet-loss-prefix |
-            set -g @packet-loss-suffix |
-            """,
-        ]
-
-    def plugin_mullvad(self):  # 2.2  local
+    def not_plugin_mullvad(self):  # 2.2  local
         #
         #   #{mullvad_city}#{mullvad_country}#{mullvad_status}
         #
@@ -83,6 +69,32 @@ class UbuConfig(SB):
             #
             set -g @mullvad_country_no_color_suffix 1
             set -g @mullvad_status_no_color_suffix 1
+            """,
+        ]
+
+    #
+    #  This is run as a vhost, the next two detect hardware
+    #  conditions on the host platform
+    #
+    def plugin_packet_loss(self):  # 1.9
+        min_vers = 1.9
+        if self.is_tmate():
+            min_vers = 99  # disable for tmate
+        return [
+            "jaclu/tmux-packet-loss",
+            min_vers,
+            """
+            set -g @packet-loss-ping_count    4
+            set -g @packet-loss-history_size 10
+
+            set -g @packet-loss-weighted_average 1
+            set -g @packet-loss-display_trend    1
+            set -g @packet-loss-hist_avg_display 1
+
+            set -g @packet-loss-color_bg    colour27
+
+            set -g @packet-loss-prefix |
+            set -g @packet-loss-suffix |
             """,
         ]
 
