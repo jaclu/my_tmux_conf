@@ -35,7 +35,7 @@ from sb.sb_muted import SB
 class ishHost(SB):
     # status_interval = 5
 
-    plugin_handler = ""
+    # plugin_handler = ""
 
     # use_embedded_scripts = False
 
@@ -76,14 +76,14 @@ class ishHost(SB):
     def plugin_better_mouse_mode(self) -> list:  # 2.1
         return ("jaclu/tmux-better-mouse-mode", 99, "")
 
-    def plugin_menus(self) -> list:  # 1.8
-        return ("6", 99, "")
+    #def plugin_menus(self) -> list:  # 1.8
+    #    return ("6", 99, "")
 
     def plugin_power_zoom(self) -> list:  # 2.0
         return ("5", 99, "")
 
-    def plugin_prefix_highlight(self) -> list:  # 2.0
-        return ("4", 99, "")
+    #def plugin_prefix_highlight(self) -> list:  # 2.0
+    #    return ("4", 99, "")
 
     def plugin_resurrect(self) -> list:  # 1.9
         return ("3", 99, "")
