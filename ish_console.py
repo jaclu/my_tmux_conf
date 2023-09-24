@@ -22,7 +22,7 @@ import os
 
 from base import BaseConfig
 
-handling_ish_console_tag = "TMUX_HANDLING_ISH_CONSOLE"
+nav_key_handled_tag = "TMUX_HANDLING_ISH_NAV_KEY"
 
 
 class IshConsole(BaseConfig):
@@ -32,29 +32,24 @@ class IshConsole(BaseConfig):
     If ISH_NAV_KEY is defined and not "None" use it
     """
 
+    ish_nav_key = None
+
     def local_overides(self) -> None:
         super().local_overides()
         #
-        #  Only use this if client is iSH using a nav-key, and it isnt
-        #  handled by a current tmux
+        #  Only use this if session is running on the iSH console
+        #  that is 1) kernel is ish 2) not an ssh session,
+        #     3) not handled by an outer tmux
         #
-        self.ish_nav_key = os.environ.get("ISH_NAV_KEY") or ""
-        if self.ish_nav_key in ("None", ""):
+        if (
+            (not os.path.exists("/proc/ish"))
+            or os.environ.get("SSH_CONNECTION")
+            or os.environ.get(nav_key_handled_tag)
+        ):
             #
-            # This is not running on the iSH console, so no special
-            # handling is needed
+            #  This check is only relent on the iSH console itself
+            #  and if no outer tmux is already handling the nav keyf
             #
-            return
-
-        if os.environ.get(handling_ish_console_tag):
-            self.write(
-                f"""#
-                #  parent tmux is handling ISH_NAV_KEY
-                #  this instance can ignore it
-                #
-                {handling_ish_console_tag}=0
-                """
-            )
             return
 
         if not self.vers_ok(2.6):
@@ -62,23 +57,38 @@ class IshConsole(BaseConfig):
             print("         ISH_NAV_KEY is not supported on this version")
             return
 
+        try:  # pylint: disable=too-many-try-statements
+            with open("/etc/opt/tmux_nav_key", "r", encoding="utf-8") as file:
+                self.ish_nav_key = file.read()
+        except FileNotFoundError:
+            #
+            #  No nav key defined
+            #
+            return
+
         self.write(
             f"""#
-            #  Indicates this tmux is handling ISH_NAV_KEY
+            #  Indicates this tmux is handling ISH_NAV_KEY, to ensure
+            #  nested tmuxes, dont parse it again.
             #
-            {handling_ish_console_tag}=1
+            {nav_key_handled_tag}=1
+
+            #
+            # if defined use custom handling for navigation keys,
+            # set by /usr/local/bin/nav_keys.shell
+            #
+            run-shell "[ -f /etc/opt/tmux_nav_key_handling ] && tmux source /etc/opt/tmux_nav_key_handling"
             """
         )
-        print(f">> nav_key: [{self.ish_nav_key}]")
         self.ic_setup()
 
     def ic_setup(self) -> None:
-        if self.ish_nav_key == "shift":
-            self.ic_nav_key_mod("S")
-        elif self.ish_nav_key == "ctrl":
-            self.ic_nav_key_mod("C")
-        else:
-            self.ic_nav_key_esc_prefix()
+        # if self.ish_nav_key == "shift":
+        #     self.ic_nav_key_mod("S")
+        # elif self.ish_nav_key == "ctrl":
+        #     self.ic_nav_key_mod("C")
+        # else:
+        #     self.ic_nav_key_esc_prefix()
 
         #
         #  Since iSH console is limited to only M-numbers and M-S-numbers
@@ -89,7 +99,7 @@ class IshConsole(BaseConfig):
         self.ic_fn_keys()
         self.ic_alt_upper_case(fn_keys_mapped=True)
 
-    def ic_nav_key_mod(self, mod_char: str) -> None:
+    def NOT_ic_nav_key_mod(self, mod_char: str) -> None:
         self.write(
             f"""
         bind -N "S-Up = PageUp"     -n  {mod_char}-Up     send-keys PageUp
@@ -99,7 +109,7 @@ class IshConsole(BaseConfig):
         """
         )
 
-    def ic_nav_key_esc_prefix(self) -> None:
+    def NOT_ic_nav_key_esc_prefix(self) -> None:
         if self.vers_ok(2.1):
             tbl_opt = "T"
         else:
