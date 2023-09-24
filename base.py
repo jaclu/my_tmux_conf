@@ -1352,7 +1352,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  Utility methods
     #
     def mkscript_toggle_mouse(self):
-        "Toogles mouse handling on/off"
+        """Toogles mouse handling on/off"""
         #  The {} encapsulating the script needs to be doubled to escape them
         toggle_mouse_sh = [
             f"""
