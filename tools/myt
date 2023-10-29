@@ -58,17 +58,17 @@ regular_tmux() {
 
     select_tmux_bin
 
-    echo "><> profile: $profile tmux: $TMUX_BIN"
+    # echo "><> profile: $profile tmux: $TMUX_BIN"
     #
     #  generate a fresh .tmux.conf
     #
     if [ "$quick_mode" -eq 0 ]; then
-        echo "><> Generating new profile"
+        # echo "><> Generating new profile"
         ! "${profile}" -r -t "$TMUX_BIN" && exit 2
     else
         echo "Using existing proffile: $profile with: $TMUX_BIN"
     fi
-    echo "><> starting tmux session"
+    # echo "><> starting tmux session"
     "$TMUX_BIN" -u new-session -ADs main
 }
 
