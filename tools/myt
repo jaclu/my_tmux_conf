@@ -14,8 +14,14 @@
 version="2.0.1"
 my_tmux_conf_location="/usr/local/my_tmux_conf"
 
-select_tmux_bin() {
+select_tmux_bin(){
     TMUX_BIN=""
+    if [ -n "$tmux_bin" ]; then
+	# User defined tmux
+	TMUX_BIN="$tmux_bin"
+	unset tmux_bin
+	return
+    fi
     if [ -n "$ASDF_DIR" ]; then
         if asdf list | grep -q tmux ; then
             TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
