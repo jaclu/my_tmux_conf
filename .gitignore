@@ -9,6 +9,7 @@ src/tmux_conf.egg-info/
 local_tmux_conf/
 
 .venv/
+not-v-env/
 
 # vscode
 *.code-workspace
