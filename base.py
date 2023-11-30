@@ -95,7 +95,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     sb_left: str = "|#{session_name}| "
     sb_right: str = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template: str = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
-    hostname_template: str = "#[fg=colour195,bg=colour1]#h#[default]"
+    hostname_template: str = f"#[fg=colour195,bg=colour1]#{hostname_display}#[default]"
     tpm_initializing: str = "#[reverse,blink] tpm initializing...#[default]"
 
     handle_iterm2: bool = True  # Select screen-256color for iTerm2
