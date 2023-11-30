@@ -91,6 +91,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  Default templates for the status bar, so that they can easily be
     #  modified using status_bar_customization()
     #
+    hostname_display = "h"
     sb_left: str = "|#{session_name}| "
     sb_right: str = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template: str = " #[fg=colour1,bg=colour195]#(whoami)#[default]"

@@ -33,13 +33,15 @@ muted_text = "colour242"  # grey
 
 
 class SB(DefaultPlugins):
+    username_template = f"#[fg={theme_text}] #(whoami)#[default]@"
+    sb_left = f"#[fg={theme_text}]" "#{session_name}" f"#[fg={muted_text}]: "
+
     def status_bar_customization(self, print_header=True):
         super().status_bar_customization(print_header=print_header)
         w = self.write
         w("# this is sb_muted")
-        self.username_template = f"#[fg={theme_text}] #(whoami)#[default]@"
-        self.hostname_template = f"#[fg={theme_text}]#h#[default]"
-        self.sb_left = f"#[fg={theme_text}]" "#{session_name}" f"#[fg={muted_text}]: "
+        self.hostname_template = f"#[fg={theme_text}]#{self.hostname_display}#[default]"
+
         self.sb_right = self.sb_right.replace(
             "%a %h", f"#[fg={muted_text}] %a %h")
         w(

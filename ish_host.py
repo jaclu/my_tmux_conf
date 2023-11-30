@@ -35,6 +35,8 @@ from sb.sb_muted import SB
 class ishHost(SB):
     # status_interval = 5
 
+    hostname_display: str = "(/usr/local/bin/hostname)"
+
     # plugin_handler = ""
 
     # use_embedded_scripts = False
