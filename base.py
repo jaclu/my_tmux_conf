@@ -1019,12 +1019,15 @@ class BaseConfig(TmuxConfig):  # type: ignore
             """
             )
 
-        # if self.vers_ok(3.3):
-        #     # Needs to wait until a window exists
-        #     w(
-        #         f'run -b "sleep 1 ; {self.tmux_bin} '
-        #         'set pane-border-indicators arrows"\n'
-        #     )
+        if self.vers_ok(3.2):
+            w("run -b 'sleep 0.2 ; $TMUX_BIN set pane-border-lines number'")
+
+        if self.vers_ok(3.3):
+            # Needs to wait until a window exists
+            w(
+                f'run -b "sleep 0.2 ; $TMUX_BIN '
+                'set pane-border-indicators arrows"\n'
+            )
 
         #
         #  Pane title and size
@@ -1484,7 +1487,8 @@ timer_end() {{
 
     def mkscript_tpm_indicator(self):
         """Changes state for tpm_initializing with params: set clear"""
-        purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
+        purge_seq = self.tpm_initializing.replace(
+            "[", "\\[").replace("]", "\\]")
         self.sb_purge_tpm_running = f"""$TMUX_BIN set -q status-right \\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{ purge_seq }//')\\" """
 
         clear_tpm_init_sh = [
