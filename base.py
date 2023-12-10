@@ -1020,7 +1020,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             )
 
         if self.vers_ok(3.2):
-            w("run -b 'sleep 0.2 ; $TMUX_BIN setw -g pane-border-lines number'")
+            w("run -b 'sleep 0.2 ; $TMUX_BIN setw -g pane-border-lines single'")  # number
 
         if self.vers_ok(3.3):
             # Needs to wait until a window exists
