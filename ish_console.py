@@ -53,23 +53,26 @@ class IshConsole(BaseConfig):
         if (
             (not os.path.exists("/proc/ish"))
             or os.environ.get("SSH_CONNECTION")
-            or os.environ.get(nav_key_handled_tag)
         ):
             #
             #  This check is only relent on the iSH console itself
             #  and if no outer tmux is already handling the nav keyf
             #
             return
+        elif os.environ.get(nav_key_handled_tag):
+            print("iSH console keyboard already handled by outer tmux!")
+            return
+
         self.is_ish_console = True
         
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
-            print("         ISH_NAV_KEY is not supported on this version")
+            print("         keyboard adaptions not supported on this version")
             return
 
         if self.ic_keyboard == kbd_type_brydge_10_2_max:  # "Brydge 10.2 MAX+"
             self.ic_keyb_brydge_10_2_max()
-        if self.ic_keyboard == kbd_type_yoozon3:  # "Brydge 10.2 MAX+"
+        elif self.ic_keyboard == kbd_type_yoozon3:  # "Brydge 10.2 MAX+"
             self.ic_keyb_Yoozon3()
         elif os.path.exists(self.aok_nav_key_handling):
             self.write(
@@ -81,6 +84,7 @@ class IshConsole(BaseConfig):
                 run-shell "[ -f {self.aok_nav_key_handling} ] && tmux source {self.aok_nav_key_handling}"
                 """
             )
+            print(f"Console keyboard based on: {self.aok_nav_key_handling}")
             self.ic_indicate_nav_key_handled()
         elif os.path.exists(self.aok_nav_key):
             try:  # pylint: disable=too-many-try-statements
@@ -98,18 +102,41 @@ class IshConsole(BaseConfig):
 
         self.ic_setup()
 
-    def ic_setup(self) -> None:
+    #
+    #  Specific Keyboards
+    #
+    def ic_keyb_brydge_10_2_max(self):
+        w = self.write
+        print("Assuming keyboard is: Brydge 10.2 MAX+")
+        self.ic_nav_key_esc_prefix("\\302\\247")
+        w("""
+        set -s user-keys[201]  "\\302\\261" # Generates '±'  # Usually: ~
+        bind -N "Enables ~" -n User201 send '~'
+        
+        #  € is Option+Shift+2 in United States layout
+        set -s user-keys[202]  "\\342\\202\\254" # Usually: €        
+        bind -N "Enables €" -n User202 send '€'
+        
+        """)
+
+    def ic_keyb_Yoozon3(self):
+        """Yoozon 3.0 Keyboard"""
+        w = self.write
+        print("Assuming keyboard is: Yoozon3")
+        # self.ic_multiKey('§')
+        self.ic_multiKey("\\302\\247")
+        w(
+        """
+        set -s user-keys[201]  '±'  # ~
         #
-        #  Since iSH console is limited to only M-numbers and M-S-numbers
-        #  I use M-S-number for function keys normally, thus not being
-        #  able to use keys like M-(
-        #  To avoid this collision, set fn_keys_mapped accordingly
+        #  Send back-tick by shifting the key the 2nd time, ie
+        #  pressing what normally would be ~ in order not to collide
+        #  with Escape
         #
-        #  This does general iSH mapping, not focusing on keyboard specific
-        #  customization needs
-        #
-        self.ic_fn_keys()
-        self.ic_alt_upper_case(fn_keys_mapped=True)
+        bind -T escPrefix    User201  send '\\'
+        bind -N "± -> ~" -n  User201  send '~'
+        """
+        )
 
     def ic_nav_key_esc_prefix(self, esc_key) -> None:
         if self.vers_ok(2.1):
@@ -128,9 +155,23 @@ class IshConsole(BaseConfig):
         bind -T escPrefix  Up       send PageUp
         bind -T escPrefix  Left     send Home
         bind -T escPrefix  Right    send End
+        bind -T escPrefix  User201  send "\`"
         """
         )
         self.ic_indicate_nav_key_handled()
+
+    def ic_setup(self) -> None:
+        #
+        #  Since iSH console is limited to only M-numbers and M-S-numbers
+        #  I use M-S-number for function keys normally, thus not being
+        #  able to use keys like M-(
+        #  To avoid this collision, set fn_keys_mapped accordingly
+        #
+        #  This does general iSH mapping, not focusing on keyboard specific
+        #  customization needs
+        #
+        self.ic_fn_keys()
+        self.ic_alt_upper_case(fn_keys_mapped=True)
 
     def ic_indicate_nav_key_handled(self):
         self.write(f"""#
@@ -347,59 +388,6 @@ class IshConsole(BaseConfig):
         )
 
     
-    #
-    #  Specific Keyboards
-    #
-    def ic_keyb_brydge_10_2_max(self):
-        w = self.write
-        print("Assuming keyboard is: Brydge 10.2 MAX+")
-        self.ic_nav_key_esc_prefix("\\302\\247")
-        w("""
-        set -s user-keys[201]  "\\302\\261" # Generates '±'  # Usually: ~
-        bind -N "Enables ~" -n User201 send '~'
-        
-        #  € is Option+Shift+2 in United States layout
-        set -s user-keys[202]  "\\342\\202\\254" # Usually: €        
-        bind -N "Enables €" -n User202 send '€'
-        
-        """)
-        if False:
-            w("""
-        
-            set -s escape-time 0
-            
-            #  Using Esc prefix for nav keys
-            
-            set -s user-keys[200]  "\\302\\247" # Generates §        
-            bind -N "Switch to -T escPrefix" -n User200 switch-client -T escPrefix
-            
-            bind -T escPrefix  User200  send Escape # Double tap for actual Esc
-            bind -T escPrefix  Down     send PageDown
-            bind -T escPrefix  Up       send PageUp
-            bind -T escPrefix  Left     send Home
-            bind -T escPrefix  Right    send End
-            bind -T escPrefix  User201  send '\\'            
-            """)
-
-    def ic_keyb_Yoozon3(self):
-        """Yoozon 3.0 Keyboard"""
-        w = self.write
-        print("Assuming keyboard is: Yoozon3")
-        # self.ic_multiKey('§')
-        self.ic_multiKey("\\302\\247")
-        w(
-        """
-        set -s user-keys[201]  '±'  # ~
-        #
-        #  Send back-tick by shifting the key the 2nd time, ie
-        #  pressing what normally would be ~ in order not to collide
-        #  with Escape
-        #
-        bind -T escPrefix    User201  send '\\'
-        bind -N "± -> ~" -n  User201  send '~'
-        """
-        )
-
 
 #
 #  If this is run directly
