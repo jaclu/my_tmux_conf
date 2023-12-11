@@ -64,6 +64,7 @@ class IshConsole(BaseConfig):
             return
 
         self.is_ish_console = True
+        self.ic_read_aok_nav_key()
         
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
@@ -86,22 +87,21 @@ class IshConsole(BaseConfig):
             )
             print(f"Console keyboard based on: {self.aok_nav_key_handling}")
             self.ic_indicate_nav_key_handled()
-        elif os.path.exists(self.aok_nav_key):
-            try:  # pylint: disable=too-many-try-statements
-                with open("/etc/opt/tmux_nav_key", "r", encoding="utf-8") as f:
-                    aok_nav_key = f.read()
-            except FileNotFoundError:
-                #
-                #  No nav key defined
-                #
-                aok_nav_key = None
-            if not aok_nav_key:
-                return
-            
-            self.ic_nav_key_esc_prefix(aok_nav_key)
+        elif self.aok_nav_key:
+            self.ic_nav_key_esc_prefix(self.aok_nav_key)
 
         self.ic_setup()
 
+    def ic_read_aok_nav_key(self):
+        try:  # pylint: disable=too-many-try-statements
+            with open(self.aok_nav_key, "r", encoding="utf-8") as f:
+                self.aok_nav_key = f.read()
+        except FileNotFoundError:
+            #
+            #  No nav key defined
+            #
+            self.aok_nav_key = None
+        
     #
     #  Specific Keyboards
     #
