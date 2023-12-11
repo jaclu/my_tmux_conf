@@ -1,1 +1,66 @@
-ish_host.py
+#!/usr/bin/env python3
+#
+#  -*- mode: python; mode: fold -*-
+#
+#  Copyright (c) 2022: Jacob.Lundqvist@gmail.com
+#  License: MIT
+#
+#  Part of https://github.com/jaclu/my_tmux_conf
+#
+#  Kind of a .tmux.conf compiler, generating one compatible with the
+#  current tmux version.
+#
+#  Trying my best to keep this in sync with my regular .tmux.conf
+#  but no doubt at times they will be slightly out of sync.
+#
+#  The generated config will only include group headers
+#  The more detailed comments in here will not be written, read them here :)
+#  The generated config is not really meant to be used as a primary config,
+#  I use it when I check various versions for feature and plugin compatibility,
+#  and this seemed like a quick way of using my default config,
+#  filtering out or replacing incompatible syntax.
+#
+
+#
+#  A typical iSH host
+#
+
+import os
+
+from sb.sb_muted import SB
+# from sb.sb_ish import SB
+import ish_console
+from ish_host import ishHost
+
+class JacPad(ishHost):
+    # status_interval = 5
+
+    #ic_keyboard = "Brydge 10.2 MAX+"
+    ic_keyboard = ish_console.kbd_type_brydge_10_2_max
+    # hostname_display: str = "(/usr/local/bin/hostname)"
+
+    # plugin_handler = ""
+
+    # use_embedded_scripts = False
+
+    def not_local_overides(self) -> None:
+        super().local_overides()
+        self.write("""
+        
+        set -s escape-time 0
+
+        # works
+        # set -s user-keys[201]  "\\302\\261" # '±'  # ~
+
+        set -s user-keys[201] '±'  # ~
+        
+        # bind -N "S-top ~" -n User201 run "printf '~'"        
+        bind -N "Enables ~" -n User201 send '~'
+        
+        """
+        )
+        
+    
+
+if __name__ == "__main__":
+    JacPad().run()

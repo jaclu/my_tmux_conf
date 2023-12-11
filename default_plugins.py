@@ -32,6 +32,7 @@ class DefaultPlugins(IshConsole):
     resource demanding ones are not added here.
     I use this as my primary base class
     If you never plan to use iSH you can subclass BaseConfig directly
+    We use IshConsole as parent, so that the running node is propperly configured
     """
 
     # plugin_handler = "tmux-plugins/tpm"
