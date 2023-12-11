@@ -33,6 +33,17 @@ nav_key_handled_tag = "TMUX_HANDLING_ISH_NAV_KEY"
 #  This goes for Keyboad names:
 #    Omnitype
 #
+#  Brydge issues
+#  M-_ gives - cant find last session
+#  M-+ gives tilde 
+#  M-< doesnt work - is it _UK mapped? generates right sequence
+#  M-> doesnt work - does nothing in tmux, outside \\313\\230
+#  M-P doesnt work - is it _UK mapped? generates right sequence
+#  M-X doesnt work - is it _UK mapped? generates right sequence
+#  M-x doesnt work - is it  mapped?    generates right sequence
+#  Check base.py - search for switch-client -l - defined twice!!
+#
+
 kbd_type_brydge_10_2_max = "Brydge 10.2 MAX+"
 kbd_type_yoozon3 = "Yoozon 3"
 
@@ -42,7 +53,7 @@ class IshConsole(BaseConfig):
 
     Groupings of userkeys
 
-      1-50  Alt Upper case
+      1-60  Alt Upper case
     100-129 Function keys
     200   Navkey
     210 -  General keyboard bindings
@@ -118,6 +129,9 @@ class IshConsole(BaseConfig):
     #  Specific Keyboards
     #
     def ic_keyb_type_1(self):
+        #
+        #  General settings seems to work for several keyboards
+        #
         w = self.write
         print(f"Assuming keyboard is: {self.ic_keyboard}")
         self.ic_nav_key_esc_prefix("\\302\\247")
@@ -131,6 +145,27 @@ class IshConsole(BaseConfig):
         set -s user-keys[220]  "\\302\\261"
         bind -N "Enables ~" -n User220 send '~'
         bind -T escPrefix  User220  send "\`"
+        
+        #set -s user-keys[221]  "~"# kbd_type_brydge_10_2_max - M-+
+        """)
+
+    def ic_keyb_Brydge_10_2_max(self):
+        w = self.write
+        print(f"Assuming keyboard is: {self.ic_keyboard}")
+        self.ic_nav_key_esc_prefix("\\302\\247")
+        w("""
+        #
+        #  Send ~ by shifting the "Escape key"
+        #  Send back-tick by shifting it the key the 2nd time, ie
+        #  pressing what normally would be ~ in order not to collide
+        #  with Escape
+        #
+        set -s user-keys[220]  "\\302\\261"
+        bind -N "Enables ~" -n User220 send '~'
+        bind -T escPrefix  User220  send "\`"
+
+        set -s user-keys[221]  "\\302\\257"
+        bind -N "Enables M-<" -n User221 send "M-<"        
         """)
 
     def ic_nav_key_esc_prefix(self, esc_key) -> None:
@@ -169,8 +204,8 @@ class IshConsole(BaseConfig):
         #  instead triggers it to send this sequence
         #  Weird, but this seems to solve it
         #
-        set -s user-keys[211]  "\\302\\257"
-        bind -N "Enables M-<" -n User211 send "M-<"
+        #set -s user-keys[211]  "\\302\\257"
+        #bind -N "Enables M-<" -n User211 send "M-<"
         """)
 
     def ic_setup(self) -> None:
@@ -218,6 +253,9 @@ class IshConsole(BaseConfig):
 
     def ic_alt_upper_case(self, fn_keys_mapped: bool) -> None:
         w = self.write
+        m_par_open = ""  #  Only used if not fn_keys_mapped
+        m_par_close = "" #  Only used if not fn_keys_mapped
+
         w("""
         #
         #  iSH console doesn't generate the right keys for
@@ -252,15 +290,19 @@ class IshConsole(BaseConfig):
 
         set -s user-keys[30]  "\\342\\200\\235"  # M-{
         set -s user-keys[31]  "\\342\\200\\231"  # M-}
-        set -s user-keys[32]  "\\303\\232"  # M-:
-        set -s user-keys[33]  "\\303\\206"  # M-\"
-        set -s user-keys[34]  "\\302\\273"  # M-\\
-        set -s user-keys[35]  "\\302\\257"  # M-<
-        set -s user-keys[36]  "\\313\\230"  # M->
-        set -s user-keys[37]  "\\302\\277"  # M-?
+        set -s user-keys[32]  "\\303\\232"       # M-:
+        set -s user-keys[33]  "\\303\\206"       # M-\"
+        set -s user-keys[34]  "\\302\\273"       # M-\\
+        set -s user-keys[35]  "\\302\\257"       # M-<
+        set -s user-keys[36]  "\\313\\230"       # M->
+        set -s user-keys[37]  "\\302\\277"       # M-?
+        set -s user-keys[38]  "\\342\\200\\224"  # M-_
+        #set -s user-keys[39]  "\\302\\261"       # M-+
+        set -s user-keys[39]  "\\176"     # brydge generates ~ inside tmux
         """
         )
-
+        self.usr_key_meta_plus = "User40"
+        
         for i, c in (
             ("1", "A"),
             ("2", "B"),
@@ -315,32 +357,32 @@ class IshConsole(BaseConfig):
 
         if not fn_keys_mapped:
             #  Collides with F1 - F10 remapping
-            w(
-                """
-            set -s user-keys[41]  "\\342\\201\\204"  # M-!
-            set -s user-keys[42]  "\\342\\202\\254"  # M-@
-            set -s user-keys[43]  "\\342\\200\\271"  # M-#
-            set -s user-keys[44]  "\\342\\200\\272"  # M-$
-            set -s user-keys[45]  "\\357\\254\\201"  # M-%
-            set -s user-keys[46]  "\\357\\254\\202"  # M-^
-            set -s user-keys[47]  "\\342\\200\\241"  # M-&
-            set -s user-keys[48]  "\\302\\260"       # M-*
-            set -s user-keys[49]  "\\302\\267"       # M-(
-            set -s user-keys[50]  "\\342\\200\\232"  # M-)
-            """
-            )
+            w("""
+            set -s user-keys[51]  "\\342\\201\\204"  # M-!
+            set -s user-keys[52]  "\\342\\202\\254"  # M-@
+            set -s user-keys[53]  "\\342\\200\\271"  # M-#
+            set -s user-keys[54]  "\\342\\200\\272"  # M-$
+            set -s user-keys[55]  "\\357\\254\\201"  # M-%
+            set -s user-keys[56]  "\\357\\254\\202"  # M-^
+            set -s user-keys[57]  "\\342\\200\\241"  # M-&
+            set -s user-keys[58]  "\\302\\260"       # M-*
+            set -s user-keys[59]  "\\302\\267"       # M-(
+            set -s user-keys[60]  "\\342\\200\\232"  # M-)
+            """)
+            m_par_open = "User59"
+            m_par_close = "User60"
 
             for i, c in (
-                ("41", "!"),
-                ("42", "@"),
-                ("43", "#"),
-                ("44", "$"),
-                ("45", "%"),
-                ("46", "^"),
-                ("47", "&"),
-                ("48", "*"),
-                ("49", "("),
-                ("50", ")"),
+                ("51", "!"),
+                ("52", "@"),
+                ("53", "#"),
+                ("54", "$"),
+                ("55", "%"),
+                ("56", "^"),
+                ("57", "&"),
+                ("58", "*"),
+                ("59", "("),
+                ("60", ")"),
             ):
                 w(f'bind -N "Enables M-{c}" -n  User{i}  send "M-{c}"')
         w()
@@ -351,11 +393,13 @@ class IshConsole(BaseConfig):
         #  send-keys. If the resulting key has an action,
         #  we need to override and bind the user-key to this action.
         #
-        self.display_plugins_used_UK(M_P="User16")
-        self.kill_tmux_server_UK(M_X="User24")
         self.split_entire_window_UK(
             M_H="User8", M_J="User10", M_K="User11", M_L="User12"
         )
+        self.display_plugins_used_UK(M_P="User16")
+        self.kill_tmux_server_UK(M_X="User24")
+        self.swap_window_UK(M_less_than="User35", M_greater_than="User36")
+        self.meta_ses_handling_UK(M_plus=self.usr_key_meta_plus, M_par_open=m_par_open, M_par_close=m_par_close, M__="User38")
 
         w(
             """
