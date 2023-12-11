@@ -1019,10 +1019,11 @@ class BaseConfig(TmuxConfig):  # type: ignore
             """
             )
 
-        if self.vers_ok(3.2):
-            w("run -b 'sleep 0.2 ; $TMUX_BIN setw -g pane-border-lines single'")  # number
+        # if self.vers_ok(3.2):
+        #    w("run -b 'sleep 0.2 ; $TMUX_BIN setw -g pane-border-lines single'")  # number
 
         if self.vers_ok(3.3):
+            print("><> is 3.3 and arrows")
             # Needs to wait until a window exists
             w(
                 f'run -b "sleep 0.2 ; $TMUX_BIN '
