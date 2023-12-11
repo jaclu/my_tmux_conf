@@ -28,10 +28,15 @@
 import os
 import socket
 
+# import ish_console
+
 from ish_host import ishHost
 
 class Pad5(ishHost):
 
+    #  omnitype doesnt need any setup atm
+    # ic_keyboard = ish_console.kbd_type_omnitype
+    
     def plugin_power_zoom(self):
         #  this host to slow for this plugin...
         return ["jaclu/tmux-power-zoom", 99, ""]

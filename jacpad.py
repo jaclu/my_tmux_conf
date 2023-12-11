@@ -27,39 +27,21 @@
 
 import os
 
-from sb.sb_muted import SB
-# from sb.sb_ish import SB
 import ish_console
+
 from ish_host import ishHost
 
 class JacPad(ishHost):
     # status_interval = 5
 
-    #ic_keyboard = "Brydge 10.2 MAX+"
     ic_keyboard = ish_console.kbd_type_brydge_10_2_max
+
     # hostname_display: str = "(/usr/local/bin/hostname)"
 
     # plugin_handler = ""
 
     # use_embedded_scripts = False
 
-    def not_local_overides(self) -> None:
-        super().local_overides()
-        self.write("""
-        
-        set -s escape-time 0
-
-        # works
-        # set -s user-keys[201]  "\\302\\261" # '±'  # ~
-
-        set -s user-keys[201] '±'  # ~
-        
-        # bind -N "S-top ~" -n User201 run "printf '~'"        
-        bind -N "Enables ~" -n User201 send '~'
-        
-        """
-        )
-        
     
 
 if __name__ == "__main__":

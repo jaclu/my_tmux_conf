@@ -28,13 +28,26 @@ nav_key_handled_tag = "TMUX_HANDLING_ISH_NAV_KEY"
 #  To make it easier to identify what keyboard to config
 #  the names here match what you see in Bluetooth settings
 #
+#  Some don't seem to need any specific settings, and do fine
+#  by just defining their nav key using the AOK nav_keys.sh
+#  This goes for Keyboad names:
+#    Omnitype
+#
 kbd_type_brydge_10_2_max = "Brydge 10.2 MAX+"
-kbd_type_yoozon3 = "yoozon 3"
+kbd_type_yoozon3 = "Yoozon 3"
 
 class IshConsole(BaseConfig):
     """When running tmux from an iSH console this redefines the rather
     limited keyboard in order to make it more useful.
 
+    Groupings of userkeys
+
+      1-50  Alt Upper case
+    100-129 Function keys
+    200   Navkey
+    210 -  General keyboard bindings
+    220-  Specific Keyboard bindings
+    
     If ISH_NAV_KEY is defined and not "None" use it
     """
     is_ish_console = False
@@ -65,16 +78,15 @@ class IshConsole(BaseConfig):
 
         self.is_ish_console = True
         self.ic_read_aok_nav_key()
+        self.ic_setup()
         
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
             print("         keyboard adaptions not supported on this version")
             return
 
-        if self.ic_keyboard == kbd_type_brydge_10_2_max:  # "Brydge 10.2 MAX+"
-            self.ic_keyb_brydge_10_2_max()
-        elif self.ic_keyboard == kbd_type_yoozon3:  # "Brydge 10.2 MAX+"
-            self.ic_keyb_Yoozon3()
+        if self.ic_keyboard == kbd_type_brydge_10_2_max or self.ic_keyboard == kbd_type_yoozon3:
+            self.ic_keyb_type_1()
         elif os.path.exists(self.aok_nav_key_handling):
             self.write(
                 f"""                
@@ -90,7 +102,7 @@ class IshConsole(BaseConfig):
         elif self.aok_nav_key:
             self.ic_nav_key_esc_prefix(self.aok_nav_key)
 
-        self.ic_setup()
+        self.general_keyb_settings()            
 
     def ic_read_aok_nav_key(self):
         try:  # pylint: disable=too-many-try-statements
@@ -105,38 +117,21 @@ class IshConsole(BaseConfig):
     #
     #  Specific Keyboards
     #
-    def ic_keyb_brydge_10_2_max(self):
+    def ic_keyb_type_1(self):
         w = self.write
-        print("Assuming keyboard is: Brydge 10.2 MAX+")
+        print(f"Assuming keyboard is: {self.ic_keyboard}")
         self.ic_nav_key_esc_prefix("\\302\\247")
         w("""
-        set -s user-keys[201]  "\\302\\261" # Generates '±'  # Usually: ~
-        bind -N "Enables ~" -n User201 send '~'
-        
-        #  € is Option+Shift+2 in United States layout
-        set -s user-keys[202]  "\\342\\202\\254" # Usually: €        
-        bind -N "Enables €" -n User202 send '€'
-        
-        """)
-
-    def ic_keyb_Yoozon3(self):
-        """Yoozon 3.0 Keyboard"""
-        w = self.write
-        print("Assuming keyboard is: Yoozon3")
-        # self.ic_multiKey('§')
-        self.ic_multiKey("\\302\\247")
-        w(
-        """
-        set -s user-keys[201]  '±'  # ~
         #
-        #  Send back-tick by shifting the key the 2nd time, ie
+        #  Send ~ by shifting the "Escape key"
+        #  Send back-tick by shifting it the key the 2nd time, ie
         #  pressing what normally would be ~ in order not to collide
         #  with Escape
         #
-        bind -T escPrefix    User201  send '\\'
-        bind -N "± -> ~" -n  User201  send '~'
-        """
-        )
+        set -s user-keys[220]  "\\302\\261"
+        bind -N "Enables ~" -n User220 send '~'
+        bind -T escPrefix  User220  send "\`"
+        """)
 
     def ic_nav_key_esc_prefix(self, esc_key) -> None:
         if self.vers_ok(2.1):
@@ -144,7 +139,7 @@ class IshConsole(BaseConfig):
         else:
             tbl_opt = "t"
 
-        self.write(f"""
+        self.write(f"""#
         #  Use Esc as prefix for nav-keys
         #
         set -s user-keys[200]  "{esc_key}"  # escPrefix
@@ -155,10 +150,28 @@ class IshConsole(BaseConfig):
         bind -T escPrefix  Up       send PageUp
         bind -T escPrefix  Left     send Home
         bind -T escPrefix  Right    send End
-        bind -T escPrefix  User201  send "\`"
         """
         )
         self.ic_indicate_nav_key_handled()
+
+    def general_keyb_settings(self):
+        self.write("""
+        #
+        #  General Keyboar bindings
+        #
+        #  € is Option+Shift+2 in United States layout
+        set -s user-keys[210]  "\\342\\202\\254" # Usually: €
+        bind -N "Enables €" -n User210 send '€'
+
+        #
+        #  Some keybs have issues with M-<
+        #  the initial binding for this char
+        #  instead triggers it to send this sequence
+        #  Weird, but this seems to solve it
+        #
+        set -s user-keys[211]  "\\302\\257"
+        bind -N "Enables M-<" -n User211 send "M-<"
+        """)
 
     def ic_setup(self) -> None:
         #
@@ -180,14 +193,13 @@ class IshConsole(BaseConfig):
         #
         {nav_key_handled_tag}=1
         """)
-        
+
     def ic_fn_keys(self) -> None:
         w = self.write
+        w("""
         #
         #  This will map M-S number to F1 - F10
         #
-        w(
-            """
         set -s user-keys[101] "\\342\\201\\204"  #  M-S-1
         set -s user-keys[102] "\\342\\202\\254"  #  M-S-2
         set -s user-keys[103] "\\342\\200\\271"  #  M-S-3
@@ -206,8 +218,7 @@ class IshConsole(BaseConfig):
 
     def ic_alt_upper_case(self, fn_keys_mapped: bool) -> None:
         w = self.write
-        w(
-            """
+        w("""
         #
         #  iSH console doesn't generate the right keys for
         #  Alt upper case chars, so here they are defined
