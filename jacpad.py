@@ -42,7 +42,5 @@ class JacPad(ishHost):
 
     # use_embedded_scripts = False
 
-    
-
 if __name__ == "__main__":
     JacPad().run()
