@@ -105,7 +105,9 @@ class IshConsole(BaseConfig):
             return
 
         if self.ic_keyboard == kbd_type_brydge_10_2_max:
-            self.ic_keyb_type_1()
+            self.ic_keyb_type_brydge()
+        elif self.ic_keyboard == kbd_type_omnitype:
+            self.ic_keyb_type_omnitype()
         else:
             #
             #  keyboard handling esc directly, still needed on regular ish
@@ -119,7 +121,7 @@ class IshConsole(BaseConfig):
     #
     #  Specific Keyboards
     #
-    def ic_keyb_type_1(self):
+    def ic_keyb_type_brydge(self):
         #
         #  General settings seems to work for several keyboards
         #
@@ -142,6 +144,27 @@ class IshConsole(BaseConfig):
         # set -s user-keys[221]  "\\302\\257"
         # bind -N "Enables M-<" -n User221 send "M-<"
         # set -s user-keys[221]  "~"# kbd_type_brydge_10_2_max - M-+
+        """
+        )
+
+    def ic_keyb_type_omnitype(self):
+        #
+        #  General settings seems to work for several keyboards
+        #
+        w = self.write
+        esc_key = "\\033"
+        self.ic_nav_key_esc_prefix(esc_key)
+
+        w(
+            """
+        #
+        #  Send ~ by shifting the "Escape key"
+        #  Send back-tick by shifting it the key the 2nd time, ie
+        #  pressing what normally would be ~ in order not to collide
+        #  with Escape
+        #
+        set -s user-keys[220]  "\\176"
+        bind -N "Enables ~" -n User220 send '~'
         """
         )
 
