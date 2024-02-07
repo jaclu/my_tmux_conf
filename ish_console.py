@@ -130,7 +130,9 @@ class IshConsole(BaseConfig):
         bind -N "Enables ~" -n User220 send '~'
         bind -T escPrefix  User220  send "\`"
 
-        #set -s user-keys[221]  "~"# kbd_type_brydge_10_2_max - M-+
+        # set -s user-keys[221]  "\\302\\257"
+        # bind -N "Enables M-<" -n User221 send "M-<"
+        # set -s user-keys[221]  "~"# kbd_type_brydge_10_2_max - M-+
         """
         )
         self.general_keyb_settings()
@@ -174,27 +176,6 @@ class IshConsole(BaseConfig):
             """
             )
         self.ic_indicate_nav_key_handled()
-
-    # def ic_keyb_Brydge_10_2_max(self):
-    #     w = self.write
-    #     print(f"Assuming keyboard is: {self.ic_keyboard}")
-    #     self.ic_nav_key_esc_prefix("\\302\\247")
-    #     w(
-    #         """
-    #     #
-    #     #  Send ~ by shifting the "Escape key"
-    #     #  Send back-tick by shifting it the key the 2nd time, ie
-    #     #  pressing what normally would be ~ in order not to collide
-    #     #  with Escape
-    #     #
-    #     set -s user-keys[220]  "\\302\\261"
-    #     bind -N "Enables ~" -n User220 send '~'
-    #     bind -T escPrefix  User220  send "\`"
-
-    #     set -s user-keys[221]  "\\302\\257"
-    #     bind -N "Enables M-<" -n User221 send "M-<"
-    #     """
-    #     )
 
     def general_keyb_settings(self):
         self.write(

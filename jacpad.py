@@ -25,11 +25,10 @@
 #  A typical iSH host
 #
 
-import os
-
 import ish_console
 
 from ish_host import ishHost
+
 
 class JacPad(ishHost):
     # status_interval = 5
@@ -42,7 +41,6 @@ class JacPad(ishHost):
 
     # use_embedded_scripts = False
 
-    
 
 if __name__ == "__main__":
     JacPad().run()
