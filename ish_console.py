@@ -165,6 +165,7 @@ class IshConsole(BaseConfig):
         #
         set -s user-keys[220]  "\\176"
         bind -N "Enables ~" -n User220 send '~'
+        bind -T escPrefix  User220  send "\`"
         """
         )
 
