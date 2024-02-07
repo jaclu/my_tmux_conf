@@ -35,7 +35,7 @@ nav_key_handled_tag = "TMUX_HANDLING_ISH_NAV_KEY"
 #
 #  Brydge issues
 #  M-_ gives - cant find last session
-#  M-+ gives tilde 
+#  M-+ gives tilde
 #  M-< doesnt work - is it _UK mapped? generates right sequence
 #  M-> doesnt work - does nothing in tmux, outside \\313\\230
 #  M-P doesnt work - is it _UK mapped? generates right sequence
@@ -46,6 +46,18 @@ nav_key_handled_tag = "TMUX_HANDLING_ISH_NAV_KEY"
 
 kbd_type_brydge_10_2_max = "Brydge 10.2 MAX+"
 kbd_type_yoozon3 = "Yoozon 3"
+
+
+def this_is_aok_kernel():
+    try:
+        with open("/proc/ish/version", "r") as file:
+            for line in file:
+                if "aok" in line.lower():
+                    return True
+    except FileNotFoundError:
+        pass
+    return False
+
 
 class IshConsole(BaseConfig):
     """When running tmux from an iSH console this redefines the rather
@@ -58,15 +70,16 @@ class IshConsole(BaseConfig):
     200   Navkey
     210 -  General keyboard bindings
     220-  Specific Keyboard bindings
-    
+
     If ISH_NAV_KEY is defined and not "None" use it
     """
+
     is_ish_console = False
     ic_keyboard = None
-    aok_nav_key_handling = "/etc/opt/AOK/tmux_nav_key_handling"
-    aok_nav_key = "/etc/opt/AOK/tmux_nav_key"
+    # aok_nav_key_handling = "/etc/opt/AOK/tmux_nav_key_handling"
+    # aok_nav_key = "/etc/opt/AOK/tmux_nav_key"
     ish_nav_key = None
-    
+
     def local_overides(self) -> None:
         super().local_overides()
         #
@@ -74,10 +87,7 @@ class IshConsole(BaseConfig):
         #  that is 1) kernel is ish 2) not an ssh session,
         #     3) not handled by an outer tmux
         #
-        if (
-            (not os.path.exists("/proc/ish"))
-            or os.environ.get("SSH_CONNECTION")
-        ):
+        if (not os.path.exists("/proc/ish")) or os.environ.get("SSH_CONNECTION"):
             #
             #  This check is only relent on the iSH console itself
             #  and if no outer tmux is already handling the nav keyf
@@ -88,43 +98,14 @@ class IshConsole(BaseConfig):
             return
 
         self.is_ish_console = True
-        self.ic_read_aok_nav_key()
-        self.ic_setup()
-        
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
             print("         keyboard adaptions not supported on this version")
             return
 
-        if self.ic_keyboard == kbd_type_brydge_10_2_max or self.ic_keyboard == kbd_type_yoozon3:
-            self.ic_keyb_type_1()
-        elif os.path.exists(self.aok_nav_key_handling):
-            self.write(
-                f"""                
-                #
-                # if defined use custom handling for navigation keys,
-                # set by /usr/local/bin/nav_keys.shell
-                #
-                run-shell "[ -f {self.aok_nav_key_handling} ] && tmux source {self.aok_nav_key_handling}"
-                """
-            )
-            print(f"Console keyboard based on: {self.aok_nav_key_handling}")
-            self.ic_indicate_nav_key_handled()
-        elif self.aok_nav_key:
-            self.ic_nav_key_esc_prefix(self.aok_nav_key)
+        self.ic_keyb_type_1()
+        self.ic_setup()
 
-        self.general_keyb_settings()            
-
-    def ic_read_aok_nav_key(self):
-        try:  # pylint: disable=too-many-try-statements
-            with open(self.aok_nav_key, "r", encoding="utf-8") as f:
-                self.aok_nav_key = f.read()
-        except FileNotFoundError:
-            #
-            #  No nav key defined
-            #
-            self.aok_nav_key = None
-        
     #
     #  Specific Keyboards
     #
@@ -133,9 +114,12 @@ class IshConsole(BaseConfig):
         #  General settings seems to work for several keyboards
         #
         w = self.write
+        esc_key = "\\302\\247"
         print(f"Assuming keyboard is: {self.ic_keyboard}")
-        self.ic_nav_key_esc_prefix("\\302\\247")
-        w("""
+        self.ic_nav_key_esc_prefix(esc_key)
+
+        w(
+            """
         #
         #  Send ~ by shifting the "Escape key"
         #  Send back-tick by shifting it the key the 2nd time, ie
@@ -145,54 +129,78 @@ class IshConsole(BaseConfig):
         set -s user-keys[220]  "\\302\\261"
         bind -N "Enables ~" -n User220 send '~'
         bind -T escPrefix  User220  send "\`"
-        
+
         #set -s user-keys[221]  "~"# kbd_type_brydge_10_2_max - M-+
-        """)
-
-    def ic_keyb_Brydge_10_2_max(self):
-        w = self.write
-        print(f"Assuming keyboard is: {self.ic_keyboard}")
-        self.ic_nav_key_esc_prefix("\\302\\247")
-        w("""
-        #
-        #  Send ~ by shifting the "Escape key"
-        #  Send back-tick by shifting it the key the 2nd time, ie
-        #  pressing what normally would be ~ in order not to collide
-        #  with Escape
-        #
-        set -s user-keys[220]  "\\302\\261"
-        bind -N "Enables ~" -n User220 send '~'
-        bind -T escPrefix  User220  send "\`"
-
-        set -s user-keys[221]  "\\302\\257"
-        bind -N "Enables M-<" -n User221 send "M-<"        
-        """)
+        """
+        )
+        self.general_keyb_settings()
 
     def ic_nav_key_esc_prefix(self, esc_key) -> None:
+        w = self.write
         if self.vers_ok(2.1):
             tbl_opt = "T"
         else:
             tbl_opt = "t"
 
-        self.write(f"""#
-        #  Use Esc as prefix for nav-keys
+        w(
+            f"""#
+        #  Handle Esc key
         #
-        set -s user-keys[200]  "{esc_key}"  # escPrefix
+        set -s user-keys[200]  "{esc_key}"
         bind -N "Switch to -T escPrefix" -n User200 switch-client -{tbl_opt} escPrefix
-
         bind -T escPrefix  User200  send Escape # Double tap for actual Esc
-        bind -T escPrefix  Down     send PageDown
-        bind -T escPrefix  Up       send PageUp
-        bind -T escPrefix  Left     send Home
-        bind -T escPrefix  Right    send End
         """
         )
+        if this_is_aok_kernel():
+            w(
+                """#
+            #  Use shift-arrows for navigation
+            #
+            bind -n  S-Up     send-keys PageUp
+            bind -n  S-Down   send-keys PageDown
+            bind -n  S-Left   send-keys Home
+            bind -n  S-Right  send-keys End
+            """
+            )
+        else:
+            w(
+                """#
+            #  Use Esc-prefix for navigation
+            #
+            bind -T escPrefix  Down     send PageDown
+            bind -T escPrefix  Up       send PageUp
+            bind -T escPrefix  Left     send Home
+            bind -T escPrefix  Right    send End
+            """
+            )
         self.ic_indicate_nav_key_handled()
 
+    # def ic_keyb_Brydge_10_2_max(self):
+    #     w = self.write
+    #     print(f"Assuming keyboard is: {self.ic_keyboard}")
+    #     self.ic_nav_key_esc_prefix("\\302\\247")
+    #     w(
+    #         """
+    #     #
+    #     #  Send ~ by shifting the "Escape key"
+    #     #  Send back-tick by shifting it the key the 2nd time, ie
+    #     #  pressing what normally would be ~ in order not to collide
+    #     #  with Escape
+    #     #
+    #     set -s user-keys[220]  "\\302\\261"
+    #     bind -N "Enables ~" -n User220 send '~'
+    #     bind -T escPrefix  User220  send "\`"
+
+    #     set -s user-keys[221]  "\\302\\257"
+    #     bind -N "Enables M-<" -n User221 send "M-<"
+    #     """
+    #     )
+
     def general_keyb_settings(self):
-        self.write("""
+        self.write(
+            """
         #
-        #  General Keyboar bindings
+        #  General Keyboard bindings
         #
         #  € is Option+Shift+2 in United States layout
         set -s user-keys[210]  "\\342\\202\\254" # Usually: €
@@ -206,7 +214,8 @@ class IshConsole(BaseConfig):
         #
         #set -s user-keys[211]  "\\302\\257"
         #bind -N "Enables M-<" -n User211 send "M-<"
-        """)
+        """
+        )
 
     def ic_setup(self) -> None:
         #
@@ -222,16 +231,18 @@ class IshConsole(BaseConfig):
         self.ic_alt_upper_case(fn_keys_mapped=True)
 
     def ic_indicate_nav_key_handled(self):
-        self.write(f"""#
+        self.write(
+            f"""#
         #  Indicates this tmux is handling ISH_NAV_KEY, to ensure
         #  nested tmuxes, dont parse it again.
         #
-        {nav_key_handled_tag}=1
-        """)
+        {nav_key_handled_tag}=1"""
+        )
 
     def ic_fn_keys(self) -> None:
         w = self.write
-        w("""
+        w(
+            """
         #
         #  This will map M-S number to F1 - F10
         #
@@ -254,9 +265,10 @@ class IshConsole(BaseConfig):
     def ic_alt_upper_case(self, fn_keys_mapped: bool) -> None:
         w = self.write
         m_par_open = ""  #  Only used if not fn_keys_mapped
-        m_par_close = "" #  Only used if not fn_keys_mapped
+        m_par_close = ""  #  Only used if not fn_keys_mapped
 
-        w("""
+        w(
+            """
         #
         #  iSH console doesn't generate the right keys for
         #  Alt upper case chars, so here they are defined
@@ -302,7 +314,7 @@ class IshConsole(BaseConfig):
         """
         )
         self.usr_key_meta_plus = "User40"
-        
+
         for i, c in (
             ("1", "A"),
             ("2", "B"),
@@ -357,7 +369,8 @@ class IshConsole(BaseConfig):
 
         if not fn_keys_mapped:
             #  Collides with F1 - F10 remapping
-            w("""
+            w(
+                """
             set -s user-keys[51]  "\\342\\201\\204"  # M-!
             set -s user-keys[52]  "\\342\\202\\254"  # M-@
             set -s user-keys[53]  "\\342\\200\\271"  # M-#
@@ -368,7 +381,8 @@ class IshConsole(BaseConfig):
             set -s user-keys[58]  "\\302\\260"       # M-*
             set -s user-keys[59]  "\\302\\267"       # M-(
             set -s user-keys[60]  "\\342\\200\\232"  # M-)
-            """)
+            """
+            )
             m_par_open = "User59"
             m_par_close = "User60"
 
@@ -399,7 +413,12 @@ class IshConsole(BaseConfig):
         self.display_plugins_used_UK(M_P="User16")
         self.kill_tmux_server_UK(M_X="User24")
         self.swap_window_UK(M_less_than="User35", M_greater_than="User36")
-        self.meta_ses_handling_UK(M_plus=self.usr_key_meta_plus, M_par_open=m_par_open, M_par_close=m_par_close, M__="User38")
+        self.meta_ses_handling_UK(
+            M_plus=self.usr_key_meta_plus,
+            M_par_open=m_par_open,
+            M_par_close=m_par_close,
+            M__="User38",
+        )
 
         w(
             """
@@ -442,7 +461,6 @@ class IshConsole(BaseConfig):
         """
         )
 
-    
 
 #
 #  If this is run directly
