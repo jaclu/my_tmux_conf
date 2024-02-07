@@ -32,14 +32,8 @@ from ish_host import ishHost
 
 class JacPad(ishHost):
     # status_interval = 5
-
     ic_keyboard = ish_console.kbd_type_brydge_10_2_max
 
-    # hostname_display: str = "(/usr/local/bin/hostname)"
-
-    # plugin_handler = ""
-
-    # use_embedded_scripts = False
 
 if __name__ == "__main__":
     JacPad().run()
