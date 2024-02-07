@@ -45,6 +45,7 @@ nav_key_handled_tag = "TMUX_HANDLING_ISH_NAV_KEY"
 #
 
 kbd_type_brydge_10_2_max = "Brydge 10.2 MAX+"
+kbd_type_omnitype = "Omnitype Keyboard"
 kbd_type_yoozon3 = "Yoozon 3"
 
 
@@ -103,7 +104,16 @@ class IshConsole(BaseConfig):
             print("         keyboard adaptions not supported on this version")
             return
 
-        self.ic_keyb_type_1()
+        if self.ic_keyboard == kbd_type_brydge_10_2_max:
+            self.ic_keyb_type_1()
+        else:
+            #
+            #  keyboard handling esc directly, still needed on regular ish
+            #  to handle navigation
+            #
+            self.ic_nav_key_esc_prefix("\\033")
+        self.general_keyb_settings()
+
         self.ic_setup()
 
     #
@@ -115,7 +125,6 @@ class IshConsole(BaseConfig):
         #
         w = self.write
         esc_key = "\\302\\247"
-        print(f"Assuming keyboard is: {self.ic_keyboard}")
         self.ic_nav_key_esc_prefix(esc_key)
 
         w(
@@ -135,10 +144,11 @@ class IshConsole(BaseConfig):
         # set -s user-keys[221]  "~"# kbd_type_brydge_10_2_max - M-+
         """
         )
-        self.general_keyb_settings()
 
     def ic_nav_key_esc_prefix(self, esc_key) -> None:
         w = self.write
+        print(f"Assuming keyboard is: {self.ic_keyboard}")
+
         if self.vers_ok(2.1):
             tbl_opt = "T"
         else:
