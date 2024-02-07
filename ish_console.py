@@ -45,8 +45,10 @@ nav_key_handled_tag = "TMUX_HANDLING_ISH_NAV_KEY"
 #
 
 kbd_type_brydge_10_2_max = "Brydge 10.2 MAX+"
+kbd_type_yoozon3 = "Yoozon 3"  # same as brydge
+
 kbd_type_omnitype = "Omnitype Keyboard"
-kbd_type_yoozon3 = "Yoozon 3"
+kbd_type_bluetooth = "Bluetooh Keyboard"  # sadly generic name
 
 
 def this_is_aok_kernel():
@@ -104,14 +106,13 @@ class IshConsole(BaseConfig):
             print("         keyboard adaptions not supported on this version")
             return
 
-        if self.ic_keyboard == kbd_type_brydge_10_2_max:
-            self.ic_keyb_type_brydge()
-        elif self.ic_keyboard == kbd_type_omnitype:
-            self.ic_keyb_type_omnitype()
+        if self.ic_keyboard in (kbd_type_brydge_10_2_max, kbd_type_yoozon3):
+            self.ic_keyb_type_1()
+        elif self.ic_keyboard in (kbd_type_omnitype, kbd_type_bluetooth):
+            self.ic_keyb_type_2()
         else:
             #
-            #  keyboard handling esc directly, still needed on regular ish
-            #  to handle navigation
+            #  keyboard handling Esc directly, no custom keys
             #
             self.ic_nav_key_esc_prefix("\\033")
         self.general_keyb_settings()
@@ -121,7 +122,7 @@ class IshConsole(BaseConfig):
     #
     #  Specific Keyboards
     #
-    def ic_keyb_type_brydge(self):
+    def ic_keyb_type_1(self):
         #
         #  General settings seems to work for several keyboards
         #
@@ -139,7 +140,7 @@ class IshConsole(BaseConfig):
         #
         set -s user-keys[220]  "\\302\\261"
         bind -N "Enables ~" -n User220 send '~'
-        bind -T escPrefix  User220  send "\`"
+        bind -T escPrefix  User220  send "\\`"
 
         # set -s user-keys[221]  "\\302\\257"
         # bind -N "Enables M-<" -n User221 send "M-<"
@@ -147,9 +148,9 @@ class IshConsole(BaseConfig):
         """
         )
 
-    def ic_keyb_type_omnitype(self):
+    def ic_keyb_type_2(self):
         #
-        #  General settings seems to work for several keyboards
+        #  General generating Esc directly
         #
         w = self.write
         esc_key = "\\033"
@@ -165,7 +166,7 @@ class IshConsole(BaseConfig):
         #
         set -s user-keys[220]  "\\176"
         bind -N "Enables ~" -n User220 send '~'
-        bind -T escPrefix  User220  send "\`"
+        bind -T escPrefix  User220  send "\\`"
         """
         )
 
@@ -279,8 +280,8 @@ class IshConsole(BaseConfig):
 
     def ic_alt_upper_case(self, fn_keys_mapped: bool) -> None:
         w = self.write
-        m_par_open = ""  #  Only used if not fn_keys_mapped
-        m_par_close = ""  #  Only used if not fn_keys_mapped
+        m_par_open = ""  # Only used if not fn_keys_mapped
+        m_par_close = ""  # Only used if not fn_keys_mapped
 
         w(
             """
