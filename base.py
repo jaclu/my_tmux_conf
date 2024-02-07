@@ -678,39 +678,14 @@ class BaseConfig(TmuxConfig):  # type: ignore
             'bind -N "Create new session"             +    command-prompt -I "?" '
             '-p "Name of new session: " "new-session -s \\"%%\\""'
         )
-        if self.bind_meta:
-            w(
-                'bind -N "Create new session  - P +"  -n  M-+  command-prompt '
-                '-I "?" -p "Name of new session: " "new-session -s \\"%%\\""'
-            )
-        else:
-            w("#  skipping adv keys, if resourced")
-            w("unbind -n M-+")
-        w()
-
+        self.meta_ses_handling_UK()
         w(
             """# session navigation
         bind -N "Select previous session" -r  (  switch-client -p
         bind -N "Select next session"     -r  )  switch-client -n
         bind -N "Switch to last session"      _  switch-client -l"""
         )
-        if self.bind_meta:
-            w(
-                """
-            bind -N "Select previous session  - P (" -n  M-(  switch-client -p
-            bind -N "Select next session  - P )"     -n  M-)  switch-client -n
-            bind -N "Switch to last session  - P _"  -n  M-_  switch-client -l
-            """
-            )
-        else:
-            w(
-                """#  skipping adv keys, if resourced
-            unbind -n  M-(
-            unbind -n  M-)
-            unbind -n  M-_
-            """
-            )
-
+        
         w(
             'bind -N "Rename Session"  S    command-prompt -I "#S" '
             '"rename-session -- \\"%%\\""'
@@ -850,21 +825,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             bind -N "Swap window left"         -r  <    swap-window -dt:-1
             bind -N "Swap window right"        -r  >    swap-window -dt:+1"""
             )
-            if self.bind_meta:
-                w(
-                    """
-                bind -N "Swap window left  - P <"  -n  M-<  swap-window -dt:-1
-                bind -N "Swap window right  - P >" -n  M->  swap-window -dt:+1
-                """
-                )
-            else:
-                w(
-                    """#  skipping adv keys, if resourced
-                unbind -n  M-<
-                unbind -n  M->
-                """
-                )
-
+            self.swap_window_UK()
         else:
             # TODO: bind to < does not take effect, so no swap left warning
             w(
@@ -1019,7 +980,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             """
             )
 
-        # if self.vers_ok(3.2):
+        #if self.vers_ok(3.2):
         #    w("run -b 'sleep 0.2 ; $TMUX_BIN setw -g pane-border-lines single'")  # number
 
         if self.vers_ok(3.3):
@@ -1265,6 +1226,48 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  keys, for terminals relaying on user-keys, they can be bound to
     #  the intended action fairly simply.
     #
+    def meta_ses_handling_UK(self, M_plus: str = "M-+", M_par_open: str = "M-(", M_par_close: str = "M-)", M__: str = "M-_"):
+        w = self.write
+        if self.bind_meta:
+            w(
+                f'bind -N "Create new session  - P +"  -n {M_plus}  command-prompt '
+                '-I "?" -p "Name of new session: " "new-session -s \\"%%\\""'
+            )
+            w(f"bind -N 'Switch to last session  - P _'  -n  {M__}  switch-client -l")
+        else:
+            w(f"""#  skipping adv keys, if resourced
+            unbind -n {M_plus}
+            unbind -n  {M__}
+            """)
+            
+        if M_par_open:
+            if self.bind_meta:
+                w(f"bind -N 'Select previous session  - P (' -n  {M_par_open}  switch-client -p")
+            else:
+                w(f"unbind -n  {M_par_open}")
+                
+        if M_par_close:
+            if self.bind_meta:
+                w(f"bind -N 'Select next session  - P )'     -n  {M_par_close}  switch-client -n")
+            else:
+                w(f"unbind -n  {M_par_close}")
+    
+    def swap_window_UK(self, M_less_than: str = "M-<", M_greater_than: str = "M->"):
+        if not self.vers_ok(1.8):
+            return
+        
+        if self.bind_meta:
+            self.write(f"""
+            bind -N "Swap window left  - P <"  -n  {M_less_than}  swap-window -dt:-1
+            bind -N "Swap window right  - P >" -n  {M_greater_than}  swap-window -dt:+1
+            """)
+        else:
+            self.write(
+            f"""#  skipping adv keys, if resourced
+            unbind -n  {M_less_than}
+            unbind -n  {M_greater_than}
+            """)
+    
     def display_plugins_used_UK(self, M_P: str = "M-P"):
         """iSH console doesn't generate correct ALT - Upper Case sequences,
         so when that is the env, intended keys must be bound as user keys.

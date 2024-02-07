@@ -25,11 +25,10 @@
 #  A typical iSH host
 #
 
-import os
-
 import ish_console
 
 from ish_host import ishHost
+
 
 class JacPad(ishHost):
     # status_interval = 5
