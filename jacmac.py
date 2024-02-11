@@ -134,12 +134,16 @@ class JacMacConfig(SB):
             """,
         ]
 
-    # def plugin_nordvpn(self):
-    #     return [ 'maxrodrigo/tmux-nordvpn', 0.0, """
-    #     set -g @nordvpn_connected_text=""
-    #     set -g @nordvpn_connecting_text="🔒"
-    #     set -g @nordvpn_disconnected_text="🔓"
-    #     """]
+    def not_plugin_nordvpn(self):
+        return [
+            "maxrodrigo/tmux-nordvpn",
+            0.0,
+            """
+        set -g @nordvpn_connected_text=""
+        set -g @nordvpn_connecting_text="🔒"
+        set -g @nordvpn_disconnected_text="🔓"
+        """,
+        ]
 
     def plugin_spotify(self):  # 1.8  local
         #
