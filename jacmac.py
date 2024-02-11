@@ -66,7 +66,7 @@ class JacMacConfig(SB):
                 # set -g @1password-account 'acme' # default 'my'
                 # set -g @1password-vault 'work' # default '' (all)
                 # set -g @1password-copy-to-clipboard 'on' # default 'off'
-                # set -g @1password-filter-tags 'development,servers' # default '' (no tag filtering)
+                # set -g @1password-filter-tags 'development,servers'
                 # set -g @1password-debug 'on' # default 'off'
                 """,
         ]
