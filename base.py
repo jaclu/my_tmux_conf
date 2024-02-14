@@ -300,28 +300,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
             w(f"set {param_span}  default-terminal tmux-256color")
 
         #
-        #  24-bit color
-        #
-        #  This causes colors to completely fail on mosh < 1.4 connections,
-        #
-        if self.vers_ok(2.2) and self.use_24bit_color:
-            if not self.vers_ok(2.7):
-                #
-                #  RGB not supported until 2.7
-                #
-                self.color_tag_24bit = "Tc"
-            w(f"set -ga terminal-overrides ',*:{self.color_tag_24bit}'")
-
-        #
-        #  For old tmux versions, this is needed to support modifiers for
-        #  function keys
-        #
-        #    https://github.com/tmux/tmux/wiki/Modifier-Keys#modifiers-and-function-keys
-        #
-        if not self.vers_ok(2.4):
-            w("set -g  xterm-keys on")
-
-        #
         #  Support for CSI u  extended keys
         #
         #    https://github.com/tmux/tmux/wiki/Modifier-Keys#extended-keys
@@ -336,6 +314,21 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             w("set -as terminal-features 'xterm*:extkeys'")
 
+        #
+        #  24-bit color
+        #
+        #  This causes colors to completely fail on mosh < 1.4 connections,
+        #
+        if self.vers_ok(3.2):
+            w(f'set -as terminal-features ",gnome*:{self.use_24bit_color}"')
+        elif self.vers_ok(2.2) and self.use_24bit_color:
+            if not self.vers_ok(2.7):
+                #
+                #  RGB not supported until 2.7
+                #
+                self.color_tag_24bit = "Tc"
+            w(f"set -ga terminal-overrides ',*:{self.color_tag_24bit}'")
+
         if self.vers_ok(1.2):
             #
             #  Making OSC 53 work on mosh connections.
@@ -348,6 +341,15 @@ class BaseConfig(TmuxConfig):  # type: ignore
             set -ag terminal-overrides "*256col*:XT:Ms=\\\\E]52;c;%p2%s\\\\7"
             """
             )
+
+        #
+        #  For old tmux versions, this is needed to support modifiers for
+        #  function keys
+        #
+        #    https://github.com/tmux/tmux/wiki/Modifier-Keys#modifiers-and-function-keys
+        #
+        if not self.vers_ok(2.4):
+            w("set -g  xterm-keys on")
 
         #
         #  Enable focus events for terminals that support them to be passed
@@ -685,7 +687,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         bind -N "Select next session"     -r  )  switch-client -n
         bind -N "Switch to last session"      _  switch-client -l"""
         )
-        
+
         w(
             'bind -N "Rename Session"  S    command-prompt -I "#S" '
             '"rename-session -- \\"%%\\""'
@@ -980,16 +982,13 @@ class BaseConfig(TmuxConfig):  # type: ignore
             """
             )
 
-        #if self.vers_ok(3.2):
+        # if self.vers_ok(3.2):
         #    w("run -b 'sleep 0.2 ; $TMUX_BIN setw -g pane-border-lines single'")  # number
 
         if self.vers_ok(3.3):
             print("><> is 3.3 and arrows")
             # Needs to wait until a window exists
-            w(
-                f'run -b "sleep 0.2 ; $TMUX_BIN '
-                'set pane-border-indicators arrows"\n'
-            )
+            w('run -b "sleep 0.2 ; $TMUX_BIN ' 'set pane-border-indicators arrows"\n')
 
         #
         #  Pane title and size
@@ -1226,7 +1225,13 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  keys, for terminals relaying on user-keys, they can be bound to
     #  the intended action fairly simply.
     #
-    def meta_ses_handling_UK(self, M_plus: str = "M-+", M_par_open: str = "M-(", M_par_close: str = "M-)", M__: str = "M-_"):
+    def meta_ses_handling_UK(
+        self,
+        M_plus: str = "M-+",
+        M_par_open: str = "M-(",
+        M_par_close: str = "M-)",
+        M__: str = "M-_",
+    ):
         w = self.write
         if self.bind_meta:
             w(
@@ -1235,39 +1240,50 @@ class BaseConfig(TmuxConfig):  # type: ignore
             )
             w(f"bind -N 'Switch to last session  - P _'  -n  {M__}  switch-client -l")
         else:
-            w(f"""#  skipping adv keys, if resourced
+            w(
+                f"""#  skipping adv keys, if resourced
             unbind -n {M_plus}
             unbind -n  {M__}
-            """)
-            
+            """
+            )
+
         if M_par_open:
             if self.bind_meta:
-                w(f"bind -N 'Select previous session  - P (' -n  {M_par_open}  switch-client -p")
+                w(
+                    "bind -N 'Select previous session  - P "
+                    f"(' -n  {M_par_open}  switch-client -p"
+                )
             else:
                 w(f"unbind -n  {M_par_open}")
-                
+
         if M_par_close:
             if self.bind_meta:
-                w(f"bind -N 'Select next session  - P )'     -n  {M_par_close}  switch-client -n")
+                w(
+                    f"bind -N 'Select next session  - P )'     -n  {M_par_close}"
+                    "  switch-client -n"
+                )
             else:
                 w(f"unbind -n  {M_par_close}")
-    
+
     def swap_window_UK(self, M_less_than: str = "M-<", M_greater_than: str = "M->"):
         if not self.vers_ok(1.8):
             return
-        
+
         if self.bind_meta:
-            self.write(f"""
+            self.write(
+                f"""
             bind -N "Swap window left  - P <"  -n  {M_less_than}  swap-window -dt:-1
             bind -N "Swap window right  - P >" -n  {M_greater_than}  swap-window -dt:+1
-            """)
+            """
+            )
         else:
             self.write(
-            f"""#  skipping adv keys, if resourced
+                f"""#  skipping adv keys, if resourced
             unbind -n  {M_less_than}
             unbind -n  {M_greater_than}
-            """)
-    
+            """
+            )
+
     def display_plugins_used_UK(self, M_P: str = "M-P"):
         """iSH console doesn't generate correct ALT - Upper Case sequences,
         so when that is the env, intended keys must be bound as user keys.
@@ -1287,7 +1303,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
             note_prefix = ""
         w(
             f'bind -N "{note_prefix}List all plugins defined"  {M_P}  '
-            f'run "$TMUX_BIN display \\"Generating response...\\" ; {__main__.__file__} {self.conf_file} -p2"'
+            'run "$TMUX_BIN display \\"Generating response...\\" ;'
+            f' {__main__.__file__} {self.conf_file} -p2"'
         )
 
     def kill_tmux_server_UK(self, M_X: str = "M-X"):
@@ -1491,9 +1508,9 @@ timer_end() {{
 
     def mkscript_tpm_indicator(self):
         """Changes state for tpm_initializing with params: set clear"""
-        purge_seq = self.tpm_initializing.replace(
-            "[", "\\[").replace("]", "\\]")
-        self.sb_purge_tpm_running = f"""$TMUX_BIN set -q status-right \\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{ purge_seq }//')\\" """
+        purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
+        self.sb_purge_tpm_running = "$TMUX_BIN set -q status-right "
+        """\\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{purge_seq}//')\\" """
 
         clear_tpm_init_sh = [
             f"""
