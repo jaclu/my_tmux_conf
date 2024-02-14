@@ -112,9 +112,9 @@ class IshConsole(BaseConfig):
             h_name = file.readline().strip().lower()
         print(f"><> h_name {h_name}")
         if h_name in ("jacpad", "jacpad-aok"):
-            self.ic_keyboard = self.ish_console.kbd_type_brydge_10_2_max
+            self.ic_keyboard = kbd_type_brydge_10_2_max
         elif h_name in ("pad5", "pad5-aok"):
-            self.ic_keyboard = self.ish_console.kbd_type_bluetooth
+            self.ic_keyboard = kbd_type_bluetooth
         else:
             self.ic_keyboard = None
 
