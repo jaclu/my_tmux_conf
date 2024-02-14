@@ -1,4 +1,4 @@
-# my tmux conf
+# MyTmuxConf
 
 ## Dependency
 pip install [tmux-conf](https://github.com/jaclu/tmux-conf)

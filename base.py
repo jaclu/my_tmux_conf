@@ -986,7 +986,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #    w("run -b 'sleep 0.2 ; $TMUX_BIN setw -g pane-border-lines single'")  # number
 
         if self.vers_ok(3.3):
-            print("><> is 3.3 and arrows")
             # Needs to wait until a window exists
             w('run -b "sleep 0.2 ; $TMUX_BIN ' 'set pane-border-indicators arrows"\n')
 

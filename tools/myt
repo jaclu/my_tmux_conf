@@ -97,7 +97,7 @@ tmux_2() {
         echo "Will use: $TMUX_BIN"
     fi
 
-    "$TMUX_BIN" -f ~/t2/tmux/tmux.conf -L serv2
+    "$TMUX_BIN" -f ~/t2/tmux/tmux.conf -L serv2 new-session -ADs main
 }
 
 display_help() {
