@@ -1,4 +1,4 @@
-# Nav-hints
+# NavHints
 
 (r) = repeats
 
