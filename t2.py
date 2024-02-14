@@ -22,13 +22,14 @@
 # from sb.sb_muted import SB
 # from sb.sb_virtualbox import SB
 
+from ish_host import ishHost
 from sb.sb_tst import SB
 
 # from sb.sb_acceptance import SB
 # from sb.sb_production import SB
 
 
-class T2(SB):
+class T2(SB, ishHost):
     t2_env = "1"
 
     # plugin_handler = "manual"
