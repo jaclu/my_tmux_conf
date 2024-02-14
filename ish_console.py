@@ -110,7 +110,6 @@ class IshConsole(BaseConfig):
         with open("/etc/hostname", "r") as file:
             # Read the content of the file
             h_name = file.readline().strip().lower()
-        print(f"><> h_name {h_name}")
         if h_name in ("jacpad", "jacpad-aok"):
             self.ic_keyboard = kbd_type_brydge_10_2_max
         elif h_name in ("pad5", "pad5-aok"):
