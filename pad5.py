@@ -25,15 +25,13 @@
 #  A typical iSH host
 #
 
-import ish_console
-
 from ish_host import ishHost
 
 
 class Pad5(ishHost):
 
     # ic_keyboard = ish_console.kbd_type_omnitype
-    ic_keyboard = ish_console.kbd_type_bluetooth
+    # ic_keyboard = ish_console.kbd_type_bluetooth
 
     def plugin_power_zoom(self):
         #  this host to slow for this plugin...

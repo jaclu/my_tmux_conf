@@ -19,6 +19,7 @@
 #  in the 2nd collumn (octal)
 #
 import os
+import socket
 
 from base import BaseConfig
 
@@ -105,6 +106,15 @@ class IshConsole(BaseConfig):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
             print("         keyboard adaptions not supported on this version")
             return
+
+        h_name = socket.gethostname().split(".")[0].lower()
+
+        if h_name in ("jacpad", "jacpad-aok"):
+            self.ic_keyboard = self.ish_console.kbd_type_brydge_10_2_max
+        elif h_name in ("pad5", "pad5-aok"):
+            self.ic_keyboard = self.ish_console.kbd_type_bluetooth
+        else:
+            self.ic_keyboard = None
 
         if self.ic_keyboard in (kbd_type_brydge_10_2_max, kbd_type_yoozon3):
             self.ic_keyb_type_1()
