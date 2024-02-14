@@ -19,7 +19,6 @@
 #  in the 2nd collumn (octal)
 #
 import os
-import socket
 
 from base import BaseConfig
 
@@ -107,7 +106,10 @@ class IshConsole(BaseConfig):
             print("         keyboard adaptions not supported on this version")
             return
 
-        h_name = socket.gethostname().split(".")[0].lower()
+        h_name = ""
+        with open("/etc/hostname", "r") as file:
+            # Read the content of the file
+            h_name = file.readline().strip().lower()
         print(f"><> h_name {h_name}")
         if h_name in ("jacpad", "jacpad-aok"):
             self.ic_keyboard = self.ish_console.kbd_type_brydge_10_2_max
