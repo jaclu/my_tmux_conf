@@ -108,7 +108,7 @@ class IshConsole(BaseConfig):
             return
 
         h_name = socket.gethostname().split(".")[0].lower()
-
+        print(f"><> h_name {h_name}")
         if h_name in ("jacpad", "jacpad-aok"):
             self.ic_keyboard = self.ish_console.kbd_type_brydge_10_2_max
         elif h_name in ("pad5", "pad5-aok"):

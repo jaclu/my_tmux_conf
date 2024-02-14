@@ -105,25 +105,25 @@ class ishHost(SB):
             """,
         ]
 
-    def plugin_better_mouse_mode(self) -> list:  # 2.1
+    def plugin_better_mouse_mode(self) -> tuple:  # 2.1
         return ("jaclu/tmux-better-mouse-mode", 99, "")
 
-    # def plugin_menus(self) -> list:  # 1.8
+    # def plugin_menus(self) -> tuple:  # 1.8
     #    return ("6", 99, "")
 
-    def plugin_power_zoom(self) -> list:  # 2.0
+    def plugin_power_zoom(self) -> tuple:  # 2.0
         return ("5", 99, "")
 
-    # def plugin_prefix_highlight(self) -> list:  # 2.0
+    # def plugin_prefix_highlight(self) -> tuple:  # 2.0
     #    return ("4", 99, "")
 
-    def plugin_resurrect(self) -> list:  # 1.9
+    def plugin_resurrect(self) -> tuple:  # 1.9
         return ("3", 99, "")
 
-    def plugin_suspend(self) -> list:  # 2.4
+    def plugin_suspend(self) -> tuple:  # 2.4
         return ("2", 99, "")
 
-    def plugin_yank(self) -> list:  # 1.8
+    def plugin_yank(self) -> tuple:  # 1.8
         return ("1", 99, "")
 
 
