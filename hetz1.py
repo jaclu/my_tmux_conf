@@ -11,7 +11,7 @@
 from default_plugins import DefaultPlugins
 
 
-class SB(DefaultPlugins):
+class Hetz1(DefaultPlugins):
     def status_bar_customization(self, print_header=True):
         super().status_bar_customization(print_header=print_header)
         if self.vers_ok("1.9"):
@@ -20,4 +20,4 @@ class SB(DefaultPlugins):
 
 
 if __name__ == "__main__":
-    SB().run()
+    Hetz1().run()

@@ -27,12 +27,12 @@
 
 import os
 
+from default_plugins import DefaultPlugins
 from sb.sb_muted import SB
-
 # from sb.sb_ish import SB
 
 
-class ishHost(SB):
+class ishHost(DefaultPlugins):
     # status_interval = 5
 
     hostname_display: str = "(/usr/local/bin/hostname)"
@@ -127,5 +127,9 @@ class ishHost(SB):
         return ("1", 99, "")
 
 
+class ishHostStyle(ishHost, SB):
+    pass
+
+
 if __name__ == "__main__":
-    ishHost().run()
+    ishHostStyle().run()

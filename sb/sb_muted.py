@@ -37,6 +37,7 @@ class SB(DefaultPlugins):
     sb_left = f"#[fg={theme_text}]" "#{session_name}" f"#[fg={muted_text}]: "
 
     def status_bar_customization(self, print_header=True):
+        print("><> sb_muted.py")
         super().status_bar_customization(print_header=print_header)
         w = self.write
         w("# this is sb_muted")
@@ -51,10 +52,9 @@ class SB(DefaultPlugins):
         w(f'set -g window-status-current-format "#[fg={theme_text}]#W"')
         w("set -g status-justify centre")
 
-        w('set -g message-style "fg=colour251,bg=colour8"')
-        w('set -g mode-style "fg=colour251,bg=colour8"')
-
         if self.vers_ok("1.9"):
+            w('set -g message-style "fg=colour251,bg=colour8"')
+            w('set -g mode-style "fg=colour251,bg=colour8"')
             w(f"set -g status-style fg={muted_text},bg=default")
             w("set -g window-status-current-style default")
 

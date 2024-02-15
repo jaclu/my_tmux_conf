@@ -29,7 +29,7 @@ from sb.sb_tst import SB
 # from sb.sb_production import SB
 
 
-class T2(SB, ishHost):
+class T2(ishHost, SB):
     t2_env = "1"
 
     # plugin_handler = "manual"

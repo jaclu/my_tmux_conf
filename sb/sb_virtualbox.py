@@ -33,6 +33,7 @@ class SB(DefaultPlugins):
     fnc_rev_sb_color = "msg_rev_sb_color"
 
     def status_bar_customization(self, print_header=True):
+        print("><> sb_virtualbox.py")
         super().status_bar_customization(print_header=print_header)
         self.mkscript_rev_sb_color()
         if self.vers_ok("1.9"):

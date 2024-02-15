@@ -30,6 +30,7 @@ from default_plugins import DefaultPlugins
 
 class SB(DefaultPlugins):
     def status_bar_customization(self, print_header: bool = True) -> bool:
+        print("><> sb_acceptance.py")
         super().status_bar_customization(print_header=print_header)
         if self.vers_ok("1.9"):
             self.write("set -g status-style fg=black,bg=colour172")

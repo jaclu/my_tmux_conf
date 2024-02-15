@@ -582,6 +582,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
             )
             w(f"set -g  status-interval {self.status_interval}")
 
+
+        w("set -g  status-position bottom")
+        
         if self.vers_ok(1.9):
             w("set -g  window-status-current-style reverse")
 
