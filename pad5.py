@@ -25,10 +25,9 @@
 #  A typical iSH host
 #
 
-from ish_host import ishHost
+from ish_host import ishHostWithStyle
 
-
-class Pad5(ishHost):
+class Pad5(ishHostWithStyle):
 
     # ic_keyboard = ish_console.kbd_type_omnitype
     # ic_keyboard = ish_console.kbd_type_bluetooth

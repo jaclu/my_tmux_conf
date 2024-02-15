@@ -127,9 +127,9 @@ class ishHost(DefaultPlugins):
         return ("1", 99, "")
 
 
-class ishHostStyle(ishHost, SB):
+class ishHostWithStyle(ishHost, SB):
     pass
 
 
 if __name__ == "__main__":
-    ishHostStyle().run()
+    ishHostWithStyle().run()

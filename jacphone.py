@@ -27,10 +27,10 @@
 
 # import ish_console
 
-from ish_host import ishHost
+from ish_host import ishHostWithStyle
 
 
-class Jacphone(ishHost):
+class Jacphone(ishHostWihStyle):
 
     # ic_keyboard = ish_console.kbd_type_omnitype
 

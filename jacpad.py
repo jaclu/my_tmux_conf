@@ -27,12 +27,11 @@
 
 # import ish_console
 
-from ish_host import ishHost
+from ish_host import ishHostWithStyle
 
 # class JacPad(ishHost):
 # status_interval = 5
 # ic_keyboard = ish_console.kbd_type_brydge_10_2_max
 
-
 if __name__ == "__main__":
-    ishHost().run()
+    ishHostWithStyle().run()
