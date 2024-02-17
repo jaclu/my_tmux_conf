@@ -27,15 +27,5 @@
 
 from ish_host import ishHostWithStyle
 
-class Pad5(ishHostWithStyle):
-
-    # ic_keyboard = ish_console.kbd_type_omnitype
-    # ic_keyboard = ish_console.kbd_type_bluetooth
-
-    def plugin_power_zoom(self):
-        #  this host to slow for this plugin...
-        return ["jaclu/tmux-power-zoom", 99, ""]
-
-
 if __name__ == "__main__":
-    Pad5().run()
+    ishHostWithStyle().run()

@@ -30,14 +30,5 @@
 from ish_host import ishHostWithStyle
 
 
-class Jacphone(ishHostWihStyle):
-
-    # ic_keyboard = ish_console.kbd_type_omnitype
-
-    def plugin_power_zoom(self):
-        #  this host to slow for this plugin...
-        return ["jaclu/tmux-power-zoom", 99, ""]
-
-
 if __name__ == "__main__":
-    Jacphone().run()
+    ishHostWihStyle().run()
