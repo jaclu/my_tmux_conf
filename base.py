@@ -974,9 +974,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
                 border_other = "colour104"  # 245 - pale lilac
             else:
                 #
-                #  Ptimary env
+                #  Primary env
                 #
-                border_active = "colour203"  # 203 - bright orange close to red
+                border_active = "colour76"  # 76 - green
                 border_other = "colour245"  # 245 - low intensity grey
 
             w(
