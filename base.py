@@ -1306,7 +1306,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         w(
             f'bind -N "{note_prefix}List all plugins defined"  {M_P}  '
             'run "$TMUX_BIN display \\"Generating response...\\" ;'
-            f' {__main__.__file__} {self.conf_file} -p2"'
+            f' {__main__.__file__} -p2"'
         )
 
     def kill_tmux_server_UK(self, M_X: str = "M-X"):
