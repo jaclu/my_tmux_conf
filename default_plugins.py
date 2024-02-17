@@ -274,6 +274,7 @@ class DefaultPlugins(IshConsole):
         #   Zooms to separate Window, to allow for adding support panes
         #
         if self.is_tmate():
+            print("><> plugin_power_zoom thinks this is tmate")
             vers_min = 99
         else:
             vers_min = 2.0
