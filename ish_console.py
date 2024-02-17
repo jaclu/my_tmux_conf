@@ -71,9 +71,10 @@ class IshConsole(BaseConfig):
 
       1-60  Alt Upper case
     100-129 Function keys
-    200   Navkey
-    210 -  General keyboard bindings
-    220-  Specific Keyboard bindings
+    180-199 Common odd keys
+    200     Navkey
+    210-219 General keyboard bindings
+    220-    Specific Keyboard bindings
 
     If ISH_NAV_KEY is defined and not "None" use it
     """
@@ -102,6 +103,9 @@ class IshConsole(BaseConfig):
             return
 
         self.is_ish_console = True
+
+        self.usr_key_meta_plus = None
+        
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
             print("         keyboard adaptions not supported on this version")
@@ -150,7 +154,7 @@ class IshConsole(BaseConfig):
         #  pressing what normally would be ~ in order not to collide
         #  with Escape
         #
-        set -s user-keys[220]  "\\302\\261"
+        ##set -s user-keys[220]  "\\302\\261"
         bind -N "Enables ~" -n User220 send '~'
         bind -T escPrefix  User220  send "\\`"
 
@@ -181,7 +185,7 @@ class IshConsole(BaseConfig):
         bind -T escPrefix  User220  send "\\`"
         """
         )
-
+        
     def ic_nav_key_esc_prefix(self, esc_key) -> None:
         w = self.write
         print(f"Assuming keyboard is: {self.ic_keyboard}")
@@ -234,7 +238,11 @@ class IshConsole(BaseConfig):
         set -s user-keys[210]  "\\342\\202\\254" # Usually: €
         bind -N "Enables €" -n User210 send '€'
 
-        #
+        # M-+ default: ±
+        set -s user-keys[211] "\\302\\261"
+        bind -N "Enables M-+" -n User211 send 'abc'
+
+#
         #  Some keybs have issues with M-<
         #  the initial binding for this char
         #  instead triggers it to send this sequence
@@ -341,7 +349,6 @@ class IshConsole(BaseConfig):
         set -s user-keys[39]  "\\176"     # brydge generates ~ inside tmux
         """
         )
-        self.usr_key_meta_plus = "User40"
 
         for i, c in (
             ("1", "A"),
@@ -441,12 +448,12 @@ class IshConsole(BaseConfig):
         self.display_plugins_used_UK(M_P="User16")
         self.kill_tmux_server_UK(M_X="User24")
         self.swap_window_UK(M_less_than="User35", M_greater_than="User36")
-        self.meta_ses_handling_UK(
-            M_plus=self.usr_key_meta_plus,
-            M_par_open=m_par_open,
-            M_par_close=m_par_close,
-            M__="User38",
-        )
+        #self.meta_ses_handling_UK(
+        #    M_plus=self.usr_key_meta_plus,
+        #    M_par_open=m_par_open,
+        #    M_par_close=m_par_close,
+        #    M__="User38",
+        #)
 
         w(
             """

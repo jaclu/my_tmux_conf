@@ -1233,7 +1233,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
         M_par_open: str = "M-(",
         M_par_close: str = "M-)",
         M__: str = "M-_",
-    ):
+        ):
+        if M_plus in (None, ""):
+            sys.exit("ERROR: meta_ses_handling_UK() M_plus undefined!")
+           
         w = self.write
         if self.bind_meta:
             w(
