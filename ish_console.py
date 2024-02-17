@@ -45,6 +45,7 @@ nav_key_handled_tag = "TMUX_HANDLING_ISH_NAV_KEY"
 #
 
 kbd_type_brydge_10_2_max = "Brydge 10.2 MAX+"
+kbd_type_brydge_10_2_esc = "Brydge 10.2 MAX+ esc"
 kbd_type_yoozon3 = "Yoozon 3"  # same as brydge
 
 kbd_type_omnitype = "Omnitype Keyboard"
@@ -110,16 +111,16 @@ class IshConsole(BaseConfig):
         with open("/etc/hostname", "r") as file:
             # Read the content of the file
             h_name = file.readline().strip().lower()
-        if h_name in ("jacpad", "jacpad-aok", "pad5", "pad5-aok"):
+        if h_name in ("jacpad", "jacpad-aok"):
             self.ic_keyboard = kbd_type_brydge_10_2_max
-        #elif h_name in ("pad5", "pad5-aok"):
-        #    self.ic_keyboard = kbd_type_bluetooth
+        elif h_name in ("pad5", "pad5-aok"):
+            self.ic_keyboard = kbd_type_brydge_10_2_esc
         else:
             self.ic_keyboard = None
 
         if self.ic_keyboard in (kbd_type_brydge_10_2_max, kbd_type_yoozon3):
             self.ic_keyb_type_1()
-        elif self.ic_keyboard in (kbd_type_omnitype, kbd_type_bluetooth):
+        elif self.ic_keyboard in (kbd_type_brydge_10_2_esc, kbd_type_omnitype, kbd_type_bluetooth):
             self.ic_keyb_type_2()
         else:
             #
