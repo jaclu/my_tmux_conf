@@ -34,13 +34,11 @@ nav_key_handled_tag = "TMUX_HANDLING_ISH_NAV_KEY"
 #    Omnitype
 #
 #  Brydge issues
-#  M-_ gives - cant find last session
-#  M-+ gives tilde
-#  M-< doesnt work - is it _UK mapped? generates right sequence
-#  M-> doesnt work - does nothing in tmux, outside \\313\\230
-#  M-P doesnt work - is it _UK mapped? generates right sequence
-#  M-X doesnt work - is it _UK mapped? generates right sequence
-#  M-x doesnt work - is it  mapped?    generates right sequence
+#  M-+ woeks on regular Brydge, not on esc
+#  M-< fails to map special-key 35
+#  works M-P doesnt work - is it _UK mapped? generates right sequence
+#  works M-X doesnt work - is it _UK mapped? generates right sequence
+#  works M-x doesnt work - is it  mapped?    generates right sequence
 #  Check base.py - search for switch-client -l - defined twice!!
 #
 
@@ -71,7 +69,6 @@ class IshConsole(BaseConfig):
 
       1-60  Alt Upper case
     100-129 Function keys
-    180-199 Common odd keys
     200     Navkey
     210-219 General keyboard bindings
     220-    Specific Keyboard bindings
@@ -104,8 +101,6 @@ class IshConsole(BaseConfig):
 
         self.is_ish_console = True
 
-        self.usr_key_meta_plus = None
-        
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
             print("         keyboard adaptions not supported on this version")
@@ -240,9 +235,8 @@ class IshConsole(BaseConfig):
 
         # M-+ default: ±
         set -s user-keys[211] "\\302\\261"
-        bind -N "Enables M-+" -n User211 send 'abc'
-
-#
+        
+        #z
         #  Some keybs have issues with M-<
         #  the initial binding for this char
         #  instead triggers it to send this sequence
@@ -252,6 +246,7 @@ class IshConsole(BaseConfig):
         #bind -N "Enables M-<" -n User211 send "M-<"
         """
         )
+        self.usr_key_meta_plus = "User211"
 
     def ic_setup(self) -> None:
         #
@@ -346,7 +341,7 @@ class IshConsole(BaseConfig):
         set -s user-keys[37]  "\\302\\277"       # M-?
         set -s user-keys[38]  "\\342\\200\\224"  # M-_
         #set -s user-keys[39]  "\\302\\261"       # M-+
-        set -s user-keys[39]  "\\176"     # brydge generates ~ inside tmux
+        #set -s user-keys[39]  "\\176"     # brydge generates ~ inside tmux
         """
         )
 
@@ -387,13 +382,13 @@ class IshConsole(BaseConfig):
             # ¯
             # 194 0302 0xc2
             # 175 0257 0xaf
-            ("35", "<"),
-            ("36", ">"),
+            # ("35", "<"), - used in self.swap_window_UK()
+            # ("36", ">"), - used in self.swap_window_UK()
             ("37", "?"),
             # Doesn't work on Omnitype Keyboard, works on Yoozon3
             ("38", "_"),
             # Doesn't work on Omnitype,Yoozon3, generates ~
-            ("39", "+"),
+            # ("39", "+"),
         ):
             if c == "N":
                 #  Special case to avoid cutof at second -N
@@ -448,12 +443,12 @@ class IshConsole(BaseConfig):
         self.display_plugins_used_UK(M_P="User16")
         self.kill_tmux_server_UK(M_X="User24")
         self.swap_window_UK(M_less_than="User35", M_greater_than="User36")
-        #self.meta_ses_handling_UK(
-        #    M_plus=self.usr_key_meta_plus,
-        #    M_par_open=m_par_open,
-        #    M_par_close=m_par_close,
-        #    M__="User38",
-        #)
+        self.meta_ses_handling_UK(
+            M_plus=self.usr_key_meta_plus,
+            M_par_open=m_par_open,
+            M_par_close=m_par_close,
+            M__="User38",
+        )
 
         w(
             """
