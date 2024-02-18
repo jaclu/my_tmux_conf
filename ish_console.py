@@ -34,11 +34,9 @@ nav_key_handled_tag = "TMUX_HANDLING_ISH_NAV_KEY"
 #    Omnitype
 #
 #  Brydge issues
-#  M-+ woeks on regular Brydge, not on esc
-#  M-< fails to map special-key 35
-#  works M-P doesnt work - is it _UK mapped? generates right sequence
-#  works M-X doesnt work - is it _UK mapped? generates right sequence
-#  works M-x doesnt work - is it  mapped?    generates right sequence
+#  M-+ works on regular Brydge, on Brydge prints ±
+#  M-< fails to map special-key 35, inside tmux prints ¯ generates \302\257
+
 #  Check base.py - search for switch-client -l - defined twice!!
 #
 
@@ -236,7 +234,7 @@ class IshConsole(BaseConfig):
         # M-+ default: ±
         set -s user-keys[211] "\\302\\261"
         
-        #z
+        #
         #  Some keybs have issues with M-<
         #  the initial binding for this char
         #  instead triggers it to send this sequence
@@ -340,9 +338,9 @@ class IshConsole(BaseConfig):
         set -s user-keys[36]  "\\313\\230"       # M->
         set -s user-keys[37]  "\\302\\277"       # M-?
         set -s user-keys[38]  "\\342\\200\\224"  # M-_
+        """
         #set -s user-keys[39]  "\\302\\261"       # M-+
         #set -s user-keys[39]  "\\176"     # brydge generates ~ inside tmux
-        """
         )
 
         for i, c in (
