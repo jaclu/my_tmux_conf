@@ -1307,10 +1307,15 @@ class BaseConfig(TmuxConfig):  # type: ignore
             note_prefix = "M-P - "
         else:
             note_prefix = ""
+        #
+        # The conf_file needs to be mentioned below to make sure
+        # the -p2 run doesnt complain if a non-standard config is used
+        # it wont be over-written!
+        #
         w(
             f'bind -N "{note_prefix}List all plugins defined"  {M_P}  '
             'run "$TMUX_BIN display \\"Generating response...\\" ;'
-            f' {__main__.__file__} -p2"'
+            f' {__main__.__file__} {self.conf_file} -p2"'
         )
 
     def kill_tmux_server_UK(self, M_X: str = "M-X"):
