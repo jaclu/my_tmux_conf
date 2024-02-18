@@ -250,10 +250,11 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             self.mkscript_tpm_deploy()
 
-            #
-            #  Script that when called removes tpm init from SB
-            #
-            self.mkscript_tpm_indicator()
+            if self.vers_ok(2.1):
+                #
+                #  Script that when called removes tpm init from SB
+                #
+                self.mkscript_tpm_indicator()
 
         #     self.write(
         #         f"""
