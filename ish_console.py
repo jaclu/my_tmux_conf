@@ -147,9 +147,9 @@ class IshConsole(BaseConfig):
         #  pressing what normally would be ~ in order not to collide
         #  with Escape
         #
-        ##set -s user-keys[220]  "\\302\\261"
+        set -s user-keys[220]  "\\302\\261"
         bind -N "Enables ~" -n User220 send '~'
-        bind -T escPrefix  User220  send "\\`"
+        bind -T escPrefix -N "Enables backtick" -n  User220  send "\\`"
 
         # set -s user-keys[221]  "\\302\\257"
         # bind -N "Enables M-<" -n User221 send "M-<"
