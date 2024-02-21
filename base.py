@@ -128,6 +128,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         clear_plugins: bool = False,  # remove all current plugins
         plugins_display: int = 0,  # Display info about plugins
     ):
+        self.style = None
         self.check_libs_compatible()
         super().__init__(
             parse_cmd_line=parse_cmd_line,
@@ -169,6 +170,17 @@ class BaseConfig(TmuxConfig):  # type: ignore
         self._fnc_activate_tpm = "activate_tpm"
         self._fnc_tpm_indicator = "tpm_init_indicator"
 
+    def assign_style(self, style_name):
+        """Use this to name the style being used, and to ensure that 
+        multiple styles are not unintentionally assigned.
+        """
+        this_style = os.path.splitext(os.path.basename(style_name))[0]
+        if self.style:
+            sys.exit(f"ERROR: Style already assiged as: {self.style}, "
+            f"Can not use style: {this_style}")
+        self.style = this_style
+        print(f"Style used is: >> {self.style} <<")
+
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """This is called just before the status bar is rendered,
         local_overides() is called later so can not modify status bar
@@ -186,7 +198,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
         it will print a header in the resulting config file.
         If this method returns True a footer will be printed.
         """
-
         w = self.write
         if print_header:
             w(

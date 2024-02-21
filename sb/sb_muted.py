@@ -37,7 +37,7 @@ class SB(DefaultPlugins):
     sb_left = f"#[fg={theme_text}]" "#{session_name}" f"#[fg={muted_text}]: "
 
     def status_bar_customization(self, print_header=True):
-        print("><> sb_muted.py")
+        self.assign_style(__file__)
         super().status_bar_customization(print_header=print_header)
         w = self.write
         w("# this is sb_muted")

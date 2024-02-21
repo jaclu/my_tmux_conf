@@ -25,8 +25,6 @@
 #  A typical iSH host
 #
 
-# import ish_console
-
 from ish_host import ishHostWithStyle
 
 
