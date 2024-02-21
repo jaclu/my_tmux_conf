@@ -30,7 +30,7 @@ from sb.sb_tst import SB
 
 
 class T2(ishHost, SB):
-    t2_env = "1"
+    t2_env = True
 
     # plugin_handler = "manual"
     # plugin_handler: str = "tmux-plugins/tpm"
@@ -50,20 +50,17 @@ class T2(ishHost, SB):
     #  in both states. If this is really needed in the inner tmux
     #  a separate capture key for t2 could be defined
     #
-    def plugin_suspend(self):
+    def not_plugin_suspend(self):
         return ["jaclu/tmux-suspend", 99, ""]
 
-    def plugin_mouse_swipe(self):  # 3.0
+    def not_plugin_mouse_swipe(self):  # 3.0
         return ["jaclu/tmux-mouse-swipe", 99, ""]
 
     #  Handled by outer tmux
-    def plugin_jump(self):
+    def not_plugin_jump(self):
         return ["jaclu/tmux-jump", 99, ""]
 
-    def not_plugin_yank(self):
-        return ["jaclu/tmux-yank", 99, ""]
-
-    def plugin_zz_continuum(self):
+    def not_plugin_zz_continuum(self):
         # T2_ENV is a test env, so we do not want auto save/restore of env
         return ["jaclu/tmux-continuum", 99, ""]
 

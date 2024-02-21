@@ -313,7 +313,7 @@ class DefaultPlugins(IshConsole):
         #  devices. so no point enabling tmux-resurrect & tmux-continuum
         #  on iSH
         #
-        if self.is_limited_host or self.is_tmate():
+        if self.is_limited_host or self.t2_env or self.is_tmate():
             return ["tmux-plugins/tmux-resurrect", 99, ""]
 
         conf = """

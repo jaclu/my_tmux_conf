@@ -64,6 +64,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
     prefix_key: str = "C-a"
     prefix_key_T2: str = "C-w"  # prefix for inner dev environment
 
+    t2_env = False  # Set to True when defining an inner/nested tmux conf
+
     status_interval: int = 10  # How often the status bar should be updated
 
     monitor_activity: bool = False  # Notification when other windows change state
