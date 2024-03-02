@@ -29,4 +29,4 @@ from ish_host import ishHostWithStyle
 
 
 if __name__ == "__main__":
-    ishHostWihStyle().run()
+    ishHostWithStyle().run()

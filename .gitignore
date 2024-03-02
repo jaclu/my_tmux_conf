@@ -24,3 +24,4 @@ not-v-env/
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 **/.history
+.shellchecker.cache

@@ -2,7 +2,7 @@
 #
 #  -*- mode: python; mode: fold -*-
 #
-#  Copyright (c) 2022: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022,2024: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -173,13 +173,13 @@ class BaseConfig(TmuxConfig):  # type: ignore
         self._fnc_tpm_indicator = "tpm_init_indicator"
 
     def assign_style(self, style_name):
-        """Use this to name the style being used, and to ensure that 
+        """Use this to name the style being used, and to ensure that
         multiple styles are not unintentionally assigned.
         """
         this_style = os.path.splitext(os.path.basename(style_name))[0]
         if self.style:
             sys.exit(f"ERROR: Style already assiged as: {self.style}, "
-            f"Can not use style: {this_style}")
+                     f"Can not use style: {this_style}")
         self.style = this_style
         print(f"Style used is: >> {self.style} <<")
 
@@ -596,9 +596,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
             )
             w(f"set -g  status-interval {self.status_interval}")
 
-
         w("set -g  status-position bottom")
-        
+
         if self.vers_ok(1.9):
             w("set -g  window-status-current-style reverse")
 
@@ -1242,15 +1241,14 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  the intended action fairly simply.
     #
     def meta_ses_handling_UK(
-        self,
-        M_plus: str = "M-+",
-        M_par_open: str = "M-(",
-        M_par_close: str = "M-)",
-        M__: str = "M-_",
-        ):
+            self,
+            M_plus: str = "M-+",
+            M_par_open: str = "M-(",
+            M_par_close: str = "M-)",
+            M__: str = "M-_"):
         if M_plus in (None, ""):
             sys.exit("ERROR: meta_ses_handling_UK() M_plus undefined!")
-           
+
         w = self.write
         if self.bind_meta:
             w(

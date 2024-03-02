@@ -2,7 +2,7 @@
 #
 #  -*- mode: python; mode: fold -*-
 #
-#  Copyright (c) 2022: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022,2024: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -178,7 +178,7 @@ class IshConsole(BaseConfig):
         bind -T escPrefix  User220  send "\\`"
         """
         )
-        
+
     def ic_nav_key_esc_prefix(self, esc_key) -> None:
         w = self.write
         print(f"Assuming keyboard is: {self.ic_keyboard}")
@@ -233,7 +233,7 @@ class IshConsole(BaseConfig):
 
         # M-+ default: ±
         set -s user-keys[211] "\\302\\261"
-        
+
         #
         #  Some keybs have issues with M-<
         #  the initial binding for this char
@@ -339,9 +339,9 @@ class IshConsole(BaseConfig):
         set -s user-keys[37]  "\\302\\277"       # M-?
         set -s user-keys[38]  "\\342\\200\\224"  # M-_
         """
-        #set -s user-keys[39]  "\\302\\261"       # M-+
-        #set -s user-keys[39]  "\\176"     # brydge generates ~ inside tmux
         )
+        # set -s user-keys[39]  "\\302\\261"       # M-+
+        # set -s user-keys[39]  "\\176"     # brydge generates ~ inside tmux
 
         for i, c in (
             ("1", "A"),

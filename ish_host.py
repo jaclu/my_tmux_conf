@@ -104,6 +104,7 @@ class ishHost(DefaultPlugins):
             """,
         ]
 
+
 class ishHostWithStyle(ishHost, SB):
     pass
 
