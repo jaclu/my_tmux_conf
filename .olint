@@ -1,3 +1,5 @@
+#!/bin/bash
+# This is sourced. Fake bang-path to help editors and linters
 
 #
 # Exclude by file name prefix
@@ -11,3 +13,4 @@ prefixes+=(
 #./local_tmux_conf/.git/
 #./local_tmux_conf/.pytest_cache/
 #./local_tmux_conf/tests/.pytest_cache/
+
