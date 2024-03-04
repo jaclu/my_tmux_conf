@@ -8,6 +8,6 @@ prefixes+=(
     ./local_tmux_conf/
     ./.pytest_cache/
 )
-    #./local_tmux_conf/.git/
-    #./local_tmux_conf/.pytest_cache/
-    #./local_tmux_conf/tests/.pytest_cache/
+#./local_tmux_conf/.git/
+#./local_tmux_conf/.pytest_cache/
+#./local_tmux_conf/tests/.pytest_cache/
