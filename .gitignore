@@ -8,6 +8,8 @@ dist/
 src/tmux_conf.egg-info/
 local_tmux_conf/
 
+.cache.olint
+
 .venv/
 not-v-env/
 
@@ -24,4 +26,3 @@ not-v-env/
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 **/.history
-.shellchecker.cache
