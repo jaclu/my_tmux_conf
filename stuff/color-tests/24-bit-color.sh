@@ -16,12 +16,12 @@
 
 setBackgroundColor()
 {
-    printf '\x1b[48;2;%s;%s;%sm' "$1" "$2" "$3"
+    printf '\\x1b[48;2;%s;%s;%sm' "$1" "$2" "$3"
 }
 
 resetOutput()
 {
-    echo -en "\x1b[0m\n"
+    echo -en "\\x1b[0m\\n"
 }
 
 #  Gives a color $1/255 % along HSV
