@@ -1,6 +1,7 @@
 # MyTmuxConf
 
 ## Dependency
+
 pip install [tmux-conf](https://github.com/jaclu/tmux-conf)
 
 ## Purpose of my setup style
@@ -82,9 +83,13 @@ and even run a different version of tmux for compatiblity tests.
 
 ## host name based config
 
-I normally start tmux with myt (in tools) it compiles a fresh tmux.conf based on hostname.
+I normally start tmux with myt (in tools) it compiles a fresh tmux.conf
+based on hostname.
 This way it is dead easy to adopt the setup depending on where it runs.
-In most cases I just ~~soft-link~~ (weird no longer works, now I need to copy the template to the hostname file if not in same dir) one of the sb/ entries to the hostname, to give it a suitable
+In most cases I just ~~soft-link~~ (weird no longer works, now I need
+to copy the template to the hostname file if not in same dir) one of the
+sb/ entries to the hostname, to give it a suitable
 styling depending on host role.
 
-Most of my actual hosts are filtered out for privacy reasons, I have left a few in here, as examples.
+Most of my actual hosts are filtered out for privacy reasons, I have left
+a few in here, as examples.
