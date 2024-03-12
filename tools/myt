@@ -84,6 +84,12 @@ tmux_2() {
     mkdir -p "$HOME"/t2
     cd ~/t2 || exit
 
+    #
+    # Since tmux version often is changed in t2, clear cache
+    # to avoid incompatible menuitems
+    #
+    rm -rf ~/t2/tmux/plugins/tmux-menus/cache
+    
     select_tmux_bin
 
     #  Needs to be $HOME not ~ since it is sent into tmux_conf
