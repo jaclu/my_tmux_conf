@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-#  Copyright (c) 2022: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -16,6 +16,10 @@
 #  filtering out or replacing incompatible syntax.
 #
 
+# pylint: disable=C0116
+
+""" JacMac config """
+
 import sys
 
 # from sb.sb_local import SB
@@ -23,6 +27,8 @@ from sb.sb_muted import SB
 
 
 class JacMacConfig(SB):
+    """JacMac config"""
+
     status_interval = 5
 
     # use_embedded_scripts = False

@@ -2,7 +2,7 @@
 #
 #  -*- mode: python; mode: fold -*-
 #
-#  Copyright (c) 2022: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -21,9 +21,9 @@
 #  filtering out or replacing incompatible syntax.
 #
 
-#
-#  A typical iSH host
-#
+# pylint: disable=C0116
+
+""" A typical iSH host """
 
 import os
 
@@ -31,7 +31,9 @@ from default_plugins import DefaultPlugins
 from sb.sb_muted import SB
 
 
-class ishHost(DefaultPlugins):
+class IshHost(DefaultPlugins):
+    """A typical iSH host"""
+
     # status_interval = 5
 
     hostname_display: str = "(/usr/local/bin/hostname)"
@@ -105,9 +107,9 @@ class ishHost(DefaultPlugins):
         ]
 
 
-class ishHostWithStyle(ishHost, SB):
-    pass
+class IshHostWithStyle(IshHost, SB):
+    """iSH host with default style"""
 
 
 if __name__ == "__main__":
-    ishHostWithStyle().run()
+    IshHostWithStyle().run()

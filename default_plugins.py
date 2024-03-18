@@ -2,7 +2,7 @@
 #
 #  -*- mode: python; mode: fold -*-
 #
-#  Copyright (c) 2022: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -18,11 +18,16 @@
 #  compatibility.
 #
 
+# pylint: disable=C0116
+
+"""Defines default plugins"""
+
 import os
 
 #
-#  Since I often run this on iSH, this class will bind missing keys in the case
-#  this is run directly on the ishConsole, in all other cases it will do nothing
+#  Since I often run this on iSH, this class will bind missing keys in the
+#  case this is run directly on the ishConsole, in all other cases it will
+#  do nothing
 #
 from ish_console import IshConsole
 
@@ -32,7 +37,8 @@ class DefaultPlugins(IshConsole):
     resource demanding ones are not added here.
     I use this as my primary base class
     If you never plan to use iSH you can subclass BaseConfig directly
-    We use IshConsole as parent, so that the running node is propperly configured
+    We use IshConsole as parent, so that the running node is propperly
+    configured
     """
 
     # plugin_handler = "tmux-plugins/tpm"
@@ -78,7 +84,8 @@ class DefaultPlugins(IshConsole):
             self.sb_right += "#{@mode_indicator_custom_prompt}"
 
         if "tmux-mullvad" in used_plugins:
-            # self.sb_left += "#{mullvad_city}#{mullvad_country}#{mullvad_status}"
+            self.sb_left += "#{mullvad_city}#{mullvad_country}"
+            self.sb_left += "#{mullvad_status}"
             self.sb_left += "#{mullvad_status}"
 
         if "tmux-nordvpn" in used_plugins:

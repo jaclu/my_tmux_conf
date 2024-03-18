@@ -2,7 +2,7 @@
 #
 #  -*- mode: python; mode: fold -*-
 #
-#  Copyright (c) 2022: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -21,15 +21,13 @@
 #  filtering out or replacing incompatible syntax.
 #
 
-#
-#  A typical iSH host
-#
+""" host: jacpad-aok """
 
-from ish_host import ishHostWithStyle
+from ish_host import IshHostWithStyle
 
-# class JacPad(ishHost):
+# class JacPad(IshHost):
 # status_interval = 5
-# ic_keyboard = ish_console.kbd_type_brydge_10_2_max
+# ic_keyboard = ish_console.KBD_TYPE_BRYDGE_10_2_MAX
 
 if __name__ == "__main__":
-    ishHostWithStyle().run()
+    IshHostWithStyle().run()

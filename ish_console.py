@@ -2,7 +2,7 @@
 #
 #  -*- mode: python; mode: fold -*-
 #
-#  Copyright (c) 2022,2024: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -18,11 +18,16 @@
 #  Find key codes using for example:  showkey -a and examine the output
 #  in the 2nd collumn (octal)
 #
+
+# pylint: disable=C0116
+
+"""Checks if this is run on the iSH console"""
+
 import os
 
 from base import BaseConfig
 
-nav_key_handled_tag = "TMUX_HANDLING_ISH_NAV_KEY"
+NAV_KEY_HANDLED_TAG = "TMUX_HANDLING_ISH_NAV_KEY"
 
 #
 #  To make it easier to identify what keyboard to config
@@ -40,17 +45,17 @@ nav_key_handled_tag = "TMUX_HANDLING_ISH_NAV_KEY"
 #  Check base.py - search for switch-client -l - defined twice!!
 #
 
-kbd_type_brydge_10_2_max = "Brydge 10.2 MAX+"
-kbd_type_brydge_10_2_esc = "Brydge 10.2 MAX+ esc"
-kbd_type_yoozon3 = "Yoozon 3"  # same as brydge
+KBD_TYPE_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
+KBD_TYPE_BRYDGE_10_2_ESC = "Brydge 10.2 MAX+ esc"
+KBD_TYPE_YOOZON3 = "Yoozon 3"  # same as brydge
 
-kbd_type_omnitype = "Omnitype Keyboard"
-kbd_type_bluetooth = "Bluetooh Keyboard"  # sadly generic name
+KBD_TYPE_OMNITYPE = "Omnitype Keyboard"
+KBD_TYPE_BLUETOOTH = "Bluetooh Keyboard"  # sadly generic name
 
 
 def this_is_aok_kernel():
     try:
-        with open("/proc/ish/version", "r") as file:
+        with open("/proc/ish/version", "r", encoding="utf-8") as file:
             for line in file:
                 if "aok" in line.lower():
                     return True
@@ -80,6 +85,8 @@ class IshConsole(BaseConfig):
     # aok_nav_key = "/etc/opt/AOK/tmux_nav_key"
     ish_nav_key = None
 
+    usr_key_meta_plus = "User211"
+
     def local_overides(self) -> None:
         super().local_overides()
         #
@@ -93,7 +100,7 @@ class IshConsole(BaseConfig):
             #  and if no outer tmux is already handling the nav keyf
             #
             return
-        elif os.environ.get(nav_key_handled_tag):
+        if os.environ.get(NAV_KEY_HANDLED_TAG):
             print("iSH console keyboard already handled by outer tmux!")
             return
 
@@ -105,19 +112,23 @@ class IshConsole(BaseConfig):
             return
 
         h_name = ""
-        with open("/etc/hostname", "r") as file:
+        with open("/etc/hostname", "r", encoding="utf-8") as file:
             # Read the content of the file
             h_name = file.readline().strip().lower()
         if h_name in ("jacpad", "jacpad-aok"):
-            self.ic_keyboard = kbd_type_brydge_10_2_max
+            self.ic_keyboard = KBD_TYPE_BRYDGE_10_2_MAX
         elif h_name in ("pad5", "pad5-aok"):
-            self.ic_keyboard = kbd_type_brydge_10_2_esc
+            self.ic_keyboard = KBD_TYPE_BRYDGE_10_2_ESC
         else:
             self.ic_keyboard = None
 
-        if self.ic_keyboard in (kbd_type_brydge_10_2_max, kbd_type_yoozon3):
+        if self.ic_keyboard in (KBD_TYPE_BRYDGE_10_2_MAX, KBD_TYPE_YOOZON3):
             self.ic_keyb_type_1()
-        elif self.ic_keyboard in (kbd_type_brydge_10_2_esc, kbd_type_omnitype, kbd_type_bluetooth):
+        elif self.ic_keyboard in (
+            KBD_TYPE_BRYDGE_10_2_ESC,
+            KBD_TYPE_OMNITYPE,
+            KBD_TYPE_BLUETOOTH,
+        ):
             self.ic_keyb_type_2()
         else:
             #
@@ -153,7 +164,7 @@ class IshConsole(BaseConfig):
 
         # set -s user-keys[221]  "\\302\\257"
         # bind -N "Enables M-<" -n User221 send "M-<"
-        # set -s user-keys[221]  "~"# kbd_type_brydge_10_2_max - M-+
+        # set -s user-keys[221]  "~"# KBD_TYPE_BRYDGE_10_2_MAX - M-+
         """
         )
 
@@ -244,7 +255,6 @@ class IshConsole(BaseConfig):
         #bind -N "Enables M-<" -n User211 send "M-<"
         """
         )
-        self.usr_key_meta_plus = "User211"
 
     def ic_setup(self) -> None:
         #
@@ -265,7 +275,7 @@ class IshConsole(BaseConfig):
         #  Indicates this tmux is handling ISH_NAV_KEY, to ensure
         #  nested tmuxes, dont parse it again.
         #
-        {nav_key_handled_tag}=1"""
+        {NAV_KEY_HANDLED_TAG}=1"""
         )
 
     def ic_fn_keys(self) -> None:
@@ -380,8 +390,8 @@ class IshConsole(BaseConfig):
             # ¯
             # 194 0302 0xc2
             # 175 0257 0xaf
-            # ("35", "<"), - used in self.swap_window_UK()
-            # ("36", ">"), - used in self.swap_window_UK()
+            # ("35", "<"), - used in self.swap_window_uk()
+            # ("36", ">"), - used in self.swap_window_uk()
             ("37", "?"),
             # Doesn't work on Omnitype Keyboard, works on Yoozon3
             ("38", "_"),
@@ -435,17 +445,17 @@ class IshConsole(BaseConfig):
         #  send-keys. If the resulting key has an action,
         #  we need to override and bind the user-key to this action.
         #
-        self.split_entire_window_UK(
-            M_H="User8", M_J="User10", M_K="User11", M_L="User12"
+        self.split_entire_window_uk(
+            m_h="User8", m_j="User10", m_k="User11", m_l="User12"
         )
-        self.display_plugins_used_UK(M_P="User16")
-        self.kill_tmux_server_UK(M_X="User24")
-        self.swap_window_UK(M_less_than="User35", M_greater_than="User36")
-        self.meta_ses_handling_UK(
-            M_plus=self.usr_key_meta_plus,
-            M_par_open=m_par_open,
-            M_par_close=m_par_close,
-            M__="User38",
+        self.display_plugins_used_uk(m_p="User16")
+        self.kill_tmux_server_uk(m_x="User24")
+        self.swap_window_uk(m_less_than="User35", m_greater_than="User36")
+        self.meta_ses_handling_uk(
+            m_plus=self.usr_key_meta_plus,
+            m_par_open=m_par_open,
+            m_par_close=m_par_close,
+            m_underscore="User38",
         )
 
         w(
@@ -479,15 +489,15 @@ class IshConsole(BaseConfig):
     #
     #  Not used stuff
     #
-    def NOT_ic_nav_key_mod(self, mod_char: str) -> None:
-        self.write(
-            f"""
-        bind -N "S-Up = PageUp"     -n  {mod_char}-Up     send-keys PageUp
-        bind -N "S-Down = PageDown" -n  {mod_char}-down   send-keys PageDown
-        bind -N "S-Left = Home"     -n  {mod_char}-Left   send-keys Home
-        bind -N "S-Right = End"     -n  {mod_char}-Right  send-keys End
-        """
-        )
+    # def ic_nav_key_mod(self, mod_char: str) -> None:
+    #     self.write(
+    #         f"""
+    #     bind -N "S-Up = PageUp"     -n  {mod_char}-Up     send-keys PageUp
+    #     bind -N "S-Down = PageDown" -n  {mod_char}-down   send-keys PageDown
+    #     bind -N "S-Left = Home"     -n  {mod_char}-Left   send-keys Home
+    #     bind -N "S-Right = End"     -n  {mod_char}-Right  send-keys End
+    #     """
+    #     )
 
 
 #

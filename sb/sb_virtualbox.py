@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-#  Copyright (c) 2022,2024: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -8,10 +8,13 @@
 #  Template giving the status bar the colors I use for a (local) virtual box
 #
 
+""" Style virtualbox node """
+
 from default_plugins import DefaultPlugins
 
 
 class SB(DefaultPlugins):
+    """Style virtualbox node"""
 
     fnc_rev_sb_color = "msg_rev_sb_color"
 
@@ -25,7 +28,8 @@ class SB(DefaultPlugins):
             w(self.es.run_it(self.fnc_rev_sb_color))
         return print_header  # request footer to be printed
 
-    def mkscript_rev_sb_color(self):  # reverse_sb_color
+    def mkscript_rev_sb_color(self):
+        """Reverse statusbar color"""
         cut_this1 = "cut -d',' -f1 | cut -d'='"
         cut_this2 = "cut -d',' -f2 | cut -d'='"
         rev_sb_sh = [

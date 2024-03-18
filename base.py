@@ -2,7 +2,7 @@
 #
 #  -*- mode: python; mode: fold -*-
 #
-#  Copyright (c) 2022,2024: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -32,6 +32,9 @@
 #  The alternate session has its own plugin directory if jaclu/tpm is used
 #
 
+# pylint: disable=C0116,C0302
+
+"""base class used by tpm"""
 
 import os
 import sys
@@ -64,7 +67,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     prefix_key: str = "C-a"
     prefix_key_T2: str = "C-w"  # prefix for inner dev environment
 
-    t2_env = False  # Set to True when defining an inner/nested tmux conf
+    t2_env = ""  # Set to True when defining an inner/nested tmux conf
 
     status_interval: int = 10  # How often the status bar should be updated
 
@@ -178,8 +181,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
         """
         this_style = os.path.splitext(os.path.basename(style_name))[0]
         if self.style:
-            sys.exit(f"ERROR: Style already assiged as: {self.style}, "
-                     f"Can not use style: {this_style}")
+            sys.exit(
+                f"ERROR: Style already assiged as: {self.style}, "
+                f"Can not use style: {this_style}"
+            )
         self.style = this_style
         print(f"Style used is: >> {self.style} <<")
 
@@ -455,7 +460,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             )
         w()  # Spacer
 
-        self.display_plugins_used_UK()
+        self.display_plugins_used_uk()
 
         scrpad_key = "O"  # P being taken this is pOpup :)
         scrpad_min_vers = 3.2
@@ -473,7 +478,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
                 f'display "pOpup scratchpad session needs {scrpad_min_vers}"'
             )
 
-        self.kill_tmux_server_UK()
+        self.kill_tmux_server_uk()
         w()  # spacer between sections
 
     def remove_unwanted_default_bindings(self):
@@ -696,7 +701,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             'bind -N "Create new session"             +    command-prompt -I "?" '
             '-p "Name of new session: " "new-session -s \\"%%\\""'
         )
-        self.meta_ses_handling_UK()
+        self.meta_ses_handling_uk()
         w(
             """# session navigation
         bind -N "Select previous session" -r  (  switch-client -p
@@ -768,7 +773,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         #  Splitting the entire window
         #
-        self.split_entire_window_UK()
+        self.split_entire_window_uk()
         #
         #  Same using arrow keys with C-M-S modifier
         #
@@ -826,7 +831,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             unbind -n  M--"""
             )
             if self.vers_ok(2.4):
-                # TODO: Why can this be bound but not unbound at 2.1?
+                # Why can this be bound but not unbound at 2.1?
                 w(
                     """
                   unbind -T copy-mode -n M-9
@@ -843,9 +848,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
             bind -N "Swap window left"         -r  <    swap-window -dt:-1
             bind -N "Swap window right"        -r  >    swap-window -dt:+1"""
             )
-            self.swap_window_UK()
+            self.swap_window_uk()
         else:
-            # TODO: bind to < does not take effect, so no swap left warning
+            # bind to < does not take effect, so no swap left warning
             w(
                 'bind -N "Swap window right"  >  display "Swap window right '
                 'needs 1.8"'
@@ -1003,7 +1008,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         if self.vers_ok(3.3):
             # Needs to wait until a window exists
-            w('run -b "sleep 0.2 ; $TMUX_BIN ' 'set pane-border-indicators arrows"\n')
+            w('run -b "sleep 0.2 ; $TMUX_BIN set pane-border-indicators arrows"\n')
 
         #
         #  Pane title and size
@@ -1240,68 +1245,72 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  keys, for terminals relaying on user-keys, they can be bound to
     #  the intended action fairly simply.
     #
-    def meta_ses_handling_UK(
-            self,
-            M_plus: str = "M-+",
-            M_par_open: str = "M-(",
-            M_par_close: str = "M-)",
-            M__: str = "M-_"):
-        if M_plus in (None, ""):
-            sys.exit("ERROR: meta_ses_handling_UK() M_plus undefined!")
+    def meta_ses_handling_uk(
+        self,
+        m_plus: str = "M-+",
+        m_par_open: str = "M-(",
+        m_par_close: str = "M-)",
+        m_underscore: str = "M-_",
+    ):
+        if m_plus in (None, ""):
+            sys.exit("ERROR: meta_ses_handling_uk() m_plus undefined!")
 
         w = self.write
         if self.bind_meta:
             w(
-                f'bind -N "Create new session  - P +"  -n {M_plus}  command-prompt '
+                f'bind -N "Create new session  - P +"  -n {m_plus}  command-prompt '
                 '-I "?" -p "Name of new session: " "new-session -s \\"%%\\""'
             )
-            w(f"bind -N 'Switch to last session  - P _'  -n  {M__}  switch-client -l")
+            w(
+                "bind -N 'Switch to last session  - P _'  "
+                f"-n  {m_underscore}  switch-client -l"
+            )
         else:
             w(
                 f"""#  skipping adv keys, if resourced
-            unbind -n {M_plus}
-            unbind -n  {M__}
+            unbind -n {m_plus}
+            unbind -n  {m_underscore}
             """
             )
 
-        if M_par_open:
+        if m_par_open:
             if self.bind_meta:
                 w(
                     "bind -N 'Select previous session  - P "
-                    f"(' -n  {M_par_open}  switch-client -p"
+                    f"(' -n  {m_par_open}  switch-client -p"
                 )
             else:
-                w(f"unbind -n  {M_par_open}")
+                w(f"unbind -n  {m_par_open}")
 
-        if M_par_close:
+        if m_par_close:
             if self.bind_meta:
                 w(
-                    f"bind -N 'Select next session  - P )'     -n  {M_par_close}"
+                    f"bind -N 'Select next session  - P )'     -n  {m_par_close}"
                     "  switch-client -n"
                 )
             else:
-                w(f"unbind -n  {M_par_close}")
+                w(f"unbind -n  {m_par_close}")
 
-    def swap_window_UK(self, M_less_than: str = "M-<", M_greater_than: str = "M->"):
+    def swap_window_uk(self, m_less_than: str = "M-<", m_greater_than: str = "M->"):
         if not self.vers_ok(1.8):
             return
 
         if self.bind_meta:
             self.write(
                 f"""
-            bind -N "Swap window left  - P <"  -n  {M_less_than}  swap-window -dt:-1
-            bind -N "Swap window right  - P >" -n  {M_greater_than}  swap-window -dt:+1
+            bind -N "Swap window left  - P <"  -n  {m_less_than}  swap-window -dt:-1
+            bind -N "Swap window right  - P >" -n  {m_greater_than}  swap-window -dt:+1
             """
             )
         else:
             self.write(
                 f"""#  skipping adv keys, if resourced
-            unbind -n  {M_less_than}
-            unbind -n  {M_greater_than}
+            unbind -n  {m_less_than}
+            unbind -n  {m_greater_than}
             """
             )
 
-    def display_plugins_used_UK(self, M_P: str = "M-P"):
+    def display_plugins_used_uk(self, m_p: str = "M-P"):
         """iSH console doesn't generate correct ALT - Upper Case sequences,
         so when that is the env, intended keys must be bound as user keys.
         To make that without having two separate snippets of code doing
@@ -1314,7 +1323,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             # There is no plugin support...
             return
 
-        if M_P != "M-P":
+        if m_p != "M-P":
             note_prefix = "M-P - "
         else:
             note_prefix = ""
@@ -1324,12 +1333,12 @@ class BaseConfig(TmuxConfig):  # type: ignore
         # it wont be over-written!
         #
         w(
-            f'bind -N "{note_prefix}List all plugins defined"  {M_P}  '
+            f'bind -N "{note_prefix}List all plugins defined"  {m_p}  '
             'run "$TMUX_BIN display \\"Generating response...\\" ;'
             f' {__main__.__file__} {self.conf_file} -p2"'
         )
 
-    def kill_tmux_server_UK(self, M_X: str = "M-X"):
+    def kill_tmux_server_uk(self, m_x: str = "M-X"):
         """iSH console doesn't generate correct ALT - Upper Case sequences,
         so when that is the env, intended keys must be bound as user keys.
         To make that without having two separate snippets of code doing
@@ -1338,18 +1347,18 @@ class BaseConfig(TmuxConfig):  # type: ignore
         user keys will be given
         """
         w = self.write
-        if M_X != "M-X":
+        if m_x != "M-X":
             note_prefix = "M-X - "
         else:
             note_prefix = ""
         w(
-            f'bind -N "{note_prefix}Kill tmux server"  {M_X}  '
+            f'bind -N "{note_prefix}Kill tmux server"  {m_x}  '
             "confirm-before -p "
             f'"kill tmux server {self.conf_file}? (y/n)" kill-server'
         )
 
-    def split_entire_window_UK(
-        self, M_H: str = "M-H", M_J: str = "M-J", M_K: str = "M-K", M_L: str = "M-L"
+    def split_entire_window_uk(
+        self, m_h: str = "M-H", m_j: str = "M-J", m_k: str = "M-K", m_l: str = "M-L"
     ):
         """iSH console doesn't generate correct ALT - Upper Case sequences,
         so when that is the env, intended keys must be bound as user keys.
@@ -1371,29 +1380,29 @@ class BaseConfig(TmuxConfig):  # type: ignore
             sw = "split-window -f"
             pcb = '-c "#{pane_current_path}"'  # line is not to long
 
-            if M_H != "M-H":
+            if m_h != "M-H":
                 pref = "M-H - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}horizontally left"   {M_H}  {sw}hb {pcb}')
+            w(f'{b}{pref}{n_base}horizontally left"   {m_h}  {sw}hb {pcb}')
 
-            if M_J != "M-J":
+            if m_j != "M-J":
                 pref = "M-J - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}vertically down"     {M_J}  {sw}v  {pcb}')
+            w(f'{b}{pref}{n_base}vertically down"     {m_j}  {sw}v  {pcb}')
 
-            if M_K != "M-K":
+            if m_k != "M-K":
                 pref = "M-K - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}vertically up"       {M_K}  {sw}vb {pcb}')
+            w(f'{b}{pref}{n_base}vertically up"       {m_k}  {sw}vb {pcb}')
 
-            if M_L != "M-L":
+            if m_l != "M-L":
                 pref = "M-L - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}horizontally right"  {M_L}  {sw}h  {pcb}')
+            w(f'{b}{pref}{n_base}horizontally right"  {m_l}  {sw}h  {pcb}')
 
     #
     #  Utility methods
@@ -1531,8 +1540,8 @@ timer_end() {{
     def mkscript_tpm_indicator(self):
         """Changes state for tpm_initializing with params: set clear"""
         purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
-        self.sb_purge_tpm_running = "$TMUX_BIN set -q status-right "
-        """\\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{purge_seq}//')\\" """
+        # self.sb_purge_tpm_running = "$TMUX_BIN set -q status-right "
+        # \\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{purge_seq}//')\\"
 
         clear_tpm_init_sh = [
             f"""

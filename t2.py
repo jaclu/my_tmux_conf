@@ -22,15 +22,17 @@
 # from sb.sb_muted import SB
 # from sb.sb_virtualbox import SB
 
-from ish_host import ishHost
+from ish_host import IshHost
 from sb.sb_tst import SB
 
 # from sb.sb_acceptance import SB
 # from sb.sb_production import SB
 
 
-class T2(ishHost, SB):
-    t2_env = True
+class T2(IshHost, SB):
+    """Inner tmux session"""
+
+    t2_env = "1"
 
     # plugin_handler = "manual"
     # plugin_handler: str = "tmux-plugins/tpm"
