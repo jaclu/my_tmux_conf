@@ -68,10 +68,12 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
     status_interval: int = 10  # How often the status bar should be updated
 
-    monitor_activity: bool = False  # Notification when other windows change state
+    # Notification when other windows change state
+    monitor_activity: bool = False
 
     show_pane_title: bool = True  # If enabled, Set title with <P> P
-    show_pane_size: bool = True  # If enabled pane frane lines will display pane size
+    # If enabled pane frane lines will display pane size
+    show_pane_size: bool = True
 
     #
     #  So that I can disable them and practice the vi keys every now and
@@ -97,7 +99,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
     sb_left: str = "|#{session_name}| "
     sb_right: str = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template: str = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
-    hostname_template: str = f"#[fg=colour195,bg=colour1]#{hostname_display}#[default]"
+    hostname_template: str = "#[fg=colour195,bg=colour1]" + \
+        f"#{hostname_display}#[default]"
     tpm_initializing: str = "#[reverse,blink] tpm initializing...#[default]"
 
     handle_iterm2: bool = True  # Select screen-256color for iTerm2
@@ -408,7 +411,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         if self.vers_ok(3.3):
             #  needs a short wait, so that display has time to be created
-            w("run -b 'sleep 0.2 ; $TMUX_BIN set -w popup-border-lines rounded'")
+            w("run -b 'sleep 0.2 ; $TMUX_BIN "
+              "set -w popup-border-lines rounded'")
 
         self.remove_unwanted_default_bindings()
 
@@ -450,7 +454,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
             )
         else:
             w(
-                f'bind -N "Navigate ses/win/pane not available warning"  {nav_key}  '
+                'bind -N "Navigate ses/win/pane not available warning" '
+                f'{nav_key}  '
                 'display "Navigate needs 2.7"'
             )
         w()  # Spacer
@@ -462,7 +467,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
         if self.vers_ok(scrpad_min_vers):
             display_popup = "display-popup -h 70% -w 70% -E "
             if self.vers_ok(3.3):
-                display_popup += "-T " '"#[align=centre] pOpup Scratchpad Session " '
+                display_popup += "-T " + \
+                    '"#[align=centre] pOpup Scratchpad Session " '
             w(
                 f'bind -N "pOpup scratchpad session"  {scrpad_key}  '
                 f'{display_popup} "$TMUX_BIN -u new-session -ADs scratch"'
@@ -563,7 +569,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         if self.vers_ok(2.4) and not self.is_tmate():
             w(
-                'bind -N "Toggle zoom for mouseovered pane" -n  DoubleClick3Pane'
+                'bind -N "Toggle zoom for mouseovered pane" -n  '
+                'DoubleClick3Pane'
                 ' resize-pane -Z -t= "{mouse}"'
             )
         w()  # spacer between sections
@@ -650,7 +657,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #  not flood status line
             #
             t2_tag = f"{self.vers.get()[:6]} {self.prefix_key} "
-            self.sb_left = f"#[fg=green,bg=black]{t2_tag}#[default]{self.sb_left}"
+            self.sb_left = f"#[fg=green,bg=black]{t2_tag}" + \
+                f"#[default]{self.sb_left}"
 
         self.filter_me_from_sb_right()
 
@@ -693,7 +701,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
         """
         )
         w(
-            'bind -N "Create new session"             +    command-prompt -I "?" '
+            'bind -N "Create new session"             +    '
+            'command-prompt -I "?" '
             '-p "Name of new session: " "new-session -s \\"%%\\""'
         )
         self.meta_ses_handling_UK()
@@ -999,11 +1008,13 @@ class BaseConfig(TmuxConfig):  # type: ignore
             )
 
         # if self.vers_ok(3.2):
-        #    w("run -b 'sleep 0.2 ; $TMUX_BIN setw -g pane-border-lines single'")  # number
+        #    w("run -b 'sleep 0.2 ; $TMUX_BIN setw -g pane-border-lines "
+        #      "single'")  # number
 
         if self.vers_ok(3.3):
             # Needs to wait until a window exists
-            w('run -b "sleep 0.2 ; $TMUX_BIN ' 'set pane-border-indicators arrows"\n')
+            w('run -b "sleep 0.2 ; $TMUX_BIN '
+              'set pane-border-indicators arrows"\n')
 
         #
         #  Pane title and size
@@ -1073,7 +1084,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         if self.bind_meta:
             w(
-                """bind -N "Select pane left  - P h"  -n  M-Left   select-pane -L
+                """bind -N "Select pane left  - P h" -n  M-Left  select-pane -L
             bind -N "Select pane right  - P l" -n  M-Right  select-pane -R
             bind -N "Select pane up  - P k"    -n  M-Up     select-pane -U
             bind -N "Select pane down  - P j"  -n  M-Down   select-pane -D
@@ -1196,10 +1207,14 @@ class BaseConfig(TmuxConfig):  # type: ignore
         """
         )
         if self.bind_meta:
-            w("bind -N 'Resize pane 1 up  - P K'     -n  C-M-Up     resize-pane -U")
-            w("bind -N 'Resize pane 1 down  - P J'   -n  C-M-Down   resize-pane -D")
-            w("bind -N 'Resize pane 1 left  - P H'   -n  C-M-Left   resize-pane -L")
-            w("bind -N 'Resize pane 1 right  - P L'  -n  C-M-Right  resize-pane -R")
+            w("bind -N 'Resize pane 1 up  - P K'     -n  C-M-Up     "
+              "resize-pane -U")
+            w("bind -N 'Resize pane 1 down  - P J'   -n  C-M-Down   "
+              "resize-pane -D")
+            w("bind -N 'Resize pane 1 left  - P H'   -n  C-M-Left   "
+              "resize-pane -L")
+            w("bind -N 'Resize pane 1 right  - P L'  -n  C-M-Right  "
+              "resize-pane -R")
         else:
             w(
                 """#  skipping adv keys, if resourced
@@ -1252,10 +1267,12 @@ class BaseConfig(TmuxConfig):  # type: ignore
         w = self.write
         if self.bind_meta:
             w(
-                f'bind -N "Create new session  - P +"  -n {M_plus}  command-prompt '
+                f'bind -N "Create new session  - P +"  -n {M_plus}  '
+                'command-prompt '
                 '-I "?" -p "Name of new session: " "new-session -s \\"%%\\""'
             )
-            w(f"bind -N 'Switch to last session  - P _'  -n  {M__}  switch-client -l")
+            w(f"bind -N 'Switch to last session  - P _'  -n  {M__}  "
+              "switch-client -l")
         else:
             w(
                 f"""#  skipping adv keys, if resourced
@@ -1276,23 +1293,24 @@ class BaseConfig(TmuxConfig):  # type: ignore
         if M_par_close:
             if self.bind_meta:
                 w(
-                    f"bind -N 'Select next session  - P )'     -n  {M_par_close}"
+                    "bind -N 'Select next session  - P )'     "
+                    f"-n  {M_par_close}"
                     "  switch-client -n"
                 )
             else:
                 w(f"unbind -n  {M_par_close}")
 
-    def swap_window_UK(self, M_less_than: str = "M-<", M_greater_than: str = "M->"):
+    def swap_window_UK(self, M_less_than: str = "M-<",
+                       M_greater_than: str = "M->"):
         if not self.vers_ok(1.8):
             return
 
         if self.bind_meta:
-            self.write(
-                f"""
-            bind -N "Swap window left  - P <"  -n  {M_less_than}  swap-window -dt:-1
-            bind -N "Swap window right  - P >" -n  {M_greater_than}  swap-window -dt:+1
-            """
-            )
+            w = self.write
+            w(f'bind -N "Swap window left  - P <"  -n  {M_less_than}  '
+              'swap-window -dt:-1')
+            w(f'bind -N "Swap window right  - P >" -n  {M_greater_than}  '
+              'swap-window -dt:+1')
         else:
             self.write(
                 f"""#  skipping adv keys, if resourced
@@ -1349,7 +1367,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
         )
 
     def split_entire_window_UK(
-        self, M_H: str = "M-H", M_J: str = "M-J", M_K: str = "M-K", M_L: str = "M-L"
+            self, M_H: str = "M-H", M_J: str = "M-J", M_K: str = "M-K",
+            M_L: str = "M-L"
     ):
         """iSH console doesn't generate correct ALT - Upper Case sequences,
         so when that is the env, intended keys must be bound as user keys.
@@ -1515,7 +1534,8 @@ timer_end() {{
         dte_mins="$((t_duration / 60))"
         dte_seconds="$((t_duration - dte_mins * 60))"
         #  Add zero prefix when < 10
-        [ "$dte_mins" -gt 0 ] && [ "$dte_mins" -lt 10 ] && dte_mins="0$dte_mins"
+        [ "$dte_mins" -gt 0 ] && [ "$dte_mins" -lt 10 ] && \
+            dte_mins="0$dte_mins"
         [ "$dte_seconds" -lt 10 ] && dte_seconds="0$dte_seconds"
         msg="[$(date)] $dte_mins:$dte_seconds $TMUX_CONF"
         [ -n "$lbl" ] && msg="$msg - $lbl"
@@ -1530,9 +1550,11 @@ timer_end() {{
 
     def mkscript_tpm_indicator(self):
         """Changes state for tpm_initializing with params: set clear"""
-        purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
+        purge_seq = self.tpm_initializing.replace(
+            "[", "\\[").replace("]", "\\]")
         self.sb_purge_tpm_running = "$TMUX_BIN set -q status-right "
-        """\\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{purge_seq}//')\\" """
+        """\\"$($TMUX_BIN display -p '#{{status-right}}' | """
+        """sed 's/{purge_seq}//')\\" """
 
         clear_tpm_init_sh = [
             f"""
@@ -1546,7 +1568,8 @@ timer_end() {{
     esac
 
     sb_r_now="$($TMUX_BIN display -p '#{{status-right}}')"
-    if [ -n "$($TMUX_BIN display -p '#{{{self.tpm_working_incicator}}}')" ]; then
+    if [ -n "$($TMUX_BIN display " \
+            "-p '#{{{self.tpm_working_incicator}}}')" ]; then
         tpm_running=1
     else
         tpm_running=0

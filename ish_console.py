@@ -87,7 +87,8 @@ class IshConsole(BaseConfig):
         #  that is 1) kernel is ish 2) not an ssh session,
         #     3) not handled by an outer tmux
         #
-        if (not os.path.exists("/proc/ish")) or os.environ.get("SSH_CONNECTION"):
+        if (not os.path.exists("/proc/ish")) or os.environ.get(
+                "SSH_CONNECTION"):
             #
             #  This check is only relent on the iSH console itself
             #  and if no outer tmux is already handling the nav keyf
@@ -100,7 +101,8 @@ class IshConsole(BaseConfig):
         self.is_ish_console = True
 
         if not self.vers_ok(2.6):
-            print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
+            print("WARNING: tmux < 2.6 does not support user-keys, "
+                  "thus handling")
             print("         keyboard adaptions not supported on this version")
             return
 
@@ -117,7 +119,9 @@ class IshConsole(BaseConfig):
 
         if self.ic_keyboard in (kbd_type_brydge_10_2_max, kbd_type_yoozon3):
             self.ic_keyb_type_1()
-        elif self.ic_keyboard in (kbd_type_brydge_10_2_esc, kbd_type_omnitype, kbd_type_bluetooth):
+        elif self.ic_keyboard in (kbd_type_brydge_10_2_esc,
+                                  kbd_type_omnitype,
+                                  kbd_type_bluetooth):
             self.ic_keyb_type_2()
         else:
             #
@@ -192,11 +196,12 @@ class IshConsole(BaseConfig):
             f"""#
         #  Handle Esc key
         #
-        set -s user-keys[200]  "{esc_key}"
-        bind -N "Switch to -T escPrefix" -n User200 switch-client -{tbl_opt} escPrefix
-        bind -T escPrefix  User200  send Escape # Double tap for actual Esc
-        """
-        )
+        set -s user-keys[200]  "{esc_key}" """)
+
+        w('bind -N "Switch to -T escPrefix" -n User200 switch-client '
+          f'-{tbl_opt} escPrefix')
+        w('bind -T escPrefix  User200  send Escape '
+          '# Double tap for actual Esc')
         if this_is_aok_kernel():
             w(
                 """#

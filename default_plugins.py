@@ -22,7 +22,8 @@ import os
 
 #
 #  Since I often run this on iSH, this class will bind missing keys in the case
-#  this is run directly on the ishConsole, in all other cases it will do nothing
+#  this is run directly on the ishConsole, in all other cases it will do
+#  nothing
 #
 from ish_console import IshConsole
 
@@ -32,7 +33,8 @@ class DefaultPlugins(IshConsole):
     resource demanding ones are not added here.
     I use this as my primary base class
     If you never plan to use iSH you can subclass BaseConfig directly
-    We use IshConsole as parent, so that the running node is propperly configured
+    We use IshConsole as parent, so that the running node is propperly
+    configured
     """
 
     # plugin_handler = "tmux-plugins/tpm"
@@ -78,7 +80,6 @@ class DefaultPlugins(IshConsole):
             self.sb_right += "#{@mode_indicator_custom_prompt}"
 
         if "tmux-mullvad" in used_plugins:
-            # self.sb_left += "#{mullvad_city}#{mullvad_country}#{mullvad_status}"
             self.sb_left += "#{mullvad_status}"
 
         if "tmux-nordvpn" in used_plugins:
@@ -92,7 +93,8 @@ class DefaultPlugins(IshConsole):
 
         if "tmux-spotify-info" in used_plugins:
             self.sb_right = (
-                "#[bg=colour28]#(tmux-spotify-info)#[default] " f"{self.sb_right}"
+                "#[bg=colour28]#(tmux-spotify-info)#[default] "
+                f"{self.sb_right}"
             )
 
         if "tmux-packet-loss" in used_plugins:
@@ -424,7 +426,8 @@ class DefaultPlugins(IshConsole):
         #  as possible to minimize the risk of a crucial tmux variable
         # `status-right` is not overwritten (usually by theme plugins).
         #
-        conf = "#  Parameter dependent settings for tmux-plugins/tmux-continuum"
+        conf = "#  Parameter dependent settings for " + \
+            "tmux-plugins/tmux-continuum"
         if self.do_continuum:
             conf += """
             set -g @continuum-restore        on

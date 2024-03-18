@@ -24,7 +24,8 @@ class SB(DefaultPlugins):
         super().status_bar_customization(print_header=print_header)
         w = self.write
         w("# this is sb_muted")
-        self.hostname_template = f"#[fg={theme_text}]#{self.hostname_display}#[default]"
+        self.hostname_template = f"#[fg={theme_text}]#" + \
+            f"{self.hostname_display}#[default]"
 
         self.sb_right = self.sb_right.replace(
             "%a %h", f"#[fg={muted_text}] %a %h")
