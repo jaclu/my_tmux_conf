@@ -2,7 +2,7 @@
 #
 #  -*- mode: python; mode: fold -*-
 #
-#  Copyright (c) 2022,2024: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -31,7 +31,6 @@
 #
 #  The alternate session has its own plugin directory if jaclu/tpm is used
 #
-
 
 import os
 import sys
@@ -62,10 +61,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
     """Defines the general tmux setup, key binds etc"""
 
     prefix_key: str = "C-a"
-    prefix_key_T2: str = "C-w"  # prefix for inner dev environment
-
-    t2_env = False  # Set to True when defining an inner/nested tmux conf
-
     status_interval: int = 10  # How often the status bar should be updated
 
     # Notification when other windows change state
@@ -99,8 +94,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
     sb_left: str = "|#{session_name}| "
     sb_right: str = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template: str = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
-    hostname_template: str = "#[fg=colour195,bg=colour1]" + \
-        f"#{hostname_display}#[default]"
+    hostname_template: str = (
+        "#[fg=colour195,bg=colour1]" + f"#{hostname_display}#[default]"
+    )
     tpm_initializing: str = "#[reverse,blink] tpm initializing...#[default]"
 
     handle_iterm2: bool = True  # Select screen-256color for iTerm2
@@ -111,6 +107,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  interfere with my main environment
     #
     t2_env: str = os.environ.get("T2_ENV", "")
+
+    prefix_key_T2: str = "C-w"  # prefix for inner dev environment
 
     # ======================================================
     #
@@ -181,8 +179,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
         """
         this_style = os.path.splitext(os.path.basename(style_name))[0]
         if self.style:
-            sys.exit(f"ERROR: Style already assiged as: {self.style}, "
-                     f"Can not use style: {this_style}")
+            sys.exit(
+                f"ERROR: Style already assiged as: {self.style}, "
+                f"Can not use style: {this_style}"
+            )
         self.style = this_style
         print(f"Style used is: >> {self.style} <<")
 
@@ -411,8 +411,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         if self.vers_ok(3.3):
             #  needs a short wait, so that display has time to be created
-            w("run -b 'sleep 0.2 ; $TMUX_BIN "
-              "set -w popup-border-lines rounded'")
+            w("run -b 'sleep 0.2 ; $TMUX_BIN " "set -w popup-border-lines rounded'")
 
         self.remove_unwanted_default_bindings()
 
@@ -455,7 +454,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         else:
             w(
                 'bind -N "Navigate ses/win/pane not available warning" '
-                f'{nav_key}  '
+                f"{nav_key}  "
                 'display "Navigate needs 2.7"'
             )
         w()  # Spacer
@@ -467,8 +466,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         if self.vers_ok(scrpad_min_vers):
             display_popup = "display-popup -h 70% -w 70% -E "
             if self.vers_ok(3.3):
-                display_popup += "-T " + \
-                    '"#[align=centre] pOpup Scratchpad Session " '
+                display_popup += "-T " + '"#[align=centre] pOpup Scratchpad Session " '
             w(
                 f'bind -N "pOpup scratchpad session"  {scrpad_key}  '
                 f'{display_popup} "$TMUX_BIN -u new-session -ADs scratch"'
@@ -570,7 +568,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         if self.vers_ok(2.4) and not self.is_tmate():
             w(
                 'bind -N "Toggle zoom for mouseovered pane" -n  '
-                'DoubleClick3Pane'
+                "DoubleClick3Pane"
                 ' resize-pane -Z -t= "{mouse}"'
             )
         w()  # spacer between sections
@@ -657,8 +655,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #  not flood status line
             #
             t2_tag = f"{self.vers.get()[:6]} {self.prefix_key} "
-            self.sb_left = f"#[fg=green,bg=black]{t2_tag}" + \
-                f"#[default]{self.sb_left}"
+            self.sb_left = f"#[fg=green,bg=black]{t2_tag}" + f"#[default]{self.sb_left}"
 
         self.filter_me_from_sb_right()
 
@@ -1013,8 +1010,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         if self.vers_ok(3.3):
             # Needs to wait until a window exists
-            w('run -b "sleep 0.2 ; $TMUX_BIN '
-              'set pane-border-indicators arrows"\n')
+            w('run -b "sleep 0.2 ; $TMUX_BIN ' 'set pane-border-indicators arrows"\n')
 
         #
         #  Pane title and size
@@ -1207,14 +1203,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
         """
         )
         if self.bind_meta:
-            w("bind -N 'Resize pane 1 up  - P K'     -n  C-M-Up     "
-              "resize-pane -U")
-            w("bind -N 'Resize pane 1 down  - P J'   -n  C-M-Down   "
-              "resize-pane -D")
-            w("bind -N 'Resize pane 1 left  - P H'   -n  C-M-Left   "
-              "resize-pane -L")
-            w("bind -N 'Resize pane 1 right  - P L'  -n  C-M-Right  "
-              "resize-pane -R")
+            w("bind -N 'Resize pane 1 up  - P K'     -n  C-M-Up     " "resize-pane -U")
+            w("bind -N 'Resize pane 1 down  - P J'   -n  C-M-Down   " "resize-pane -D")
+            w("bind -N 'Resize pane 1 left  - P H'   -n  C-M-Left   " "resize-pane -L")
+            w("bind -N 'Resize pane 1 right  - P L'  -n  C-M-Right  " "resize-pane -R")
         else:
             w(
                 """#  skipping adv keys, if resourced
@@ -1256,11 +1248,12 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  the intended action fairly simply.
     #
     def meta_ses_handling_UK(
-            self,
-            M_plus: str = "M-+",
-            M_par_open: str = "M-(",
-            M_par_close: str = "M-)",
-            M__: str = "M-_"):
+        self,
+        M_plus: str = "M-+",
+        M_par_open: str = "M-(",
+        M_par_close: str = "M-)",
+        M__: str = "M-_",
+    ):
         if M_plus in (None, ""):
             sys.exit("ERROR: meta_ses_handling_UK() M_plus undefined!")
 
@@ -1268,11 +1261,13 @@ class BaseConfig(TmuxConfig):  # type: ignore
         if self.bind_meta:
             w(
                 f'bind -N "Create new session  - P +"  -n {M_plus}  '
-                'command-prompt '
+                "command-prompt "
                 '-I "?" -p "Name of new session: " "new-session -s \\"%%\\""'
             )
-            w(f"bind -N 'Switch to last session  - P _'  -n  {M__}  "
-              "switch-client -l")
+            w(
+                f"bind -N 'Switch to last session  - P _'  -n  {M__}  "
+                "switch-client -l"
+            )
         else:
             w(
                 f"""#  skipping adv keys, if resourced
@@ -1300,17 +1295,20 @@ class BaseConfig(TmuxConfig):  # type: ignore
             else:
                 w(f"unbind -n  {M_par_close}")
 
-    def swap_window_UK(self, M_less_than: str = "M-<",
-                       M_greater_than: str = "M->"):
+    def swap_window_UK(self, M_less_than: str = "M-<", M_greater_than: str = "M->"):
         if not self.vers_ok(1.8):
             return
 
         if self.bind_meta:
             w = self.write
-            w(f'bind -N "Swap window left  - P <"  -n  {M_less_than}  '
-              'swap-window -dt:-1')
-            w(f'bind -N "Swap window right  - P >" -n  {M_greater_than}  '
-              'swap-window -dt:+1')
+            w(
+                f'bind -N "Swap window left  - P <"  -n  {M_less_than}  '
+                "swap-window -dt:-1"
+            )
+            w(
+                f'bind -N "Swap window right  - P >" -n  {M_greater_than}  '
+                "swap-window -dt:+1"
+            )
         else:
             self.write(
                 f"""#  skipping adv keys, if resourced
@@ -1367,8 +1365,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         )
 
     def split_entire_window_UK(
-            self, M_H: str = "M-H", M_J: str = "M-J", M_K: str = "M-K",
-            M_L: str = "M-L"
+        self, M_H: str = "M-H", M_J: str = "M-J", M_K: str = "M-K", M_L: str = "M-L"
     ):
         """iSH console doesn't generate correct ALT - Upper Case sequences,
         so when that is the env, intended keys must be bound as user keys.
@@ -1550,8 +1547,7 @@ timer_end() {{
 
     def mkscript_tpm_indicator(self):
         """Changes state for tpm_initializing with params: set clear"""
-        purge_seq = self.tpm_initializing.replace(
-            "[", "\\[").replace("]", "\\]")
+        purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
         self.sb_purge_tpm_running = "$TMUX_BIN set -q status-right "
         """\\"$($TMUX_BIN display -p '#{{status-right}}' | """
         """sed 's/{purge_seq}//')\\" """

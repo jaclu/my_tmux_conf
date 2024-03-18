@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-#  Copyright (c) 2022: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -30,8 +30,6 @@ from sb.sb_tst import SB
 
 
 class T2(ishHost, SB):
-    t2_env = True
-
     # plugin_handler = "manual"
     # plugin_handler: str = "tmux-plugins/tpm"
     # bind_meta = False
