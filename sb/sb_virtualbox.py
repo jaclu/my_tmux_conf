@@ -10,6 +10,7 @@
 
 """ Style virtualbox node """
 
+# pylint: disable=E0401
 from default_plugins import DefaultPlugins
 
 
@@ -19,6 +20,7 @@ class SB(DefaultPlugins):
     fnc_rev_sb_color = "msg_rev_sb_color"
 
     def status_bar_customization(self, print_header=True):
+        """override statusbar config"""
         self.assign_style(__file__)
         super().status_bar_customization(print_header=print_header)
         self.mkscript_rev_sb_color()

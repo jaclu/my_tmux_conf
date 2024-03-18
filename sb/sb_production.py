@@ -10,17 +10,21 @@
 
 """ Style production """
 
+# pylint: disable=E0401
 from default_plugins import DefaultPlugins
 
 
+# pylint: disable=R0903
 class SB(DefaultPlugins):
     """Style production"""
 
     def status_bar_customization(self, print_header=True):
+        """override statusbar config"""
         self.assign_style(__file__)
         super().status_bar_customization(print_header=print_header)
         if self.vers_ok("1.9"):
             self.write("set -g status-style fg=white,bg=red")
+            # pylint: disable=W0201
             self.hostname_template = "#[bg=colour195,fg=colour1] #h #[default]"
         return print_header  # request footer to be printed
 

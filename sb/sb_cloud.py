@@ -10,13 +10,16 @@
 
 """ Style cloud """
 
+# pylint: disable=E0401
 from default_plugins import DefaultPlugins
 
 
+# pylint: disable=R0903
 class SB(DefaultPlugins):
     """Style cloud"""
 
     def status_bar_customization(self, print_header=True):
+        """override statusbar config"""
         self.assign_style(__file__)
         super().status_bar_customization(print_header=print_header)
         if self.vers_ok("1.9"):

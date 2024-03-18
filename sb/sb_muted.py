@@ -11,12 +11,14 @@
 
 """ Style muted """
 
+# pylint: disable=E0401
 from default_plugins import DefaultPlugins
 
 THEME_TEXT = "colour135"  # lilac / magenta, not sure how to label this
 MUTED_TEXT = "colour242"  # grey
 
 
+# pylint: disable=R0903
 class SB(DefaultPlugins):
     """Style muted"""
 
@@ -24,10 +26,12 @@ class SB(DefaultPlugins):
     sb_left = f"#[fg={THEME_TEXT}]" "#{session_name}" f"#[fg={MUTED_TEXT}]: "
 
     def status_bar_customization(self, print_header=True):
+        """override statusbar config"""
         self.assign_style(__file__)
         super().status_bar_customization(print_header=print_header)
         w = self.write
         w("# this is sb_muted")
+        # pylint: disable=W0201
         self.hostname_template = f"#[fg={THEME_TEXT}]#{self.hostname_display}#[default]"
 
         self.sb_right = self.sb_right.replace("%a %h", f"#[fg={MUTED_TEXT}] %a %h")
