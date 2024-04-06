@@ -231,7 +231,7 @@ def main():
         else:
             msg += 'ssh'
         print(msg + '...')
-        os.system(hc.full_command_line())
+        os.system(hc.full_command_line())  # nosec
 
 
 #
