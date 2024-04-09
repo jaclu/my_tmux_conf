@@ -257,6 +257,7 @@ class DefaultPlugins(IshConsole):
             #  Version dependent settings for jaclu/tmux-menus
             set -g @menus_location_x  C
             set -g @menus_location_y  C
+            # set -g @menus_use_cache no
             """
         return ["jaclu/tmux-menus", 1.8, conf]
 
