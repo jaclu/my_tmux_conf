@@ -36,7 +36,7 @@ class IshHost(DefaultPlugins):
 
     # status_interval = 5
 
-    hostname_display: str = "(/usr/local/bin/hostname)"
+    # hostname_display: str = "(/usr/local/bin/hostname)"
 
     # plugin_handler = ""
 
