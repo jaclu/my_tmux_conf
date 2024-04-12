@@ -39,6 +39,7 @@ class T2(IshHost, SB):
     # bind_meta = False
     # use_embedded_scripts = False
     # is_limited_host = True
+    status_interval = 5
 
     #
     #  Override default plugins with empty stubs for plugins
@@ -52,19 +53,35 @@ class T2(IshHost, SB):
     #  in both states. If this is really needed in the inner tmux
     #  a separate capture key for t2 could be defined
     #
-    def not_plugin_suspend(self):
-        return ["jaclu/tmux-suspend", 99, ""]
-
-    def not_plugin_mouse_swipe(self):  # 3.0
-        return ["jaclu/tmux-mouse-swipe", 99, ""]
 
     #  Handled by outer tmux
     def not_plugin_jump(self):
         return ["jaclu/tmux-jump", 99, ""]
 
-    def not_plugin_zz_continuum(self):
-        # T2_ENV is a test env, so we do not want auto save/restore of env
-        return ["jaclu/tmux-continuum", 99, ""]
+    def plugin_packet_loss(self):  # 1.9
+        min_vers = 1.9
+        if self.is_tmate():
+            min_vers = 99  # disable for tmate
+        return [
+            "jaclu/tmux-packet-loss",
+            min_vers,
+            """
+            set -g @packet-loss-ping_count    4
+            set -g @packet-loss-history_size 10
+
+            set -g @packet-loss-display_trend     1
+            set -g @packet-loss-hist_avg_display  1
+
+            set -g @packet-loss-level_alert      26
+
+            set -g @packet-loss-color_alert colour21
+            set -g @packet-loss-color_crit  colour196
+            set -g @packet-loss-color_bg    colour226
+
+            set -g @packet-loss-prefix |
+            set -g @packet-loss-suffix |
+            """,
+        ]
 
 
 if __name__ == "__main__":

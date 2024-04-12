@@ -25,9 +25,11 @@
 
 from ish_host import IshHostWithStyle
 
-# class JacPad(IshHost):
-# status_interval = 5
-# ic_keyboard = ish_console.KBD_TYPE_BRYDGE_10_2_MAX
+
+#class JacPad(IshHostWithStyle):
+#    status_interval = 5
+
 
 if __name__ == "__main__":
     IshHostWithStyle().run()
+    # JacPad().run()
