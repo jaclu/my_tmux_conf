@@ -39,7 +39,7 @@ class T2(IshHost, SB):
     # bind_meta = False
     # use_embedded_scripts = False
     # is_limited_host = True
-    status_interval = 5
+    status_interval = 10
 
     #
     #  Override default plugins with empty stubs for plugins
@@ -66,8 +66,8 @@ class T2(IshHost, SB):
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            set -g @packet-loss-ping_count    4
-            set -g @packet-loss-history_size 10
+            set -g @packet-loss-ping_count    5
+            set -g @packet-loss-history_size  8
 
             set -g @packet-loss-display_trend     1
             set -g @packet-loss-hist_avg_display  1
