@@ -1479,7 +1479,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         {tpm_env}{tpm_app}
 
-        timer_end
+        timer_end "Completed tpm"
         {self.es.call_script(self._fnc_tpm_indicator)} clear
         exit 0
     fi
@@ -1533,20 +1533,21 @@ timer_start() {{
 timer_end() {{
     lbl="$1"
     t_duration="$(($(date +%s) - t_start))"
-    if [ $t_duration -gt 1 ]; then
-        #
-        #  Logging startup times for slow hosts
-        #
-        dte_mins="$((t_duration / 60))"
-        dte_seconds="$((t_duration - dte_mins * 60))"
-        #  Add zero prefix when < 10
-        [ "$dte_mins" -gt 0 ] && [ "$dte_mins" -lt 10 ] && dte_mins="0$dte_mins"
-        [ "$dte_seconds" -lt 10 ] && dte_seconds="0$dte_seconds"
-        msg="[$(date)] $dte_mins:$dte_seconds $TMUX_CONF"
-        [ -n "$lbl" ] && msg="$msg - $lbl"
-        TMPDIR="${{TMPDIR:-/tmp}}" # honour it if set
-        echo "$msg"  >> "$TMPDIR/tmux-tpm-startup-times"
-    fi
+    # if [ $t_duration -gt 1 ]; then
+    #     #
+    #     #  Logging startup times for slow hosts
+    #     #
+    #     dte_mins="$((t_duration / 60))"
+    #     dte_seconds="$((t_duration - dte_mins * 60))"
+    #     #  Add zero prefix when < 10
+    #     [ "$dte_mins" -gt 0 ] && [ "$dte_mins" -lt 10 ] && dte_mins="0$dte_mins"
+    #     [ "$dte_seconds" -lt 10 ] && dte_seconds="0$dte_seconds"
+    #     msg="[$(date)] $dte_mins:$dte_seconds $TMUX_CONF"
+    #     [ -n "$lbl" ] && msg="$msg - $lbl"
+    #     # d_tmp="${{TMPDIR:-/tmp}}" # honour it if set
+    #     echo "$msg"  >> "/tmp/tmux-tpm-startup-times"
+    # fi
+    echo "$lbl"  >> "/tmp/tmux-tpm-startup-times"
 }}
 """
         ]
