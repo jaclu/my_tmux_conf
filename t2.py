@@ -39,7 +39,7 @@ class T2(IshHost, SB):
     # bind_meta = False
     # use_embedded_scripts = False
     # is_limited_host = True
-    status_interval = 10
+    status_interval = 12
 
     #
     #  Override default plugins with empty stubs for plugins
