@@ -47,7 +47,7 @@ class JacMacConfig(SB):
             set -g @packet-loss-display_trend     1
             set -g @packet-loss-hist_avg_display  1
 
-            set -g @packet-loss-level_alert      26
+            set -g @packet-loss-level_alert      18  # 4-26 6-18
 
             set -g @packet-loss-color_alert colour21
             set -g @packet-loss-color_bg    colour226
