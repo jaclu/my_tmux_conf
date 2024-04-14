@@ -1547,7 +1547,6 @@ timer_end() {{
         TMPDIR="${{TMPDIR:-/tmp}}" # honour it if set
         echo "$msg"  >> "$TMPDIR"/tmux-tpm-startup-times
     fi
-    echo "$lbl"  >> "/tmp/tmux-tpm-startup-times"
 }}
 """
         ]
