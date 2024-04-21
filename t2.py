@@ -67,7 +67,7 @@ class T2(IshHost, SB):
             min_vers,
             """
             set -g @packet-loss-ping_host 8.8.8.8
-            
+
             set -g @packet-loss-display_trend     true
             set -g @packet-loss-hist_avg_display  true
 

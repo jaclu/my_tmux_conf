@@ -26,10 +26,31 @@
 from ish_host import IshHostWithStyle
 
 
-#class JacPad(IshHostWithStyle):
-#    status_interval = 5
+class JacPad(IshHostWithStyle):
+    status_interval = 5
+
+    def plugin_packet_loss(self):  # 1.9
+        min_vers = 1.9
+        if self.is_tmate():
+            min_vers = 99  # disable for tmate
+        return [
+            "jaclu/tmux-packet-loss",
+            min_vers,
+            """
+            # set -g @packet-loss-ping_host 8.8.8.8
+
+            set -g @packet-loss-display_trend     true
+            set -g @packet-loss-hist_avg_display  true
+
+            set -g @packet-loss-color_alert colour21
+            set -g @packet-loss-color_bg    colour226
+
+            set -g @packet-loss-prefix |
+            set -g @packet-loss-suffix |
+            """,
+        ]
 
 
 if __name__ == "__main__":
-    IshHostWithStyle().run()
-    # JacPad().run()
+    # IshHostWithStyle().run()
+    JacPad().run()

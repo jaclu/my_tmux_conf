@@ -42,13 +42,13 @@ class JacMacConfig(SB):
             min_vers,
             """
             # set -g @packet-loss-ping_host 8.8.4.4
-            set -g @packet-loss-ping_count    5
-            set -g @packet-loss-history_size  8
+            # set -g @packet-loss-ping_count    6
+            # set -g @packet-loss-history_size  8
 
             # set -g @packet-loss-weighted_average  yes
             set -g @packet-loss-display_trend       yes
 
-            # set -g @packet-loss-level_alert      18  # 4-26 6-17
+            # set -g @packet-loss-level_alert      16  # 4-26 6-17
             set -g @packet-loss-hist_avg_display  yes
 
             set -g @packet-loss-color_alert colour21
