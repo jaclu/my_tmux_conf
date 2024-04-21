@@ -37,7 +37,7 @@
 """base class used by tpm"""
 
 import os
-import subprocess
+import subprocess  # nosec
 import sys
 from pydoc import locate
 
@@ -271,7 +271,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
         """Local overrides applied last in the config, not related to
         status bar, for that see status_bar_customization()
         """
-        return
 
     def __base_overrides(self):
         """This should be at the very end of content subclasses
@@ -300,7 +299,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         #     """
         #     )
-        return
 
     #
     #  content methods broken up in parts, by content
@@ -589,7 +587,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             )
         w()  # spacer between sections
 
-    def status_bar(self):
+    def status_bar_prepare(self):
         w = self.write
         w(
             """
@@ -658,6 +656,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             self.sb_right += "#[reverse]#{?pane_synchronized,sync,}#[default]"
 
+    def status_bar(self):
+        w = self.write
+        self.status_bar_prepare()
         if self.status_bar_customization():
             w("\n#---   End of status_bar_customization()   ---")
 
@@ -738,7 +739,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         w()  # spacer between sections
 
-    def windows_handling(self):
+    def windows_handling_part_1(self):
         w = self.write
         w(
             """
@@ -819,6 +820,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
                   unbind -n  C-M-S-Right
                   """
                 )
+
+    def windows_handling(self):
+        self.windows_handling_part_1()
+        w = self.write
 
         #
         #  I tend to bind ^[9 & ^[0 to Alt-Left/Right in my terminal apps
@@ -1551,7 +1556,6 @@ timer_end() {{
 """
         ]
         self.es.create(self._fnc_activate_tpm, activate_tpm_sh)
-        return output
 
     def mkscript_tpm_indicator(self):
         """Changes state for tpm_initializing with params: set clear"""
@@ -1597,7 +1601,6 @@ timer_end() {{
 """
         ]
         self.es.create(self._fnc_tpm_indicator, clear_tpm_init_sh)
-        return
 
     def check_libs_compatible(self):
         """Inspection of tmux-conf version to see if it is compatible"""
