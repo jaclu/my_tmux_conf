@@ -68,14 +68,16 @@ class T2(IshHost, SB):
             """
             set -g @packet-loss-ping_host 8.8.8.8
             
-            set -g @packet-loss-display_trend     1
-            set -g @packet-loss-hist_avg_display  1
+            set -g @packet-loss-display_trend     true
+            set -g @packet-loss-hist_avg_display  true
 
             set -g @packet-loss-color_alert colour21
             set -g @packet-loss-color_bg    colour226
 
             set -g @packet-loss-prefix |
             set -g @packet-loss-suffix |
+
+            set -g @packet-loss-use_param_cache false
             """,
         ]
 
