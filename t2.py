@@ -66,10 +66,12 @@ class T2(IshHost, SB):
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            set -g @packet-loss-ping_host 8.8.8.8
+            set -g @packet-loss-ping_host 1.1.1.1
 
             set -g @packet-loss-display_trend     true
             set -g @packet-loss-hist_avg_display  true
+
+            set -g @packet-loss-level_disp   3 # makes a glitch disappear quicker
 
             set -g @packet-loss-color_alert colour21
             set -g @packet-loss-color_bg    colour226
