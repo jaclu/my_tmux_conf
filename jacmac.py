@@ -48,7 +48,7 @@ class JacMacConfig(SB):
             # set -g @packet-loss-weighted_average  yes
             set -g @packet-loss-display_trend       yes
 
-            set -g @packet-loss-level_disp  3
+            set -g @packet-loss-level_disp  5
 
             # set -g @packet-loss-level_alert      16  # 4-26 6-17
             set -g @packet-loss-hist_avg_display  yes
@@ -56,8 +56,6 @@ class JacMacConfig(SB):
             set -g @packet-loss-color_alert colour21
             set -g @packet-loss-color_bg    colour226
 
-            set -g @packet-loss-prefix '|'
-            set -g @packet-loss-suffix '|'
             """,
         ]
 

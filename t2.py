@@ -71,13 +71,10 @@ class T2(IshHost, SB):
             set -g @packet-loss-display_trend     yes
             set -g @packet-loss-hist_avg_display  yes
 
-            set -g @packet-loss-level_disp   3 # makes a glitch disappear quicker
+            set -g @packet-loss-level_disp   5
 
             set -g @packet-loss-color_alert colour21
             set -g @packet-loss-color_bg    colour226
-
-            set -g @packet-loss-prefix |
-            set -g @packet-loss-suffix |
 
             """,
         ]
