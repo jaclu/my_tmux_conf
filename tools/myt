@@ -14,21 +14,21 @@
 version="2.0.1"
 my_tmux_conf_location="/usr/local/my_tmux_conf"
 
-select_tmux_bin(){
+select_tmux_bin() {
     TMUX_BIN=""
     if [ -n "$tmux_bin" ]; then
-	# User defined tmux
-	TMUX_BIN="$tmux_bin"
-	unset tmux_bin
-	return
+        # User defined tmux
+        TMUX_BIN="$tmux_bin"
+        unset tmux_bin
+        return
     fi
     if [ -n "$ASDF_DIR" ]; then
-        if asdf list | grep -q tmux ; then
+        if asdf list | grep -q tmux; then
             TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
         fi
     fi
     [ -z "$TMUX_BIN" ] && TMUX_BIN="$(command -v "$tmux_bin")"
-    
+
     if [ -z "$TMUX_BIN" ]; then
         echo "ERROR: no tmux in PATH!"
         exit 1
@@ -48,8 +48,9 @@ regular_tmux() {
     if [ ! -f "${profile}" ]; then
         echo
         echo "*** Warning: no profile found for: $profile"
-        echo "***          using default profile"
+        echo "***          using default profile after 3 seconds"
         echo
+        sleep 3
         profile="${my_tmux_conf_location}/default_plugins.py"
     else
         # handle soft links to other directories
@@ -69,7 +70,7 @@ regular_tmux() {
         echo "Using existing proffile: $profile with: $TMUX_BIN"
     fi
     # echo "><> starting tmux session"
-    "$TMUX_BIN" -u new-session -ADs main
+    "$TMUX_BIN" -u new-session -ADs main -c "$d_initial"
 }
 
 tmux_2() {
@@ -82,6 +83,8 @@ tmux_2() {
     # defined in this location
     #
     mkdir -p "$HOME"/t2
+
+    # To help pick up the right tmux go here to search
     cd ~/t2 || exit
 
     #
@@ -89,7 +92,7 @@ tmux_2() {
     # to avoid incompatible menuitems
     #
     rm -rf ~/t2/tmux/plugins/tmux-menus/cache
-    
+
     select_tmux_bin
 
     #  Needs to be $HOME not ~ since it is sent into tmux_conf
@@ -103,7 +106,8 @@ tmux_2() {
         echo "Will use: $TMUX_BIN"
     fi
 
-    "$TMUX_BIN" -f ~/t2/tmux/tmux.conf -L serv2 new-session -ADs main
+    # cd "$d_initial" || exit
+    "$TMUX_BIN" -f ~/t2/tmux/tmux.conf -L serv2 new-session -ADs main -c "$d_initial"
 }
 
 display_help() {
@@ -130,6 +134,7 @@ quick_mode=0
 t2_env=0
 profile=""
 tmux_bin="tmux"
+d_initial="$PWD" # original pwd
 
 while [ -n "$1" ]; do
     case "$1" in
