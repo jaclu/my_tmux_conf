@@ -39,17 +39,20 @@ class JacPad(IshHostWithStyle):
             """
             # set -g @packet-loss-ping_host 8.8.8.8
 
-            set -g @packet-loss-display_trend     true
-            set -g @packet-loss-hist_avg_display  true
+            set -g @packet-loss-ping_count 3
+            set -g @packet-loss-level_alert 34
+            set -g @packet-loss-history_size 15
+
+            set -g @packet-loss-display_trend     yes
+            set -g @packet-loss-hist_avg_display  yes
+
+            set -g @packet-loss-level_disp   5
 
             set -g @packet-loss-color_alert colour21
             set -g @packet-loss-color_bg    colour226
 
-            set -g @packet-loss-prefix |
-            set -g @packet-loss-suffix |
             """,
         ]
-
 
 if __name__ == "__main__":
     # IshHostWithStyle().run()
