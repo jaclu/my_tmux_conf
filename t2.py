@@ -68,6 +68,10 @@ class T2(IshHost, SB):
             """
             set -g @packet-loss-ping_host 1.1.1.1
 
+            set -g @packet-loss-ping_count 3
+            set -g @packet-loss-level_alert 34
+            set -g @packet-loss-history_size 15
+
             set -g @packet-loss-display_trend     yes
             set -g @packet-loss-hist_avg_display  yes
 
