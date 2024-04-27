@@ -66,16 +66,16 @@ class T2(IshHost, SB):
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            set -g @packet-loss-ping_host 1.1.1.1
-
-            set -g @packet-loss-ping_count 3
-            set -g @packet-loss-level_alert 34
-            set -g @packet-loss-history_size 15
+            set -g @packet-loss-ping_host 8.8.8.8
+            
+            set -g @packet-loss-ping_count   7
+            set -g @packet-loss-history_size 5
+            set -g @packet-loss-level_alert 15
 
             set -g @packet-loss-display_trend     yes
             set -g @packet-loss-hist_avg_display  yes
 
-            set -g @packet-loss-level_disp   5
+            set -g @packet-loss-level_disp   1
 
             set -g @packet-loss-color_alert colour21
             set -g @packet-loss-color_bg    colour226
