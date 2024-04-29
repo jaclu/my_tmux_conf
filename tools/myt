@@ -70,7 +70,10 @@ regular_tmux() {
         echo "Using existing proffile: $profile with: $TMUX_BIN"
     fi
     # echo "><> starting tmux session"
-    cd "$d_initial"
+    cd "$d_initial" || {
+	echo "ERROR: Failed to cd back to [$d_initial]"
+	exit 1
+    }
     "$TMUX_BIN" -u new-session -ADs main
 }
 
