@@ -33,10 +33,12 @@ class Hetz1(SB):
             set -g @packet-loss-color_alert colour21
             set -g @packet-loss-color_bg    colour226
 
+            set -g @packet-loss-log_file  /tmp/tmux-packet-loss-hetz1.log
+
             """,
         ]
 
 
 if __name__ == "__main__":
-    SB().run()
-    # Hetz1().run()
+    # SB().run()
+    Hetz1().run()
