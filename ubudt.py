@@ -33,21 +33,23 @@ class UbuConfig(SB):
             "jaclu/tmux-packet-loss",
             1.9,
             """
-            set -g @packet-loss-ping_host "8.8.4.4"
-            set -g @packet-loss-ping_count "6"
-            set -g @packet-loss-history_size "6"
-            set -g @packet-loss_weighted_average "1"
+            # set -g @packet-loss-ping_host 1.1.1.1
+            # set -g @packet-loss-ping_count     7
+            # set -g @packet-loss-history_size   5
+            # set -g @packet-loss-level_alert 15 # 4-26 6-17 7-15
 
-            set -g @packet-loss_level_disp "0.1"
-            set -g @packet-loss_level_alert "16"
-            set -g @packet-loss_level_crit "40"
+            set -g @packet-loss-weighted_average  yes
+            set -g @packet-loss-display_trend     yes
 
-            #set -g @packet-loss_color_alert "colour181"
-            #set -g @packet-loss_color_crit "red"
-            #set -g @packet-loss_color_bg "black"
+            set -g @packet-loss-level_disp  5
 
-            set -g @packet-loss_prefix " | pkt loss: "
-            set -g @packet-loss_suffix " | "
+            set -g @packet-loss-hist_avg_display  yes
+
+            set -g @packet-loss-color_alert  colour21
+            set -g @packet-loss-color_bg     colour226
+
+            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-ubudt.log
+
             """,
         ]
 
