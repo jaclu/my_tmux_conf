@@ -26,19 +26,13 @@ class Hetz1(SB):
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            set -g @packet-loss-ping_count    6
-            set -g @packet-loss-history_size 6
+            set -g @packet-loss-ping_host 8.8.8.8
 
-            set -g @packet-loss-display_trend     1
-            set -g @packet-loss-hist_avg_display  1
-
-            set -g @packet-loss-level_alert      26
+            set -g @packet-loss-hist_avg_display  yes
 
             set -g @packet-loss-color_alert colour21
             set -g @packet-loss-color_bg    colour226
 
-            set -g @packet-loss-prefix '|'
-            set -g @packet-loss-suffix '|'
             """,
         ]
 
