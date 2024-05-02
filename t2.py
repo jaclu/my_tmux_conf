@@ -72,7 +72,7 @@ class T2(IshHost, SB):
             set -g @packet-loss-history_size 5
             set -g @packet-loss-level_alert 15
 
-            set -g @packet-loss-display_trend     yes
+            set -g @packet-loss-display_trend     no
             set -g @packet-loss-hist_avg_display  yes
 
             set -g @packet-loss-level_disp   1
