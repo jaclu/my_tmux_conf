@@ -26,6 +26,13 @@ class SB(DefaultPlugins):
             self.write("set -g status-style fg=white,bg=red")
             # pylint: disable=W0201
             self.hostname_template = "#[bg=colour195,fg=colour1] #h #[default]"
+        else:
+            self.write(
+                """
+                set -g status-fg white
+                set -g status-bg red
+                """
+            )
         return print_header  # request footer to be printed
 
 

@@ -14,7 +14,8 @@
 #  to revert to multiple session windows
 #
 
-# from default_plugins import DefaultPlugins as tmux
+# from default_plugins import DefaultPlugins
+
 # from sb.sb_cloud import SB
 # from sb.sb_ish import SB
 # from sb.sb_local import SB
@@ -22,14 +23,13 @@
 # from sb.sb_muted import SB
 # from sb.sb_virtualbox import SB
 
-from ish_host import IshHost
 from sb.sb_tst import SB
 
 # from sb.sb_acceptance import SB
 # from sb.sb_production import SB
 
 
-class T2(IshHost, SB):
+class T2(SB):
     """Inner tmux session"""
 
     t2_env = "1"

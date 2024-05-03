@@ -25,7 +25,7 @@
 
 """ A typical iSH host """
 
-import os
+# import os
 
 from default_plugins import DefaultPlugins
 from sb.sb_muted import SB
@@ -47,71 +47,6 @@ class IshHost(DefaultPlugins):
     #  are set to require tmux version 99 in default_plugins.py
     #  Thereby not making them available for iSH hosts
     #
-
-    def not_local_overides(self) -> None:
-        super().local_overides()
-        self.write(
-            """
-
-        set -s escape-time 0
-
-        #  Using Esc prefix for nav keys
-
-        set -s user-keys[200]  "\\302\\247" # Generates §
-        bind -N "Switch to -T escPrefix" -n User200 switch-client -T escPrefix
-
-        bind -T escPrefix  User200  send Escape # Double tap for actual Esc
-        bind -T escPrefix  Down     send PageDown
-        bind -T escPrefix  Up       send PageUp
-        bind -T escPrefix  Left     send Home
-        bind -T escPrefix  Right    send End
-        bind -T escPrefix  User201  send '\\'
-
-        set -s user-keys[201]  "\\302\\261" # Generates '±'  # Usually: ~
-        bind -N "Enables ~" -n User201 send '~'
-
-        # ⌥ Option+⇧ Shift+2 in United States layout
-        #set -s user-keys[202]  "\\033\\117\\121" # Usually: €
-        set -s user-keys[202]  "\\342\\202\\254" # Usually: €
-
-        bind -N "Enables €" -n User202 send '€'
-        """
-        )
-
-    def not_plugin_packet_loss(self) -> list:  # 1.9
-        if os.path.isfile("/etc/debian_version"):
-            # Ish Debian tends to fail on this plugin on my (oldish) iPads
-            min_vers = 99.0
-        else:
-            min_vers = 1.9
-        return [
-            "jaclu/tmux-packet-loss",
-            #
-            #  I sometimes experiment with this plugin on iSH
-            #  When not using it, I set the min version to way above
-            #  what will be found.
-            #
-            min_vers,
-            """
-            # set -g @packet-loss-ping_host 1.1.1.1
-            # set -g @packet-loss-ping_count     7
-            # set -g @packet-loss-history_size   5
-            # set -g @packet-loss-level_alert 15 # 4-26 6-17 7-15
-
-            set -g @packet-loss-weighted_average  yes
-            set -g @packet-loss-display_trend     yes
-
-            set -g @packet-loss-level_disp  5
-
-            set -g @packet-loss-hist_avg_display  yes
-
-            set -g @packet-loss-color_alert  colour21
-            set -g @packet-loss-color_bg     colour226
-
-            # set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss.log
-
-            """,
-        ]
 
 
 class IshHostWithStyle(IshHost, SB):

@@ -212,8 +212,8 @@ class DefaultPlugins(IshConsole):
         #  Default trigger: <prefix> j
         #
         k = "-n  M-j"
-        if self.is_limited_host or self.is_tmate():
-            # make sure this is never used, generates to much lag
+        if self.t2_env == "1" or self.is_limited_host or self.is_tmate():
+            # make sure this is never used, generates too much lag
             vers_min = 99
             self.write(
                 f"bind -N 'tmux-jump'  {k}  display "

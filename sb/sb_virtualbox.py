@@ -23,11 +23,19 @@ class SB(DefaultPlugins):
         """override statusbar config"""
         self.assign_style(__file__)
         super().status_bar_customization(print_header=print_header)
+        w = self.write
         self.mkscript_rev_sb_color()
         if self.vers_ok("1.9"):
-            w = self.write
             w("set -g status-style fg=colour19,bg=colour226")
             w(self.es.run_it(self.fnc_rev_sb_color))
+        else:
+            w(
+                """
+                set -g status-fg colour19
+                set -g status-bg colour226
+                """
+            )
+
         return print_header  # request footer to be printed
 
     def mkscript_rev_sb_color(self):

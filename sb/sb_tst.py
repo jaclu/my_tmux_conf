@@ -25,6 +25,14 @@ class SB(DefaultPlugins):
         super().status_bar_customization(print_header=print_header)
         if self.vers_ok("1.9"):
             self.write("set -g status-style fg=colour21,bg=white")
+        else:
+            self.write(
+                """
+                set -g status-fg colour21
+                set -g status-bg white
+                """
+            )
+
         return print_header  # request footer to be printed
 
 
