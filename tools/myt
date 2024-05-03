@@ -1,16 +1,17 @@
 #!/bin/sh
 #
-#  Copyright (c) 2022-2023: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
 #
-#  Auto-generates new .tmux.conf and starts it
+#  Auto-generates new tmux conf and starts tmux
 #
-#  -2 generates a secondary env, I use this for testing changes and plugins
-#  using asdf to potentially run this with a different tmux version
-#
-#  -q re-uses current config, can be used in combination with -2
+#  -q  re-uses current config
+#  -s  share session - connects without detaching other connections
+#  -2  generates a secondary env, I use this for testing changes and
+#      plugins, using asdf to potentially run this with a different
+#      tmux version
 #
 my_tmux_conf_location="/usr/local/my_tmux_conf"
 
@@ -27,7 +28,7 @@ select_tmux_bin() {
             TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
         fi
     else
-	TMUX_BIN="$(command -v tmux)"
+        TMUX_BIN="$(command -v tmux)"
     fi
     [ -z "$TMUX_BIN" ] && TMUX_BIN="$(command -v "$tmux_bin")"
 
@@ -59,26 +60,23 @@ start_tmux() {
         echo
         echo "ERROR: $socket instances for version other than: $tmux_vers running!"
         echo
-        echo "TMUX_BIN: $TMUX_BIN $socket_identifier"
-        echo "all_this_socket: [$all_this_socket]"
-        echo "all_this_vers:   [$all_this_vers]"
+        echo "Found the following processes:"
         echo
         #  shellcheck disable=SC2009
         ps ax | grep -v grep | grep " $socket"
         exit 1
     }
-    
+
     cd "$d_initial" || {
-	echo "ERROR: Failed to cd back to [$d_initial]"
-	exit 1
+        echo "ERROR: Failed to cd back to [$d_initial]"
+        exit 1
     }
 
     echo "TMUX_BIN [$TMUX_BIN] socket [$socket]"
     if $TMUX_BIN -L "$socket" list-sessions | grep -q main; then
-        echo "><> using attach"
-        $TMUX_BIN -L "$socket" -f "$conf_file" attach-session -dt "main"
+        $shared_session && detch="" || detch="-d"
+        eval "$TMUX_BIN" -L "$socket" -f "$conf_file" attach-session "$detch" -t main
     else
-        echo "><> using new-session"
         $TMUX_BIN -L "$socket" -f "$conf_file" new-session -s main
     fi
     echo "exiting tmux $(date)"
@@ -142,7 +140,7 @@ tmux_2() {
     rm -rf ~/t2/tmux/plugins/tmux-menus/cache
 
     select_tmux_bin
-    
+
     #conf_file="$HOME/t2/tmux/tmux.conf"
 
     if $quick_mode; then
@@ -166,11 +164,12 @@ Options can be given in any order.
 
 Availlable options:
 
--h  --help      Print this help and exit.
--c  --command   Use this tmux binary (default tmux)
--q              Dont generate config, start tmux direcly
--2              Run in T2_ENV (inner tmux, other prefix)
-profile         Run using specific profile
+-h       Print this help and exit.
+-c       Use this tmux binary (default tmux)
+-s       Share session
+-q       Dont generate config, start tmux direcly
+-2       Run in T2_ENV (inner tmux, other prefix)
+profile  Run using specific profile
 EOF
     exit 0
 }
@@ -182,21 +181,15 @@ d_initial="$PWD" # original pwd
 
 while [ -n "$1" ]; do
     case "$1" in
-
     "-h" | "--help") display_help ;;
-
-    "-c" | "--command")
+    "-c")
         shift
         tmux_bin="$1"
         ;;
-
-    "-q") quick_mode=1 ;;
-
+    "-s") shared_session=true ;;
+    "-q") quick_mode=true ;;
     "-2") t2_env=true ;;
-
-    *)
-        profile="$1"
-        ;;
+    *) profile="$1" ;;
     esac
 
     shift
