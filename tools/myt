@@ -26,6 +26,8 @@ select_tmux_bin() {
         if asdf list | grep -q tmux; then
             TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
         fi
+    else
+	TMUX_BIN="$(command -v tmux)"
     fi
     [ -z "$TMUX_BIN" ] && TMUX_BIN="$(command -v "$tmux_bin")"
 
@@ -108,11 +110,11 @@ regular_tmux() {
     #
     #  generate a fresh .tmux.conf
     #
-    if [ "$quick_mode" -eq 0 ]; then
+    if $quick_mode; then
+        echo "Using existing proffile: $profile with: $TMUX_BIN"
+    else
         # echo "><> Generating new profile"
         ! "${profile}" -r -t "$TMUX_BIN" "$conf_file" && exit 2
-    else
-        echo "Using existing proffile: $profile with: $TMUX_BIN"
     fi
 
     start_tmux
@@ -143,12 +145,12 @@ tmux_2() {
     
     #conf_file="$HOME/t2/tmux/tmux.conf"
 
-    if [ "$quick_mode" -eq 0 ]; then
+    if $quick_mode; then
+        echo "Using existing tmux conf"
+    else
         #  ensure previously used tmux bin is not picked up
         rm -f "$conf_file"
         ! T2_ENV=1 "${my_tmux_conf_location}/${profile}.py" -r -t "$TMUX_BIN" "$conf_file" && exit 2
-    else
-        echo "Will use: $TMUX_BIN"
     fi
 
     start_tmux
@@ -173,7 +175,7 @@ EOF
     exit 0
 }
 
-quick_mode=0
+quick_mode=false
 t2_env=false
 profile=""
 d_initial="$PWD" # original pwd
