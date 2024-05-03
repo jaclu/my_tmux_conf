@@ -598,22 +598,17 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #======================================================
         """
         )
-        #
-        #  Before 1.8 only basic text and strftime(3) can be used
-        #  So I just don't bother and leave the defaults
-        #
-        if self.vers_ok(1.8):
-            w("# Allow status to grow as needed")
-            if self.vers_ok(3.0):
-                unlimited = 0
-            else:
-                unlimited = 999
-            w(
-                f"""set -g  status-left-length  {unlimited}
-                  set -g  status-right-length {unlimited}
-                  """
-            )
-            w(f"set -g  status-interval {self.status_interval}")
+        w("# Allow status to grow as needed")
+        if self.vers_ok(3.0):
+            unlimited = 0
+        else:
+            unlimited = 999
+        w(
+            f"""set -g  status-left-length  {unlimited}
+            set -g  status-right-length {unlimited}
+            """
+        )
+        w(f"set -g  status-interval {self.status_interval}")
 
         w("set -g  status-position bottom")
 
@@ -682,6 +677,12 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #  unless hostname is also empty
             #
             self.hostname_template = " " + self.hostname_template
+
+        #
+        #  Before 1.8 only basic text and strftime(3) can be used
+        #
+        if not self.vers_ok(1.8):
+            self.sb_left = self.sb_left.replace("#{session_name}", "#S")
 
         self.sb_right = self.sb_right.replace(
             "USERNAME_TEMPLATE", self.username_template
@@ -860,22 +861,15 @@ class BaseConfig(TmuxConfig):  # type: ignore
                   """
                 )
 
-        if self.vers_ok(1.8):
-            #
-            #  Swap window left/right <prefix>  < / >
-            #
-            w(
-                """# window shuffle
+        #
+        #  Swap window left/right <prefix>  < / >
+        #
+        w(
+            """# window shuffle
             bind -N "Swap window left"         -r  <    swap-window -dt:-1
             bind -N "Swap window right"        -r  >    swap-window -dt:+1"""
-            )
-            self.swap_window_uk()
-        else:
-            # bind to < does not take effect, so no swap left warning
-            w(
-                'bind -N "Swap window right"  >  display "Swap window right '
-                'needs 1.8"'
-            )
+        )
+        self.swap_window_uk()
 
         # if self.vers_ok(2.3) and not self.is_tmate():
         #     #
