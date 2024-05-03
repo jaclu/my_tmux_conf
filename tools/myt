@@ -10,8 +10,8 @@
 #  -2 generates a secondary env, I use this for testing changes and plugins
 #  using asdf to potentially run this with a different tmux version
 #
-
-version="2.0.1"
+#  -q re-uses current config, can be used in combination with -2
+#
 my_tmux_conf_location="/usr/local/my_tmux_conf"
 
 select_tmux_bin() {
@@ -33,7 +33,53 @@ select_tmux_bin() {
         echo "ERROR: no tmux in PATH!"
         exit 1
     fi
-    # echo "Will use: $TMUX_BIN"
+
+    #  Needs to be $HOME not ~ since it is sent into tmux_conf
+    if $t2_env; then
+        socket=serv2
+        conf_file="$HOME/t2/tmux/tmux.conf"
+    else
+        socket=default
+        conf_file="$HOME/.tmux.conf"
+    fi
+
+    tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
+    echo "myt will use: $tmux_vers"
+}
+
+start_tmux() {
+    socket_identifier=" -L $socket "
+    #  shellcheck disable=SC2009,SC2126
+    all_this_socket="$(ps ax | grep -v grep | grep "$socket_identifier" | wc -l)"
+    #  shellcheck disable=SC2009,SC2126
+    all_this_vers="$(ps ax | grep -v grep | grep "$socket_identifier" | grep "$tmux_vers" | wc -l)"
+    [ "$all_this_socket" = "$all_this_vers" ] || {
+        echo
+        echo "ERROR: $socket instances for version other than: $tmux_vers running!"
+        echo
+        echo "TMUX_BIN: $TMUX_BIN $socket_identifier"
+        echo "all_this_socket: [$all_this_socket]"
+        echo "all_this_vers:   [$all_this_vers]"
+        echo
+        #  shellcheck disable=SC2009
+        ps ax | grep -v grep | grep " $socket"
+        exit 1
+    }
+    
+    cd "$d_initial" || {
+	echo "ERROR: Failed to cd back to [$d_initial]"
+	exit 1
+    }
+
+    echo "TMUX_BIN [$TMUX_BIN] socket [$socket]"
+    if $TMUX_BIN -L "$socket" list-sessions | grep -q main; then
+        echo "><> using attach"
+        $TMUX_BIN -L "$socket" -f "$conf_file" attach-session -dt "main"
+    else
+        echo "><> using new-session"
+        $TMUX_BIN -L "$socket" -f "$conf_file" new-session -s main
+    fi
+    echo "exiting tmux $(date)"
 }
 
 regular_tmux() {
@@ -59,22 +105,18 @@ regular_tmux() {
 
     select_tmux_bin
 
-    # echo "><> profile: $profile tmux: $TMUX_BIN"
     #
     #  generate a fresh .tmux.conf
     #
     if [ "$quick_mode" -eq 0 ]; then
         # echo "><> Generating new profile"
-        ! "${profile}" -r -t "$TMUX_BIN" && exit 2
+        ! "${profile}" -r -t "$TMUX_BIN" "$conf_file" && exit 2
     else
         echo "Using existing proffile: $profile with: $TMUX_BIN"
     fi
-    # echo "><> starting tmux session"
-    cd "$d_initial" || {
-	echo "ERROR: Failed to cd back to [$d_initial]"
-	exit 1
-    }
-    "$TMUX_BIN" -u new-session -ADs main
+
+    start_tmux
+    #$TMUX_BIN -u new-session -ADs main
 }
 
 tmux_2() {
@@ -93,25 +135,23 @@ tmux_2() {
 
     #
     # Since tmux version often is changed in t2, clear cache
-    # to avoid incompatible menuitems
+    # to avoid incompatible menu items
     #
     rm -rf ~/t2/tmux/plugins/tmux-menus/cache
 
     select_tmux_bin
-
-    #  Needs to be $HOME not ~ since it is sent into tmux_conf
-    conf_file="$HOME/t2/tmux/tmux.conf"
+    
+    #conf_file="$HOME/t2/tmux/tmux.conf"
 
     if [ "$quick_mode" -eq 0 ]; then
         #  ensure previously used tmux bin is not picked up
         rm -f "$conf_file"
-        ! T2_ENV=1 "${my_tmux_conf_location}/${profile}.py" -t "$TMUX_BIN" -r "$conf_file" && exit 2
+        ! T2_ENV=1 "${my_tmux_conf_location}/${profile}.py" -r -t "$TMUX_BIN" "$conf_file" && exit 2
     else
         echo "Will use: $TMUX_BIN"
     fi
 
-    cd "$d_initial" || exit
-    "$TMUX_BIN" -f ~/t2/tmux/tmux.conf -L serv2 new-session -ADs main # -c "$d_initial"
+    start_tmux
 }
 
 display_help() {
@@ -125,7 +165,6 @@ Options can be given in any order.
 Availlable options:
 
 -h  --help      Print this help and exit.
--v  --version   Print version and exit.
 -c  --command   Use this tmux binary (default tmux)
 -q              Dont generate config, start tmux direcly
 -2              Run in T2_ENV (inner tmux, other prefix)
@@ -135,20 +174,14 @@ EOF
 }
 
 quick_mode=0
-t2_env=0
+t2_env=false
 profile=""
-tmux_bin="tmux"
 d_initial="$PWD" # original pwd
 
 while [ -n "$1" ]; do
     case "$1" in
 
     "-h" | "--help") display_help ;;
-
-    "-v" | "--version")
-        echo "myt $version"
-        exit 0
-        ;;
 
     "-c" | "--command")
         shift
@@ -157,7 +190,7 @@ while [ -n "$1" ]; do
 
     "-q") quick_mode=1 ;;
 
-    "-2") t2_env=1 ;;
+    "-2") t2_env=true ;;
 
     *)
         profile="$1"
@@ -167,7 +200,7 @@ while [ -n "$1" ]; do
     shift
 done
 
-if [ "$t2_env" -eq 1 ]; then
+if $t2_env; then
     tmux_2
 else
     regular_tmux
