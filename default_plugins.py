@@ -237,6 +237,7 @@ class DefaultPlugins(IshConsole):
     def plugin_menus(self) -> list:  # 1.8
         conf = """
         set -g @menus_config_overrides 1
+        set -g @menus_log_file $HOME/tmp/tmux-menus.log
         """
 
         #
