@@ -90,14 +90,15 @@ class IshConsole(BaseConfig):
     def local_overides(self) -> None:
         super().local_overides()
         #
-        #  Only use this if session is running on the iSH console
-        #  that is 1) kernel is ish 2) not an ssh session,
-        #     3) not handled by an outer tmux
+        #  Only use this if the following conditions are met:
+        #     1) kernel is ish
+        #     2) not an ssh session,
+        #     3) key escapes not handled by an outer tmux
         #
         if (not os.path.exists("/proc/ish")) or os.environ.get("SSH_CONNECTION"):
             #
-            #  This check is only relent on the iSH console itself
-            #  and if no outer tmux is already handling the nav keyf
+            #  This c is only relevant on the iSH console itself
+            #  and if no outer tmux is already handling the nav keys
             #
             return
         if os.environ.get(NAV_KEY_HANDLED_TAG):
@@ -105,6 +106,7 @@ class IshConsole(BaseConfig):
             return
 
         self.is_ish_console = True
+        print("This is an iSH console, keyboard adoptions will be implemented")
 
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
