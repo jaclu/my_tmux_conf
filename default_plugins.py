@@ -236,30 +236,12 @@ class DefaultPlugins(IshConsole):
 
     def plugin_menus(self) -> list:  # 1.8
         conf = """
-        set -g @menus_config_overrides 1
-        set -g @menus_log_file $HOME/tmp/tmux-menus.log
+        # set -g @menus_log_file ~/tmp/tmux-menus.log
         """
-
         #
-        #  Popup menus that can be helpful default trigger:  <prefix> \
+        #  This plugin works in tmux 1.7, but that version do not support
+        #  @variables, so we say 1.8 here...
         #
-        #  menu_locations:
-        #
-        #  W - By the current window name in the status line (default)
-        #  P - Lower left of current pane
-        #  C - Centered in window (tmux 3.2 and up)
-        #  M - Mouse position
-        #  R - Right edge of terminal (Only for x)
-        #  S - Next to status line (Only for y)
-        #  Number - In window coordinates 0,0 is top left of screen
-        #
-        if self.vers_ok(3.2):
-            conf += """
-            #  Version dependent settings for jaclu/tmux-menus
-            set -g @menus_location_x  C
-            set -g @menus_location_y  C
-            # set -g @menus_use_cache no
-            """
         return ["jaclu/tmux-menus", 1.8, conf]
 
     def plugin_mouse_swipe(self) -> list:  # 3.0
