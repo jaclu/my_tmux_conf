@@ -372,7 +372,7 @@ class DefaultPlugins(IshConsole):
         #  copies text from the command line to the clipboard.
         #
         min_vers = 1.8
-        if self.is_tmate():
+        if self.is_limited_host or self.is_tmate():
             min_vers = 99  # disable for tmate
         return [
             "jaclu/tmux-yank",
