@@ -133,12 +133,6 @@ tmux_2() {
     # To help pick up the right tmux go here to search
     cd ~/t2 || exit
 
-    #
-    # Since tmux version often is changed in t2, clear cache
-    # to avoid incompatible menu items
-    #
-    rm -rf ~/t2/tmux/plugins/tmux-menus/cache
-
     select_tmux_bin
 
     #conf_file="$HOME/t2/tmux/tmux.conf"
