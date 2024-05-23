@@ -47,6 +47,15 @@ select_tmux_bin() {
     fi
 
     tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
+    #
+    #  Handle some odd versions
+    #
+    case "$tmux_vers" in
+    3.1-rc) tmux_vers="3.1" ;; # asdf tmux 3.1 reports as this
+    next-3.4) v_maj="3.4" ;;   # Alpine 3.18 reports as this
+    *) ;;
+    esac
+
     echo "myt will use: $tmux_vers"
 }
 
