@@ -54,12 +54,13 @@ class T2(SB):
     #  a separate capture key for t2 could be defined
     #
 
-    def plugin_which_key(self) -> list:
-        return ['alexwforsythe/tmux-which-key', 3.0, ""]
+    #def plugin_which_key(self) -> list:
+    #    return ['alexwforsythe/tmux-which-key', 3.0, ""]
 
     def plugin_menus(self) -> list:  # 1.8
         conf = """
         set -g @menus_log_file ~/tmp/tmux-menus-t2.log
+        set -g @menus_use_cache no
         """
         #
         #  This plugin works in tmux 1.7, but that version do not support

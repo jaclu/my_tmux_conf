@@ -41,7 +41,7 @@ class JacMacConfig(SB):
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            set -g @packet-loss-ping_host 8.8.8.8
+            set -g @packet-loss-ping_host 8.8.4.4
             set -g @packet-loss-ping_count     6
             set -g @packet-loss-history_size   6
             set -g @packet-loss-level_alert 18 # 4-26 6-18 7-15

@@ -367,7 +367,7 @@ class DefaultPlugins(IshConsole):
             '"@mode_indicator_custom_prompt::#[bg=yellow]💤#[default], "\n',
         ]
 
-    def plugin_yank(self) -> list:  # 1.8
+    def not_plugin_yank(self) -> list:  # 1.8
         #
         #  copies text from the command line to the clipboard.
         #
