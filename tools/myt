@@ -52,7 +52,10 @@ select_tmux_bin() {
     #
     case "$tmux_vers" in
     3.1-rc) tmux_vers="3.1" ;; # asdf tmux 3.1 reports as this
-    next-3.4) v_maj="3.4" ;;   # Alpine 3.18 reports as this
+
+    next-3.4)
+        #  shellcheck disable=SC2034 # TODO: check why this is alerting
+        v_maj="3.4" ;;   # Alpine 3.18 reports as this
     *) ;;
     esac
 

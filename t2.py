@@ -54,8 +54,8 @@ class T2(SB):
     #  a separate capture key for t2 could be defined
     #
 
-    #def plugin_which_key(self) -> list:
-    #    return ['alexwforsythe/tmux-which-key', 3.0, ""]
+    # def plugin_which_key(self) -> list:
+    #     return ['alexwforsythe/tmux-which-key', 3.0, ""]
 
     def plugin_menus(self) -> list:  # 1.8
         conf = """
