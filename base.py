@@ -793,7 +793,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         self.split_entire_window_uk()
         #
-        #  Same using arrow keys with C-M-S modifier
+        #  Same using arrow keys with <prefix> M-S modifier
         #
         if self.vers_ok(2.3) and not self.is_tmate():
             #
@@ -801,24 +801,24 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #  to be 2.4 compatible and this is a 2.3 feature...
             #
             if self.bind_meta:
-                sw1 = 'bind -N "Split window'  # hackish strings
+                sw1 = 'bind -N "Split entire window'  # hackish strings
                 sw2 = " split-window -f"  # to make sure
                 pcb = '-c "#{pane_current_path}"'  # line is not to long
                 w(
                     f"""# window splitting - bind_meta
-                {sw1} horizontally left"  -n  C-M-S-Left   {sw2}hb {pcb}
-                {sw1} vertically down"    -n  C-M-S-Down   {sw2}v  {pcb}
-                {sw1} vertically up"      -n  C-M-S-Up     {sw2}vb {pcb}
-                {sw1} horizontally right" -n  C-M-S-Right  {sw2}h  {pcb}
+                {sw1} horizontally left"    M-S-Left   {sw2}hb {pcb}
+                {sw1} vertically down"      M-S-Down   {sw2}v  {pcb}
+                {sw1} vertically up"        M-S-Up     {sw2}vb {pcb}
+                {sw1} horizontally right"   M-S-Right  {sw2}h  {pcb}
                 """
                 )
             else:
                 w(
                     """#  skipping bind_meta, if resourced
-                  unbind -n  C-M-S-Left
-                  unbind -n  C-M-S-Down
-                  unbind -n  C-M-S-Up
-                  unbind -n  C-M-S-Right
+                  unbind   M-S-Left
+                  unbind   M-S-Down
+                  unbind   M-S-Up
+                  unbind   M-S-Right
                   """
                 )
 
@@ -1216,17 +1216,27 @@ class BaseConfig(TmuxConfig):  # type: ignore
         """
         )
         if self.bind_meta:
-            w("bind -N 'Resize pane 1 up  - P K'     -n  C-M-Up     resize-pane -U")
+            # keys without prefix never needs repeat set
+            w("bind -N 'Resize pane 1 up    - P K'   -n  C-M-Up     resize-pane -U")
             w("bind -N 'Resize pane 1 down  - P J'   -n  C-M-Down   resize-pane -D")
             w("bind -N 'Resize pane 1 left  - P H'   -n  C-M-Left   resize-pane -L")
-            w("bind -N 'Resize pane 1 right  - P L'  -n  C-M-Right  resize-pane -R")
+            w("bind -N 'Resize pane 1 right - P L'   -n  C-M-Right  resize-pane -R")
+
+            w("bind -r -N 'Resize pane 5 up'     C-M-Up     resize-pane -U 5")
+            w("bind -r -N 'Resize pane 5 down'   C-M-Down   resize-pane -D 5")
+            w("bind -r -N 'Resize pane 5 left'   C-M-Left   resize-pane -L 5")
+            w("bind -r -N 'Resize pane 5 right'  C-M-Right  resize-pane -R 5")
         else:
             w(
                 """#  skipping adv keys, if resourced
             unbind -n  C-M-Up
             unbind -n  C-M-Down
             unbind -n  C-M-Left
-            unbind -n  C-M-Right"""
+            unbind -n  C-M-Right
+            unbind  C-M-Up
+            unbind  C-M-Down
+            unbind  C-M-Left
+            unbind  C-M-Right"""
             )
 
         w(

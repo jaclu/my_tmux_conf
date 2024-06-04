@@ -18,8 +18,9 @@ dependent acctions.
 Note | Description
 -|-
 `<p>` | Prefix key
-**  | Displayed since alt key is set
-*** | Rebound with: detach-on-destroy off
+`*`   | Default key bindings
+**    | Displayed since alt key is set
+***   | Rebound with: detach-on-destroy off
 
 ### General environment
 
@@ -60,40 +61,48 @@ Key | Alt key(-s) | Description
 
 Key | Alt key(-s) | Description
 -|-|-
-`<p>` 9 | M-9 | Previous window
-`<p>` 0 | M-0 | Next window
-`<p>` - | M-- | Last window
-`<p>` = | M-=| New window
-`<p>` < | M-< | Swap window left
-`<p>` > | M-> | Swap window right
-`<p>` M-H | C-M-S-Left | Split window left
-`<p>` M-J | C-M-S-Down | Split window down
-`<p>` M-K | C-M-S-Up | Split window up
-`<p>` M-L | C-M-S Right | Split window right
-`<p>` * | | Toggle synchronized tabs
-`<p>` W | | Rename window
-`<p>` & | `<p>` X | Kill window ***
+`<p>` 9   | M-9     | Previous window
+`<p>` 0   | M-0     | Next window
+`<p>` -   | M--     | Last window
+`<p>` =   | M-=     | New window
+`<p>` <   | M-<     | Swap window left
+`<p>` >   | M->     | Swap window right
+`<p>` *   |         | Toggle synchronized tabs
+`<p>` W   |         | Rename window
+`<p>` & * | `<p>` X | Kill window ***
+||
+`<p>` M-H | `<p>` M-S-Left  | Split window left
+`<p>` M-J | `<p>` M-S-Down  | Split window down
+`<p>` M-K | `<p>` M-S-Up    | Split window up
+`<p>` M-L | `<p>` M-S Right | Split window right
 
 ### Pane handling
 
-Key | Alt key | Description
--|-|-
-`<p>` B | | Choose paste buffer(-s)
-`<p>` M-l | | Clear history & screen
-`<p>` M-e | | Save history to file (with escapes)
-`<p>` M-h | | Save history to file (no escapes)
-`<p>` h | M-Left | Select pane to the left
-`<p>` j | M-Down | Select pane below
-`<p>` k | M-Up | Select pane above
-`<p>` l | M-Right | Select pane to the right
-`<p>` C-h | M-S-Left | Split pane to the left
-`<p>` C-j | M-S-Down | Split pane below
-`<p>` C-k | M-S-Up | Split pane above
-`<p>` C-l | M-S-Right | Split pane to the right
-`<p>` H | C-M-Left | Resize the pane left
-`<p>` J | C-M-Down | Resize the pane down
-`<p>` K | C-M-Up | Resize the pane up
-`<p>` L | C-M-Right | Resize the pane right
-`<p>` s | | Set pane size (w x h)
-`<p>` P | | Set pane title
-`<p>` x | | Kill pane ***
+Key | Alt key | Default | Description
+-|-|-|-
+`<p>` B   | | | Choose paste buffer(-s)
+`<p>` M-l | | | Clear history & screen
+`<p>` M-e | | | Save history to file (with escapes)
+`<p>` M-h | | | Save history to file (no escapes)
+`<p>` s   | | | Set pane size (w x h)
+`<p>` P   | | | Set pane title
+`<p>` x * | | | Kill pane ***
+|||
+`<p>` h | M-Left  | `<p>` Left  | Select pane to the left
+`<p>` j | M-Down  | `<p>` Down  | Select pane below
+`<p>` k | M-Up    | `<p>` Up    | Select pane above
+`<p>` l | M-Right | `<p>` Right | Select pane to the right
+|||
+`<p>` H | C-M-Left  | `<p>` C-Left  | Resize the pane left by 1
+`<p>` J | C-M-Down  | `<p>` C-Down  | Resize the pane down by 1
+`<p>` K | C-M-Up    | `<p>` C-Up    | Resize the pane up by 1
+`<p>` L | C-M-Right | `<p>` C-Right | Resize the pane right by 1
+| | `<p>` C-M-Left  | `<p>` M-Left  | Resize the pane left by 5
+| | `<p>` C-M-Down  | `<p>` M-Down  | Resize the pane down by 5
+| | `<p>` C-M-Up    | `<p>` M-Up    | Resize the pane up by 5
+| | `<p>` C-M-Right | `<p>` M-Right | Resize the pane right by 5
+|||
+`<p>` C-h | M-S-Left  |         | Split pane to the left
+`<p>` C-j | M-S-Down  | `<p>` % | Split pane below
+`<p>` C-k | M-S-Up    |         | Split pane above
+`<p>` C-l | M-S-Right | `<p>` " | Split pane to the right
