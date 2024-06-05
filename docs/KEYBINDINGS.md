@@ -93,17 +93,17 @@ Key | Alt key | Default | Description
 `<p>` k | M-Up    | `<p>` Up    | Select pane above
 `<p>` l | M-Right | `<p>` Right | Select pane to the right
 <nbsp> |<nbsp> |<nbsp> | <nbsp>
-`<p>` H | C-M-Left  | `<p>` C-Left  | Resize the pane left by 1
-`<p>` J | C-M-Down  | `<p>` C-Down  | Resize the pane down by 1
-`<p>` K | C-M-Up    | `<p>` C-Up    | Resize the pane up by 1
-`<p>` L | C-M-Right | `<p>` C-Right | Resize the pane right by 1
+`<p>` H | C-S-Left  | `<p>` C-Left  | Resize the pane left by 1
+`<p>` J | C-S-Down  | `<p>` C-Down  | Resize the pane down by 1
+`<p>` K | C-S-Up    | `<p>` C-Up    | Resize the pane up by 1
+`<p>` L | C-S-Right | `<p>` C-Right | Resize the pane right by 1
 <nbsp> |<nbsp> |<nbsp> | <nbsp>
-<nbsp> | `<p>` C-M-Left  | `<p>` M-Left  | Resize the pane left by 5
-<nbsp> | `<p>` C-M-Down  | `<p>` M-Down  | Resize the pane down by 5
-<nbsp> | `<p>` C-M-Up    | `<p>` M-Up    | Resize the pane up by 5
-<nbsp> | `<p>` C-M-Right | `<p>` M-Right | Resize the pane right by 5
+<nbsp> | M-S-Left  | `<p>` M-Left  | Resize the pane left by 5
+<nbsp> | M-S-Down  | `<p>` M-Down  | Resize the pane down by 5
+<nbsp> | M-S-Up    | `<p>` M-Up    | Resize the pane up by 5
+<nbsp> | M-S-Right | `<p>` M-Right | Resize the pane right by 5
 <nbsp> |<nbsp> |<nbsp> | <nbsp>
-`<p>` C-h | M-S-Left  |         | Split pane to the left
-`<p>` C-j | M-S-Down  | `<p>` % | Split pane below
-`<p>` C-k | M-S-Up    |         | Split pane above
-`<p>` C-l | M-S-Right | `<p>` " | Split pane to the right
+`<p>` C-h | C-M-Left  |         | Split pane to the left
+`<p>` C-j | C-M-Down  | `<p>` % | Split pane below
+`<p>` C-k | C-M-Up    |         | Split pane above
+`<p>` C-l | C-M-Right | `<p>` " | Split pane to the right

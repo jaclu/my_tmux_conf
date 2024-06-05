@@ -806,19 +806,19 @@ class BaseConfig(TmuxConfig):  # type: ignore
                 pcb = '-c "#{pane_current_path}"'  # line is not to long
                 w(
                     f"""# window splitting - bind_meta
-                {sw1} horizontally left"    M-S-Left   {sw2}hb {pcb}
-                {sw1} vertically down"      M-S-Down   {sw2}v  {pcb}
-                {sw1} vertically up"        M-S-Up     {sw2}vb {pcb}
-                {sw1} horizontally right"   M-S-Right  {sw2}h  {pcb}
+                {sw1} horizontally left"    C-M-Left   {sw2}hb {pcb}
+                {sw1} vertically down"      C-M-Down   {sw2}v  {pcb}
+                {sw1} vertically up"        C-M-Up     {sw2}vb {pcb}
+                {sw1} horizontally right"   C-M-Right  {sw2}h  {pcb}
                 """
                 )
             else:
                 w(
                     """#  skipping bind_meta, if resourced
-                  unbind   M-S-Left
-                  unbind   M-S-Down
-                  unbind   M-S-Up
-                  unbind   M-S-Right
+                  unbind   C-M-Left
+                  unbind   C-M-Down
+                  unbind   C-M-Up
+                  unbind   C-M-Right
                   """
                 )
 
@@ -1158,31 +1158,31 @@ class BaseConfig(TmuxConfig):  # type: ignore
             if self.bind_meta:
                 w(
                     'bind -N "Split pane to the right  - P C-l" -n  '
-                    'S-M-Right  split-window -h  -c "#{pane_current_path}"'
+                    'C-M-Right  split-window -h  -c "#{pane_current_path}"'
                 )
                 w(
                     'bind -N "Split pane below  - P C-j"    -n  '
-                    'S-M-Down   split-window -v  -c "#{pane_current_path}"'
+                    'C-M-Down   split-window -v  -c "#{pane_current_path}"'
                 )
                 if self.vers_ok(2.0):
                     w(
                         'bind -N "Split pane to the left  - P C-h"  '
-                        "-n  S-M-Left   split-window -hb -c "
+                        "-n  C-M-Left   split-window -hb -c "
                         '"#{pane_current_path}"'
                     )
                     w(
                         'bind -N "Split pane above  - P C-k"      '
-                        "-n  S-M-Up     split-window -vb -c "
+                        "-n  C-M-Up     split-window -vb -c "
                         '"#{pane_current_path}"'
                     )
                 w()
             else:
                 w(
                     """#  skipping adv keys, if resourced
-                unbind -n  S-M-Right
-                unbind -n  S-M-Down
-                unbind -n  S-M-Left
-                unbind -n  S-M-Up
+                unbind -n  C-M-Right
+                unbind -n  C-M-Down
+                unbind -n  C-M-Left
+                unbind -n  C-M-Up
                 """
                 )
 
@@ -1217,26 +1217,26 @@ class BaseConfig(TmuxConfig):  # type: ignore
         )
         if self.bind_meta:
             # keys without prefix never needs repeat set
-            w("bind -N 'Resize pane 1 up    - P K'   -n  C-M-Up     resize-pane -U")
-            w("bind -N 'Resize pane 1 down  - P J'   -n  C-M-Down   resize-pane -D")
-            w("bind -N 'Resize pane 1 left  - P H'   -n  C-M-Left   resize-pane -L")
-            w("bind -N 'Resize pane 1 right - P L'   -n  C-M-Right  resize-pane -R")
+            w("bind -N 'Resize pane 1 up    - P K'   -n  C-S-Up     resize-pane -U")
+            w("bind -N 'Resize pane 1 down  - P J'   -n  C-S-Down   resize-pane -D")
+            w("bind -N 'Resize pane 1 left  - P H'   -n  C-S-Left   resize-pane -L")
+            w("bind -N 'Resize pane 1 right - P L'   -n  C-S-Right  resize-pane -R")
 
-            w("bind -r -N 'Resize pane 5 up'     C-M-Up     resize-pane -U 5")
-            w("bind -r -N 'Resize pane 5 down'   C-M-Down   resize-pane -D 5")
-            w("bind -r -N 'Resize pane 5 left'   C-M-Left   resize-pane -L 5")
-            w("bind -r -N 'Resize pane 5 right'  C-M-Right  resize-pane -R 5")
+            w("bind -N 'Resize pane 5 up'    -n  M-S-Up     resize-pane -U 5")
+            w("bind -N 'Resize pane 5 down'  -n  M-S-Down   resize-pane -D 5")
+            w("bind -N 'Resize pane 5 left'  -n  M-S-Left   resize-pane -L 5")
+            w("bind -N 'Resize pane 5 right' -n  M-S-Right  resize-pane -R 5")
         else:
             w(
                 """#  skipping adv keys, if resourced
-            unbind -n  C-M-Up
-            unbind -n  C-M-Down
-            unbind -n  C-M-Left
-            unbind -n  C-M-Right
-            unbind  C-M-Up
-            unbind  C-M-Down
-            unbind  C-M-Left
-            unbind  C-M-Right"""
+            unbind -n  C-S-Up
+            unbind -n  C-S-Down
+            unbind -n  C-S-Left
+            unbind -n  C-S-Right
+            unbind -n  M-S-Up
+            unbind -n  M-S-Down
+            unbind -n  M-S-Left
+            unbind -n  C-M-Right"""
             )
 
         w(
