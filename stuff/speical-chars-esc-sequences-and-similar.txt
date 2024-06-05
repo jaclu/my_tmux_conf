@@ -55,17 +55,17 @@
 #  C-R          ^[[1;5C     1B 5B 31 3B 35 43
 #  C-L          ^[[1;5D     1B 5B 31 3B 35 44
 #
-#  S-C-Right    ^[[1;6C     1B 5B 31 3B 36 43
-#  S-C-Left     ^[[1;6D     1B 5B 31 3B 36 44
+#  C-S-Right    ^[[1;6C     1B 5B 31 3B 36 43
+#  C-S-Left     ^[[1;6D     1B 5B 31 3B 36 44
 
 #  M-Right      ^[[1;3C     1B 5B 31 3B 33 43
 #  M-Left       ^[[1;3D     1B 5B 31 3B 33 44
 
-#  S-M-Right    ^[[1;10C    1B 5B 31 3B 31 30 43
-#  S-M-Left     ^[[1;10D    1B 5B 31 3B 31 30 44
+#  M-S-Right    ^[[1;10C    1B 5B 31 3B 31 30 43
+#  M-S-Left     ^[[1;10D    1B 5B 31 3B 31 30 44
 
-#  C-S-M-Right  ^[[1;14C    1B 5B 31 3B 31 34 43
-#  C-S-M-Left   ^[[1;14D    1B 5B 31 3B 31 34 44
+#  C-M-S-Right  ^[[1;14C    1B 5B 31 3B 31 34 43
+#  C-M-S-Left   ^[[1;14D    1B 5B 31 3B 31 34 44
 
 
 #alt-S
