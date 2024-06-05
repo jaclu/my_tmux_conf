@@ -35,17 +35,17 @@ rainbowColor() {
     ((t = f * 255 / 43))
     ((q = 255 - t))
 
-    if [ $h -eq 0 ]; then
+    if [[ $h -eq 0 ]]; then
         echo "255 $t 0"
-    elif [ $h -eq 1 ]; then
+    elif [[ $h -eq 1 ]]; then
         echo "$q 255 0"
-    elif [ $h -eq 2 ]; then
+    elif [[ $h -eq 2 ]]; then
         echo "0 255 $t"
-    elif [ $h -eq 3 ]; then
+    elif [[ $h -eq 3 ]]; then
         echo "0 $q 255"
-    elif [ $h -eq 4 ]; then
+    elif [[ $h -eq 4 ]]; then
         echo "$t 0 255"
-    elif [ $h -eq 5 ]; then
+    elif [[ $h -eq 5 ]]; then
         echo "255 0 $q"
     else
         # execution should never reach here
