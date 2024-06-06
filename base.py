@@ -727,6 +727,16 @@ class BaseConfig(TmuxConfig):  # type: ignore
         bind -N "Switch to last session"      _  switch-client -l"""
         )
 
+        if self.bind_meta:
+            w("""bind -N "Select previous session" -n C-M-S-Up switch-client -p
+            bind -N "Select next session" -n C-M-S-Down switch-client -n"""
+              )
+        else:
+            w(
+                """#  skipping adv keys, if resourced
+            unbind -n  C-M-S-Up
+            unbind -n  C-M-S-Down"""
+            )
         w(
             'bind -N "Rename Session"  S    command-prompt -I "#S" '
             '"rename-session -- \\"%%\\""'
@@ -782,11 +792,21 @@ class BaseConfig(TmuxConfig):  # type: ignore
         w(
             """
         # window navigation
-        bind -N "Previous Window"        -r  9    previous-window
-        bind -N "Next Window"            -r  0    next-window
-        bind -N "Last Window"                -    last-window
+        bind -N "Select previous Window"        -r  9    previous-window
+        bind -N "Select next Window"            -r  0    next-window
+        bind -N "Select last Window"                -    last-window
         """
         )
+        if self.bind_meta:
+            w("""bind -N "Select previous Window" -n C-M-S-Right next-window
+            bind -N "Select next Window" -n C-M-S-Left previous-window"""
+              )
+        else:
+            w(
+                """#  skipping adv keys, if resourced
+            unbind -n  C-M-S-Right
+            unbind -n  C-M-S-Left"""
+            )
 
         #
         #  Splitting the entire window
