@@ -54,7 +54,7 @@ Key | Description
 <nbsp>    | `M-_`              | <nbsp>  | Previously current session
  `<p>` +  | `M-+`              | <nbsp>  | Create named session
  `<p>` S  | <nbsp>             | `<p>` $ | Rename session
- | <nbsp> | `<p> M-x`         | <nbsp>  | Kill session
+ <nbsp> | `<p> M-x`         | <nbsp>  | Kill session
 
 ### Window handling
 
