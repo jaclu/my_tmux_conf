@@ -89,6 +89,8 @@ class T2(SB):
 
             set -g @packet-loss-color_alert colour21
             set -g @packet-loss-color_bg    colour226
+            
+            set -g @packet-loss-hook_idx -1
 
             set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
 
