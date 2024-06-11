@@ -43,7 +43,6 @@ class JacPad(IshHostWithStyle):
             # set -g @packet-loss-level_alert 15 # 4-26 6-17 7-15
 
             set -g @packet-loss-weighted_average  yes
-            set -g @packet-loss-display_trend     yes
 
             set -g @packet-loss-level_disp  5
 
