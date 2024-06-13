@@ -84,6 +84,7 @@ class T2(SB):
 
             set -g @packet-loss-display_trend     no
             set -g @packet-loss-hist_avg_display  yes
+            # set -g @packet-loss-run_disconnected yes
 
             set -g @packet-loss-level_disp   5
 
@@ -91,9 +92,7 @@ class T2(SB):
 
             set -g @packet-loss-level_crit 50
 
-           set -g @packet-loss-color_bg    colour226
-
-            set -g @packet-loss-hook_idx -1
+            set -g @packet-loss-color_bg    colour226
 
             set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
 

@@ -29,6 +29,7 @@ class Hetz1(SB):
             set -g @packet-loss-ping_host 8.8.8.8
 
             set -g @packet-loss-hist_avg_display  yes
+            set -g @packet-loss-run_disconnected  yes
 
             set -g @packet-loss-level_crit 50
 
