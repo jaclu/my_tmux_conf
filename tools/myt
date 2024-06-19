@@ -85,7 +85,7 @@ start_tmux() {
     if $quick_mode; then
         echo "Using existing: $conf_file with: $TMUX_BIN"
     else
-        ! T2_ENV="$t2_env" "$my_tmux_conf_location/${profile}.py" -r -t "$TMUX_BIN" "$
+        ! T2_ENV="$t2_env" "$my_tmux_conf_location/${profile}" -r -t "$TMUX_BIN" "$
 conf_file" && exit 2
         ## echo "><> Generating new profile"
         #! "${profile}" -r -t "$TMUX_BIN" "$conf_file" && exit 2
@@ -134,7 +134,7 @@ regular_tmux() {
 
 tmux_2() {
     if [ -z "$profile" ]; then
-        profile="t2"
+        profile="t2.py"
     fi
 
     #
