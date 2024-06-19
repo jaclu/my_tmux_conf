@@ -98,7 +98,7 @@ start_tmux() {
     }
 
     echo "TMUX_BIN [$TMUX_BIN] socket [$socket]"
-    if $TMUX_BIN -L "$socket" list-sessions | grep -q main; then
+    if $TMUX_BIN -L "$socket" list-sessions 2>/dev/null | grep -q main; then
         $shared_session && detch="" || detch="-d"
         eval "$TMUX_BIN" -L "$socket" -f "$conf_file" attach-session "$detch" -t main
     else
