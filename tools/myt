@@ -38,7 +38,7 @@ select_tmux_bin() {
     fi
 
     #  Needs to be $HOME not ~ since it is sent into tmux_conf
-    if $t2_env; then
+    if [ "$t2_env" -eq 1 ]; then
         socket=serv2
         conf_file="$HOME/t2/tmux/tmux.conf"
     else
@@ -79,6 +79,18 @@ start_tmux() {
         exit 1
     }
 
+    #
+    #  conf file handling
+    #
+    if $quick_mode; then
+        echo "Using existing: $conf_file with: $TMUX_BIN"
+    else
+        ! T2_ENV="$t2_env" "$my_tmux_conf_location/${profile}.py" -r -t "$TMUX_BIN" "$
+conf_file" && exit 2
+        ## echo "><> Generating new profile"
+        #! "${profile}" -r -t "$TMUX_BIN" "$conf_file" && exit 2
+    fi
+
     cd "$d_initial" || {
         echo "ERROR: Failed to cd back to [$d_initial]"
         exit 1
@@ -109,24 +121,13 @@ regular_tmux() {
         echo "***          using default profile after 3 seconds"
         echo
         sleep 3
-        profile="${my_tmux_conf_location}/default_plugins.py"
+        profile="$my_tmux_conf_location/default_plugins.py"
     else
         # handle soft links to other directories
         profile="$(realpath "$profile")"
     fi
 
     select_tmux_bin
-
-    #
-    #  generate a fresh .tmux.conf
-    #
-    if $quick_mode; then
-        echo "Using existing profile: $profile with: $TMUX_BIN"
-    else
-        # echo "><> Generating new profile"
-        ! "${profile}" -r -t "$TMUX_BIN" "$conf_file" && exit 2
-    fi
-
     start_tmux
     #$TMUX_BIN -u new-session -ADs main
 }
@@ -146,17 +147,6 @@ tmux_2() {
     cd ~/t2 || exit
 
     select_tmux_bin
-
-    #conf_file="$HOME/t2/tmux/tmux.conf"
-
-    if $quick_mode; then
-        echo "Using existing tmux conf"
-    else
-        #  ensure previously used tmux bin is not picked up
-        rm -f "$conf_file"
-        ! T2_ENV=1 "${my_tmux_conf_location}/${profile}.py" -r -t "$TMUX_BIN" "$conf_file" && exit 2
-    fi
-
     start_tmux
 }
 
@@ -182,7 +172,7 @@ EOF
 
 shared_session=false
 quick_mode=false
-t2_env=false
+t2_env=0
 profile=""
 d_initial="$PWD" # original pwd
 
@@ -195,14 +185,14 @@ while [ -n "$1" ]; do
         ;;
     "-s") shared_session=true ;;
     "-q") quick_mode=true ;;
-    "-2") t2_env=true ;;
+    "-2") t2_env=1 ;;
     *) profile="$1" ;;
     esac
 
     shift
 done
 
-if $t2_env; then
+if [ "$t2_env" -eq 1 ]; then
     tmux_2
 else
     regular_tmux
