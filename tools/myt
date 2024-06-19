@@ -83,12 +83,12 @@ start_tmux() {
     #  conf file handling
     #
     if $quick_mode; then
-        echo "Using existing: $conf_file with: $TMUX_BIN"
+        echo "Using existing: $conf_file"
     else
         if $t2_env; then
-            ! T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file" && exit 2
+            T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file" || exit 2
         else
-            ! "$profile" -r -t "$TMUX_BIN" "$conf_file" && exit 2
+            "$profile" -r -t "$TMUX_BIN" "$conf_file" || exit 2
         fi
     fi
 
