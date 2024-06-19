@@ -98,13 +98,14 @@ start_tmux() {
     }
 
     echo "TMUX_BIN [$TMUX_BIN] socket [$socket]"
+    echo
     if $TMUX_BIN -L "$socket" list-sessions 2>/dev/null | grep -q main; then
         $shared_session && detch="" || detch="-d"
         eval "$TMUX_BIN" -L "$socket" -f "$conf_file" attach-session "$detch" -t main
     else
         $TMUX_BIN -L "$socket" -f "$conf_file" new-session -s main
     fi
-    echo "exiting tmux $(date)"
+    echo "[$(date)] exited tmux"
 }
 
 regular_tmux() {
