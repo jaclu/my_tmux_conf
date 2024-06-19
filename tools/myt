@@ -38,7 +38,7 @@ select_tmux_bin() {
     fi
 
     #  Needs to be $HOME not ~ since it is sent into tmux_conf
-    if [ "$t2_env" -eq 1 ]; then
+    if $t2_env; then
         socket=serv2
         conf_file="$HOME/t2/tmux/tmux.conf"
     else
@@ -85,7 +85,11 @@ start_tmux() {
     if $quick_mode; then
         echo "Using existing: $conf_file with: $TMUX_BIN"
     else
-        ! T2_ENV="$t2_env" "$profile" -r -t "$TMUX_BIN" "$conf_file" && exit 2
+        if $t2_env; then
+            ! T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file" && exit 2
+        else
+            "$profile" -r -t "$TMUX_BIN" "$conf_file" && exit 2
+        fi
     fi
 
     cd "$d_initial" || {
@@ -169,7 +173,7 @@ EOF
 
 shared_session=false
 quick_mode=false
-t2_env=0
+t2_env=false
 profile=""
 d_initial="$PWD" # original pwd
 
@@ -182,14 +186,14 @@ while [ -n "$1" ]; do
         ;;
     "-s") shared_session=true ;;
     "-q") quick_mode=true ;;
-    "-2") t2_env=1 ;;
+    "-2") t2_env=true ;;
     *) profile="$1" ;;
     esac
 
     shift
 done
 
-if [ "$t2_env" -eq 1 ]; then
+if $t2_env; then
     tmux_2
 else
     regular_tmux
