@@ -14,10 +14,10 @@
 #  to revert to multiple session windows
 #
 
-import subprocess
+import subprocess  # nosec
 
 # pylint: disable=subprocess-run-check
-result = subprocess.run("hostname -s", capture_output=True, text=True, 
+result = subprocess.run("hostname -s", capture_output=True, text=True,  # nosec: B607
                         shell=True)  # nosec: B602
 hostname = result.stdout.strip()
 # print(f"hostname: [{hostname}]")
