@@ -23,7 +23,15 @@
 # from sb.sb_muted import SB
 # from sb.sb_virtualbox import SB
 
-from sb.sb_tst import SB
+import socket
+
+hostname = socket.gethostname()
+
+if hostname == "ish-hetz1":
+    from sb.sb_acceptance import SB
+else:
+    from sb.sb_tst import SB
+
 
 # from sb.sb_acceptance import SB
 # from sb.sb_production import SB
