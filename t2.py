@@ -14,27 +14,19 @@
 #  to revert to multiple session windows
 #
 
-# from default_plugins import DefaultPlugins
+import subprocess
 
-# from sb.sb_cloud import SB
-# from sb.sb_ish import SB
-# from sb.sb_local import SB
-
-# from sb.sb_muted import SB
-# from sb.sb_virtualbox import SB
-
-import socket
-
-hostname = socket.gethostname()
+# pylint: disable=subprocess-run-check
+result = subprocess.run("hostname -s", capture_output=True, text=True, 
+                        shell=True)  # nosec: B602
+hostname = result.stdout.strip()
+# print(f"hostname: [{hostname}]")
 
 if hostname == "ish-hetz1":
     from sb.sb_acceptance import SB
 else:
+    # normal theme
     from sb.sb_tst import SB
-
-
-# from sb.sb_acceptance import SB
-# from sb.sb_production import SB
 
 
 class T2(SB):
