@@ -111,6 +111,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         hostname_display = run_shell("hostname -s")
     else:
         hostname_display = "#h"
+    print(f"><> hostname_display [{hostname_display}]")
     # hostname_display = run_shell("hostname -s")
 
     sb_left: str = "|#{session_name}| "
