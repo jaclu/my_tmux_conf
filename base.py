@@ -108,16 +108,14 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #
     if os.path.exists("/usr/local/bin/hostname"):
         # For iSH nodes, where the builtin hostname only shows localhost
-        hostname_display = run_shell("hostname -s")
+        display_hostname = run_shell("hostname -s")
     else:
-        hostname_display = "#h"
-    print(f"><> hostname_display [{hostname_display}]")
-    # hostname_display = run_shell("hostname -s")
+        display_hostname = "#h"
 
     sb_left: str = "|#{session_name}| "
     sb_right: str = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template: str = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
-    hostname_template: str = f"#[fg=colour195,bg=colour1]{hostname_display}#[default]"
+    hostname_template: str = f"#[fg=colour195,bg=colour1]{display_hostname}#[default]"
     tpm_initializing: str = "#[reverse,blink] tpm initializing...#[default]"
 
     handle_iterm2: bool = True  # Select screen-256color for iTerm2

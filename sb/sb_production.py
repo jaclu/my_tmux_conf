@@ -25,7 +25,7 @@ class SB(DefaultPlugins):
         if self.vers_ok("1.9"):
             self.write("set -g status-style fg=white,bg=red")
             # pylint: disable=W0201
-            self.hostname_template = "#[bg=colour195,fg=colour1] #h #[default]"
+            self.hostname_template = f"#[bg=colour195,fg=colour1]{display_hostname}#[default]"
         else:
             self.write(
                 """
