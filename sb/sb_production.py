@@ -13,7 +13,7 @@
 # pylint: disable=E0401
 from default_plugins import DefaultPlugins
 
-from .. import utils
+import utils
 
 
 # pylint: disable=R0903
