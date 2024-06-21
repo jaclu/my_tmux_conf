@@ -37,11 +37,12 @@
 """base class used by tpm"""
 
 import os
-import subprocess  # nosec
 import sys
 from pydoc import locate
 
 import __main__
+
+import utils
 
 TMUX_CONF_NEEDED = "0.16.6"
 
@@ -60,15 +61,6 @@ else:
     except ModuleNotFoundError:
         print("Dependency tmux_conf not installed!")
         sys.exit(1)
-
-
-def run_shell(cmd: str) -> str:
-    """Run a command in a shell"""
-    # pylint: disable=subprocess-run-check
-    result = subprocess.run(
-        cmd, capture_output=True, text=True, shell=True  # nosec: B602
-    )
-    return result.stdout.strip()
 
 
 class BaseConfig(TmuxConfig):  # type: ignore
@@ -106,16 +98,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  Default templates for the status bar, so that they can easily be
     #  modified using status_bar_customization()
     #
-    if os.path.exists("/usr/local/bin/hostname"):
-        # For iSH nodes, where the builtin hostname only shows localhost
-        display_hostname = run_shell("hostname -s")
-    else:
-        display_hostname = "#h"
-
     sb_left: str = "|#{session_name}| "
     sb_right: str = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template: str = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
-    hostname_template: str = f"#[fg=colour195,bg=colour1]{display_hostname}#[default]"
+    hostname_template: str = f"#[fg=colour195,bg=colour1]{utils.display_hostname}#[default]"
     tpm_initializing: str = "#[reverse,blink] tpm initializing...#[default]"
 
     handle_iterm2: bool = True  # Select screen-256color for iTerm2
