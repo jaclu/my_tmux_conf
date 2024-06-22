@@ -17,11 +17,11 @@
 SEPARATOR=':'
 
 setBackgroundColor() {
-    echo -en "\x1b[48${SEPARATOR}2${SEPARATOR}$1${SEPARATOR}$2${SEPARATOR}$3""m"
+    echo -en "\\x1b[48${SEPARATOR}2${SEPARATOR}$1${SEPARATOR}$2${SEPARATOR}$3""m"
 }
 
 resetOutput() {
-    echo -en "\x1b[0m\n"
+    echo -en "\\x1b[0m\\n"
 }
 
 # Gives a color $1/255 % along HSV
