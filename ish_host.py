@@ -36,8 +36,6 @@ class IshHost(DefaultPlugins):
 
     # status_interval = 5
 
-    # hostname_display: str = "(/usr/local/bin/hostname)"
-
     # plugin_handler = ""
 
     # use_embedded_scripts = False
