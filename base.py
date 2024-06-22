@@ -167,7 +167,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             self.prefix_key = self.prefix_key_T2
             print(f"T2_ENV uses prefix_key: {self.prefix_key}")
 
-        if os.path.isdir("/proc/ish"):
+        if os.path.isdir("/proc/ish") or utils.display_hostname == "ish-hetz1":
             print("Detected iSH kernel, assuming this to be a limited host")
             self.is_limited_host = True
 
