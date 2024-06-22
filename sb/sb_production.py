@@ -29,7 +29,8 @@ class SB(DefaultPlugins):
             # pylint: disable=W0201
             self.hostname_template = "#[bg=colour195,fg=colour1]" \
                 f"{utils.display_hostname}#[default]"
-            self.tpm_initializing: str = "#[fg=yellow bg=black blink] tpm initializing...#[default]"
+            self.tpm_initializing: str = "#[fg=yellow bg=black blink] " \
+                "tpm initializing...#[default]"
         else:
             self.write(
                 """
