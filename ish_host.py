@@ -28,7 +28,7 @@
 # import os
 
 from default_plugins import DefaultPlugins
-from sb.sb_muted import SB
+from sb.sb_muted_ish import SB
 
 
 class IshHost(DefaultPlugins):
