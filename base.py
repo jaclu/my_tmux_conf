@@ -636,6 +636,24 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             self.sb_right += "#[reverse]#{?pane_synchronized,sync,}#[default]"
 
+        #
+        #  bypass tmux-prefix-highlight, hardcoding it to avoid countless
+        #  variable parsings
+        #
+        sync_indicator = "#{?synchronize-panes,#[fg=black#,bg=yellow#,blink] Sync ,}"
+
+        mode_indicator = (  # will display sync_indicator if not active
+            "#{?pane_in_mode,#[fg=black#,bg=yellow#,blink] #{pane_mode} ,"
+            f"{sync_indicator}"
+            "}"
+        )
+        prefix_indicator = (  # will display copy_indicator if not active
+            "#{?client_prefix,#[fg=colour231#,bg=colour04]"
+            f" {self.display_prefix()} ,{mode_indicator}"
+            "}#[default]"
+        )
+        self.sb_right += prefix_indicator
+
     def status_bar(self):
         w = self.write
         self.status_bar_prepare()
@@ -651,7 +669,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #  max length of vers is 6 chars, in order to
             #  not flood status line
             #
-            t2_tag = f"{self.vers.get()[:6]} {self.prefix_key} "
+            t2_tag = f"{self.vers.get()[:6]} {self.display_prefix()} "
             self.sb_left = f"#[fg=green,bg=black]{t2_tag}#[default]{self.sb_left}"
 
         self.filter_me_from_sb_right()
@@ -1437,6 +1455,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #
     #  Utility methods
     #
+    def display_prefix(self):
+        # Converts c-a into ^A
+        return self.prefix_key.upper().replace("C-", "^")
+
     def mkscript_toggle_mouse(self):
         """Toogles mouse handling on/off"""
         #  The {} encapsulating the script needs to be doubled to escape them

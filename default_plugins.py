@@ -77,8 +77,6 @@ class DefaultPlugins(IshConsole):
         #  I also include plugins only used on some nodes here.
         #
         used_plugins = self.plugins.found(short_name=True)
-        if "tmux-prefix-highlight" in used_plugins:
-            self.sb_right += "#{prefix_highlight}"
 
         if "tmux-suspend" in used_plugins:
             self.sb_right += "#{@mode_indicator_custom_prompt}"
@@ -281,16 +279,10 @@ class DefaultPlugins(IshConsole):
 
     def plugin_prefix_highlight(self) -> list:  # 2.0
         #
-        #  Highlights when you press tmux prefix key and
-        #  when copy/sync mode is active.
+        #  prevent actual plugin from being used, the equivalent code
+        #  is now harcoded in base:status_bar_prepare()
         #
-        conf = """
-        set -g @prefix_highlight_show_copy_mode  on
-        set -g @prefix_highlight_copy_mode_attr  "fg=black,bg=yellow,bold"
-        set -g @prefix_highlight_show_sync_mode  on
-        set -g @prefix_highlight_sync_mode_attr "fg=black,bg=orange,blink,bold"
-        """
-        return ["jaclu/tmux-prefix-highlight", 2.0, conf]
+        return ["jaclu/tmux-prefix-highlight", 99.0, ""]
 
     def plugin_resurrect(self) -> list:  # 1.9
         #
