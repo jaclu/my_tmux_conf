@@ -44,7 +44,7 @@ import __main__
 
 import utils
 
-TMUX_CONF_NEEDED = "0.16.6"
+TMUX_CONF_NEEDED = "0.16.8"
 
 #
 #  Special import handling for debugging, is ignored in normal usage
