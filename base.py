@@ -67,9 +67,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
     """Defines the general tmux setup, key binds etc"""
 
     prefix_key: str = "C-a"
-    prefix_key_T2: str = "C-w"  # prefix for inner dev environment
-
-    t2_env = ""  # Set to True when defining an inner/nested tmux conf
 
     status_interval: int = 10  # How often the status bar should be updated
 
@@ -101,7 +98,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
     sb_left: str = "|#{session_name}| "
     sb_right: str = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template: str = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
-    hostname_template: str = f"#[fg=colour195,bg=colour1]{utils.display_hostname}#[default]"
+    hostname_template: str = (
+        f"#[fg=colour195,bg=colour1]{utils.display_hostname}#[default]"
+    )
     tpm_initializing: str = "#[reverse,blink] tpm initializing...#[default]"
 
     handle_iterm2: bool = True  # Select screen-256color for iTerm2
@@ -112,6 +111,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  interfere with my main environment
     #
     t2_env: str = os.environ.get("T2_ENV", "")
+    prefix_key_T2: str = "C-w"  # prefix for inner dev environment
 
     # ======================================================
     #
@@ -731,9 +731,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
         )
 
         if self.bind_meta:
-            w("""bind -N "Select previous session" -n C-M-S-Up switch-client -p
+            w(
+                """bind -N "Select previous session" -n C-M-S-Up switch-client -p
             bind -N "Select next session" -n C-M-S-Down switch-client -n"""
-              )
+            )
         else:
             w(
                 """#  skipping adv keys, if resourced
@@ -801,9 +802,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
         """
         )
         if self.bind_meta:
-            w("""bind -N "Select previous Window" -n C-M-S-Right next-window
+            w(
+                """bind -N "Select previous Window" -n C-M-S-Right next-window
             bind -N "Select next Window" -n C-M-S-Left previous-window"""
-              )
+            )
         else:
             w(
                 """#  skipping adv keys, if resourced

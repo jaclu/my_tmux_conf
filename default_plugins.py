@@ -170,7 +170,7 @@ class DefaultPlugins(IshConsole):
     #
     # -----------------------------------------------------------
 
-    def plugin_better_mouse_mode(self) -> list:  # 2.1
+    def plugin_better_mouse_mode(self) -> list[str | float | int]:  # 2.1
         #
         #  A tmux plugin to better manage the mouse.
         #  Emulate mouse scrolling for full-screen programs that doesn't
@@ -179,7 +179,7 @@ class DefaultPlugins(IshConsole):
         #  Can adjust scroll-sensitivity.
         #
         if self.is_limited_host or self.is_tmate():
-            vers_min = 99  # make sure this is never used
+            vers_min = 99.0  # make sure this is never used
         else:
             vers_min = 2.1
 
@@ -212,7 +212,7 @@ class DefaultPlugins(IshConsole):
         k = "-n  M-j"
         if self.t2_env == "1" or self.is_limited_host or self.is_tmate():
             # make sure this is never used, generates too much lag
-            vers_min = 99
+            vers_min = 99.0
             self.write(
                 f"bind -N 'tmux-jump'  {k}  display "
                 "'tmux-jump disabled on limited hosts'"
@@ -247,7 +247,7 @@ class DefaultPlugins(IshConsole):
         #  right-click & swipe switches Windows / Sessions
         #
         if self.is_limited_host:
-            vers_min = 99  # make sure this is never used
+            vers_min = 99.0  # make sure this is never used
         else:
             vers_min = 3.0
         return [
@@ -264,7 +264,7 @@ class DefaultPlugins(IshConsole):
         #
         if self.is_tmate():
             print("><> plugin_power_zoom thinks this is tmate")
-            vers_min = 99
+            vers_min = 99.0
         else:
             vers_min = 2.0
 
@@ -325,7 +325,7 @@ class DefaultPlugins(IshConsole):
 
     def plugin_session_wizard(self) -> list:  # 3.2
         if self.is_limited_host:
-            vers_min = 99  # make sure this is never used
+            vers_min = 99.0  # make sure this is never used
         else:
             vers_min = 3.2
 
@@ -365,7 +365,7 @@ class DefaultPlugins(IshConsole):
         #
         min_vers = 1.8
         if self.is_limited_host or self.is_tmate():
-            min_vers = 99  # disable for tmate
+            min_vers = 99.0  # disable for tmate
         return [
             "jaclu/tmux-yank",
             min_vers,
@@ -384,7 +384,7 @@ class DefaultPlugins(IshConsole):
         #  a session makes sense, but auto-resuming does not.
         #
         if self.is_limited_host or self.t2_env or self.is_tmate():
-            vers_min = 99  # make sure this is never used
+            vers_min = 99.0  # make sure this is never used
         else:
             vers_min = 1.9
         #

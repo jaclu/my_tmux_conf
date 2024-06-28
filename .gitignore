@@ -11,6 +11,8 @@ local_tmux_conf/
 # olint linter config
 .cache.olint
 
+.mypy_cache/
+
 .venv/
 not-v-env/
 

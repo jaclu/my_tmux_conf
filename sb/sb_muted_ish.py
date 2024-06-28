@@ -11,12 +11,12 @@
 
 """ Style muted """
 
+import utils
+
 # pylint: disable=E0401
 from default_plugins import DefaultPlugins
 
-import utils
-
-THEME_TEXT = "colour186" # green with a yellowish tint
+THEME_TEXT = "colour186"  # green with a yellowish tint
 MUTED_TEXT = "colour242"  # dark grey
 
 
@@ -45,7 +45,7 @@ class SB(DefaultPlugins):
         w("set -g status-justify centre")
 
         if self.vers_ok("1.9"):
-            w('set -g message-style "fg=colour251,bg=colour8"') # medium wihte on grey
+            w('set -g message-style "fg=colour251,bg=colour8"')  # medium wihte on grey
             w('set -g mode-style "fg=colour251,bg=colour8"')
             w(f"set -g status-style fg={MUTED_TEXT},bg=default")
             w("set -g window-status-current-style default")
