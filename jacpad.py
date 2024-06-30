@@ -30,7 +30,7 @@ class JacPad(IshHostWithStyle):
     status_interval = 5
 
     def plugin_packet_loss(self):  # 1.9
-        min_vers = 1.9
+        min_vers = 99.9
         if self.is_tmate():
             min_vers = 99.0  # disable for tmate
         return [
