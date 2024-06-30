@@ -26,7 +26,7 @@ if hostname == "ish-hetz1":
     from sb.sb_acceptance import SB
 else:
     # normal theme
-    from sb.sb_tst import SB
+    from sb.sb_t2 import SB
 
 
 class T2(SB):
