@@ -28,7 +28,8 @@ class SB(DefaultPlugins):
         if self.vers_ok("1.9"):
             if os.path.isdir("/proc/ish"):
                 # give iSH a slightly different color theme
-                self.write("set -g status-style fg=colour21,bg=color187")
+                # self.write("set -g status-style fg=color27,bg=color229")
+                self.write("set -g status-style fg=color21,bg=color221")
             else:
                 self.write("set -g status-style fg=colour21,bg=white")
         else:
