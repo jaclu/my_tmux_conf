@@ -50,6 +50,13 @@ class IshHost(DefaultPlugins):
 class IshHostWithStyle(IshHost, SB):
     """iSH host with default style"""
 
+    def plugin_packet_loss(self):  # 1.9
+        return [
+            "jaclu/tmux-packet-loss",
+            99.9,
+            "",
+        ]
+    
 
 if __name__ == "__main__":
     IshHostWithStyle().run()
