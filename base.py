@@ -1028,15 +1028,23 @@ class BaseConfig(TmuxConfig):  # type: ignore
                 #
                 #  Make pane splits clearly belong to the T2_ENV
                 #
-                border_active = "colour119"  # 203 - bright green
-                border_other = "colour104"  # 245 - pale lilac
+                # border_active = "colour119"  # 203 - bright green org
+                # border_other = "colour104"   # 245 - pale lilac org
+
+                # good t2
+                border_active = "colour38"  # bluish
+                border_other = "colour95"   # 131 a bit red
+
+                # good bw theme
+                # border_active = "colour252"  # 252 - fairly bright grey
+                # border_other = "colour240"   # 240 - low intensity grey
             else:
                 #
                 #  Primary env
                 #
-                border_active = "colour76"  # 76 - green
-                border_other = "colour245"  # 245 - low intensity grey
-
+                # border_active = "colour76"   # 76 - green - org
+                border_active = "colour112"  # 112 - bright warm green
+                border_other = "colour245"   # 245 - low intensity grey - org
             w(
                 f"""set -g pane-active-border-style fg={border_active}
                   set -g pane-border-style fg={border_other}
