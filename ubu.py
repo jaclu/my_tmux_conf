@@ -32,7 +32,7 @@ class UbuConfig(SB):
         #  Auto restoring a session just as tmux starts on a limited
         #  host will just lead to painfull lag.
         #
-        return ["tmux-plugins/tmux-continuum", 99, ""]
+        return ["tmux-plugins/tmux-continuum", 99.0, ""]
 
     def not_plugin_mullvad(self):  # 2.2  local
         #
@@ -79,7 +79,7 @@ class UbuConfig(SB):
     def plugin_packet_loss(self):  # 1.9
         min_vers = 1.9
         if self.is_tmate():
-            min_vers = 99  # disable for tmate
+            min_vers = 99.0  # disable for tmate
         return [
             "jaclu/tmux-packet-loss",
             min_vers,

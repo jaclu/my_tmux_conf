@@ -32,7 +32,7 @@ class JacPad(IshHostWithStyle):
     def plugin_packet_loss(self):  # 1.9
         min_vers = 1.9
         if self.is_tmate():
-            min_vers = 99  # disable for tmate
+            min_vers = 99.0  # disable for tmate
         return [
             "jaclu/tmux-packet-loss",
             min_vers,

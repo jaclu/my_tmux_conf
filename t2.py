@@ -69,9 +69,9 @@ class T2(SB):
         return ["jaclu/tmux-menus", 1.8, conf]
 
     def plugin_packet_loss(self):  # 1.9
-        min_vers = 1.9
+        min_vers = 99.9
         if self.is_tmate():
-            min_vers = 99  # disable for tmate
+            min_vers = 99.1  # disable for tmate
         return [
             "jaclu/tmux-packet-loss",
             min_vers,

@@ -36,7 +36,7 @@ class JacMacConfig(SB):
     def plugin_packet_loss(self):  # 1.9
         min_vers = 1.9
         if self.is_tmate():
-            min_vers = 99  # disable for tmate
+            min_vers = 99.0  # disable for tmate
         return [
             "jaclu/tmux-packet-loss",
             min_vers,
@@ -108,7 +108,7 @@ class JacMacConfig(SB):
         #
         min_vers = 2.2
         if self.is_tmate():
-            min_vers = 99  # disable for tmate
+            min_vers = 99.0  # disable for tmate
         return [
             "jaclu/tmux-mullvad",
             min_vers,
@@ -163,10 +163,10 @@ class JacMacConfig(SB):
         if sys.platform == "darwin":
             min_v = 1.8
         else:
-            min_v = 99
+            min_v = 99.0
             name = name + "-requires-MacOS"
         if self.is_tmate():
-            min_v = 99
+            min_v = 99.0
         #
         #  Only meaningful for local tmux!     Only works on MacOS
         #
@@ -206,7 +206,7 @@ class JacMacConfig(SB):
         #
         min_vers = 2.2
         if self.is_tmate():
-            min_vers = 99  # disable for tmate
+            min_vers = 99.0  # disable for tmate
 
         return [
             "jaclu/tmux-battery",
