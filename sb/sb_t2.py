@@ -52,8 +52,9 @@ class SB(DefaultPlugins):
             #
             self.write(
                 """
-                set -g pane-active-border-style fg=colour38 # bluish
-                set -g pane-border-style        fg=colour95  # 131 a bit red
+                # t2 border style
+                set -g pane-active-border-style fg=colour38  #  38 bluish
+                set -g pane-border-style        fg=colour95  # 131 grey with a bit red
                 """
             )
 
