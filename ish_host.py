@@ -56,7 +56,7 @@ class IshHostWithStyle(IshHost, SB):
             99.9,
             "",
         ]
-    
+
 
 if __name__ == "__main__":
     IshHostWithStyle().run()

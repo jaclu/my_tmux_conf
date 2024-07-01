@@ -41,6 +41,22 @@ class SB(DefaultPlugins):
 
         return print_header  # request footer to be printed
 
+    def local_overides(self):
+        """Local overrides applied last in the config, not related to
+        status bar, for that see status_bar_customization()
+        """
+        super().local_overides()
+        if self.vers_ok(1.9):
+            #
+            #  Works both on bright and dark backgrounds
+            #
+            self.write(
+                """
+                set -g pane-active-border-style fg=colour38 # bluish
+                set -g pane-border-style        fg=colour95  # 131 a bit red
+                """
+            )
+
 
 if __name__ == "__main__":
     SB().run()
