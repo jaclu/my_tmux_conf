@@ -1079,11 +1079,23 @@ class BaseConfig(TmuxConfig):  # type: ignore
                     '"set -w -F pane-border-status '
                     '\\"#{?#{==:#{window_panes},1},off,top}\\""'
                 )
+
+                #
+                # TODO: avoid using shell and TMUX_BIN here
+                #
+                # orig works
                 w(
                     'set-hook -g after-resize-pane      "run-shell \\"'
                     "if [ #{window_zoomed_flag} -eq 1 ]; then "
                     '$TMUX_BIN set pane-border-status off; fi\\""\n'
                 )
+
+                # doesnt work
+                # w(
+                #    "set-hook -g  after-resize-pane "
+                #    '"set pane-border-status '
+                #    '\\"#{?#{==:#{window_zoomed_flag},1},off,top}\\""'
+                # )
 
             if self.show_pane_title:
                 w(
