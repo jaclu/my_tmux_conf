@@ -46,11 +46,11 @@ select_tmux_bin() {
     #  on the host
     #
     if [ -f /etc/opt/AOK/this_fs_is_chrooted ]; then
-	sock_prefix="chr-"
+        sock_prefix="chr-"
     else
-	sock_prefix=""
+        sock_prefix=""
     fi
-    
+
     if $t2_env; then
         socket="$sock_prefix"serv2
         conf_file="$HOME/t2/tmux/tmux.conf"
@@ -68,7 +68,8 @@ select_tmux_bin() {
 
     next-3.4)
         #  shellcheck disable=SC2034 # TODO: check why this is alerting
-        v_maj="3.4" ;;   # Alpine 3.18 reports as this
+        v_maj="3.4"
+        ;; # Alpine 3.18 reports as this
     *) ;;
     esac
 
@@ -77,11 +78,12 @@ select_tmux_bin() {
 
 start_tmux() {
     socket_identifier=" -L $socket "
-    #  shellcheck disable=SC2009,SC2126
-    all_this_socket="$(ps ax | grep -v grep | grep "$socket_identifier" | wc -l)"
-    #  shellcheck disable=SC2009,SC2126
-    all_this_vers="$(ps ax | grep -v grep | grep "$socket_identifier" | grep "$tmux_vers" | wc -l)"
-    [ "$all_this_socket" = "$all_this_vers" ] || {
+
+    #  shell check disable=SC2009,SC2126
+    # all_this_socket="$(ps ax | grep -v grep | grep "$socket_identifier" | wc -l)"
+
+    #  shellcheck disable=SC2009
+    ps ax | grep "$socket_identifier" | grep -qv -e "$TMUX_BIN" -e grep && {
         echo
         echo "ERROR: $socket instances for version other than: $tmux_vers running!"
         echo
