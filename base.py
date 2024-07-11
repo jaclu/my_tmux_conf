@@ -314,7 +314,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
         # # Allow client to pass locale environment variables
         # AcceptEnv LANG LC_*
         #
-        if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
+        if os.getenv("TERM") == "xterm-kitty" or (
+            self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2"
+        ):
             w(f"set {param_span}  default-terminal screen-256color")
         else:
             w(f"set {param_span}  default-terminal tmux-256color")
@@ -1028,7 +1030,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
 
             border_active = "colour112"  # 112 - bright warm green
-            border_other = "colour245"   # 245 - low intensity grey - org
+            border_other = "colour245"  # 245 - low intensity grey - org
 
             w(
                 f"""set -g pane-active-border-style fg={border_active}
