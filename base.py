@@ -314,9 +314,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         # # Allow client to pass locale environment variables
         # AcceptEnv LANG LC_*
         #
-        if os.getenv("TERM") == "xterm-kitty" or (
-            self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2"
-        ):
+        if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
             w(f"set {param_span}  default-terminal screen-256color")
         else:
             w(f"set {param_span}  default-terminal tmux-256color")
