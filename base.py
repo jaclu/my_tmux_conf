@@ -318,6 +318,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2"
         ):
             w(f"set {param_span}  default-terminal screen-256color")
+            w("TERM=screen-256color")
         else:
             w(f"set {param_span}  default-terminal tmux-256color")
 
