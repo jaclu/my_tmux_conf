@@ -79,9 +79,6 @@ select_tmux_bin() {
 start_tmux() {
     socket_identifier=" -L $socket "
 
-    #  shell check disable=SC2009,SC2126
-    # all_this_socket="$(ps ax | grep -v grep | grep "$socket_identifier" | wc -l)"
-
     #  shellcheck disable=SC2009
     ps ax | grep "$socket_identifier" | grep -qv -e "$TMUX_BIN" -e grep && {
         echo
