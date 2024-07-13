@@ -53,6 +53,7 @@ KBD_TYPE_LOGITECH_COMBO = "Logitech Combo-Touch"
 KBD_TYPE_OMNITYPE = "Omnitype Keyboard"
 KBD_TYPE_BLUETOOTH = "Bluetooh Keyboard"  # sadly generic name
 
+
 def this_is_aok_kernel():
     try:
         with open("/proc/ish/version", "r", encoding="utf-8") as file:
@@ -114,10 +115,10 @@ class IshConsole(BaseConfig):
             return
 
         host_name = run_shell('hostname -s').lower()
-        print( f"hostname: {host_name}" )
+        print(f"hostname: {host_name}")
         if host_name in ("jacpad", "jacpad-aok"):
             self.ic_keyboard = KBD_TYPE_LOGITECH_COMBO
-        elif host_name  in ("pad5", "pad5-aok"):
+        elif host_name in ("pad5", "pad5-aok"):
             self.ic_keyboard = KBD_TYPE_BRYDGE_10_2_ESC
         else:
             self.ic_keyboard = None
