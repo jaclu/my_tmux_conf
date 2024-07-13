@@ -21,8 +21,8 @@ def run_shell(cmd: str) -> str:
     return result.stdout.strip()
 
 
-#if os.path.exists("/usr/local/bin/hostname"):
-#    # For iSH nodes, where the builtin hostname only shows localhost
-display_hostname = run_shell("hostname -s")
-#else:
-#    display_hostname = "#h"
+if os.path.exists("/usr/local/bin/hostname"):
+    # For iSH nodes, where the builtin hostname only shows localhost
+    display_hostname = run_shell("hostname -s")
+else:
+    display_hostname = "#h"
