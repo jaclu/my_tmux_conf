@@ -26,6 +26,7 @@
 import os
 
 from base import BaseConfig
+from utils import display_hostname
 
 NAV_KEY_HANDLED_TAG = "TMUX_HANDLING_ISH_NAV_KEY"
 
@@ -48,7 +49,7 @@ NAV_KEY_HANDLED_TAG = "TMUX_HANDLING_ISH_NAV_KEY"
 KBD_TYPE_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
 KBD_TYPE_BRYDGE_10_2_ESC = "Brydge 10.2 MAX+ esc"
 KBD_TYPE_YOOZON3 = "Yoozon 3"  # same as brydge
-
+KBD_TYPE_LOGITECH_COMBO = "Logitech Combo-Touch"
 KBD_TYPE_OMNITYPE = "Omnitype Keyboard"
 KBD_TYPE_BLUETOOTH = "Bluetooh Keyboard"  # sadly generic name
 
@@ -113,13 +114,13 @@ class IshConsole(BaseConfig):
             print("         keyboard adaptions not supported on this version")
             return
 
-        h_name = ""
-        with open("/etc/hostname", "r", encoding="utf-8") as file:
-            # Read the content of the file
-            h_name = file.readline().strip().lower()
-        if h_name in ("jacpad", "jacpad-aok"):
-            self.ic_keyboard = KBD_TYPE_BRYDGE_10_2_MAX
-        elif h_name in ("pad5", "pad5-aok"):
+        # h_name = ""
+        # with open("/etc/hostname", "r", encoding="utf-8") as file:
+        #     # Read the content of the file
+        #     h_name = file.readline().strip().lower()
+        if display_hostname in ("jacpad", "jacpad-aok"):
+            self.ic_keyboard = KBD_TYPE_LOGITECH_COMBO
+        elif display_hostname  in ("pad5", "pad5-aok"):
             self.ic_keyboard = KBD_TYPE_BRYDGE_10_2_ESC
         else:
             self.ic_keyboard = None
