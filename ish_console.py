@@ -26,7 +26,7 @@
 import os
 
 from base import BaseConfig
-from utils import display_hostname
+from utils import run_shell
 
 NAV_KEY_HANDLED_TAG = "TMUX_HANDLING_ISH_NAV_KEY"
 
@@ -52,7 +52,6 @@ KBD_TYPE_YOOZON3 = "Yoozon 3"  # same as brydge
 KBD_TYPE_LOGITECH_COMBO = "Logitech Combo-Touch"
 KBD_TYPE_OMNITYPE = "Omnitype Keyboard"
 KBD_TYPE_BLUETOOTH = "Bluetooh Keyboard"  # sadly generic name
-
 
 def this_is_aok_kernel():
     try:
@@ -114,13 +113,11 @@ class IshConsole(BaseConfig):
             print("         keyboard adaptions not supported on this version")
             return
 
-        # h_name = ""
-        # with open("/etc/hostname", "r", encoding="utf-8") as file:
-        #     # Read the content of the file
-        #     h_name = file.readline().strip().lower()
-        if display_hostname in ("jacpad", "jacpad-aok"):
+        host_name = run_shell('hostname -s').lower()
+        print( f"hostname: {host_name}" )
+        if host_name in ("jacpad", "jacpad-aok"):
             self.ic_keyboard = KBD_TYPE_LOGITECH_COMBO
-        elif display_hostname  in ("pad5", "pad5-aok"):
+        elif host_name  in ("pad5", "pad5-aok"):
             self.ic_keyboard = KBD_TYPE_BRYDGE_10_2_ESC
         else:
             self.ic_keyboard = None
@@ -133,11 +130,13 @@ class IshConsole(BaseConfig):
             KBD_TYPE_BLUETOOTH,
         ):
             self.ic_keyb_type_2()
+        elif self.ic_keyboard == KBD_TYPE_LOGITECH_COMBO:
+            self.ic_keyb_type_3()
         else:
             #
             #  keyboard handling Esc directly, no custom keys
             #
-            self.ic_nav_key_esc_prefix("\\033")
+            self.ic_nav_key_prefix("\\033")
         self.general_keyb_settings()
 
         self.ic_setup()
@@ -151,7 +150,7 @@ class IshConsole(BaseConfig):
         #
         w = self.write
         esc_key = "\\302\\247"
-        self.ic_nav_key_esc_prefix(esc_key)
+        self.ic_nav_key_prefix(esc_key)
 
         w(
             """
@@ -177,7 +176,7 @@ class IshConsole(BaseConfig):
         #
         w = self.write
         esc_key = "\\033"
-        self.ic_nav_key_esc_prefix(esc_key)
+        self.ic_nav_key_prefix(esc_key)
 
         w(
             """
@@ -193,7 +192,15 @@ class IshConsole(BaseConfig):
         """
         )
 
-    def ic_nav_key_esc_prefix(self, esc_key) -> None:
+    def ic_keyb_type_3(self):
+        #
+        #  Logitech Combo-Touch"
+        #
+        pm_key = "\\302\\261"
+        esc_key = "\\302\\247"
+        self.ic_nav_key_prefix(pm_key, esc_key=esc_key)
+
+    def ic_nav_key_prefix(self, prefix_key, esc_key="") -> None:
         w = self.write
         print(f"Assuming keyboard is: {self.ic_keyboard}")
 
@@ -204,13 +211,23 @@ class IshConsole(BaseConfig):
 
         w(
             f"""#
-        #  Handle Esc key
+        #  Handle Prefix key
         #
-        set -s user-keys[200]  "{esc_key}"
-        bind -N "Switch to -T escPrefix" -n User200 switch-client -{tbl_opt} escPrefix
-        bind -T escPrefix  User200  send Escape # Double tap for actual Esc
+        set -s user-keys[200]  "{prefix_key}"
+        bind -N "Switch to -T navPrefix" -n User200 switch-client -{tbl_opt} navPrefix
         """
         )
+        if esc_key:
+            w(
+                f"""#
+                #  Virtual Escape key
+                #
+                set -s user-keys[201]  "{esc_key}"
+                bind -n User201  send Escape
+                """
+            )
+        else:
+            w("bind -T navPrefix  User200  send Escape")  # Double tap for actual Esc
         if this_is_aok_kernel():
             w(
                 """#
@@ -225,12 +242,12 @@ class IshConsole(BaseConfig):
         else:
             w(
                 """#
-            #  Use Esc-prefix for navigation
+            #  Use nav prefix for navigation
             #
-            bind -T escPrefix  Down     send PageDown
-            bind -T escPrefix  Up       send PageUp
-            bind -T escPrefix  Left     send Home
-            bind -T escPrefix  Right    send End
+            bind -T navPrefix  Down     send PageDown
+            bind -T navPrefix  Up       send PageUp
+            bind -T navPrefix  Left     send Home
+            bind -T navPrefix  Right    send End
             """
             )
         self.ic_indicate_nav_key_handled()
@@ -246,7 +263,7 @@ class IshConsole(BaseConfig):
         bind -N "Enables €" -n User210 send '€'
 
         # M-+ default: ±
-        set -s user-keys[211] "\\302\\261"
+        # set -s user-keys[211] "\\302\\261"
 
         #
         #  Some keybs have issues with M-<
