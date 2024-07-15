@@ -81,7 +81,7 @@ start_tmux() {
     socket_identifier=" -L $socket "
 
     #  shellcheck disable=SC2009
-    ps ax | grep "$socket_identifier" | grep -qv -e tmux -e  "$tmux_vers" -e grep && {
+    ps ax | grep "$socket_identifier" | grep -qv -e /usr/bin/tmux -e  "$tmux_vers" -e grep && {
         (
         echo
         echo "ERROR: $socket instances for version other than $tmux_vers running!"
