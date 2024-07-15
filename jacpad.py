@@ -55,7 +55,7 @@ class JacPad(IshHostWithStyle):
 
             set -g @packet-loss-color_bg    colour226
 
-            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
+            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-jacpad.log
 
             """,
         ]
