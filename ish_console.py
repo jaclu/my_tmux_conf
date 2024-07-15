@@ -49,7 +49,7 @@ NAV_KEY_HANDLED_TAG = "TMUX_HANDLING_ISH_NAV_KEY"
 KBD_TYPE_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
 KBD_TYPE_BRYDGE_10_2_ESC = "Brydge 10.2 MAX+ esc"
 KBD_TYPE_YOOZON3 = "Yoozon 3"  # same as brydge
-KBD_TYPE_LOGITECH_COMBO = "Logitech Combo-Touch"
+KBD_TYPE_LOGITECH_COMBO = "Logitech Combo Touch"
 KBD_TYPE_OMNITYPE = "Omnitype Keyboard"
 KBD_TYPE_BLUETOOTH = "Bluetooh Keyboard"  # sadly generic name
 
@@ -132,7 +132,7 @@ class IshConsole(BaseConfig):
         ):
             self.ic_keyb_type_2()
         elif self.ic_keyboard == KBD_TYPE_LOGITECH_COMBO:
-            self.ic_keyb_type_3()
+            self.ic_keyb_type_combo_touch()
         else:
             #
             #  keyboard handling Esc directly, no custom keys
@@ -193,9 +193,9 @@ class IshConsole(BaseConfig):
         """
         )
 
-    def ic_keyb_type_3(self):
+    def ic_keyb_type_combo_touch(self):
         #
-        #  Logitech Combo-Touch"
+        #  Logitech Combo Touch"
         #
         pm_key = "\\302\\261"  # S-±
         esc_key = "\\302\\247"  # §
@@ -206,8 +206,8 @@ class IshConsole(BaseConfig):
         #  On this keyb, in iSH back-tick sends Escape
         #  this changes it back, Esc is available via §
         #
-        set -s user-keys[202]  "\\033"
-        bind -N "Send backtick"  -n User202  send "\\`"
+        set -s user-keys[220]  "\\033"
+        bind -N "Send backtick"  -n User220  send "\\`" # map backtick back from Escape
         """
         )
 
