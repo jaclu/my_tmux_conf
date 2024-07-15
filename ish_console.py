@@ -189,7 +189,7 @@ class IshConsole(BaseConfig):
         #
         set -s user-keys[220]  "\\176"
         bind -N "Enables ~" -n User220 send '~'
-        bind -T escPrefix  User220  send "\\`"
+        bind -T escPrefix -N "Send backtick"  User220  send "\\`"
         """
         )
 
@@ -207,7 +207,7 @@ class IshConsole(BaseConfig):
         #  this changes it back, Esc is available via §
         #
         set -s user-keys[202]  "\\033"
-        bind -n User202  send "\\`"
+        bind -N "Send backtick"  -n User202  send "\\`"
         """
         )
 
@@ -234,20 +234,21 @@ class IshConsole(BaseConfig):
                 #  Virtual Escape key
                 #
                 set -s user-keys[201]  "{esc_key}"
-                bind -n User201  send Escape
+                bind -N "Send Escape" -n User201  send Escape
                 """
             )
         else:
-            w("bind -T navPrefix  User200  send Escape")  # Double tap for actual Esc
+            # Double tap for actual Esc
+            w("bind -T navPrefix -N 'Send Escape'  User200  send Escape")
         if this_is_aok_kernel():
             w(
                 """#
             #  Use shift-arrows for navigation
             #
-            bind -n  S-Up     send-keys PageUp
-            bind -n  S-Down   send-keys PageDown
-            bind -n  S-Left   send-keys Home
-            bind -n  S-Right  send-keys End
+            bind -N "Send PageUp" -n  S-Up     send-keys PageUp
+            bind -N "Send PageDown" -n  S-Down   send-keys PageDown
+            bind -N "Send Home" -n  S-Left   send-keys Home
+            bind -N "Send End" -n  S-Right  send-keys End
             """
             )
         else:
@@ -255,10 +256,10 @@ class IshConsole(BaseConfig):
                 """#
             #  Use nav prefix for navigation
             #
-            bind -T navPrefix  Down     send PageDown
-            bind -T navPrefix  Up       send PageUp
-            bind -T navPrefix  Left     send Home
-            bind -T navPrefix  Right    send End
+            bind -T navPrefix  -N "Send PageUp" Up       send PageUp
+            bind -T navPrefix  -N "Send PageDown" Down     send PageDown
+            bind -T navPrefix  -N "Send Home" Left     send Home
+            bind -T navPrefix  -N "Send End" Right    send End
             """
             )
         self.ic_indicate_nav_key_handled()
@@ -432,7 +433,7 @@ class IshConsole(BaseConfig):
             if c == "N":
                 #  Special case to avoid cutof at second -N
                 #  on tmux < 3.1
-                w(f"bind -n  User{i}  send M-{c}")
+                w(f"bind -N 'Enables M-N' -n  User{i}  send M-{c}")
             else:
                 w(f'bind -N "Enables M-{c}" -n  User{i}  send "M-{c}"')
 
