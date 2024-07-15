@@ -81,7 +81,7 @@ start_tmux() {
     socket_identifier=" -L $socket "
 
     #  shellcheck disable=SC2009
-    ps ax | grep "$socket_identifier" | grep -qv -e "$TMUX_BIN" -e grep && {
+    ps ax | grep "$socket_identifier" | grep -qv -e tmux -e  "$tmux_vers" -e grep && {
         (
         echo
         echo "ERROR: $socket instances for version other than $tmux_vers running!"
@@ -201,6 +201,8 @@ quick_mode=false
 t2_env=false
 profile=""
 d_initial="$PWD" # original pwd
+
+date > "$myt_log"
 
 while [ -n "$1" ]; do
     case "$1" in
