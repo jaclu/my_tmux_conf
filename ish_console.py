@@ -223,12 +223,13 @@ class IshConsole(BaseConfig):
         else:
             tbl_opt = "t"
 
+        s = f"-{tbl_opt} navPrefix  {prefix_comment}"
         w(
             f"""#
         #  Handle Prefix key
         #
         set -s user-keys[200]  "{prefix_key}"
-        bind -N "Switch to -T navPrefix" -n User200 switch-client -{tbl_opt} navPrefix  {prefix_comment}
+        bind -N "Switch to -T navPrefix" -n User200 switch-client {s}
         """
         )
         if esc_key:
