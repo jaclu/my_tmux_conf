@@ -84,7 +84,8 @@ start_tmux() {
     ps ax | grep "$socket_identifier" | grep -qv -e "$TMUX_BIN" -e grep && {
         (
         echo
-        echo "ERROR: $socket instances for version other than: $tmux_vers running!"
+        echo "ERROR: $socket instances for version other than $tmux_vers running!"
+        echo "Intended to use: $TMUX_BIN"
         echo
         echo "Found the following processes:"
         echo
