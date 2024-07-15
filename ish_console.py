@@ -199,7 +199,7 @@ class IshConsole(BaseConfig):
         #
         pm_key = "\\302\\261"  # S-±
         esc_key = "\\302\\247"  # §
-        self.ic_nav_key_prefix(pm_key, esc_key=esc_key)
+        self.ic_nav_key_prefix(pm_key, esc_key, "S-±")
         self.write(
             """
         #
@@ -211,9 +211,12 @@ class IshConsole(BaseConfig):
         """
         )
 
-    def ic_nav_key_prefix(self, prefix_key, esc_key="") -> None:
+    def ic_nav_key_prefix(self, prefix_key, esc_key="", prefix_comment="") -> None:
         w = self.write
         print(f"Assuming keyboard is: {self.ic_keyboard}")
+
+        if prefix_comment:
+            prefix_comment = f"# {prefix_comment}"
 
         if self.vers_ok(2.1):
             tbl_opt = "T"
@@ -225,7 +228,7 @@ class IshConsole(BaseConfig):
         #  Handle Prefix key
         #
         set -s user-keys[200]  "{prefix_key}"
-        bind -N "Switch to -T navPrefix" -n User200 switch-client -{tbl_opt} navPrefix
+        bind -N "Switch to -T navPrefix" -n User200 switch-client -{tbl_opt} navPrefix  {prefix_comment}
         """
         )
         if esc_key:
