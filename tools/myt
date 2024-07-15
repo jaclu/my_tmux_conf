@@ -14,6 +14,7 @@
 #      tmux version
 #
 my_tmux_conf_location="/usr/local/my_tmux_conf"
+myt_log="$HOME"/tmp/myt.log
 
 select_tmux_bin() {
     TMUX_BIN=""
@@ -33,7 +34,7 @@ select_tmux_bin() {
     [ -z "$TMUX_BIN" ] && TMUX_BIN="$(command -v "$tmux_bin")"
 
     if [ -z "$TMUX_BIN" ]; then
-        echo "ERROR: no tmux in PATH!"
+        echo "ERROR: no tmux in PATH!" | tee -a "$myt_log"
         exit 1
     fi
 
@@ -73,7 +74,7 @@ select_tmux_bin() {
     *) ;;
     esac
 
-    echo "myt will use tmux $tmux_vers"
+    echo "myt will use tmux $tmux_vers"  | tee -a "$myt_log"
 }
 
 start_tmux() {
@@ -81,6 +82,7 @@ start_tmux() {
 
     #  shellcheck disable=SC2009
     ps ax | grep "$socket_identifier" | grep -qv -e "$TMUX_BIN" -e grep && {
+        (
         echo
         echo "ERROR: $socket instances for version other than: $tmux_vers running!"
         echo
@@ -88,6 +90,7 @@ start_tmux() {
         echo
         #  shellcheck disable=SC2009
         ps ax | grep -v grep | grep " $socket"
+        ) | tee -a "$myt_log"
         exit 1
     }
 
@@ -95,21 +98,27 @@ start_tmux() {
     #  conf file handling
     #
     if $quick_mode; then
-        echo "Using existing: $conf_file"
+        echo "Using existing: $conf_file" | tee -a "$myt_log"
     else
         if $t2_env; then
-            T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file" || exit 2
+            T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file" || {
+                echo "ERROR: Failed to build t2 env" | tee -a "$myt_log"
+                exit 2
+            }
         else
-            "$profile" -r -t "$TMUX_BIN" "$conf_file" || exit 2
+            "$profile" -r -t "$TMUX_BIN" "$conf_file" || {
+                echo "ERROR: Failed to build $conf_file" | tee -a "$myt_log"
+                exit 2
+            }
         fi
     fi
 
     cd "$d_initial" || {
-        echo "ERROR: Failed to cd back to [$d_initial]"
+        echo "ERROR: Failed to cd back to [$d_initial]" | tee -a "$myt_log"
         exit 1
     }
 
-    echo "TMUX_BIN [$TMUX_BIN] socket [$socket]"
+    echo "TMUX_BIN [$TMUX_BIN] socket [$socket]" | tee -a "$myt_log"
     echo
     if $TMUX_BIN -L "$socket" list-sessions 2>/dev/null | grep -q main; then
         $shared_session && detch="" || detch="-d"
@@ -117,23 +126,25 @@ start_tmux() {
     else
         $TMUX_BIN -L "$socket" -f "$conf_file" new-session -s main
     fi
-    echo "[$(date)] exited tmux"
+    echo "[$(date)] exited tmux" | tee -a "$myt_log"
 }
 
 regular_tmux() {
-    # echo "-> running regular_tmux($profile) [$(hostname)]"
+    # echo "-> running regular_tmux($profile) [$(hostname)]" | tee -a "$myt_log"
     if [ -z "$profile" ]; then
         detected_hostname="$(hostname | cut -d. -f 1 | tr '[:upper:]' '[:lower:]')"
-        # echo "-> detected hostname [$detected_hostname]"
+        # echo "-> detected hostname [$detected_hostname]" | tee -a "$myt_log"
         profile="${my_tmux_conf_location}/${detected_hostname}.py"
-        # echo "-> Automatically built profile-name: [$profile]"
+        # echo "-> Automatically built profile-name: [$profile]" | tee -a "$myt_log"
     fi
 
     if [ ! -f "${profile}" ]; then
-        echo
-        echo "*** Warning: no profile found for: $profile"
-        echo "***          using default profile after 3 seconds"
-        echo
+        (
+            echo
+            echo "*** Warning: no profile found for: $profile"
+            echo "***          using default profile after 3 seconds"
+            echo
+        ) | tee -a "$myt_log"
         sleep 3
         profile="$my_tmux_conf_location/default_plugins.py"
     else
