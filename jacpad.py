@@ -41,11 +41,11 @@ class JacPad(IshHostWithStyle):
 
             # set -g @packet-loss-ping_count   7
             # set -g @packet-loss-history_size 5
-            set -g @packet-loss-level_alert 18 # 4-26 6-18 7-15
+            # set -g @packet-loss-level_alert 15 # 4-26 6-18 7-15
 
-            set -g @packet-loss-display_trend     no
-            set -g @packet-loss-hist_avg_display  yes
-            # set -g @packet-loss-run_disconnected yes
+            set -g @packet-loss-display_trend    no
+            set -g @packet-loss-hist_avg_display yes
+            set -g @packet-loss-run_disconnected no
 
             set -g @packet-loss-level_disp   5
 
