@@ -25,8 +25,8 @@
 
 import os
 
+from mtc_utils import run_shell, IS_ISH, IS_ISH_AOK
 from base import BaseConfig
-from utils import run_shell
 
 NAV_KEY_HANDLED_TAG = "TMUX_HANDLING_ISH_NAV_KEY"
 
@@ -52,17 +52,6 @@ KBD_TYPE_YOOZON3 = "Yoozon 3"  # same as brydge
 KBD_TYPE_LOGITECH_COMBO = "Logitech Combo Touch"
 KBD_TYPE_OMNITYPE = "Omnitype Keyboard"
 KBD_TYPE_BLUETOOTH = "Bluetooh Keyboard"  # sadly generic name
-
-
-def this_is_aok_kernel():
-    try:
-        with open("/proc/ish/version", "r", encoding="utf-8") as file:
-            for line in file:
-                if "aok" in line.lower():
-                    return True
-    except FileNotFoundError:
-        pass
-    return False
 
 
 class IshConsole(BaseConfig):
@@ -96,7 +85,7 @@ class IshConsole(BaseConfig):
         #     2) not an ssh session,
         #     3) key escapes not handled by an outer tmux
         #
-        if (not os.path.exists("/proc/ish")) or os.environ.get("SSH_CONNECTION"):
+        if (not IS_ISH) or os.environ.get("SSH_CONNECTION"):
             #
             #  This c is only relevant on the iSH console itself
             #  and if no outer tmux is already handling the nav keys
@@ -244,7 +233,7 @@ class IshConsole(BaseConfig):
         else:
             # Double tap for actual Esc
             w("bind -T navPrefix -N 'Send Escape'  User200  send Escape")
-        if this_is_aok_kernel():
+        if IS_ISH_AOK:
             w(
                 """#
             #  Use shift-arrows for navigation

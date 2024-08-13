@@ -34,7 +34,7 @@ class SB(DefaultPlugins):
         w = self.write
         w("# this is sb_muted")
         # pylint: disable=W0201
-        self.hostname_template = f"#[fg={THEME_TEXT}]{utils.display_hostname}#[default]"
+        self.hostname_template = f"#[fg={THEME_TEXT}]{utils.HOSTNAME}#[default]"
 
         self.sb_right = self.sb_right.replace("%a %h", f"#[fg={MUTED_TEXT}] %a %h")
         w(

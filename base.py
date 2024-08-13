@@ -41,8 +41,8 @@ import sys
 from pydoc import locate
 
 import __main__
+import mtc_utils
 
-import utils
 
 TMUX_CONF_NEEDED = "0.16.8"
 
@@ -99,7 +99,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     sb_right: str = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template: str = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
     hostname_template: str = (
-        f"#[fg=colour195,bg=colour1]{utils.display_hostname}#[default]"
+        f"#[fg=colour195,bg=colour1]{mtc_utils.HOSTNAME}#[default]"
     )
     tpm_initializing: str = "#[reverse,blink] tpm initializing...#[default]"
 
@@ -167,7 +167,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             self.prefix_key = self.prefix_key_T2
             print(f"T2_ENV uses prefix_key: {self.prefix_key}")
 
-        if os.path.isdir("/proc/ish") or utils.display_hostname == "ish-hetz1":
+        if mtc_utils.IS_ISH or mtc_utils.HOSTNAME == "ish-hetz1":
             print("Detected iSH kernel, assuming this to be a limited host")
             self.is_limited_host = True
 

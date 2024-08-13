@@ -133,7 +133,7 @@ start_tmux() {
 regular_tmux() {
     # echo "-> running regular_tmux($profile) [$(hostname)]" | tee -a "$myt_log"
     if [ -z "$profile" ]; then
-        detected_hostname="$(hostname | cut -d. -f 1 | tr '[:upper:]' '[:lower:]')"
+        detected_hostname="$(hostname -s)"
         # echo "-> detected hostname [$detected_hostname]" | tee -a "$myt_log"
         profile="${my_tmux_conf_location}/${detected_hostname}.py"
         # echo "-> Automatically built profile-name: [$profile]" | tee -a "$myt_log"

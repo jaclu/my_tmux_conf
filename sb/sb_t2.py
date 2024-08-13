@@ -10,10 +10,12 @@
 
 """ Style test """
 
-import os
+# import os
 
 # pylint: disable=E0401
 from default_plugins import DefaultPlugins
+
+from mtc_utils import IS_ISH
 
 
 # pylint: disable=R0903
@@ -23,10 +25,9 @@ class SB(DefaultPlugins):
     def status_bar_customization(self, print_header=True):
         """override statusbar config"""
         self.assign_style(__file__)
-
         super().status_bar_customization(print_header=print_header)
         if self.vers_ok("1.9"):
-            if os.path.isdir("/proc/ish"):
+            if IS_ISH:
                 # give iSH a slightly different color theme
                 self.write("set -g status-style fg=black,bg=yellow")
             else:
