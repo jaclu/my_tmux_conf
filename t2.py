@@ -14,15 +14,9 @@
 #  to revert to multiple session windows
 #
 
-import subprocess  # nosec
+import mtc_utils
 
-# pylint: disable=subprocess-run-check
-result = subprocess.run("hostname -s", capture_output=True, text=True,  # nosec: B607
-                        shell=True)  # nosec: B602
-hostname = result.stdout.strip()
-# print(f"hostname: [{hostname}]")
-
-if hostname == "ish-hetz1":
+if mtc_utils.HOSTNAME == "ish-hetz1":
     from sb.sb_acceptance import SB
 else:
     # normal theme
@@ -70,7 +64,7 @@ class T2(SB):
 
     def plugin_packet_loss(self):  # 1.9
         min_vers = 1.9
-        if self.is_tmate():
+        if mtc_utils.IS_ISH or mtc_utils.HOSTNAME == "ish-hetz1" or self.is_tmate():
             min_vers = 99.1  # disable for tmate
         return [
             "jaclu/tmux-packet-loss",
