@@ -26,7 +26,7 @@ if os.path.exists("/usr/local/bin/hostname"):
     cmd = "/usr/local/bin/hostname"
 else:
     cmd = "hostname"
-HOSTNAME = run_shell(f"{cmd} -s")
+HOSTNAME = run_shell(f"{cmd} -s").lower()
 
 IS_ISH_AOK = False
 if os.path.isdir("/proc/ish"):
