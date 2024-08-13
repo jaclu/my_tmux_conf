@@ -14,7 +14,7 @@
 # pylint: disable=E0401
 from default_plugins import DefaultPlugins
 
-import utils
+import mtc_utils
 
 THEME_TEXT = "colour135"  # lilac / magenta, not sure how to label this
 MUTED_TEXT = "colour242"  # grey
@@ -34,7 +34,7 @@ class SB(DefaultPlugins):
         w = self.write
         w("# this is sb_muted")
         # pylint: disable=W0201
-        self.hostname_template = f"#[fg={THEME_TEXT}]{utils.HOSTNAME}#[default]"
+        self.hostname_template = f"#[fg={THEME_TEXT}]{mtc_utils.HOSTNAME}#[default]"
 
         self.sb_right = self.sb_right.replace("%a %h", f"#[fg={MUTED_TEXT}] %a %h")
         w(

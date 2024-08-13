@@ -65,6 +65,7 @@ class T2(SB):
     def plugin_packet_loss(self):  # 1.9
         min_vers = 1.9
         if mtc_utils.IS_ISH or mtc_utils.HOSTNAME == "ish-hetz1" or self.is_tmate():
+            #  this will draw lots of CPU on hetz1, so disable it
             min_vers = 99.1  # disable for tmate
         return [
             "jaclu/tmux-packet-loss",
