@@ -13,7 +13,7 @@
 # pylint: disable=E0401
 from default_plugins import DefaultPlugins
 
-import mts_utils
+from mts_utils import HOSTNAME
 
 
 # pylint: disable=R0903
@@ -28,7 +28,7 @@ class SB(DefaultPlugins):
             self.write("set -g status-style fg=white,bg=red")
             # pylint: disable=W0201
             self.hostname_template = "#[bg=colour195,fg=colour1]" \
-                f"{mts_utils.HOSTNAME}#[default]"
+                f"{HOSTNAME}#[default]"
             self.tpm_initializing: str = "#[fg=yellow bg=black blink] " \
                 "tpm initializing...#[default]"
         else:
