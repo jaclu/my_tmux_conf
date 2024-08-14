@@ -7,7 +7,13 @@
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
 #
-
+#  Provides constants:
+#
+#    HOSTNAME   short hostname
+#    IS_ISH     (boolean) true if platform is the iOS iSH App
+#    IS_ISH_AOK (boolean) true if platform is the iOS-AOK fork
+#               If env is iSH-AOK, IS_ISH will also be true
+#
 import os.path
 import subprocess  # nosec
 
