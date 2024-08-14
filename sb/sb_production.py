@@ -13,7 +13,7 @@
 # pylint: disable=E0401
 from default_plugins import DefaultPlugins
 
-from mts_utils import HOSTNAME
+from mtc_utils import HOSTNAME
 
 
 # pylint: disable=R0903

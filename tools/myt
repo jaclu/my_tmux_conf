@@ -26,16 +26,29 @@ use_python_venv=true
 #  Logs how the latest tmux env was setup
 myt_log=/tmp/myt.log
 
+log_msg() {
+    echo "$1"
+    [ -n "$myt_log" ] && echo "$1" >> "$myt_log"
+}
+
+err_msg() {
+    log_msg "ERROR: $1"
+    exit "${2:-1}"
+}
+
 
 py_venv_activate() {
     #
     #  Activate Python venv, will only be called if use_python_venv ia true
     #
     if [ -d "$my_tmux_conf_location"/.venv ]; then
+        log_msg "Using py venv: $my_tmux_conf_location/.venv"
 	#  shellcheck source=/dev/null
 	. "$my_tmux_conf_location"/.venv/bin/activate
     else
+        log_msg "Creating py venv: $my_tmux_conf_location/.venv"
 	python3 -m venv "$my_tmux_conf_location"/.venv
+        log_msg "Using py venv: $my_tmux_conf_location/.venv"
 	#  shellcheck source=/dev/null
 	. "$my_tmux_conf_location"/.venv/bin/activate
 	#  Python dependency
@@ -47,6 +60,7 @@ py_venv_deactivate() {
     #
     #  Dectivate Python venv, will only be called if use_python_venv ia true
     #
+    log_msg "Exiting py venv: $my_tmux_conf_location/.venv"
     deactivate
 }
 
@@ -70,10 +84,7 @@ select_tmux_bin() {
     fi
     [ -z "$TMUX_BIN" ] && TMUX_BIN="$(command -v "$tmux_bin")"
 
-    if [ -z "$TMUX_BIN" ]; then
-        echo "ERROR: no tmux in PATH!" | tee -a "$myt_log"
-        exit 1
-    fi
+    [ -z "$TMUX_BIN" ] && err_msg "no tmux in PATH!"
 
     #  Needs to be $HOME not ~ since it is sent into tmux_conf
 
@@ -111,7 +122,7 @@ select_tmux_bin() {
     *) ;;
     esac
 
-    echo "myt will use tmux $tmux_vers"  | tee -a "$myt_log"
+    log_msg "myt will use tmux: $tmux_vers - socket: $socket"
     chk_incompatible_socket
 }
 
@@ -123,16 +134,14 @@ chk_incompatible_socket() {
 
     #  shellcheck disable=SC2009
     ps ax | grep "$socket_identifier" | grep -qv -e /usr/bin/tmux -e  "$tmux_vers" -e grep && {
-        (
-        echo
-        echo "ERROR: $socket instances for version other than $tmux_vers running!"
-        echo "Intended to use: $TMUX_BIN"
-        echo
-        echo "Found the following processes:"
-        echo
         #  shellcheck disable=SC2009
-        ps ax | grep -v grep | grep " $socket"
-        ) | tee -a "$myt_log"
+        log_msg "
+ERROR: $socket instances for version other than $tmux_vers running!
+Intended to use: $TMUX_BIN
+
+Found the following processes:
+
+$(ps ax | grep -v grep | grep "$socket")"
         exit 1
     }
 }
@@ -143,61 +152,56 @@ prepare_tmux_conf() {
     #
     $use_python_venv && py_venv_activate
 
+    log_msg # spacer line
     # echo "Building tmux env using: $profile - saving it in: $conf_file"
     if $t2_env; then
         T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file" | tee -a "$myt_log" || {
-            echo "ERROR: Failed to build t2 env" | tee -a "$myt_log"
-            exit 2
+            err_msg "Failed to build t2 env" 2
         }
     else
         "$profile" -r -t "$TMUX_BIN" "$conf_file" | tee -a "$myt_log" || {
-            echo "ERROR: Failed to build $conf_file" | tee -a "$myt_log"
-            exit 2
+            err_msg "Failed to build $conf_file" 2
         }
     fi
+    log_msg # spacer line
+    
     $use_python_venv && py_venv_deactivate
 }
 
 start_tmux() {
     if $quick_mode; then
-        echo "Using existing: $conf_file" | tee -a "$myt_log"
+        log_msg "Using existing: $conf_file"
     else
 	prepare_tmux_conf
     fi
 
     cd "$d_initial" || {
-        echo "ERROR: Failed to cd back to [$d_initial]" | tee -a "$myt_log"
-        exit 1
+        err_msg "ERROR: Failed to cd back to [$d_initial]"
     }
 
-
-    echo "TMUX_BIN [$TMUX_BIN] socket [$socket]" | tee -a "$myt_log"
-    echo
     if $TMUX_BIN -L "$socket" list-sessions 2>/dev/null | grep -q main; then
         $shared_session && detch="" || detch="-d"
         eval "$TMUX_BIN" -L "$socket" -f "$conf_file" attach-session "$detch" -t main
     else
         $TMUX_BIN -L "$socket" -f "$conf_file" new-session -s main
     fi
-    echo "[$(date)] exited tmux" | tee -a "$myt_log"
+    log_msg "[$(date)] exited tmux"
 }
 
 regular_tmux() {
-    # echo "-> running regular_tmux($profile) [$(hostname)]" | tee -a "$myt_log"
+    # log_msg "-> running regular_tmux($profile) [$(hostname)]"
     if [ -z "$profile" ]; then
         detected_hostname="$(hostname -s | tr '[:upper:]' '[:lower:]')"
-        # echo "-> detected hostname [$detected_hostname]" | tee -a "$myt_log"
+        # log_msg "-> detected hostname [$detected_hostname]"
         profile="${my_tmux_conf_location}/${detected_hostname}.py"
-        # echo "-> Automatically built profile-name: [$profile]" | tee -a "$myt_log"
+        # log_msg "-> Automatically built profile-name: [$profile]"
     fi
 
-    if [ ! -f "${profile}" ]; then
-        (
-            echo
-            echo "*** Warning: no profile found for: $profile"
-            echo "***          using default profile after 3 seconds"
-            echo
-        ) | tee -a "$myt_log"
+    if [ ! -f "${profile}" ]; then        
+        echo
+        log_msg "*** Warning: no profile found for: $profile"
+        echo "***          using default profile after 3 seconds"
+        echo
         sleep 3
         profile="$my_tmux_conf_location/default_plugins.py"
     else
@@ -263,7 +267,7 @@ t2_env=false
 profile=""
 d_initial="$PWD" # original pwd
 
-date > "$myt_log"
+[ -n "$myt_log" ] && echo "[$(date)] - starting $0" > "$myt_log"
 
 while [ -n "$1" ]; do
     case "$1" in
