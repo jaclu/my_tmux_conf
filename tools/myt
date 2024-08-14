@@ -159,6 +159,10 @@ create_tmux_conf() {
     #
     #  Generate a new tmux conf file
     #
+    cd "$my_tmux_conf_location" || {
+        error_msg "ERROR: Failed to cd into: $my_tmux_conf_location"
+    }
+
     $use_python_venv && py_venv_activate
     # f_py_output=$(mktemp)
 
@@ -209,7 +213,7 @@ regular_tmux() {
     if [ -z "$profile" ]; then
         detected_hostname="$(hostname -s | tr '[:upper:]' '[:lower:]')"
         # log_msg "-> detected hostname [$detected_hostname]"
-        profile="${my_tmux_conf_location}/${detected_hostname}.py"
+        profile="${my_tmux_conf_location}/hostnames/${detected_hostname}.py"
         # log_msg "-> Automatically built profile-name: [$profile]"
     fi
 
@@ -239,13 +243,15 @@ tmux_2() {
     fi
 
     #
-    # run from this location to pick up alternate tmux versions
-    # defined in this location
+    #  run from this location to pick up alternate tmux versions
+    #  defined in this location
     #
     mkdir -p "$HOME"/t2
 
-    # To help pick up the right tmux go here to search
-    cd ~/t2 || exit
+    #  To help pick up the right tmux go here to search
+    # cd ~/t2 || {
+    #     error_msg "ERROR: Failed to cd back to [$d_initial]"
+    # }
 
     select_tmux_bin
     start_tmux
@@ -281,7 +287,7 @@ shared_session=false
 quick_mode=false
 t2_env=false
 profile=""
-d_initial="$PWD" # original pwd
+d_initial="$PWD" #  original pwd, will switch back to it before starting tmux
 
 [ -n "$myt_log" ] && {
     echo "Will log progress to: $myt_log"
