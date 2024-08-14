@@ -7,6 +7,8 @@
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
 #
+#  Changes needed if this runs on the iSH console
+#
 #  This checks if the session running this originates from an iSH node.
 #  The iSH console has a very limited keyboard, very few keys are
 #  defined, and most of the ALT keys are incorrect. So here ALT

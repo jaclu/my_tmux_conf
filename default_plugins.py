@@ -7,6 +7,8 @@
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
 #
+#  Includes plugins I "always" use, regardless of Local vs Remote node
+#
 #  Since I use this on older tmux versions, I can't use line continuation
 #  on tmux commands, so some of those lines are really long...
 #

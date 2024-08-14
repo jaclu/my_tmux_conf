@@ -7,11 +7,8 @@
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
 #
-#  Kind of a .tmux.conf compiler, generating one compatible with the
-#  current tmux version.
-#
-#  Trying my best to keep this in sync with my regular .tmux.conf
-#  but no doubt at times they will be slightly out of sync.
+#  Changes needed when tmux runs inside iSH, regardless if started
+#  localy or via remote shell
 #
 #  The generated config will only include group headers
 #  The more detailed comments in here will not be written, read them here :)

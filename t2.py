@@ -5,15 +5,23 @@
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
 #
-#  Template I use for my t2 environment, a secondary tmux env on the same
-#  system, be it local or remote. This keeps it's own plugin dirs and
-#  everything, a lot of this is setup in the default file, this is for
-#  color theme and selection of often changing list of plugins I am testing
-#  out. It is quite convenient to be able to test tmux settings inside another
-#  tmux session, really frustrating when you suddenly cant start tmux and have
-#  to revert to multiple session windows
+#  This sets up the t2 environment, meant to run an "inner" tmux, with
+#  its own prefix (will be displayed on the status bar)
+#
+#  This keeps it's own plugin dirs and environment.
+#  It is quite convenient to be able to test tmux settings or plugins
+#  inside another tmux session without risking to wreck your entire tmux
+#  foring you to fix it and then close everythinh down and restart tmux
+#  hoping your primary or outer env comes back.
+#
+#  Also convenient for simply running this on another host than where
+#  your primary tmux is running, without having colliding prefix issues
 #
 
+# everything, a lot of this is setup
+#  in the default file, this is for color theme and selection of often
+#  changing list of plugins I am testing
+#  out.
 import mtc_utils
 
 if mtc_utils.HOSTNAME == "ish-hetz1":
