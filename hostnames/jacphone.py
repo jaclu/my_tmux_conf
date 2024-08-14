@@ -23,6 +23,15 @@
 
 """ host: jacphone """
 
+import os
+import sys
+
+# Put the "project path first to support relative imports"
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, root_dir)
+
+# flake8: noqa: E402
+# pylint: disable=wrong-import-position
 from ish_host import IshHostWithStyle
 
 if __name__ == "__main__":
