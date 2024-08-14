@@ -32,10 +32,8 @@ else
 fi
 
 #  Logs how the latest tmux env was setup
-myt_log="${TMPDIR:-/tmp}"/myt.log
+myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log
 
-echo "Will log progress to: $myt_log"
-echo
 log_msg() {
     echo "$1"
     [ -n "$myt_log" ] && echo "$1" >>"$myt_log"
@@ -285,7 +283,11 @@ t2_env=false
 profile=""
 d_initial="$PWD" # original pwd
 
-[ -n "$myt_log" ] && echo "[$(date)] - starting $0" >"$myt_log"
+[ -n "$myt_log" ] && {
+    echo "Will log progress to: $myt_log"
+    echo
+    echo "[$(date)] - starting $0" >"$myt_log"
+}
 
 while [ -n "$1" ]; do
     case "$1" in
