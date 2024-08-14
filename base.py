@@ -88,6 +88,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #
     #  Tc is more commonly supported by terminals
     #  RGB may provide more accurate color representation
+    #  If running tmux < 2.7, this will be overriden into Tc, since
+    #  RGB was not supported in older tmux'es
     #
     color_tag_24bit: str = "RGB"
 
@@ -98,9 +100,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     sb_left: str = "|#{session_name}| "
     sb_right: str = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template: str = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
-    hostname_template: str = (
-        f"#[fg=colour195,bg=colour1]{mtc_utils.HOSTNAME}#[default]"
-    )
+    hostname_template: str = f"#[fg=colour195,bg=colour1]{mtc_utils.HOSTNAME}#[default]"
     tpm_initializing: str = "#[reverse,blink] tpm initializing...#[default]"
 
     handle_iterm2: bool = True  # Select screen-256color for iTerm2

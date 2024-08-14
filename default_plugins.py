@@ -41,14 +41,13 @@ class DefaultPlugins(IshConsole):
     configured
     """
 
+    #
+    #  The default is to use jaclu/tpm, with built in support for
+    #  TMUX_BIN and some improvements in reporting progress during
+    #  install/removal of plugins.
+    #  If you prefer to use the original uncomment this
+    #
     # plugin_handler = "tmux-plugins/tpm"
-
-    #
-    #  Don't do auto-resume session in t2_env
-    #  Manual reload with <prefix> C-R is still available
-    #  if tmux-plugins/tmux-resurrect is installed
-    #
-    do_continuum: bool = not os.environ.get("T2_ENV")
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """This is called just before the status bar is rendered,
@@ -70,6 +69,9 @@ class DefaultPlugins(IshConsole):
         """
 
         super().status_bar_customization(print_header=print_header)
+
+        if not self.style:
+            self.assign_style("host not recognized - No style is used")
 
         #
         #  Plugin-hooks for status-bar, enable an item if that plugin
@@ -407,15 +409,11 @@ class DefaultPlugins(IshConsole):
         #  as possible to minimize the risk of a crucial tmux variable
         # `status-right` is not overwritten (usually by theme plugins).
         #
-        conf = "#  Parameter dependent settings for tmux-plugins/tmux-continuum"
-        if self.do_continuum:
-            conf += """
-            set -g @continuum-restore        on
-            set -g @continuum-save-interval  15"""
-        else:
-            conf += """
-            set -g @continuum-restore        off
-            set -g @continuum-save-interval  15"""
+        conf = """
+        set -g @continuum-save-interval  15
+        set -g @continuum-restore        on
+        """
+
         # return ["jaclu/tmux-continuum", vers_min, conf]
         return ["tmux-plugins/tmux-continuum", vers_min, conf]
 
