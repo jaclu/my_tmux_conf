@@ -161,21 +161,25 @@ prepare_tmux_conf() {
     #  tmux conf file generation
     #
     $use_python_venv && py_venv_activate
+    # f_py_output=$(mktemp)
 
     log_msg # spacer line
     # echo "Building tmux env using: $profile - saving it in: $conf_file"
     if $t2_env; then
-        T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file" | tee -a "$myt_log" || {
-            err_msg "Failed to build t2 env" 2
-        }
+	T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file" | tee -a "$myt_log" || {
+            err_msg "Failed to log python output" 2
+	}
     else
         "$profile" -r -t "$TMUX_BIN" "$conf_file" | tee -a "$myt_log" || {
-            err_msg "Failed to build $conf_file" 2
+            err_msg "Failed to log python output" 2
         }
     fi
     log_msg # spacer line
     
     $use_python_venv && py_venv_deactivate
+    grep -q "Writing tmux" "$myt_log" || {
+	err_msg "Python build failed to complete"
+    }
 }
 
 start_tmux() {
