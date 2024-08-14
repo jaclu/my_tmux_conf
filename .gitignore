@@ -8,11 +8,6 @@ dist/
 src/tmux_conf.egg-info/
 local_tmux_conf/
 
-# olint linter config
-.cache.olint
-
-.mypy_cache/
-
 .venv/
 not-v-env/
 
@@ -29,3 +24,12 @@ not-v-env/
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 **/.history
+
+.mypy_cache/
+
+#  olint linter config
+.cache.olint
+
+
+#  deploy location hint
+.destination

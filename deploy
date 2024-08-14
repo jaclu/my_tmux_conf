@@ -1,6 +1,38 @@
 #!/bin/sh
+#
+#  Copyright (c) 2024: Jacob.Lundqvist@gmail.com
+#  License: MIT
+#
+#  Part of https://github.com/jaclu/my_tmux_conf
+#
+#  Deploys tmux & rt to selected destination
+#
 
 CURRENT_DIR=$(cd -- "$(dirname -- "$0")" && pwd)
+
+f_destination="$(echo "$CURRENT_DIR/.destination" | sed 's#^\./##')"
+
+echo
+if [ ! -f "$f_destination" ]; then
+    echo "If you put a destination folder in the file $f_destination"
+    echo "This deploy will deploy the tools 'myt' and 'rt' to that location."
+    echo
+    echo "This might need sudo on first deploy."
+    echo
+    echo "Example:"
+    echo "  echo /usr/local/bin > $f_destination"
+    exit 1
+fi
+
+dest="$(cat "$f_destination")"
+
+if [ ! -d "$dest" ]; then
+    echo
+    echo "ERROR: The directory mentioned in .destination does not exist"
+    echo "       Supplied destination: $dest"
+    exit 1
+fi
+
 
 update_if_changed() {
     item="$1"

@@ -13,10 +13,47 @@
 #      plugins, using asdf to potentially run this with a different
 #      tmux version
 #
+
+#  where  my_tmux_conf is located
 my_tmux_conf_location="/usr/local/my_tmux_conf"
-myt_log="$HOME"/tmp/myt.log
+
+#
+#  if you dont need to use a venv for the python that compiles your tmux conf,
+#  set this to false
+#
+use_python_venv=true
+
+#  Logs how the latest tmux env was setup
+myt_log=/tmp/myt.log
+
+
+py_venv_activate() {
+    #
+    #  Activate Python venv, will only be called if use_python_venv ia true
+    #
+    if [ -d "$my_tmux_conf_location"/.venv ]; then
+	#  shellcheck source=/dev/null
+	. "$my_tmux_conf_location"/.venv/bin/activate
+    else
+	python3 -m venv "$my_tmux_conf_location"/.venv
+	#  shellcheck source=/dev/null
+	. "$my_tmux_conf_location"/.venv/bin/activate
+	#  Python dependency
+	pip install tmux_conf
+    fi
+}
+
+py_venv_deactivate() {
+    #
+    #  Dectivate Python venv, will only be called if use_python_venv ia true
+    #
+    deactivate
+}
 
 select_tmux_bin() {
+    #
+    #  Selects what tmux bin to use
+    #
     TMUX_BIN=""
     if [ -n "$tmux_bin" ]; then
         # User defined tmux
@@ -75,9 +112,13 @@ select_tmux_bin() {
     esac
 
     echo "myt will use tmux $tmux_vers"  | tee -a "$myt_log"
+    chk_incompatible_socket
 }
 
-start_tmux() {
+chk_incompatible_socket() {
+    #
+    #  Ensure tmux socket is not used by another version of tmux
+    #
     socket_identifier=" -L $socket "
 
     #  shellcheck disable=SC2009
@@ -94,30 +135,41 @@ start_tmux() {
         ) | tee -a "$myt_log"
         exit 1
     }
+}
 
+prepare_tmux_conf() {
     #
-    #  conf file handling
+    #  tmux conf file generation
     #
+    $use_python_venv && py_venv_activate
+
+    # echo "Building tmux env using: $profile - saving it in: $conf_file"
+    if $t2_env; then
+        T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file" | tee -a "$myt_log" || {
+            echo "ERROR: Failed to build t2 env" | tee -a "$myt_log"
+            exit 2
+        }
+    else
+        "$profile" -r -t "$TMUX_BIN" "$conf_file" | tee -a "$myt_log" || {
+            echo "ERROR: Failed to build $conf_file" | tee -a "$myt_log"
+            exit 2
+        }
+    fi
+    $use_python_venv && py_venv_deactivate
+}
+
+start_tmux() {
     if $quick_mode; then
         echo "Using existing: $conf_file" | tee -a "$myt_log"
     else
-        if $t2_env; then
-            T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file" || {
-                echo "ERROR: Failed to build t2 env" | tee -a "$myt_log"
-                exit 2
-            }
-        else
-            "$profile" -r -t "$TMUX_BIN" "$conf_file" || {
-                echo "ERROR: Failed to build $conf_file" | tee -a "$myt_log"
-                exit 2
-            }
-        fi
+	prepare_tmux_conf
     fi
 
     cd "$d_initial" || {
         echo "ERROR: Failed to cd back to [$d_initial]" | tee -a "$myt_log"
         exit 1
     }
+
 
     echo "TMUX_BIN [$TMUX_BIN] socket [$socket]" | tee -a "$myt_log"
     echo
@@ -159,6 +211,9 @@ regular_tmux() {
 }
 
 tmux_2() {
+    #
+    #  Inner tmux server, uses a separate config and another prefix
+    #
     if [ -z "$profile" ]; then
         profile="$my_tmux_conf_location/t2.py"
     fi
@@ -195,6 +250,12 @@ profile  Run using specific profile
 EOF
     exit 0
 }
+
+#===============================================================
+#
+#   Main
+#
+#===============================================================
 
 shared_session=false
 quick_mode=false
