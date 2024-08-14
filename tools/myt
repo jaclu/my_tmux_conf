@@ -51,7 +51,9 @@ py_venv_activate() {
         log_msg "Using py venv: $my_tmux_conf_location/.venv"
 	#  shellcheck source=/dev/null
 	. "$my_tmux_conf_location"/.venv/bin/activate
+
 	#  Python dependency
+        log_msg "pip install tmux_conf"
 	pip install tmux_conf
     fi
 }
