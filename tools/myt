@@ -124,7 +124,7 @@ select_tmux_bin() {
     *) ;;
     esac
 
-    log_msg "myt will use tmux: $tmux_vers - socket: $socket"
+    log_msg "myt will use: $TMUX_BIN [$tmux_vers] - socket: $socket"
     chk_incompatible_socket
 }
 
