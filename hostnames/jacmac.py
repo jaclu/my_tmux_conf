@@ -20,9 +20,15 @@
 
 """ JacMac config """
 
+import os
 import sys
 
-# from sb.sb_local import SB
+# Put the "project path first to support relative imports"
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, root_dir)
+
+# flake8: noqa: E402
+# pylint: disable=wrong-import-position
 from sb.sb_muted import SB
 
 

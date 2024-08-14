@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 #
-#  Copyright (c) 2022: Jacob.Lundqvist@gmail.com
+#  -*- mode: python; mode: fold -*-
+#
+#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -19,9 +21,9 @@
 #  filtering out or replacing incompatible syntax.
 #
 
-from sb.sb_virtualbox import SB
-# from sb_muted import MutedConfig as SB
+""" host: jacphone """
 
+from ish_host import IshHostWithStyle
 
 if __name__ == "__main__":
-    SB().run()
+    IshHostWithStyle().run()

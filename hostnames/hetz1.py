@@ -10,6 +10,15 @@
 
 """ host hetz1 """
 
+import os
+import sys
+
+# Put the "project path first to support relative imports"
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, root_dir)
+
+# flake8: noqa: E402
+# pylint: disable=wrong-import-position
 from sb.sb_cloud import SB
 
 

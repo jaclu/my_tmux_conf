@@ -19,19 +19,79 @@
 #  filtering out or replacing incompatible syntax.
 #
 
-from sb.sb_virtualbox import SB
+import os
+import sys
 
-# from sb_muted import MutedConfig as SB
+# Put the "project path first to support relative imports"
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, root_dir)
+
+# flake8: noqa: E402
+# pylint: disable=wrong-import-position
+from sb.sb_virtualbox import SB
 
 
 class UbuConfig(SB):
-    def plugin_packet_loss(self):  # 1.9
+
+    # plugin_handler: str = "tmux-plugins/tpm"
+    status_interval = 5
+
+    def plugin_zz_continuum(self) -> list:  # 1.9
         #
-        #  #{packet_loss}
+        #  Auto restoring a session just as tmux starts on a limited
+        #  host will just lead to painfull lag.
+        #
+        return ["tmux-plugins/tmux-continuum", 99.0, ""]
+
+    def not_plugin_mullvad(self):  # 2.2  local
+        #
+        #   #{mullvad_city}#{mullvad_country}#{mullvad_status}
         #
         return [
+            "jaclu/tmux-mullvad",
+            2.2,
+            """
+            set -g @mullvad_cache_time ''
+
+            #
+            #  I only want to be notified about where the VPN is connected if
+            #  not connected to my normal location, typically when avoiding Geo
+            #  blocks.
+            #  Since this will negatively impact bandwidth and lag, its good to
+            #  have a visual reminder.
+            #
+            set -g @mullvad_excluded_country 'Netherlands'
+            set -g @mullvad_excluded_city    'Amsterdam'
+
+            #  No colors wanted for disconnected status, just distracting.
+            set -g @mullvad_disconnected_bg_color ' '
+
+            #  Since nothing is printed when connected, we don't need to
+            #  bother with the colors
+            set -g @mullvad_connected_text ' '
+
+            #  When city/country is printed, use comma as separator
+            set -g @mullvad_city_suffix ','
+
+            #
+            #  Keep separation if items are displayed
+            #
+            set -g @mullvad_country_no_color_suffix 1
+            set -g @mullvad_status_no_color_suffix 1
+            """,
+        ]
+
+    #
+    #  This is run as a vhost, the next two detect hardware
+    #  conditions on the host platform
+    #
+    def plugin_packet_loss(self):  # 1.9
+        min_vers = 1.9
+        if self.is_tmate():
+            min_vers = 99.0  # disable for tmate
+        return [
             "jaclu/tmux-packet-loss",
-            1.9,
+            min_vers,
             """
             # set -g @packet-loss-ping_host 1.1.1.1
             # set -g @packet-loss-ping_count     7
@@ -48,7 +108,7 @@ class UbuConfig(SB):
             set -g @packet-loss-color_alert  colour21
             set -g @packet-loss-color_bg     colour226
 
-            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-ubudt.log
+            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-ubu.log
 
             """,
         ]
@@ -76,48 +136,6 @@ class UbuConfig(SB):
             set -g @batt_remain_short 'true'
             """,
         ]
-
-    def plugin_mullvad(self):  # 2.2  local
-        #
-        #   #{mullvad_city}#{mullvad_country}#{mullvad_status}
-        #
-        c = """
-        set -g @mullvad_cache_time ''
-
-        #
-        #  I only want to be notified about where the VPN is connected if not
-        #  connected to my normal location, typically when avoiding Geo blocks.
-        #  Since this will negatively impact bandwith and lag, its good to have
-        #  a visual reminder.
-        #
-        """
-        c += (
-            "set -g @mullvad_excluded_country 'Netherlands' # dont "
-            "display this country\n"
-        )
-        c += (
-            "set -g @mullvad_excluded_city    'Amsterdam'   # dont "
-            "display this city\n"
-        )
-        c += """
-            #  No colors wanted for disconnected status, just distracting.
-            set -g @mullvad_disconnected_bg_color ' '
-
-            #  Since nothing is printed when connected, we don't need to bother
-            #  with the colors
-            set -g @mullvad_connected_text ' '
-
-            #  When city/country is printed, use comma as separator
-            set -g @mullvad_city_suffix ','
-
-            #
-            #  Keep separation if items are displayed
-            #
-            set -g @mullvad_country_no_color_suffix 1
-            set -g @mullvad_status_no_color_suffix 1
-            """
-
-        return ["jaclu/tmux-mullvad", 2.2, c]
 
 
 if __name__ == "__main__":

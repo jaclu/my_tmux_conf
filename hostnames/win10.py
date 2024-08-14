@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 #
-#  -*- mode: python; mode: fold -*-
-#
-#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -21,10 +19,19 @@
 #  filtering out or replacing incompatible syntax.
 #
 
-""" host: jacphone """
+import os
+import sys
 
-from ish_host import IshHostWithStyle
+# Put the "project path first to support relative imports"
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, root_dir)
+
+# flake8: noqa: E402
+# pylint: disable=wrong-import-position
+from sb.sb_virtualbox import SB
+
+# from sb_muted import MutedConfig as SB
 
 
 if __name__ == "__main__":
-    IshHostWithStyle().run()
+    SB().run()
