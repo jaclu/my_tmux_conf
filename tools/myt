@@ -18,10 +18,18 @@
 my_tmux_conf_location="/usr/local/my_tmux_conf"
 
 #
-#  if you dont need to use a venv for the python that compiles your tmux conf,
-#  set this to false
+#  This needs the python module tmux_conf, and by default it will create
+#  its own venv installing this.
 #
-use_python_venv=true
+#  If you dont need to use a venv for the python that compiles your tmux conf,
+#  do: touch $HOME/.myt_skip_venv
+#
+
+if [ -f "$HOME"/.myt_skip_venv ]; then
+    use_python_venv=false
+else
+    use_python_venv=true
+fi
 
 #  Logs how the latest tmux env was setup
 myt_log=/tmp/myt.log
