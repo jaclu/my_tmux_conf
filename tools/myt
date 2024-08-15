@@ -315,6 +315,11 @@ $quick_mode && [ -n "$profile" ] && {
     error_msg "Can not be combined: -q and $profile"
 }
 
+[ "$TERM" = "xterm-kitty" ] && {
+    # tmux cant handle this terminal type
+    export TERM="screen-256color"
+}
+
 if $t2_env; then
     tmux_2
 else
