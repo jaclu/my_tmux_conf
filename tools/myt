@@ -206,11 +206,12 @@ start_tmux() {
 
     if $TMUX_BIN -L "$socket" list-sessions 2>/dev/null | grep -q main; then
         if ! $shared_session; then
+            #
+            #  tmux -d just kills other clients using the same session
+            #  this kills all other clients regardless of session
+            #
             $TMUX_BIN -L "$socket" list-clients -F '#{client_tty}' | \
                 xargs -I{} "$TMUX_BIN" -L "$socket" detach-client -t {}
-            #detch=""
-        #else
-        #    detch="-d"
         fi
         eval "$TMUX_BIN" -L "$socket" -f "$conf_file" attach-session -t main
     else
