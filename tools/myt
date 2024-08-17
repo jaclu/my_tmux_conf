@@ -34,6 +34,32 @@ fi
 #  Logs how the latest tmux env was setup
 myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log
 
+#---------------------------------------------------------------
+#
+#   notifications
+#
+#---------------------------------------------------------------
+
+display_help() {
+    cat <<EOF
+Usage: myt [-q] [-2] [profile]
+
+Generates config and starts tmux
+Default profile is hostname
+Options can be given in any order.
+
+Availlable options:
+
+-h       Print this help and exit.
+-c       Use this tmux binary (default tmux)
+-s       Share session
+-q       Dont generate config, start tmux direcly
+-2       Run in T2_ENV (inner tmux, other prefix)
+profile  Run using specific profile
+EOF
+    exit 0
+}
+
 log_msg() {
     echo "$1"
     [ -n "$myt_log" ] && echo "$1" >>"$myt_log"
@@ -43,6 +69,12 @@ error_msg() {
     log_msg "ERROR: $1"
     exit "${2:-1}"
 }
+
+#---------------------------------------------------------------
+#
+#   venv handling
+#
+#---------------------------------------------------------------
 
 py_venv_activate() {
     #
@@ -73,25 +105,11 @@ py_venv_deactivate() {
     deactivate
 }
 
-chk_incompatible_socket() {
-    #
-    #  Ensure tmux socket is not used by another running version of tmux
-    #
-    socket_identifier=" -L $socket "
-
-    #  shellcheck disable=SC2009
-    ps ax | grep "$socket_identifier" | grep -qv -e /usr/bin/tmux -e "$tmux_vers" -e grep && {
-        #  shellcheck disable=SC2009
-        log_msg "
-ERROR: $socket instances for version other than $tmux_vers running!
-Intended to use: $TMUX_BIN
-
-Found the following processes:
-
-$(ps ax | grep -v grep | grep "$socket")"
-        exit 1
-    }
-}
+#---------------------------------------------------------------
+#
+#   running tmux
+#
+#---------------------------------------------------------------
 
 select_tmux_bin() {
     #
@@ -155,6 +173,58 @@ select_tmux_bin() {
     chk_incompatible_socket
 }
 
+chk_incompatible_socket() {
+    #
+    #  Ensure tmux socket is not used by another running version of tmux
+    #
+    socket_identifier=" -L $socket "
+
+    #  shellcheck disable=SC2009
+    ps ax | grep "$socket_identifier" | grep -qv -e /usr/bin/tmux -e "$tmux_vers" -e grep && {
+        #  shellcheck disable=SC2009
+        log_msg "
+ERROR: $socket instances for version other than $tmux_vers running!
+Intended to use: $TMUX_BIN
+
+Found the following processes:
+
+$(ps ax | grep -v grep | grep "$socket")"
+        exit 1
+    }
+}
+
+start_tmux() {
+    if $quick_mode; then
+        log_msg "Using existing: $conf_file"
+    else
+        create_tmux_conf
+    fi
+
+    cd "$d_initial" || {
+        error_msg "ERROR: Failed to cd back to [$d_initial]"
+    }
+
+    if $TMUX_BIN -L "$socket" list-sessions 2>/dev/null | grep -q main; then
+        if ! $shared_session; then
+            $TMUX_BIN -L "$socket" list-clients -F '#{client_tty}' | \
+                xargs -I{} "$TMUX_BIN" -L "$socket" detach-client -t {}
+            #detch=""
+        #else
+        #    detch="-d"
+        fi
+        eval "$TMUX_BIN" -L "$socket" -f "$conf_file" attach-session -t main
+    else
+        $TMUX_BIN -L "$socket" -f "$conf_file" new-session -s main
+    fi
+    log_msg "[$(date)] exited tmux"
+}
+
+#---------------------------------------------------------------
+#
+#   Setup tmux env
+#
+#---------------------------------------------------------------
+
 create_tmux_conf() {
     #
     #  Generate a new tmux conf file
@@ -183,26 +253,6 @@ create_tmux_conf() {
     grep -q "Writing tmux" "$myt_log" || {
         error_msg "Python build failed to complete"
     }
-}
-
-start_tmux() {
-    if $quick_mode; then
-        log_msg "Using existing: $conf_file"
-    else
-        create_tmux_conf
-    fi
-
-    cd "$d_initial" || {
-        error_msg "ERROR: Failed to cd back to [$d_initial]"
-    }
-
-    if $TMUX_BIN -L "$socket" list-sessions 2>/dev/null | grep -q main; then
-        $shared_session && detch="" || detch="-d"
-        eval "$TMUX_BIN" -L "$socket" -f "$conf_file" attach-session "$detch" -t main
-    else
-        $TMUX_BIN -L "$socket" -f "$conf_file" new-session -s main
-    fi
-    log_msg "[$(date)] exited tmux"
 }
 
 regular_tmux() {
@@ -255,26 +305,6 @@ tmux_2() {
 
     select_tmux_bin
     start_tmux
-}
-
-display_help() {
-    cat <<EOF
-Usage: myt [-q] [-2] [profile]
-
-Generates config and starts tmux
-Default profile is hostname
-Options can be given in any order.
-
-Availlable options:
-
--h       Print this help and exit.
--c       Use this tmux binary (default tmux)
--s       Share session
--q       Dont generate config, start tmux direcly
--2       Run in T2_ENV (inner tmux, other prefix)
-profile  Run using specific profile
-EOF
-    exit 0
 }
 
 #===============================================================
