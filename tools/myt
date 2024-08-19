@@ -234,8 +234,7 @@ create_tmux_conf() {
         error_msg "ERROR: Failed to cd into: $my_tmux_conf_location"
     }
 
-    echo
-    log_msg "Buidling new tmux conf"
+    log_msg "===  Buidling new tmux conf"
     $use_python_venv && py_venv_activate
     # f_py_output=$(mktemp)
 
@@ -256,7 +255,7 @@ create_tmux_conf() {
     grep -q "Writing tmux" "$myt_log" || {
         error_msg "Python build failed to complete"
     }
-    log_msg "new tmux conf generated!"
+    log_msg "===  new tmux conf generated!"
     echo
 }
 
