@@ -35,7 +35,7 @@ from sb.sb_muted import SB
 class JacMacConfig(SB):
     """JacMac config"""
 
-    status_interval = 5
+    status_interval = 10
 
     # use_embedded_scripts = False
 
