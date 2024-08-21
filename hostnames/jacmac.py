@@ -35,7 +35,7 @@ from sb.sb_muted import SB
 class JacMacConfig(SB):
     """JacMac config"""
 
-    status_interval = 10
+    status_interval = 5
 
     # use_embedded_scripts = False
 
@@ -108,7 +108,7 @@ class JacMacConfig(SB):
             """,
         ]
 
-    def plugin_mullvad(self):  # 2.2  local
+    def not_plugin_mullvad(self):  # 2.2  local
         #
         #   #{mullvad_city}#{mullvad_country}#{mullvad_status}
         #
@@ -160,7 +160,7 @@ class JacMacConfig(SB):
         """,
         ]
 
-    def plugin_spotify(self):  # 1.8  local
+    def not_plugin_spotify(self):  # 1.8  local
         #
         #  Ensure this is only used on MacOS
         #
