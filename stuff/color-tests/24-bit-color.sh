@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #   This file echoes four gradients with 24-bit color codes
 #   to the terminal to demonstrate their functionality.
