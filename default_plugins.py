@@ -314,6 +314,9 @@ class DefaultPlugins(IshConsole):
         #  Default keys:  save: <prefix> C-s restore: <prefix> C-r
         #
         #  All the process names needs to be added on one long line...
+        #  Only long running processes needs to be listed, ie those that
+        #  might be running in a pane when the session was saved.
+        #
         #  If it is a command triggered by a full path you can refer to it
         #  with a ~ prefix, this will match all commands ending with this
         #  name, regardless of where from it was started.
