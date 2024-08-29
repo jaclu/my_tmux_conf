@@ -302,7 +302,14 @@ class DefaultPlugins(IshConsole):
         if self.is_limited_host or self.t2_env or self.is_tmate():
             return ["tmux-plugins/tmux-resurrect", 99, ""]
 
-        conf = """
+        plugins_dir = self.plugins.get_plugin_dir()
+        # go up one and put it beside plugins_dir
+        resurect_dir = f"{os.path.dirname(plugins_dir)}/resurrect"
+
+        procs = "zsh bash ash ssh sudo top htop watch psql mysql sqlite sqlite3 "
+        procs += "glow bat batcat"
+
+        conf = f"""
         #
         #  Default keys:  save: <prefix> C-s restore: <prefix> C-r
         #
@@ -311,19 +318,14 @@ class DefaultPlugins(IshConsole):
         #  with a ~ prefix, this will match all commands ending with this
         #  name, regardless of where from it was started.
         #
-        set -g @resurrect-processes 'zsh ash ssh sudo watch psql """
-
-        #  Line continuation without passing col 80 here
-        conf += "mysql glow sqlite sqlite3 top htop  ~packet_loss "
-        conf += "~common_pull ~sysload_tracker ~Mbrew ~Mapt'\n"
-
-        plugins_dir = self.plugins.get_plugin_dir()
-        # go up one and put it beside plugins_dir
-        resurect_dir = f"{os.path.dirname(plugins_dir)}/resurrect"
-        conf += f"""
+        set -g @resurrect-processes "{procs}"
         #  Env dependent settings for tmux-plugins/tmux-resurrect
         set -g @resurrect-dir "{resurect_dir}"
         """
+        #  Line continuation without passing col 80 here
+        # conf += "mysql glow sqlite sqlite3 top htop  ~packet_loss "
+        # conf += "~common_pull ~sysload_tracker ~Mbrew ~Mapt'\n"
+
         return ["jaclu/tmux-resurrect", 1.9, conf]
 
     def plugin_session_wizard(self) -> list:  # 3.2
