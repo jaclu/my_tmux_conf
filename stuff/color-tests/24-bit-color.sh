@@ -60,7 +60,7 @@ for i in `seq 0 127`; do
     echo -en " "
 done
 resetOutput
-for i in `seq 255 128`; do
+for i in `seq 255 -1 128`; do
     setBackgroundColor $i 0 0
     echo -en " "
 done
@@ -71,7 +71,7 @@ for i in `seq 0 127`; do
     echo -n " "
 done
 resetOutput
-for i in `seq 255 128`; do
+for i in `seq 255 -1 128`; do
     setBackgroundColor 0 $i 0
     echo -n " "
 done
@@ -82,7 +82,7 @@ for i in `seq 0 127`; do
     echo -n " "
 done
 resetOutput
-for i in `seq 255 128`; do
+for i in `seq 255 -1 128`; do
     setBackgroundColor 0 0 $i
     echo -n " "
 done
@@ -93,7 +93,7 @@ for i in `seq 0 127`; do
     echo -n " "
 done
 resetOutput
-for i in `seq 255 128`; do
+for i in `seq 255 -1 128`; do
     setBackgroundColor `rainbowColor $i`
     echo -n " "
 done
