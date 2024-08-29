@@ -1,11 +1,4 @@
-#!/usr/bin/env bash
-#
-#  Copyright (c) 2020-2022: Jacob.Lundqvist@gmail.com
-#  License: MIT
-#
-#  Part of https://github.com/jaclu/tmux-multi-node
-#
-#  This file was originally taken from iterm2 https://github.com/gnachman/iTerm2/blob/master/tests/24-bit-color.sh
+#!/bin/bash
 #
 #   This file echoes four gradients with 24-bit color codes
 #   to the terminal to demonstrate their functionality.
@@ -33,27 +26,27 @@ resetOutput()
 # ranging between 0 and 255 inclusive
 rainbowColor()
 { 
-    (( h=$1/43 ))
-    (( f=$1-43*h ))
-    (( t=f*255/43 ))
-    (( q=255-t ))
+    let h=$1/43
+    let f=$1-43*$h
+    let t=$f*255/43
+    let q=255-t
 
-    if [[ $h -eq 0 ]]
+    if [ $h -eq 0 ]
     then
         echo "255 $t 0"
-    elif [[ $h -eq 1 ]]
+    elif [ $h -eq 1 ]
     then
         echo "$q 255 0"
-    elif [[ $h -eq 2 ]]
+    elif [ $h -eq 2 ]
     then
         echo "0 255 $t"
-    elif [[ $h -eq 3 ]]
+    elif [ $h -eq 3 ]
     then
         echo "0 $q 255"
-    elif [[ $h -eq 4 ]]
+    elif [ $h -eq 4 ]
     then
         echo "$t 0 255"
-    elif [[ $h -eq 5 ]]
+    elif [ $h -eq 5 ]
     then
         echo "255 0 $q"
     else
@@ -62,48 +55,46 @@ rainbowColor()
     fi
 }
 
-for i in $(seq 0 127); do
-    setBackgroundColor "$i" 0 0
+for i in `seq 0 127`; do
+    setBackgroundColor $i 0 0
     echo -en " "
 done
 resetOutput
-for i in $(seq 255 128); do
-    setBackgroundColor "$i" 0 0
+for i in `seq 255 128`; do
+    setBackgroundColor $i 0 0
     echo -en " "
 done
 resetOutput
 
-for i in $(seq 0 127); do
-    setBackgroundColor 0 "$i" 0
+for i in `seq 0 127`; do
+    setBackgroundColor 0 $i 0
     echo -n " "
 done
 resetOutput
-for i in $(seq 255 128); do
-    setBackgroundColor 0 "$i" 0
-    echo -n " "
-done
-resetOutput
-
-for i in $(seq 0 127); do
-    setBackgroundColor 0 0 "$i"
-    echo -n " "
-done
-resetOutput
-for i in $(seq 255 128); do
-    setBackgroundColor 0 0 "$i"
+for i in `seq 255 128`; do
+    setBackgroundColor 0 $i 0
     echo -n " "
 done
 resetOutput
 
-for i in $(seq 0 127); do
-    # shellcheck disable=SC2046
-    setBackgroundColor $(rainbowColor "$i")
+for i in `seq 0 127`; do
+    setBackgroundColor 0 0 $i
     echo -n " "
 done
 resetOutput
-for i in $(seq 255 128); do
-    # shellcheck disable=SC2046
-    setBackgroundColor $(rainbowColor "$i")
+for i in `seq 255 128`; do
+    setBackgroundColor 0 0 $i
+    echo -n " "
+done
+resetOutput
+
+for i in `seq 0 127`; do
+    setBackgroundColor `rainbowColor $i`
+    echo -n " "
+done
+resetOutput
+for i in `seq 255 128`; do
+    setBackgroundColor `rainbowColor $i`
     echo -n " "
 done
 resetOutput
