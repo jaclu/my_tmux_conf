@@ -88,7 +88,6 @@ class DefaultPlugins(IshConsole):
         if "tmux-mullvad" in used_plugins:
             self.sb_left += "#{mullvad_city}#{mullvad_country}"
             self.sb_left += "#{mullvad_status}"
-            self.sb_left += "#{mullvad_status}"
 
         if "tmux-nordvpn" in used_plugins:
             self.sb_left += "#{nordvpn_country}#{nordvpn_status}"
