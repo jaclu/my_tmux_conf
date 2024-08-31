@@ -70,7 +70,7 @@ class T2(SB):
         #
         return ["jaclu/tmux-menus", 1.8, conf]
 
-    def plugin_packet_loss(self):  # 1.9
+    def not_plugin_packet_loss(self):  # 1.9
         min_vers = 1.9
         # if mtc_utils.IS_ISH or mtc_utils.HOSTNAME == "ish-hetz1" or self.is_tmate():
         # if mtc_utils.IS_ISH or self.is_tmate():
