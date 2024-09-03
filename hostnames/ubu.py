@@ -85,7 +85,7 @@ class UbuConfig(SB):
     #  This is run as a vhost, the next two detect hardware
     #  conditions on the host platform
     #
-    def plugin_packet_loss(self):  # 1.9
+    def not_plugin_packet_loss(self):  # 1.9
         min_vers = 1.9
         if self.is_tmate():
             min_vers = 99.0  # disable for tmate
@@ -113,7 +113,7 @@ class UbuConfig(SB):
             """,
         ]
 
-    def plugin_battery(self):  # 2.2  local
+    def not_plugin_battery(self):  # 2.2  local
         #
         #  #{battery_smart} takes < 5s ATM
         #
