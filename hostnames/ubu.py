@@ -36,7 +36,7 @@ class UbuConfig(SB):
     # plugin_handler: str = "tmux-plugins/tpm"
     status_interval = 5
 
-    def plugin_zz_continuum(self) -> list:  # 1.9
+    def not_plugin_zz_continuum(self) -> list:  # 1.9
         #
         #  Auto restoring a session just as tmux starts on a limited
         #  host will just lead to painfull lag.
