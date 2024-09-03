@@ -129,11 +129,26 @@ select_tmux_bin() {
     else
         TMUX_BIN="$(command -v tmux)"
     fi
-    [ -z "$TMUX_BIN" ] && TMUX_BIN="$(command -v "$tmux_bin")"
 
+    if [ -z "$TMUX_BIN" ] && [ -d "$HOME"/.asdf ]; then
+        #
+        # Consider if asdf is used but has not been initialized
+        # here are some common locations, worthwhile to examine
+        #
+        if ! source_asdf_if_found "$HOME"/.asdf/asdf.sh \
+             /usr/local/opt/asdf/libexec/asdf.sh \
+             /home/linuxbrew/.linuxbrew/opt/asdf/libexec/asdf.sh; then
+
+            msg="tmux not initially found - ~/.asdf hinted at asdf being used,"
+            msg="$msg but this failed to initialize it"
+            error_msg "$msg"
+        fi
+        log_msg "Found an uninitialized asdf env, activated it."
+        log_msg "Checking if it contains a tmux..."
+        # hopefully now it is found!
+        TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
+    fi
     [ -z "$TMUX_BIN" ] && error_msg "no tmux in PATH!"
-
-    #  Needs to be $HOME not ~ since it is sent into tmux_conf
 
     #
     #  To not collide when checking for colliding versions
@@ -173,6 +188,20 @@ select_tmux_bin() {
     chk_incompatible_socket
 }
 
+source_asdf_if_found() {
+    # try each param, and source the first found in the FS
+    while [ -n "$1" ]; do
+        if [ -f "$1" ]; then
+            ASDF_DIR="$(dirname "$(realpath "$1")")"
+            #  shellcheck source=/dev/null
+            . "$1"
+            return 0 # true
+        fi
+        shift
+    done
+    return 1 # false
+}
+            
 chk_incompatible_socket() {
     #
     #  Ensure tmux socket is not used by another running version of tmux
