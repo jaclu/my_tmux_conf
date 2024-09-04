@@ -420,7 +420,9 @@ class DefaultPlugins(IshConsole):
         set -g @continuum-restore        on
         """
 
-        return ["jaclu/tmux-continuum", vers_min, conf]
+        #  On some systems this is super slow, then instead use
+        #  jaclu/tmux-continuum - this limits actual checks to once/minute
+        return ["tmux-plugins/tmux-continuum", vers_min, conf]
 
 
 if __name__ == "__main__":
