@@ -52,8 +52,9 @@ Availlable options:
 
 -h       Print this help and exit.
 -c       Use this tmux binary (default tmux)
--s       Share session
 -q       Dont generate config, start tmux direcly
+-s       Share session
+-v       (Re-) Create venv for building tmux.conf
 -2       Run in T2_ENV (inner tmux, other prefix)
 profile  Run using specific profile
 EOF
@@ -76,24 +77,38 @@ error_msg() {
 #
 #---------------------------------------------------------------
 
+py_venv_create() {
+    log_msg "Creating py venv: $my_tmux_conf_location/.venv"
+    venv_location="$my_tmux_conf_location"/.venv
+    [ -d "$venv_location" ] && {
+	log_msg "Removing previous venv location: $venv_location"
+	rm -rf "$venv_location"
+    }
+    python3 -m venv "$venv_location"
+    log_msg "Using py venv: $venv_location"
+    #  shellcheck source=/dev/null
+    . "$venv_location"/bin/activate || {
+	error_msg "Failure to activate new venv"
+    }
+
+
+    #  Python dependency
+    log_msg "pip install tmux_conf"
+    pip install tmux_conf || error_msg "Failure in: pip install tmux_conf"
+}
+
 py_venv_activate() {
     #
     #  Activate Python venv, will only be called if use_python_venv ia true
     #
-    if [ -d "$my_tmux_conf_location"/.venv ]; then
+    scr_activate="$my_tmux_conf_location"/.venv/bin/activate
+    if [ -f "$scr_acivate" ]; then
         log_msg "Using py venv: $my_tmux_conf_location/.venv"
+	log_msg "Will source: $scr_activate"
         #  shellcheck source=/dev/null
-        . "$my_tmux_conf_location"/.venv/bin/activate
+        . "$scr_activate"
     else
-        log_msg "Creating py venv: $my_tmux_conf_location/.venv"
-        python3 -m venv "$my_tmux_conf_location"/.venv
-        log_msg "Using py venv: $my_tmux_conf_location/.venv"
-        #  shellcheck source=/dev/null
-        . "$my_tmux_conf_location"/.venv/bin/activate
-
-        #  Python dependency
-        log_msg "pip install tmux_conf"
-        pip install tmux_conf
+	py_venv_create
     fi
 }
 
@@ -366,8 +381,14 @@ while [ -n "$1" ]; do
         shift
         tmux_bin="$1"
         ;;
-    "-s") shared_session=true ;;
     "-q") quick_mode=true ;;
+    "-s") shared_session=true ;;
+    "-v")
+	log_msg "Prepare the Python venv"
+	py_venv_create
+	deactivate
+	exit 0
+	;;
     "-2") t2_env=true ;;
     *) profile="$1" ;;
     esac
