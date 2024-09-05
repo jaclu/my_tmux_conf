@@ -90,7 +90,7 @@ py_venv_create() {
     . "$venv_location"/bin/activate || {
 	error_msg "Failure to activate new venv"
     }
-
+    pip install -U pip
 
     #  Python dependency
     log_msg "pip install tmux_conf"
