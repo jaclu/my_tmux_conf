@@ -31,10 +31,11 @@ class Hetz1(SB):
         min_vers = 1.9
         if self.is_tmate():
             min_vers = 99.0  # disable for tmate
+        pkt_loss_log = "$HOME/cloud/Dropbox/machines/hetz1/packet-loss/hetz1.log"
         return [
             "jaclu/tmux-packet-loss",
             min_vers,
-            """
+            f"""
             set -g @packet-loss-ping_host 8.8.8.8
 
             set -g @packet-loss-hist_avg_display  yes
@@ -45,8 +46,8 @@ class Hetz1(SB):
             set -g @packet-loss-color_alert colour21
             set -g @packet-loss-color_bg    colour226
 
-            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-hetz1.log
-
+            set -g @packet-loss-log_file {pkt_loss_log}
+            
             """,
         ]
 
