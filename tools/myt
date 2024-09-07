@@ -300,7 +300,11 @@ create_tmux_conf() {
 
     echo
     log_msg "===  Buidling new tmux conf"
-    ! ($use_python_venv && py_venv_activate) || error_msg "Failed to activate venv"
+    $use_python_venv && {
+	py_venv_activate || {
+	error_msg "Failed to activate venv - run: myt --venv"
+	}
+    }
     # f_py_output=$(mktemp)
 
     log_msg # spacer line
