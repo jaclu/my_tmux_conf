@@ -21,9 +21,11 @@ echo "long time. Running this in paralell will indicate if something is"
 echo "happening or the system has gotten stuck."
 echo "Expected results when completed are (aproximations):"
 
+# py 3.12.2 Darwin 12M- 996
+
 if [ "$(uname -o)" = "Android" ]; then
     echo "  size  29M  -  file count: 1520"
-elif [ "$(uname -s)" = "Linux" ]; then
+elif [ "$(uname -s)" = "Linux" ] || [ "$(uname -s)" = "Darwin" ]; then
     echo "  size  13M  -  file count: 997"
 else
     echo "  size  unknown  -  file count: unknown"

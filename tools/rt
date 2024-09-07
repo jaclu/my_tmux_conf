@@ -25,7 +25,7 @@ class Host:
     server = ""  # server to connect to
     remote_user = ""  # If not given ~/.ssh/config setting will be used
 
-    tmux = "/usr/local/bin/myt"  # override with full path if not auto-found
+    tmux = ".local/bin/myt"  # override with full path if not auto-found
 
     use_mosh = False
     mosh_client = "mosh"  # local mosh command
