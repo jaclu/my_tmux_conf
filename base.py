@@ -703,10 +703,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
         )
 
     def filter_me_from_sb_right(self):
-        """Dont display my primary hostname & username."""
+        """Dont display my primary username."""
 
-        #  If its my default account dont show username
-        if os.getenv("USER") == "jaclu":
+        #  If its my default accounts dont show username
+        if os.getenv("USER") in ("jaclu", "u0_a194"):
             self.username_template = ""
 
     def session_handling(self):
