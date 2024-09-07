@@ -22,6 +22,7 @@ echo "happening or the system has gotten stuck."
 echo "Expected results when completed are (aproximations):"
 
 # py 3.12.2 Darwin 12M- 996
+# py 3.12.3 Darwin 13M- 997
 
 if [ "$(uname -o)" = "Android" ]; then
     echo "  size  29M  -  file count: 1520"
