@@ -300,7 +300,7 @@ create_tmux_conf() {
 
     echo
     log_msg "===  Buidling new tmux conf"
-    $use_python_venv && py_venv_activate
+    ! ($use_python_venv && py_venv_activate) || error_msg "Failed to activate venv"
     # f_py_output=$(mktemp)
 
     log_msg # spacer line
@@ -317,9 +317,11 @@ create_tmux_conf() {
     log_msg # spacer line
 
     $use_python_venv && py_venv_deactivate
-    grep -q "Writing tmux" "$myt_log" || {
-        error_msg "Python build failed to complete"
-    }
+    if grep -q "Dependency tmux_conf not installed!" "$myt_log"; then
+	error_msg "venv seems broken - run: myt --venv"
+    elif ! grep -q "Writing tmux" "$myt_log"; then
+        error_msg "Python build failed to complete, check: $myt_log"
+    fi
     log_msg "---  new tmux conf generated!"
     echo
 }
