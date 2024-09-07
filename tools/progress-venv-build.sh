@@ -15,27 +15,40 @@ my_tmux_conf_location="$(cat "$f_destination")"
     exit 1
 }
 
+# more detailed results, not sure yet if its worthwhile to display.
+# py 3.12.2 Darwin  12M - 996
+# iSH Debian 10 - iPad 7th 8 mins
+#   py 3.12.2       13M - 996
+# py 3.12.3 Linux   13M - 997
+# iSH Alpine 3.20 - iPad 7th 8 mins
+#   py 3.12.3       12.4M   - 996
+
 echo
 echo "On some systems like iSH or Termux, creating the venv can take a really"
-echo "long time. Running this in paralell will indicate if something is"
-echo "happening or the system has gotten stuck."
-echo "Expected results when completed are (aproximations):"
-
-# py 3.12.2 Darwin 12M- 996
-# py 3.12.3 Darwin 13M- 997
+echo "long time."
+if [ -d /proc/iSH ]; then
+    echo " example: iPad 7th - 8 mins"
+fi
+echo "Running this in paralell will indicate status of the venv install, be aware"
+echo "that sometimes it takes a while for any changes to happen, so give it time..."
+echo "Expected results when completed (they migt go higher during the process)"
+echo "are aproximately:"
 
 if [ "$(uname -o)" = "Android" ]; then
     echo "  size  29M  -  file count: 1520"
 elif [ "$(uname -s)" = "Linux" ] || [ "$(uname -s)" = "Darwin" ]; then
     echo "  size  13M  -  file count: 997"
-else
-    echo "  size  unknown  -  file count: unknown"
 fi
 echo
 
+d_venv="$my_tmux_conf_location"/.venv
 while true; do
-    printf "size: %s   -  file count:  %s\n" \
-	   "$(du -sh "$my_tmux_conf_location"/.venv/ | cut -f1)" \
-	   "$(find "$my_tmux_conf_location"/.venv | wc -l)"
+    if [ -d "$d_venv" ]; then
+	printf "size: %s   -  file count:  %s\n" \
+	       "$(du -sh  | cut -f1)" \
+	       "$(find "$my_tmux_conf_location"/.venv | wc -l)"
+    else
+	echo "Not present ATM: $d_venv"
+	fi
     sleep 1
 done
