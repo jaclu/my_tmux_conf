@@ -24,18 +24,17 @@ my_tmux_conf_location="$(cat "$f_destination")"
 #   py 3.12.3       12.4M   - 996
 
 echo
-echo "On some systems like iSH or Termux, creating the venv can take a really"
-echo "long time."
-if [ -d /proc/iSH ]; then
-    echo " example: iPad 7th - 8 mins"
-fi
-echo "Running this in paralell will indicate status of the venv install, be aware"
-echo "that sometimes it takes a while for any changes to happen, so give it time..."
+echo "On some systems like iSH, creating the venv can take a really"
+echo "long time,  example: iPad 7th - 8 mins"
+echo
+echo "Running this in during 'myt --venv' will indicate status of the venv install."
+echo "Be aware that sometimes it takes a while for any changes to happen,"
+echo "so give it time..."
 echo "Expected results when completed (they migt go higher during the process)"
 echo "are aproximately:"
 
 if [ "$(uname -o)" = "Android" ]; then
-    echo "  size  29M  -  file count: 1520"
+    echo "  size  31M  -  file count: 1520"
 elif [ "$(uname -s)" = "Linux" ] || [ "$(uname -s)" = "Darwin" ]; then
     echo "  size  13M  -  file count: 997"
 fi
