@@ -66,7 +66,7 @@ Availlable options:
 -c       Use this tmux binary (default tmux)
 -q       Dont generate config, start tmux direcly
 -s       Share session
--venv    (Re-) Create venv for building tmux.conf
+--venv   (Re-) Create venv for building tmux.conf
 -2       Run in T2_ENV (inner tmux, other prefix)
 profile  Run using specific profile
 EOF
@@ -96,6 +96,10 @@ py_venv_create() {
 	rm -rf "$venv_location"
     }
     log_msg "---  Creating py venv: $venv_location"
+    echo
+    echo "If this seems to take forever, run: $my_tmux_conf_location/tools/progress-venv-build.sh"
+    echo "in a seperate terminal to see progress"
+    echo
     python3 -m venv "$venv_location"
     log_msg " --  Using py venv: $venv_location"
     #  shellcheck source=/dev/null
@@ -399,7 +403,7 @@ while [ -n "$1" ]; do
         ;;
     "-q") quick_mode=true ;;
     "-s") shared_session=true ;;
-    "-venv")
+    "--venv")
 	log_msg "===  Prepare the Python venv"
 	py_venv_create
 	deactivate
