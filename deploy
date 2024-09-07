@@ -10,6 +10,9 @@
 
 CURRENT_DIR=$(cd -- "$(dirname -- "$0")" && pwd)
 
+mkdir -p  "$HOME"/.config
+echo "$CURRENT_DIR" > "$HOME"/.config/my_tmux_conf_location
+
 f_destination="$(echo "$CURRENT_DIR/.destination" | sed 's#^\./##')"
 
 echo
@@ -40,8 +43,8 @@ update_if_changed() {
         echo "ERROR: update_changed() - no param"
         exit 1
     fi
-    if ! diff -q "$CURRENT_DIR"/tools/"$item" /usr/local/bin/"$item" >/dev/null 2>&1; then
-        sudo cp -av "$CURRENT_DIR"/tools/"$item" /usr/local/bin
+    if ! diff -q "$CURRENT_DIR"/tools/"$item" "$dest/$item" >/dev/null 2>&1; then
+        cp -av "$CURRENT_DIR"/tools/"$item" "$dest/$item"
     fi
 }
 

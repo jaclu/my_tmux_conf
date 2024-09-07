@@ -15,7 +15,19 @@
 #
 
 #  where  my_tmux_conf is located
-my_tmux_conf_location="/usr/local/my_tmux_conf"
+f_destination="$HOME"/.config/my_tmux_conf_location
+[ ! -f "$f_destination" ] && {
+    echo "Location of my_tmux_conf repo not stored, go to repo folder"
+    echo "and run ./deploy to solve his"
+    exit 1
+}    
+
+my_tmux_conf_location="$(cat "$f_destination")"
+[ ! -d "$my_tmux_conf_location" ] && {
+    echo "Location of my_tmux_conf repo incorrect, go to repo folder"
+    echo "and run ./deploy to solve his"
+    exit 1
+}
 
 #
 #  This needs the python module tmux_conf, and by default it will create
