@@ -36,7 +36,7 @@ from ish_host import IshHostWithStyle
 
 
 class JacDroid(IshHostWithStyle):
-    status_interval = 10
+    status_interval = 5
 
     def plugin_packet_loss(self):  # 1.9
         min_vers = 1.9
