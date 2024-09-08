@@ -36,8 +36,37 @@ from ish_host import IshHostWithStyle
 
 
 class JacDroid(IshHostWithStyle):
-    status_interval = 5
+    status_interval = 10
 
+    def plugin_packet_loss(self):  # 1.9
+        min_vers = 1.9
+        if self.is_tmate():
+            min_vers = 99.0  # disable for tmate
+        return [
+            "jaclu/tmux-packet-loss",
+            min_vers,
+            """
+            set -g @packet-loss-ping_host 8.8.4.4
+            set -g @packet-loss-ping_count     6
+            set -g @packet-loss-history_size   6
+            set -g @packet-loss-level_alert 18 # 4-26 6-18 7-15
+
+            set -g @packet-loss-weighted_average  yes
+            set -g @packet-loss-display_trend     no
+            set -g @packet-loss-hist_avg_display  yes
+            set -g @packet-loss-run_disconnected  yes
+
+            set -g @packet-loss-level_disp  5
+
+            set -g @packet-loss-level_crit 50
+
+            set -g @packet-loss-color_alert  colour21
+            set -g @packet-loss-color_bg     colour226
+
+            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss.log
+
+            """,
+        ]
 
     # Override unwanted default plugins with disables
     
