@@ -25,7 +25,13 @@ class Host:
     server = ""  # server to connect to
     remote_user = ""  # If not given ~/.ssh/config setting will be used
 
-    tmux = "bash -i -c ~/.local/bin/myt"  # override with full path if not auto-found
+    #
+    #  run dest command as an interactive bash shell in order to pick up
+    #  the user environment, since the mosh session itself will not.
+    #  if params need to be passed to the cmd bash runs, wrap them inside
+    #  the inner quotes, like '.local/bin/myt -2' instead of '.local/bin/myt'
+    #
+    tmux = "bash -i -c '.local/bin/myt'"
 
     use_mosh = False
     mosh_client = "mosh"  # local mosh command
@@ -64,7 +70,7 @@ class Host:
         if remote_command:
             self.rem_cmd = remote_command
         else:
-            self.rem_cmd = f'"{self.tmux}"'
+            self.rem_cmd = f'{self.tmux}'
         if not self.rem_cmd:
             print("ERROR: remote_command can't be empty!")
             sys.exit(1)
