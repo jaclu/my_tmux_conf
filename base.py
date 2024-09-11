@@ -715,21 +715,21 @@ class BaseConfig(TmuxConfig):  # type: ignore
         """
         )
         w(
-            'bind -N "Create new session"             +    command-prompt -I "?" '
+            'bind -N "Create new session  - M-+"             +    command-prompt -I "?" '
             '-p "Name of new session: " "new-session -s \\"%%\\""'
         )
         self.meta_ses_handling_uk()
         w(
             """# session navigation
-        bind -N "Select previous session" -r  (  switch-client -p
-        bind -N "Select next session"     -r  )  switch-client -n
+        bind -N "Select previous session  - M-(  or  C-M-S-Up" -r  (  switch-client -p
+        bind -N "Select next session  - M-)  or  C-M-S-Down"     -r  )  switch-client -n
         bind -N "Switch to last session"      _  switch-client -l"""
         )
 
         if self.bind_meta:
             w(
-                """bind -N "Select previous session" -n C-M-S-Up switch-client -p
-            bind -N "Select next session" -n C-M-S-Down switch-client -n"""
+                """bind -N "Select previous session  - P (" -n C-M-S-Up switch-client -p
+            bind -N "Select next session  - P )" -n C-M-S-Down switch-client -n"""
             )
         else:
             w(
@@ -789,18 +789,23 @@ class BaseConfig(TmuxConfig):  # type: ignore
         else:
             w("unbind                      -n  M-=  # skipping adv-key")
 
+        pref = 'bind -N "Select the'
         w(
-            """
+            f"""
         # window navigation
-        bind -N "Select previous Window"        -r  9    previous-window
-        bind -N "Select next Window"            -r  0    next-window
-        bind -N "Select last Window"                -    last-window
-        """
+        {pref} previous window  - M-9  or  C-M-S-Left"  -r  9   previous-window
+        {pref} next window  - M-0  or C-M-S-Right"      -r  0   next-window
+        {pref} previously current window  - M--"        -r  -  last-window
+        # override default to add my note
+        {pref} previous window  - M-9  or  C-M-S-Left"  -r  p   previous-window
+        {pref} next window      - M-0  or C-M-S-Right"      -r  n   next-window"""
         )
         if self.bind_meta:
+            pref = 'bind -N "Select the '
             w(
-                """bind -N "Select previous Window" -n C-M-S-Right next-window
-            bind -N "Select next Window" -n C-M-S-Left previous-window"""
+                f"""
+                {pref}previous window  - P p  or  P 9"  -n C-M-S-Left   previous-window
+                {pref}next window      - P n  or  P 0"  -n C-M-S-Right  next-window"""
             )
         else:
             w(
@@ -853,9 +858,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
         if self.bind_meta:
             w(
                 """# adv key win nav
-            bind -N "Previous window  - P 9" -n  M-9  previous-window
-            bind -N "Next window - P 0"      -n  M-0  next-window
-            bind -N "Last Window - P -"      -n  M--  last-window"""
+            bind -N "Select the previous window  - P-p  or  P 9"  -n  M-9  previous-window
+            bind -N "Select the next window      - P-n  or  P 0"  -n  M-0  next-window
+            bind -N "Select the previously current window - P -"  -n  M--  last-window"""
             )
             if self.vers_ok(2.1):
                 w2 = "window"  # hackish strings to make sure
@@ -892,8 +897,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
         if self.skip_default_popups:
             w(
                 """# window shuffle
-                bind -N "Swap window left"         -r  <    swap-window -dt:-1
-                bind -N "Swap window right"        -r  >    swap-window -dt:+1"""
+                bind -N "Swap window left  - M-<"         -r  <    swap-window -dt:-1
+                bind -N "Swap window right  - M->"        -r  >    swap-window -dt:+1"""
             )
         self.swap_window_uk()
 
