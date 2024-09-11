@@ -76,12 +76,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
     show_pane_size: bool = True  # If enabled pane frane lines will display pane size
 
     #
-    #  So that I can disable them and practice the vi keys every now and
-    #  then. If Falde, Meta keys are unbound
-    #
-    bind_meta: bool = True
-
-    #
     #  This causes most colors on MacOS Term.app to fail
     #
     use_24bit_color: bool = os.environ.get("TERM_PROGRAM") != "Apple_Terminal"
@@ -92,6 +86,12 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  RGB was not supported in older tmux'es
     #
     color_tag_24bit: str = "RGB"
+
+    #
+    #  So that I can disable them and practice the vi keys every now and
+    #  then. If Falde, Meta keys are unbound
+    #
+    bind_meta: bool = True
 
     #
     #  Default templates for the status bar, so that they can easily be
@@ -113,13 +113,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
     t2_env: str = os.environ.get("T2_ENV", "")
     prefix_key_T2: str = "C-w"  # prefix for inner dev environment
 
-    # ======================================================
-    #
-    #  overrides of tmux-conf package defaults
-    #
-    # ======================================================
+    # Disables tmux deault popup menus, instead relying on the plugin jaclu/tmux-menus
+    skip_default_popups: bool = True
 
-    plugin_handler: str = "jaclu/tpm"
+    plugin_handler: str = "jaclu/tpm"  # overrides of tmux-conf package default
 
     def __init__(
         self,
@@ -421,8 +418,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
         if self.prefix_key.lower() != "c-b":
             w(
                 f"""
-            set -g  prefix  {self.prefix_key}
-            unbind  C-b     # remove default prefix key"""
+            # remove default prefix key, do it before in case C-b is selected
+            unbind  C-b
+            set -g  prefix  {self.prefix_key}"""
             )
             w(
                 f'bind -N "Repeats sends {self.prefix_key} through"  '
@@ -497,36 +495,32 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #  so the safe bet is to disable
         #
         unbind  Space    #  Select next layout
-
-        #
-        #  C-Up/Down are handled by MacOS, and since that is what I
-        #  usually use, I disable these keys, to ensure they will
-        #  never-ever enter my muscle-memory by accident
-        #
-        unbind  C-Up     #  Resize the pane up
-        unbind  C-Down   #  Resize the pane down
-        unbind  C-Left   #  Resize the pane left
-        unbind  C-Right  #  Resize the pane right
         """
         )
+        if self.skip_default_popups:
+            if self.vers_ok(2.1):
+                w(
+                    """
+                    #
+                    #  Remove the default popup menus
+                    #  Instead using the plugin jaclu/tmux-menus - <prefix> \\
+                    #
+                    unbind  -n  MouseDown3Pane
+                    unbind  -n  MouseDown3Status
+                    unbind  -n  M-MouseDown3Pane
+                    unbind  -n  M-MouseDown3Status"""
+                )
+                if self.vers_ok(2.9):
+                    w(
+                        """unbind  -n  MouseDown3StatusLeft
+                        unbind  -n  M-MouseDown3StatusLeft
+                        unbind  -n  MouseDown3StatusRight""")
+                if self.vers_ok("3.0a"):
+                    w(
+                        """unbind  <
+                        unbind  >""")
 
-        if self.vers_ok(2.1):
-            w(
-                """
-            #
-            #  Remove the default popup menus
-            #
-            unbind  <   #  Manipulating window
-            unbind  >   #  Manipulating pane
-
-            unbind  -n  MouseDown3Pane
-            unbind  -n  M-MouseDown3Pane
-            unbind  -n  MouseDown3Status"""
-            )
-
-        if self.vers_ok(2.9):
-            w("unbind  -n  MouseDown3StatusLeft")
-        w()  # spacer
+                w()  # spacer
 
     def mouse_handling(self):
         w = self.write
@@ -890,12 +884,17 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         #
         #  Swap window left/right <prefix>  < / >
+        #  This collides with some default popups,
+        #  so only use if they are disabled.
+        #  This is also avilable as no-prefix:  M-<  and  M->
+        #  regardles of default popup status.
         #
-        w(
-            """# window shuffle
-            bind -N "Swap window left"         -r  <    swap-window -dt:-1
-            bind -N "Swap window right"        -r  >    swap-window -dt:+1"""
-        )
+        if self.skip_default_popups:
+            w(
+                """# window shuffle
+                bind -N "Swap window left"         -r  <    swap-window -dt:-1
+                bind -N "Swap window right"        -r  >    swap-window -dt:+1"""
+            )
         self.swap_window_uk()
 
         # if self.vers_ok(2.3) and not self.is_tmate():
@@ -1351,10 +1350,16 @@ class BaseConfig(TmuxConfig):  # type: ignore
             return
 
         if self.bind_meta:
+            note_lt = "Swap window left"
+            note_gt = "Swap window right"
+            if self.skip_default_popups:
+                # indicate alternate sequences
+                note_lt += "  - P <"
+                note_gt += "  - P >"
             self.write(
                 f"""
-            bind -N "Swap window left  - P <"  -n  {m_less_than}  swap-window -dt:-1
-            bind -N "Swap window right  - P >" -n  {m_greater_than}  swap-window -dt:+1
+            bind -N "{note_lt}"  -n  {m_less_than}  swap-window -dt:-1
+            bind -N "{note_gt}" -n  {m_greater_than}  swap-window -dt:+1
             """
             )
         else:
