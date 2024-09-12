@@ -32,10 +32,9 @@ sys.path.insert(0, root_dir)
 
 # flake8: noqa: E402
 # pylint: disable=wrong-import-position
-from ish_host import IshHostWithStyle
+from sb.sb_ish import SB
 
-
-class JacDroid(IshHostWithStyle):
+class JacDroid(SB):
     status_interval = 5
 
     def plugin_packet_loss(self):  # 1.9
@@ -76,21 +75,9 @@ class JacDroid(IshHostWithStyle):
     def plugin_mouse_swipe(self) -> list:  # 3.0
         return [ "mouse_swipe", 99, "" ]
 
-    def plugin_prefix_highlight(self) -> list:  # 2.0
-        return [ "prefix_highlight", 99, "" ]
-
-    def plugin_resurrect(self) -> list:  # 1.9
-        return [ "resurrect", 99, "" ]
-
-    def plugin_session_wizard(self) -> list:  # 3.2
-        return [ "session_wizard", 99, "" ]
-
     def plugin_suspend(self) -> list:  # 2.4
         return [ "suspend", 99, "" ]
     
-    def plugin_zz_continuum(self) -> list:  # 1.9
-        return [ "continuum", 99, "" ]
-
 	    
 if __name__ == "__main__":
     # IshHostWithStyle().run()

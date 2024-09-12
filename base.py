@@ -150,6 +150,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         self.tpm_working_incicator = "@tpm-is-active"
 
+        self.is_termux = os.environ.get("TERMUX_VERSION") is not None  # noqa: F841
+
         if self.is_tmate() and (self.show_pane_title or self.show_pane_size):
             print("show_pane_title & show_pane_size disabled for tmate")
             self.show_pane_size = self.show_pane_title = False

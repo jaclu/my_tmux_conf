@@ -237,6 +237,8 @@ class DefaultPlugins(IshConsole):
 
     def plugin_menus(self) -> list:  # 1.8
         conf = """
+        set -g @menus_trigger F12
+        set -g @menus_without_prefix Yes
         # set -g @menus_log_file ~/tmp/tmux-menus.log
         """
         #
@@ -280,7 +282,7 @@ class DefaultPlugins(IshConsole):
             """,
         ]
 
-    def plugin_prefix_highlight(self) -> list:  # 2.0
+    def not_plugin_prefix_highlight(self) -> list:  # 2.0
         #
         #  prevent actual plugin from being used, the equivalent code
         #  is now harcoded in base:status_bar_prepare()
@@ -332,7 +334,7 @@ class DefaultPlugins(IshConsole):
         return ["jaclu/tmux-resurrect", 1.9, conf]
 
     def plugin_session_wizard(self) -> list:  # 3.2
-        if self.is_limited_host:
+        if self.is_limited_host or self.is_termux:
             vers_min = 99.0  # make sure this is never used
         else:
             vers_min = 3.2

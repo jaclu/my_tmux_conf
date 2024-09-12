@@ -22,6 +22,7 @@
 #  in the default file, this is for color theme and selection of often
 #  changing list of plugins I am testing
 #  out.
+import os
 import mtc_utils
 
 if mtc_utils.HOSTNAME == "ish-hetz1":
@@ -103,6 +104,89 @@ class T2(SB):
 
             """,
         ]
+
+    def plugin_resurrect(self) -> list:  # 1.9
+        #
+        #  Saves & Restores server sessions
+        #
+        #  save: <prefix> C-s restore: <prefix> C-r
+        #
+        #  Does not work on: iSH
+        #
+        #  This plugins fails to restore sessions in iSH, at least on my
+        #  devices. so no point enabling tmux-resurrect & tmux-continuum
+        #  on iSH
+        #
+        if self.is_tmate():
+            return ["tmux-plugins/tmux-resurrect", 99, ""]
+
+        plugins_dir = self.plugins.get_plugin_dir()
+        # go up one and put it beside plugins_dir
+        resurect_dir = f"{os.path.dirname(plugins_dir)}/resurrect"
+
+        procs = "zsh bash ash ssh sudo top htop watch psql mysql sqlite sqlite3 "
+        procs += "glow bat batcat"
+
+        conf = f"""
+        #
+        #  Default keys:  save: <prefix> C-s restore: <prefix> C-r
+        #
+        #  All the process names needs to be added on one long line...
+        #  Only long running processes needs to be listed, ie those that
+        #  might be running in a pane when the session was saved.
+        #
+        #  If it is a command triggered by a full path you can refer to it
+        #  with a ~ prefix, this will match all commands ending with this
+        #  name, regardless of where from it was started.
+        #
+        set -g @resurrect-processes "{procs}"
+        #  Env dependent settings for tmux-plugins/tmux-resurrect
+        set -g @resurrect-dir "{resurect_dir}"
+        """
+        #  Line continuation without passing col 80 here
+        # conf += "mysql glow sqlite sqlite3 top htop  ~packet_loss "
+        # conf += "~common_pull ~sysload_tracker ~Mbrew ~Mapt'\n"
+
+        return ["jaclu/tmux-resurrect", 1.9, conf]
+
+    def plugin_zz_continuum(self) -> list:  # 1.9
+        #
+        #  Auto restoring a session just as tmux starts on a limited
+        #  host will just lead to painfull lag.
+        #
+        #  It is also not desired on inner tmux sessions. They are
+        #  typically for testing purposes, being able to manually restore
+        #  a session makes sense, but auto-resuming does not.
+        #
+        if self.is_tmate():
+            vers_min = 99.0  # make sure this is never used
+        else:
+            vers_min = 1.9
+        #
+        #  Automatically save and restore tmux server's open sessions.
+        #
+        #   Saves every 15 mins (default) Restores last save when tmux is
+        #   starting
+        #
+        #  Depends on tmux-resurrect for actual save/restore.
+        #
+        #  In the below switch-statement I set the variables even if the
+        #  values are defaults, since when re-running the config after
+        #  changing this,
+        #  If a variable is unset in the new state, the already set value
+        #  will still be in effect. - Boy did that bite me...
+        #
+        #  2020-12-24
+        #  ==========
+        #  Due to a bug tmux-continuum should be as close to last plugin
+        #  as possible to minimize the risk of a crucial tmux variable
+        # `status-right` is not overwritten (usually by theme plugins).
+        #
+        conf = """
+        set -g @continuum-save-interval  15
+        set -g @continuum-restore        on
+        """
+        return ["jaclu/tmux-continuum", vers_min, conf]
 
 
 if __name__ == "__main__":
