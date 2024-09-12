@@ -173,7 +173,7 @@ class DefaultPlugins(IshConsole):
     #
     # -----------------------------------------------------------
 
-    def plugin_better_mouse_mode(self) -> list[str | float | int]:  # 2.1
+    def plugin_better_mouse_mode(self) -> list:  # [str | float | int]:  # 2.1
         #
         #  A tmux plugin to better manage the mouse.
         #  Emulate mouse scrolling for full-screen programs that doesn't
