@@ -60,17 +60,6 @@ class T2(SB):
     # def plugin_which_key(self) -> list:
     #     return ['alexwforsythe/tmux-which-key', 3.0, ""]
 
-    def plugin_menus(self) -> list:  # 1.8
-        conf = """
-        set -g @menus_log_file ~/tmp/tmux-menus-t2.log
-        # set -g @menus_use_cache no
-        """
-        #
-        #  This plugin works in tmux 1.7, but that version do not support
-        #  @variables, so we say 1.8 here...
-        #
-        return ["jaclu/tmux-menus", 1.8, conf]
-
     def not_plugin_packet_loss(self):  # 1.9
         min_vers = 1.9
         # if mtc_utils.IS_ISH or mtc_utils.HOSTNAME == "ish-hetz1" or self.is_tmate():

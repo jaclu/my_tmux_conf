@@ -235,6 +235,17 @@ class DefaultPlugins(IshConsole):
             """,
         ]
 
+    def plugin_menus(self) -> list:  # 1.8
+        conf = """
+        set -g @menus_log_file ~/tmp/tmux-menus-t2.log
+        # set -g @menus_use_cache no
+        """
+        #
+        #  This plugin works in tmux 1.7, but that version do not support
+        #  @variables, so we say 1.8 here...
+        #
+        return ["jaclu/tmux-menus", 1.8, conf]
+
     def plugin_mouse_swipe(self) -> list:  # 3.0
         #
         #  right-click & swipe switches Windows / Sessions
