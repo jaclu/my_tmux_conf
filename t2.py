@@ -146,47 +146,7 @@ class T2(SB):
         #  Line continuation without passing col 80 here
         # conf += "mysql glow sqlite sqlite3 top htop  ~packet_loss "
         # conf += "~common_pull ~sysload_tracker ~Mbrew ~Mapt'\n"
-
         return ["jaclu/tmux-resurrect", 1.9, conf]
-
-    def plugin_zz_continuum(self) -> list:  # 1.9
-        #
-        #  Auto restoring a session just as tmux starts on a limited
-        #  host will just lead to painfull lag.
-        #
-        #  It is also not desired on inner tmux sessions. They are
-        #  typically for testing purposes, being able to manually restore
-        #  a session makes sense, but auto-resuming does not.
-        #
-        if self.is_tmate():
-            vers_min = 99.0  # make sure this is never used
-        else:
-            vers_min = 1.9
-        #
-        #  Automatically save and restore tmux server's open sessions.
-        #
-        #   Saves every 15 mins (default) Restores last save when tmux is
-        #   starting
-        #
-        #  Depends on tmux-resurrect for actual save/restore.
-        #
-        #  In the below switch-statement I set the variables even if the
-        #  values are defaults, since when re-running the config after
-        #  changing this,
-        #  If a variable is unset in the new state, the already set value
-        #  will still be in effect. - Boy did that bite me...
-        #
-        #  2020-12-24
-        #  ==========
-        #  Due to a bug tmux-continuum should be as close to last plugin
-        #  as possible to minimize the risk of a crucial tmux variable
-        # `status-right` is not overwritten (usually by theme plugins).
-        #
-        conf = """
-        set -g @continuum-save-interval  15
-        set -g @continuum-restore        on
-        """
-        return ["jaclu/tmux-continuum", vers_min, conf]
 
 
 if __name__ == "__main__":
