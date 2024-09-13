@@ -28,7 +28,7 @@ from default_plugins import DefaultPlugins
 from sb.sb_muted_ish import SB
 
 
-class IshHostWithStyle(DefaultPlugins, SB):
+class IshHostWithStyle(SB):
     """iSH host with default style"""
     # status_interval = 10
 
