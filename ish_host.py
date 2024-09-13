@@ -28,10 +28,9 @@ from default_plugins import DefaultPlugins
 from sb.sb_muted_ish import SB
 
 
-class IshHost(DefaultPlugins):
-    """A typical iSH host"""
-
-    # status_interval = 5
+class IshHostWithStyle(DefaultPlugins, SB):
+    """iSH host with default style"""
+    # status_interval = 10
 
     # plugin_handler = ""
 
@@ -42,17 +41,6 @@ class IshHost(DefaultPlugins):
     #  are set to require tmux version 99 in default_plugins.py
     #  Thereby not making them available for iSH hosts
     #
-
-
-class IshHostWithStyle(IshHost, SB):
-    """iSH host with default style"""
-
-    def plugin_packet_loss(self):  # 1.9
-        return [
-            "jaclu/tmux-packet-loss",
-            99.9,
-            "",
-        ]
 
 
 if __name__ == "__main__":

@@ -71,5 +71,4 @@ class JacPad(IshHostWithStyle):
 
 
 if __name__ == "__main__":
-    # IshHostWithStyle().run()
     JacPad().run()
