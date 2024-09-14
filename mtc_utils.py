@@ -29,12 +29,12 @@ def run_shell(_cmd: str) -> str:
     return result.stdout.strip()
 
 
-if os.path.exists("/usr/local/bin/hostname"):
-    # For iSH nodes, where the builtin hostname only shows localhost
-    cmd = "/usr/local/bin/hostname"
+HOSTNAME = os.getenv("HOSTNAME_SHORT").lower()
+if HOSTNAME:
+    HOSTNAME.lower()
 else:
-    cmd = "hostname"
-HOSTNAME = run_shell(f"{cmd} -s").lower()
+    cmd_hostname = shutil.which("hostname")
+    HOSTNAME = run_shell(f"{cmd} -s").lower()
 
 IS_ISH_AOK = False
 if os.path.isdir("/proc/ish"):

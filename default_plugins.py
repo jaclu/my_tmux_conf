@@ -31,6 +31,8 @@ import os
 #  case this is run directly on the ishConsole, in all other cases it will
 #  do nothing
 #
+from mtc_utils import IS_ISH
+
 from ish_console import IshConsole
 
 
@@ -181,7 +183,7 @@ class DefaultPlugins(IshConsole):
         #  Can scroll in non-active 'mouse over-ed' panes.
         #  Can adjust scroll-sensitivity.
         #
-        if self.is_limited_host or self.is_tmate():
+        if self.is_tmate():
             vers_min = 99.0  # make sure this is never used
         else:
             vers_min = 2.1
@@ -300,7 +302,7 @@ class DefaultPlugins(IshConsole):
         #  devices. so no point enabling tmux-resurrect & tmux-continuum
         #  on iSH
         #
-        if self.is_limited_host or self.is_tmate():
+        if IS_ISH or self.is_tmate():
             return ["tmux-plugins/tmux-resurrect", 99, ""]
 
         plugins_dir = self.plugins.get_plugin_dir()
@@ -392,7 +394,7 @@ class DefaultPlugins(IshConsole):
         #  typically for testing purposes, being able to manually restore
         #  a session makes sense, but auto-resuming does not.
         #
-        if self.is_limited_host or self.t2_env or self.is_tmate():
+        if self.is_limited_host or self.is_tmate():
             vers_min = 99.0  # make sure this is never used
         else:
             vers_min = 1.9
@@ -420,7 +422,6 @@ class DefaultPlugins(IshConsole):
         set -g @continuum-save-interval  15
         set -g @continuum-restore        on
         """
-
         return ["jaclu/tmux-continuum", vers_min, conf]
 
 
