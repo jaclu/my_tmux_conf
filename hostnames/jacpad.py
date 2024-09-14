@@ -42,11 +42,12 @@ class JacPad(IshHostWithStyle):
         min_vers = 1.9
         if self.is_tmate():
             min_vers = 99.1  # disable for tmate
+        print(f"><> jacpad-packet_losss min_vers:{min_vers}")
         return [
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            set -g @packet-loss-ping_host 8.8.4.4
+            set -g @packet-loss-ping_host 1.1.1.1
 
             # set -g @packet-loss-ping_count   7
             # set -g @packet-loss-history_size 5
