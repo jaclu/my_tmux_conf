@@ -24,7 +24,7 @@
 
 # import os
 
-from default_plugins import DefaultPlugins
+from default_plugins import DefaultPlugins  # noqa: F401
 from sb.sb_muted_ish import SB
 
 
