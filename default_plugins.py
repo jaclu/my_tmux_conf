@@ -183,7 +183,7 @@ class DefaultPlugins(IshConsole):
         #  Can scroll in non-active 'mouse over-ed' panes.
         #  Can adjust scroll-sensitivity.
         #
-        if self.is_tmate():
+        if self.t2_env or self.is_tmate():
             vers_min = 99.0  # make sure this is never used
         else:
             vers_min = 2.1
@@ -215,7 +215,7 @@ class DefaultPlugins(IshConsole):
         #  Default trigger: <prefix> j
         #
         k = "-n  M-j"
-        if self.t2_env == "1" or self.is_limited_host or self.is_tmate():
+        if self.t2_env or self.is_limited_host or self.is_tmate():
             # make sure this is never used, generates too much lag
             vers_min = 99.0
             self.write(
@@ -252,7 +252,7 @@ class DefaultPlugins(IshConsole):
         #
         #  right-click & swipe switches Windows / Sessions
         #
-        if self.is_limited_host:
+        if self.is_limited_host or self.t2_env:
             vers_min = 99.0  # make sure this is never used
         else:
             vers_min = 3.0
@@ -394,7 +394,7 @@ class DefaultPlugins(IshConsole):
         #  typically for testing purposes, being able to manually restore
         #  a session makes sense, but auto-resuming does not.
         #
-        if self.is_limited_host or self.is_tmate():
+        if self.is_limited_host or self.t2_env or self.is_tmate():
             vers_min = 99.0  # make sure this is never used
         else:
             vers_min = 1.9

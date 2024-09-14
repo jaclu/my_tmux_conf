@@ -75,10 +75,7 @@ class JacDroid(SB):
     def plugin_mouse_swipe(self) -> list:  # 3.0
         return [ "mouse_swipe", 99, "" ]
 
-    def plugin_suspend(self) -> list:  # 2.4
-        return [ "suspend", 99, "" ]
-    
-	    
+
 if __name__ == "__main__":
     # IshHostWithStyle().run()
     JacDroid().run()

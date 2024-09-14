@@ -17,6 +17,7 @@
 #               If env is iSH-AOK, IS_ISH will also be true
 #
 import os.path
+import shutil
 import subprocess  # nosec
 
 
@@ -33,7 +34,7 @@ HOSTNAME = os.getenv("HOSTNAME_SHORT").lower()
 if HOSTNAME:
     HOSTNAME.lower()
 else:
-    cmd_hostname = shutil.which("hostname")
+    cmd = shutil.which("hostname")
     HOSTNAME = run_shell(f"{cmd} -s").lower()
 
 IS_ISH_AOK = False
