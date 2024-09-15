@@ -258,7 +258,7 @@ start_tmux() {
         error_msg "ERROR: Failed to cd back to [$d_initial]"
     }
 
-    log_it "Starting $TMUX_BINKY [$tmux_vers]"
+    log_it "Starting $TMUX_BIN [$tmux_vers]"
     log_it "    socket: $socket - config: $conf_file"
     echo
     if $TMUX_BIN -L "$socket" list-sessions >/dev/null 2>&1; then
