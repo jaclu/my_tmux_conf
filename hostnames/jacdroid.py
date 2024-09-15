@@ -45,7 +45,7 @@ class JacDroid(SB):
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            # set -g @packet-loss-ping_host 1.1.1.1
+            set -g @packet-loss-ping_host 1.1.1.1
             set -g @packet-loss-ping_count     6
             set -g @packet-loss-history_size   6
             set -g @packet-loss-level_alert 18 # 4-26 6-18 7-15
