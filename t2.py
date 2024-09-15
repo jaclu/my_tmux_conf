@@ -60,6 +60,7 @@ class T2(SB):
     #     return ['alexwforsythe/tmux-which-key', 3.0, ""]
 
     def not_plugin_packet_loss(self):  # 1.9
+        # normally this is better run in the outer tmux session
         min_vers = 1.9
         # if mtc_utils.IS_ISH or mtc_utils.HOSTNAME == "ish-hetz1" or self.is_tmate():
         # if mtc_utils.IS_ISH or self.is_tmate():
@@ -70,7 +71,7 @@ class T2(SB):
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            set -g @packet-loss-ping_host 1.1.1.1
+            set -g @packet-loss-ping_host 8.8.8.8
 
             set -g @packet-loss-ping_count   6
             set -g @packet-loss-history_size 6
