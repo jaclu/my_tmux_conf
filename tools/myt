@@ -108,7 +108,6 @@ py_venv_activate() {
     scr_activate="$my_tmux_conf_location"/.venv/bin/activate
     if [ -f "$scr_activate" ]; then
         log_it " --  Using py venv: $my_tmux_conf_location/.venv"
-	log_it "  -  Will source: $scr_activate"
         #  shellcheck source=/dev/null
         . "$scr_activate"
     else
@@ -204,7 +203,6 @@ select_tmux_bin() {
     *) ;;
     esac
 
-    log_it "myt will use: $TMUX_BIN [$tmux_vers] - socket: $socket"
     chk_incompatible_socket
 }
 
@@ -232,7 +230,7 @@ chk_incompatible_socket() {
     ps ax | grep "$socket_identifier" | grep -qv -e /usr/bin/tmux -e "$tmux_vers" -e grep && {
         #  shellcheck disable=SC2009
         log_it "
-ERROR: $socket instances for version other than $tmux_vers running!
+ERROR: instances for version other than $tmux_vers using socket: $socket  running!
 Intended to use: $TMUX_BIN
 
 Found the following processes:
@@ -244,7 +242,14 @@ $(ps ax | grep -v grep | grep "$socket")"
 
 start_tmux() {
     if $quick_mode; then
-        log_it "Using existing: $conf_file"
+	if [ -f "$conf_file" ]; then
+            log_it "Using existing config file"
+	else
+	    log_it "Conf file not found: $conf_file"
+	    log_it "Creating empty one to prevent 'No such file or directory' error"
+	    echo
+	    touch "$conf_file"
+	fi
     else
         create_tmux_conf
     fi
@@ -253,20 +258,28 @@ start_tmux() {
         error_msg "ERROR: Failed to cd back to [$d_initial]"
     }
 
-    if $TMUX_BIN -L "$socket" list-sessions 2>/dev/null | grep -q main; then
+    log_it "Starting $TMUX_BINKY [$tmux_vers]"
+    log_it "    socket: $socket - config: $conf_file"
+    echo
+    if $TMUX_BIN -L "$socket" list-sessions >/dev/null 2>&1; then
+	echo "><> ataching running tmux server"
         if ! $shared_session; then
             #
             #  tmux -d just kills other clients using the same session
             #  this kills all other clients regardless of session
             #
-            $TMUX_BIN -L "$socket" list-clients -F '#{client_tty}' | \
-                xargs -I{} "$TMUX_BIN" -L "$socket" detach-client -t {}
+	    log_it "Detatching sessions currently using:"
+	    log_it "    $TMUX_BIN [$tmux_vers]"
+	    log_it "    socket: $socket"
+	    $TMUX_BIN -L "$socket" list-clients | cut -d: -f 1 |\
+                xargs -I{}  "$TMUX_BIN" -L "$socket" detach-client -t {}
         fi
         eval "$TMUX_BIN" -L "$socket" -f "$conf_file" attach-session -t main
     else
+	echo "><> starting tmux server"
         $TMUX_BIN -L "$socket" -f "$conf_file" new-session -s main
     fi
-    log_it "[$(date)] exited tmux"
+    log_it "[$(date)] [$?] exited tmux"
 }
 
 #---------------------------------------------------------------
@@ -336,6 +349,9 @@ regular_tmux() {
     #
     #  Start the normal tmux env
     #
+    [ -n "$TMUX" ] && {
+	error_msg "sessions should be nested with care, unset \$TMUX to force"
+    }
     # log_it "-> running regular_tmux($profile) [$(hostname)]"
     if [ -z "$profile" ]; then
         detected_hostname="$(hostname -s | tr '[:upper:]' '[:lower:]')"
