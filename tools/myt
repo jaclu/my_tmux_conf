@@ -376,9 +376,9 @@ tmux_2() {
     mkdir -p "$HOME"/t2
 
     #  To help pick up the right tmux go here to search
-    # cd ~/t2 || {
-    #     error_msg "ERROR: Failed to cd back to [$d_initial]"
-    # }
+    cd ~/t2 || {
+        error_msg "ERROR: Failed to cd back to [$d_initial]"
+    }
 
     select_tmux_bin
     start_tmux
