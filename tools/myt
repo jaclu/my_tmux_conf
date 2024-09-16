@@ -43,7 +43,7 @@ Usage: myt [-q] [-2] [profile]
 
 Generates config and starts tmux
 Default profile is hostname
-§Options can be given in any order.
+Options can be given in any order.
 
 Availlable options:
 
@@ -142,13 +142,12 @@ select_tmux_bin() {
         return
     fi
     if [ -n "$ASDF_DIR" ]; then
-        if asdf list | grep -q tmux; then
+        if asdf list 2>/dev/null | grep -q tmux; then
             TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
         fi
     else
         TMUX_BIN="$(command -v tmux)"
     fi
-
     if [ -z "$TMUX_BIN" ] && [ -d "$HOME"/.asdf ]; then
         #
         # Consider if asdf is used but has not been initialized
@@ -240,16 +239,54 @@ $(ps ax | grep -v grep | grep "$socket")"
     }
 }
 
+indicate_tmux_connection_type() {
+    connect_type="$1"
+    [ -z "$connect_type" ] && {
+	error_msg "indicate_tmux_connection_type() - no param1"
+    }
+    log_it "$connect_type $TMUX_BIN [$tmux_vers]"
+    log_it "    socket: $socket - config: $conf_file"
+    echo
+}
+
+is_tmux_ses_running() {
+    $TMUX_BIN -L "$socket" list-sessions >/dev/null 2>&1
+}
+
+is_tmux_cli_connected() {
+   [ -n "$( $TMUX_BIN -L "$socket" list-clients)" ]
+}
+
+drop_other_clients() {
+    # disconnect any other clients
+    is_tmux_cli_connected && {
+        #
+        #  tmux -d just kills other clients using the same session
+        #  this kills all other clients regardless of session
+        #
+	log_it "Detatching other clients currently using:"
+	log_it "    $TMUX_BIN [$tmux_vers]"
+	log_it "    socket: $socket"
+	echo
+	$TMUX_BIN -L "$socket" list-clients | cut -d: -f 1 |\
+            xargs -I{}  "$TMUX_BIN" -L "$socket" detach-client -t {}
+    }
+}
+
+ensure_cfg_file_present() {
+    if [ -f "$conf_file" ]; then
+        log_it "Using existing config file"
+    else
+	log_it "Conf file not found: $conf_file"
+	log_it "Creating empty one to prevent 'No such file or directory' error"
+	touch "$conf_file"
+    fi
+    echo
+}
+
 start_tmux() {
     if $quick_mode; then
-	if [ -f "$conf_file" ]; then
-            log_it "Using existing config file"
-	else
-	    log_it "Conf file not found: $conf_file"
-	    log_it "Creating empty one to prevent 'No such file or directory' error"
-	    echo
-	    touch "$conf_file"
-	fi
+	ensure_cfg_file_present
     else
         create_tmux_conf
     fi
@@ -257,26 +294,12 @@ start_tmux() {
     cd "$d_initial" || {
         error_msg "ERROR: Failed to cd back to [$d_initial]"
     }
-
-    log_it "Starting $TMUX_BIN [$tmux_vers]"
-    log_it "    socket: $socket - config: $conf_file"
-    echo
-    if $TMUX_BIN -L "$socket" list-sessions >/dev/null 2>&1; then
-	echo "><> ataching running tmux server"
-        if ! $shared_session; then
-            #
-            #  tmux -d just kills other clients using the same session
-            #  this kills all other clients regardless of session
-            #
-	    log_it "Detatching sessions currently using:"
-	    log_it "    $TMUX_BIN [$tmux_vers]"
-	    log_it "    socket: $socket"
-	    $TMUX_BIN -L "$socket" list-clients | cut -d: -f 1 |\
-                xargs -I{}  "$TMUX_BIN" -L "$socket" detach-client -t {}
-        fi
+    if is_tmux_ses_running; then
+        $single_session && drop_other_clients
+	indicate_tmux_connection_type "Attaching to"
         eval "$TMUX_BIN" -L "$socket" -f "$conf_file" attach-session -t main
     else
-	echo "><> starting tmux server"
+	indicate_tmux_connection_type "Starting"
         $TMUX_BIN -L "$socket" -f "$conf_file" new-session -s main
     fi
     log_it "[$(date)] [$?] exited tmux"
@@ -406,7 +429,7 @@ tmux_2() {
 #
 #===============================================================
 
-shared_session=false
+single_session=true
 quick_mode=false
 t2_env=false
 profile=""
@@ -430,7 +453,7 @@ while [ -n "$1" ]; do
         tmux_bin="$1"
         ;;
     "-q") quick_mode=true ;;
-    "-s") shared_session=true ;;
+    "-s") single_session=false ;;
     "--venv")
 	log_it "===  Prepare the Python venv"
 	py_venv_create
