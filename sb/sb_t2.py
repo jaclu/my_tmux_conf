@@ -21,7 +21,7 @@ class SB(SB_tst):
     def status_bar_customization(self, print_header=True):
         """override statusbar config"""
         self.assign_style(__file__)
-        super().status_bar_customization(print_header=print_header)
+        # super().status_bar_customization(print_header=print_header)
         if self.vers_ok("1.9"):
             if IS_ISH:
                 # only need to overwrite if this is running on iSH,
