@@ -20,8 +20,8 @@ class SB(SB_tst):
 
     def status_bar_customization(self, print_header=True):
         """override statusbar config"""
-        self.assign_style(__file__)
-        # super().status_bar_customization(print_header=print_header)
+        # self.assign_style(__file__)
+        super().status_bar_customization(print_header=print_header)
         if self.vers_ok("1.9"):
             if IS_ISH:
                 # only need to overwrite if this is running on iSH,
@@ -45,8 +45,10 @@ class SB(SB_tst):
             self.write(
                 """
                 # t2 border style
-                set -g pane-active-border-style fg=colour38  #  38 bluish
-                set -g pane-border-style        fg=colour95  # 131 grey with a bit red
+                # yellow - was 38 bluish
+                set -g pane-active-border-style fg=colour3
+                # blue - was XS 95 131 grey with a bit red
+                set -g pane-border-style        fg=colour241
                 """
             )
 
