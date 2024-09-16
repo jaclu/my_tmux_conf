@@ -17,6 +17,8 @@ import sys
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root_dir)
 
+# Make chrooted ish reeally standout, by using production color scheme
+
 # flake8: noqa: E402
 # pylint: disable=wrong-import-position
 from sb.sb_production import SB
