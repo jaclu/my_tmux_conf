@@ -41,8 +41,8 @@ import sys
 from pydoc import locate
 
 import __main__
-import mtc_utils
 
+import mtc_utils
 
 TMUX_CONF_NEEDED = "0.16.8"
 
@@ -181,6 +181,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
         """
         this_style = os.path.splitext(os.path.basename(style_name))[0]
         if self.style:
+            # return  # error_disabled
+            # used to prevent if multiple styles are inherrited and colliding
             sys.exit(
                 f"ERROR: Style already assiged as: {self.style}, "
                 f"Can not use style: {this_style}"
@@ -516,11 +518,13 @@ class BaseConfig(TmuxConfig):  # type: ignore
                     w(
                         """unbind  -n  MouseDown3StatusLeft
                         unbind  -n  M-MouseDown3StatusLeft
-                        unbind  -n  MouseDown3StatusRight""")
+                        unbind  -n  MouseDown3StatusRight"""
+                    )
                 if self.vers_ok("3.0a"):
                     w(
                         """unbind  <
-                        unbind  >""")
+                        unbind  >"""
+                    )
 
                 w()  # spacer
 
