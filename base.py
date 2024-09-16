@@ -1033,8 +1033,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #  Works both on bright and dark backgrounds
             #
 
-            border_active = "colour112"  # 112 - bright warm green
-            border_other = "colour245"  # 245 - low intensity grey - org
+            # experimenting with stronger contrast...
+            border_active = "colour120"  # was 112 - bright warm green
+            border_other = "colour241"  # was 245 - low intensity grey
 
             w(
                 f"""set -g pane-active-border-style fg={border_active}
