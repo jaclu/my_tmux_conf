@@ -10,16 +10,12 @@
 
 """ Style test """
 
-# import os
-
-# pylint: disable=E0401
-from default_plugins import DefaultPlugins
-
 from mtc_utils import IS_ISH
+from sb.sb_tst import SB as SB_tst
 
 
 # pylint: disable=R0903
-class SB(DefaultPlugins):
+class SB(SB_tst):
     """Style test"""
 
     def status_bar_customization(self, print_header=True):
@@ -28,17 +24,12 @@ class SB(DefaultPlugins):
         super().status_bar_customization(print_header=print_header)
         if self.vers_ok("1.9"):
             if IS_ISH:
-                # give iSH a slightly different color theme
+                # only need to overwrite if this is running on iSH,
+                # otherwise leave already defined styling as is
+                # this gives iSH a slightly different color theme, makes
+                # it easier to spot that
+                self.write("# iSH override")
                 self.write("set -g status-style fg=black,bg=yellow")
-            else:
-                self.write("set -g status-style fg=colour21,bg=white")
-        else:
-            self.write(
-                """
-                set -g status-fg colour21
-                set -g status-bg white
-                """
-            )
 
         return print_header  # request footer to be printed
 
