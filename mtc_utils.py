@@ -30,7 +30,7 @@ def run_shell(_cmd: str) -> str:
     return result.stdout.strip()
 
 
-HOSTNAME = os.getenv("HOSTNAME_SHORT").lower()
+HOSTNAME = os.getenv("HOSTNAME_SHORT")
 if HOSTNAME:
     HOSTNAME.lower()
 else:
