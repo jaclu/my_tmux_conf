@@ -43,6 +43,25 @@ class T2(SB):
     # is_limited_host = True
     status_interval = 5
 
+    def local_overides(self):
+        """Local overrides applied last in the config, not related to
+        status bar, for that see status_bar_customization()
+        """
+        super().local_overides()
+        if self.vers_ok(1.9):
+            #
+            #  Works both on bright and dark backgrounds
+            #
+            self.write(
+                """
+                # t2 border style
+                # yellow - was 38 bluish
+                set -g pane-active-border-style fg=colour3
+                # blue - was XS 95 131 grey with a bit red
+                set -g pane-border-style        fg=colour241
+                """
+            )
+
     #
     #  Override default plugins with empty stubs for plugins
     #  not wanted in T2_ENV
