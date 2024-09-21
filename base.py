@@ -352,7 +352,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         if self.vers_ok(1.2):
             #
-            #  Making OSC 53 work on mosh connections.
+            #  Making OSC 52 work on mosh connections.
             #  For this to work the term name used must match
             #
             w(

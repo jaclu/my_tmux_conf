@@ -239,7 +239,7 @@ class DefaultPlugins(IshConsole):
 
     def plugin_menus(self) -> list:  # 1.8
         conf = """
-        set -g @menus_log_file ~/tmp/tmux-menus-t2.log
+        set -g @menus_log_file ~/tmp/tmux-menus.log
         # set -g @menus_use_cache no
         """
         #
