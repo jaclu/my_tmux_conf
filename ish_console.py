@@ -106,8 +106,11 @@ class IshConsole(ActualBaseConfig):
         self.muc_par_open = "M-("
         self.muc_par_close = "M-)"
         self.muc_underscore = "M-_"
+
+    def content(self):
         self.ic_detect_console_keyb()
         sys.exit(1)
+        super.content()
 
     def ic_detect_console_keyb(self) -> None:
         #
