@@ -1722,6 +1722,8 @@ if "ish_console" not in sys.modules:
     class BaseConfig(*BaseClass):
         pass
 
+else:
+    print("><> avoiding circular import")
 
 if __name__ == "__main__":
     BaseConfig().run()
