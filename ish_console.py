@@ -231,9 +231,7 @@ class IshConsole(ActualBaseConfig):
         pm_key = "\\302\\261"  # S-±
         esc_key = "\\302\\247"  # §
         muc_plus = "\\302\\261"  # ±
-        self.write(f'set -s user-keys[220]  "{muc_plus}"')
-        self.muc_plus = "User220"
-        self.ic_nav_key_prefix(pm_key, esc_key, "§")
+        self.ic_nav_key_prefix(pm_key, esc_key, "S-±")
         self.write(
             f"""
         #
@@ -244,6 +242,7 @@ class IshConsole(ActualBaseConfig):
         set -s user-keys[221]  "\\033"
         bind -N "Send backtick"  -n User221  send "\\`" # map backtick back from Escape
         """
+        self.muc_plus = "User220"
         )
 
     def ic_nav_key_prefix(self, prefix_key, esc_key="", prefix_comment="") -> None:
