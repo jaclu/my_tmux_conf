@@ -174,7 +174,7 @@ class IshConsole(ActualBaseConfig):
         # ):
         #     self.ic_keyb_type_2()
         else:
-            sys.exit(f"ERROR: Unknown LC_KEYBOARD: {self.ic_keyboard}")
+            sys.exit(1)  # f"ERROR: Unknown LC_KEYBOARD: {self.ic_keyboard}")
             # #
             # #  keyboard handling Esc directly, no custom keys
             # #
