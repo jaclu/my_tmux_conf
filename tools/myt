@@ -362,6 +362,7 @@ create_tmux_conf() {
         }
         [ -n "$ex_code" ] && exit "$ex_code"
     fi
+    exit 1
     log_it # spacer line
 
     $use_python_venv && py_venv_deactivate
