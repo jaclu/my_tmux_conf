@@ -352,10 +352,15 @@ create_tmux_conf() {
             error_msg "Failed to log python output" 2
         }
     else
-        "$profile" -r -t "$TMUX_BIN" "$conf_file" || error_msg "Failed to build tmux.conf" 2 |
-            tee -a "$myt_log" || {
+        ex_code=""
+        _s="$("$profile" -r -t "$TMUX_BIN" "$conf_file")" || {
+            ex_code="$?"
+            log_it "ERROR: Failed to build tmux.conf"
+        }
+        echo "$_s" | tee -a "$myt_log" || {
             error_msg "Failed to log python output" 3
         }
+        [ -n "$ex_code" ] && exit "$ex_code"
     fi
     log_it # spacer line
 
