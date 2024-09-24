@@ -128,18 +128,18 @@ class IshConsole(ActualBaseConfig):
             #  and if no outer tmux is already handling the nav keys
             #
             return
-        if os.environ.get(NAV_KEY_HANDLED_TAG):
+        if NAV_KEY_HANDLED_TAG in os.environ:
             print("iSH console keyboard already handled by outer tmux!")
             return
 
-        self.ic_keyboard = os.environ.get("LC_KEYBOARD")
-        self.is_ish_console = True
-        print("This is an iSH console, keyboard adoptions will be implemented")
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
             print("         keyboard adaptions not supported on this version")
             return
 
+        self.ic_keyboard = os.environ.get("LC_KEYBOARD")
+        self.is_ish_console = True
+        print("This is an iSH console, keyboard adoptions will be implemented")
         # host_name = run_shell("hostname -s").lower()
         # print(f"hostname: {host_name}")
         # if host_name in ("jacpad", "jacpad-aok"):
@@ -174,6 +174,7 @@ class IshConsole(ActualBaseConfig):
         # ):
         #     self.ic_keyb_type_2()
         else:
+            print(f"><> Unrecognized LC_KEYBOARD: {self.ic_keyboard}")
             sys.exit(1)  # f"ERROR: Unknown LC_KEYBOARD: {self.ic_keyboard}")
             # #
             # #  keyboard handling Esc directly, no custom keys
