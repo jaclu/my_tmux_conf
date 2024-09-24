@@ -27,8 +27,8 @@
 
 import os
 
-from mtc_utils import run_shell, IS_ISH, IS_ISH_AOK
-from base import BaseConfig
+from base import ActualBaseConfig
+from mtc_utils import IS_ISH, IS_ISH_AOK, run_shell
 
 NAV_KEY_HANDLED_TAG = "TMUX_HANDLING_ISH_NAV_KEY"
 
@@ -56,7 +56,7 @@ KBD_TYPE_OMNITYPE = "Omnitype Keyboard"
 KBD_TYPE_BLUETOOTH = "Bluetooh Keyboard"  # sadly generic name
 
 
-class IshConsole(BaseConfig):
+class IshConsole(ActualBaseConfig):
     """When running tmux from an iSH console this redefines the rather
     limited keyboard in order to make it more useful.
 
@@ -79,8 +79,35 @@ class IshConsole(BaseConfig):
 
     usr_key_meta_plus = "User211"
 
-    def local_overides(self) -> None:
-        super().local_overides()
+    def __init__(
+        self,
+        parse_cmd_line: bool = True,
+        #
+        #  if parse_cmd_line is True all other params are ignored
+        #
+        conf_file: str = "~/.tmux.conf",  # where to store conf file
+        tmux_bin: str = "",
+        tmux_version: str = "",
+        replace_config: bool = False,  # replace config with no prompt
+        clear_plugins: bool = False,  # remove all current plugins
+        plugins_display: int = 0,  # Display info about plugins
+    ):
+        super().__init__(
+            parse_cmd_line=parse_cmd_line,
+            conf_file=conf_file,
+            tmux_bin=tmux_bin,
+            tmux_version=tmux_version,
+            replace_config=replace_config,
+            clear_plugins=clear_plugins,
+            plugins_display=plugins_display,
+        )
+        self.muc_plus = "M-+"
+        self.muc_par_open = "M-("
+        self.muc_par_close = "M-)"
+        self.muc_underscore = "M-_"
+        self.ic_detect_console_keyb()
+
+    def ic_detect_console_keyb(self) -> None:
         #
         #  Only use this if the following conditions are met:
         #     1) kernel is ish
@@ -105,7 +132,7 @@ class IshConsole(BaseConfig):
             print("         keyboard adaptions not supported on this version")
             return
 
-        host_name = run_shell('hostname -s').lower()
+        host_name = run_shell("hostname -s").lower()
         print(f"hostname: {host_name}")
         if host_name in ("jacpad", "jacpad-aok"):
             self.ic_keyboard = KBD_TYPE_LOGITECH_COMBO
@@ -186,19 +213,22 @@ class IshConsole(BaseConfig):
 
     def ic_keyb_type_combo_touch(self):
         #
-        #  Logitech Combo Touch"
+        #  Logitech Combo Touch
         #
         pm_key = "\\302\\261"  # S-±
         esc_key = "\\302\\247"  # §
-        self.ic_nav_key_prefix(pm_key, esc_key, "S-±")
+        muc_plus = "\\302\\261"  # ±
+        self.muc_plus = "User220"
+        self.ic_nav_key_prefix(pm_key, esc_key, "§")
         self.write(
-            """
+            f"""
         #
         #  On this keyb, in iSH back-tick sends Escape
         #  this changes it back, Esc is available via §
         #
-        set -s user-keys[220]  "\\033"
-        bind -N "Send backtick"  -n User220  send "\\`" # map backtick back from Escape
+        set -s user-keys[220]  "{muc_plus}"
+        set -s user-keys[221]  "\\033"
+        bind -N "Send backtick"  -n User221  send "\\`" # map backtick back from Escape
         """
         )
 
@@ -330,9 +360,6 @@ class IshConsole(BaseConfig):
 
     def ic_alt_upper_case(self, fn_keys_mapped: bool) -> None:
         w = self.write
-        m_par_open = ""  # Only used if not fn_keys_mapped
-        m_par_close = ""  # Only used if not fn_keys_mapped
-
         w(
             """
         #
@@ -417,8 +444,8 @@ class IshConsole(BaseConfig):
             # ¯
             # 194 0302 0xc2
             # 175 0257 0xaf
-            # ("35", "<"), - used in self.swap_window_uk()
-            # ("36", ">"), - used in self.swap_window_uk()
+            # ("35", "<"), - used in self.auc_swap_window()
+            # ("36", ">"), - used in self.auc_swap_window()
             ("37", "?"),
             # Doesn't work on Omnitype Keyboard, works on Yoozon3
             ("38", "_"),
@@ -448,8 +475,8 @@ class IshConsole(BaseConfig):
             set -s user-keys[60]  "\\342\\200\\232"  # M-)
             """
             )
-            m_par_open = "User59"
-            m_par_close = "User60"
+            self.muc_par_open = "User59"
+            self.muc_par_close = "User60"
 
             for i, c in (
                 ("51", "!"),
@@ -472,18 +499,18 @@ class IshConsole(BaseConfig):
         #  send-keys. If the resulting key has an action,
         #  we need to override and bind the user-key to this action.
         #
-        self.split_entire_window_uk(
-            m_h="User8", m_j="User10", m_k="User11", m_l="User12"
-        )
-        self.display_plugins_used_uk(m_p="User16")
-        self.kill_tmux_server_uk(m_x="User24")
-        self.swap_window_uk(m_less_than="User35", m_greater_than="User36")
-        self.meta_ses_handling_uk(
-            m_plus=self.usr_key_meta_plus,
-            m_par_open=m_par_open,
-            m_par_close=m_par_close,
-            m_underscore="User38",
-        )
+        # self.auc_split_entire_window(
+        #     m_h="User8", m_j="User10", m_k="User11", m_l="User12"
+        # )
+        # self.auc_display_plugins_used(m_p="User16")
+        # self.auc_kill_tmux_server(m_x="User24")
+        # self.auc_swap_window(m_less_than="User35", m_greater_than="User36")
+        # self.auc_meta_ses_handling(
+        #     m_plus=self.usr_key_meta_plus,
+        #     muc_par_open=muc_par_open,
+        #     muc_par_close=muc_par_close,
+        #     m_underscore="User38",
+        # )
 
         w(
             """
@@ -525,6 +552,42 @@ class IshConsole(BaseConfig):
     #     bind -N "S-Right = End"     -n  {mod_char}-Right  send-keys End
     #     """
     #     )
+
+    def auc_meta_ses_handling(  # used by iSH Console
+        self,
+        muc_plus: str = "M-+",
+        muc_par_open: str = "M-(",
+        muc_par_close: str = "M-)",
+        muc_underscore: str = "M-_",
+    ):
+        # doesnt seem possible to use self.variables as defaults...
+        if self.muc_plus != "M-+":
+            muc_plus = self.muc_plus
+        if self.muc_par_open != "M-(":
+            muc_par_open = self.muc_par_open
+        if self.muc_par_close != "M-)":
+            muc_par_close = self.muc_par_close
+        if self.muc_underscore != "M-)":
+            muc_underscore = self.muc_underscore
+        super().auc_meta_ses_handling(
+            muc_plus, muc_par_open, muc_par_close, muc_underscore
+        )
+
+    def auc_swap_window(  # used by iSH Console
+        self, muc_less_than: str = "User35", muc_greater_than: str = "User36"
+    ):
+        super().auc_swap_window(muc_less_than, muc_greater_than)
+
+    def auc_display_plugins_used(self, muc_p: str = "User16"):  # used by iSH Console
+        super().auc_display_plugins_used(muc_p)
+
+    def auc_kill_tmux_server(self, muc_x: str = "User24"):  # used by iSH Console
+        super().auc_kill_tmux_server(muc_x)  # used by iSH Console
+
+    def auc_split_entire_window(
+        self, muc_h="User8", muc_j="User10", muc_k="User11", muc_l="User12"
+    ):
+        super().auc_split_entire_window(muc_h, muc_j, muc_k, muc_l)
 
 
 #

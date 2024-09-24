@@ -63,7 +63,7 @@ else:
         sys.exit(1)
 
 
-class BaseConfig(TmuxConfig):  # type: ignore
+class ActualBaseConfig(TmuxConfig):  # type: ignore
     """Defines the general tmux setup, key binds etc"""
 
     prefix_key: str = "C-a"
@@ -463,7 +463,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             )
         w()  # Spacer
 
-        self.display_plugins_used_uk()
+        self.auc_display_plugins_used()  # used by iSH Console
 
         scrpad_key = "O"  # P being taken this is pOpup :)
         scrpad_min_vers = 3.2
@@ -481,7 +481,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
                 f'display "pOpup scratchpad session needs {scrpad_min_vers}"'
             )
 
-        self.kill_tmux_server_uk()
+        self.auc_kill_tmux_server()  # used by iSH Console
         w()  # spacer between sections
 
     def remove_unwanted_default_bindings(self):
@@ -724,7 +724,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             'bind -N "Create new session  - M-+"             +    command-prompt -I "?" '
             '-p "Name of new session: " "new-session -s \\"%%\\""'
         )
-        self.meta_ses_handling_uk()
+        self.auc_meta_ses_handling()  # used by iSH Console
         w(
             """# session navigation
         bind -N "Select previous session  - M-(  or  C-M-S-Up" -r  (  switch-client -p
@@ -823,7 +823,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         #  Splitting the entire window
         #
-        self.split_entire_window_uk()
+        self.auc_split_entire_window()  # used by iSH Console
         #
         #  Same using arrow keys with <prefix> M-S modifier
         #
@@ -906,7 +906,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
                 bind -N "Swap window left  - M-<"         -r  <    swap-window -dt:-1
                 bind -N "Swap window right  - M->"        -r  >    swap-window -dt:+1"""
             )
-        self.swap_window_uk()
+        self.auc_swap_window()  # used by iSH Console
 
         # if self.vers_ok(2.3) and not self.is_tmate():
         #     #
@@ -1311,53 +1311,55 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  keys, for terminals relaying on user-keys, they can be bound to
     #  the intended action fairly simply.
     #
-    def meta_ses_handling_uk(
+    def auc_meta_ses_handling(  # used by iSH Console
         self,
-        m_plus: str = "M-+",
-        m_par_open: str = "M-(",
-        m_par_close: str = "M-)",
-        m_underscore: str = "M-_",
+        muc_plus: str = "M-+",
+        muc_par_open: str = "M-(",
+        muc_par_close: str = "M-)",
+        muc_underscore: str = "M-_",
     ):
-        if m_plus in (None, ""):
-            sys.exit("ERROR: meta_ses_handling_uk() m_plus undefined!")
+        if muc_plus in (None, ""):
+            sys.exit("ERROR: auc_meta_ses_handling() muc_plus undefined!")
 
         w = self.write
         if self.bind_meta:
             w(
-                f'bind -N "Create new session  - P +"  -n {m_plus}  command-prompt '
+                f'bind -N "Create new session  - P +"  -n {muc_plus}  command-prompt '
                 '-I "?" -p "Name of new session: " "new-session -s \\"%%\\""'
             )
             w(
                 "bind -N 'Switch to last session  - P _'  "
-                f"-n  {m_underscore}  switch-client -l"
+                f"-n  {muc_underscore}  switch-client -l"
             )
         else:
             w(
                 f"""#  skipping adv keys, if resourced
-            unbind -n {m_plus}
-            unbind -n  {m_underscore}
+            unbind -n {muc_plus}
+            unbind -n  {muc_underscore}
             """
             )
 
-        if m_par_open:
+        if muc_par_open:
             if self.bind_meta:
                 w(
                     "bind -N 'Select previous session  - P "
-                    f"(' -n  {m_par_open}  switch-client -p"
+                    f"(' -n  {muc_par_open}  switch-client -p"
                 )
             else:
-                w(f"unbind -n  {m_par_open}")
+                w(f"unbind -n  {muc_par_open}")
 
-        if m_par_close:
+        if muc_par_close:
             if self.bind_meta:
                 w(
-                    f"bind -N 'Select next session  - P )'     -n  {m_par_close}"
+                    f"bind -N 'Select next session  - P )'     -n  {muc_par_close}"
                     "  switch-client -n"
                 )
             else:
-                w(f"unbind -n  {m_par_close}")
+                w(f"unbind -n  {muc_par_close}")
 
-    def swap_window_uk(self, m_less_than: str = "M-<", m_greater_than: str = "M->"):
+    def auc_swap_window(  # used by iSH Console
+        self, muc_less_than: str = "M-<", muc_greater_than: str = "M->"
+    ):
         if not self.vers_ok(1.8):
             return
 
@@ -1370,19 +1372,19 @@ class BaseConfig(TmuxConfig):  # type: ignore
                 note_gt += "  - P >"
             self.write(
                 f"""
-            bind -N "{note_lt}"  -n  {m_less_than}  swap-window -dt:-1
-            bind -N "{note_gt}" -n  {m_greater_than}  swap-window -dt:+1
+            bind -N "{note_lt}"  -n  {muc_less_than}  swap-window -dt:-1
+            bind -N "{note_gt}" -n  {muc_greater_than}  swap-window -dt:+1
             """
             )
         else:
             self.write(
                 f"""#  skipping adv keys, if resourced
-            unbind -n  {m_less_than}
-            unbind -n  {m_greater_than}
+            unbind -n  {muc_less_than}
+            unbind -n  {muc_greater_than}
             """
             )
 
-    def display_plugins_used_uk(self, m_p: str = "M-P"):
+    def auc_display_plugins_used(self, muc_p: str = "M-P"):  # used by iSH Console
         """iSH console doesn't generate correct ALT - Upper Case sequences,
         so when that is the env, intended keys must be bound as user keys.
         To make that without having two separate snippets of code doing
@@ -1395,7 +1397,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             # There is no plugin support...
             return
 
-        if m_p != "M-P":
+        if muc_p != "M-P":
             note_prefix = "M-P - "
         else:
             note_prefix = ""
@@ -1405,12 +1407,12 @@ class BaseConfig(TmuxConfig):  # type: ignore
         # it wont be over-written!
         #
         w(
-            f'bind -N "{note_prefix}List all plugins defined"  {m_p}  '
+            f'bind -N "{note_prefix}List all plugins defined"  {muc_p}  '
             'run "$TMUX_BIN display \\"Generating response...\\" ;'
             f' {__main__.__file__} {self.conf_file} -p2"'
         )
 
-    def kill_tmux_server_uk(self, m_x: str = "M-X"):
+    def auc_kill_tmux_server(self, muc_x: str = "M-X"):  # used by iSH Console
         """iSH console doesn't generate correct ALT - Upper Case sequences,
         so when that is the env, intended keys must be bound as user keys.
         To make that without having two separate snippets of code doing
@@ -1419,18 +1421,22 @@ class BaseConfig(TmuxConfig):  # type: ignore
         user keys will be given
         """
         w = self.write
-        if m_x != "M-X":
+        if muc_x != "M-X":
             note_prefix = "M-X - "
         else:
             note_prefix = ""
         w(
-            f'bind -N "{note_prefix}Kill tmux server"  {m_x}  '
+            f'bind -N "{note_prefix}Kill tmux server"  {muc_x}  '
             "confirm-before -p "
             f'"kill tmux server {self.conf_file}? (y/n)" kill-server'
         )
 
-    def split_entire_window_uk(
-        self, m_h: str = "M-H", m_j: str = "M-J", m_k: str = "M-K", m_l: str = "M-L"
+    def auc_split_entire_window(  # used by iSH Console
+        self,
+        muc_h: str = "M-H",
+        muc_j: str = "M-J",
+        muc_k: str = "M-K",
+        muc_l: str = "M-L",
     ):
         """iSH console doesn't generate correct ALT - Upper Case sequences,
         so when that is the env, intended keys must be bound as user keys.
@@ -1452,29 +1458,29 @@ class BaseConfig(TmuxConfig):  # type: ignore
             sw = "split-window -f"
             pcb = '-c "#{pane_current_path}"'  # line is not to long
 
-            if m_h != "M-H":
+            if muc_h != "M-H":
                 pref = "M-H - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}horizontally left"   {m_h}  {sw}hb {pcb}')
+            w(f'{b}{pref}{n_base}horizontally left"   {muc_h}  {sw}hb {pcb}')
 
-            if m_j != "M-J":
+            if muc_j != "M-J":
                 pref = "M-J - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}vertically down"     {m_j}  {sw}v  {pcb}')
+            w(f'{b}{pref}{n_base}vertically down"     {muc_j}  {sw}v  {pcb}')
 
-            if m_k != "M-K":
+            if muc_k != "M-K":
                 pref = "M-K - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}vertically up"       {m_k}  {sw}vb {pcb}')
+            w(f'{b}{pref}{n_base}vertically up"       {muc_k}  {sw}vb {pcb}')
 
-            if m_l != "M-L":
+            if muc_l != "M-L":
                 pref = "M-L - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}horizontally right"  {m_l}  {sw}h  {pcb}')
+            w(f'{b}{pref}{n_base}horizontally right"  {muc_l}  {sw}h  {pcb}')
 
     #
     #  Utility methods
@@ -1697,6 +1703,20 @@ timer_end() {{
         print()
         print(f"vers found: {lib_vers_found}   needs: {TMUX_CONF_NEEDED}")
         sys.exit(1)
+
+
+if "LC_KEYBOARD" in os.environ:
+    from ish_console import IshConsole
+
+    BaseClass = (IshConsole,)
+else:
+    BaseClass = (ActualBaseConfig,)
+
+# BaseClass = (IshConsole) if "LC_KEYBOARD" in os.environ else (ActualBaseConfig)
+
+
+class BaseConfig(*BaseClass):
+    pass
 
 
 if __name__ == "__main__":
