@@ -242,8 +242,8 @@ class IshConsole(ActualBaseConfig):
         set -s user-keys[221]  "\\033"
         bind -N "Send backtick"  -n User221  send "\\`" # map backtick back from Escape
         """
-        self.muc_plus = "User220"
         )
+        self.muc_plus = "User220"
 
     def ic_nav_key_prefix(self, prefix_key, esc_key="", prefix_comment="") -> None:
         # Only set esc_key, if different from prefix
