@@ -131,6 +131,13 @@ class IshConsole(ActualBaseConfig):
 
         self.is_ish_console = True
         print("This is an iSH console, keyboard adoptions will be implemented")
+        self.write(
+            """
+            #
+            #  Remap keys for limited console
+            #
+            """
+        )
 
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
@@ -164,6 +171,13 @@ class IshConsole(ActualBaseConfig):
         self.general_keyb_settings()
 
         self.ic_setup()
+        self.write(
+            """
+            #
+            #  End of Remap keys for limited console
+            #
+            """
+        )
 
     #
     #  Specific Keyboards
