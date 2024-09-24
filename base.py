@@ -1705,20 +1705,20 @@ timer_end() {{
         sys.exit(1)
 
 
-if "LC_KEYBOARD" in os.environ:
-    import ish_console
+if 'ish_console' not in sys.modules:
+    # aovid circular import
+    if "LC_KEYBOARD" in os.environ:
+        import ish_console
 
-    print("><> Using IshConsole")
-    BaseClass = (ish_console.IshConsole,)
-else:
-    print("><> Using ActualBaseConfig")
-    BaseClass = (ActualBaseConfig,)
+        print("><> Using IshConsole")
+        BaseClass = (ish_console.IshConsole,)
+    else:
+        print("><> Using ActualBaseConfig")
+        BaseClass = (ActualBaseConfig,)
 
-# BaseClass = (IshConsole) if "LC_KEYBOARD" in os.environ else (ActualBaseConfig)
-
-
-class BaseConfig(*BaseClass):
-    pass
+    # BaseClass = (IshConsole) if "LC_KEYBOARD" in os.environ else (ActualBaseConfig)
+    class BaseConfig(*BaseClass):
+        pass
 
 
 if __name__ == "__main__":
