@@ -228,22 +228,21 @@ class IshConsole(ActualBaseConfig):
         #
         #  Logitech Combo Touch
         #
-        pm_key = "\\302\\261"  # S-±
-        esc_key = "\\302\\247"  # §
-        muc_plus = "\\302\\261"  # ±
-        self.ic_nav_key_prefix(pm_key, esc_key, "S-±")
-        self.write(
-            f"""
+        w = self.write
+        esc_key = "\\302\\247"
+        self.ic_nav_key_prefix(esc_key, prefix_comment="§")
+        w('set -s user-keys[220]  "\\302\\261"')  # ±
+        self.muc_plus = "User220"
+        w(
+            """
         #
         #  On this keyb, in iSH back-tick sends Escape
         #  this changes it back, Esc is available via §
         #
-        set -s user-keys[220]  "{muc_plus}"
         set -s user-keys[221]  "\\033"
         bind -N "Send backtick"  -n User221  send "\\`" # map backtick back from Escape
         """
         )
-        self.muc_plus = "User220"
 
     def ic_nav_key_prefix(self, prefix_key, esc_key="", prefix_comment="") -> None:
         # Only set esc_key, if different from prefix
