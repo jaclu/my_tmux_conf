@@ -33,10 +33,10 @@ import os
 #
 from mtc_utils import IS_ISH
 
-from ish_console import IshConsole
+from base import BaseConfig
 
 
-class DefaultPlugins(IshConsole):
+class DefaultPlugins(BaseConfig):
     """This defines all the plugins I normally use, local only and very
     resource demanding ones are not added here.
     I use this as my primary base class
