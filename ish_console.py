@@ -26,7 +26,6 @@
 """Checks if this is run on the iSH console"""
 
 import os
-import sys
 
 from base import ActualBaseConfig
 from mtc_utils import IS_ISH, IS_ISH_AOK, run_shell
@@ -109,8 +108,7 @@ class IshConsole(ActualBaseConfig):
 
     def content(self):
         self.ic_detect_console_keyb()
-        sys.exit(1)
-        # super.content()
+        super().content()
 
     def ic_detect_console_keyb(self) -> None:
         #
@@ -133,9 +131,11 @@ class IshConsole(ActualBaseConfig):
         print("This is an iSH console, keyboard adoptions will be implemented")
         self.write(
             """
+            # ============================================================
             #
             #  Remap keys for limited console
             #
+            # ============================================================
             """
         )
 
@@ -173,9 +173,11 @@ class IshConsole(ActualBaseConfig):
         self.ic_setup()
         self.write(
             """
+            # ============================================================
             #
             #  End of Remap keys for limited console
             #
+            # ============================================================
             """
         )
 
