@@ -118,10 +118,16 @@ class IshConsole(ActualBaseConfig):
     def ic_detect_console_keyb(self) -> None:
         #
         #  Only use this if the following conditions are met:
-        #     1) kernel is ish
-        #     2) not an ssh session,
-        #     3) key escapes not handled by an outer tmux
+        #     1) tmux >= 2.6
+        #     2) kernel is ish
+        #     3) not an ssh session,
+        #     3) keyboard remappings not handled by an outer tmux
         #
+        if not self.vers_ok(2.6):
+            print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
+            print("         keyboard adaptions not supported on this version")
+            return
+
         if (not IS_ISH) or os.environ.get("SSH_CONNECTION"):
             #
             #  This c is only relevant on the iSH console itself
@@ -129,11 +135,9 @@ class IshConsole(ActualBaseConfig):
             #
             return
 
-        if not self.vers_ok(2.6):
-            print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
-            print("         keyboard adaptions not supported on this version")
+        if NAV_KEY_HANDLED_TAG in os.environ:
+            print("iSH console nav key already handled by outer tmux!")
             return
-
         self.ic_keyboard = os.environ.get("LC_KEYBOARD")
         self.is_ish_console = True
         print("This is an iSH console, keyboard adoptions will be implemented")
@@ -254,9 +258,6 @@ class IshConsole(ActualBaseConfig):
         # Only set esc_key, if different from prefix
         w = self.write
         print(f"Assuming keyboard is: {self.ic_keyboard}")
-        if NAV_KEY_HANDLED_TAG in os.environ:
-            print("iSH console nav key already handled by outer tmux!")
-            return
 
         if prefix_comment:
             prefix_comment = f"# {prefix_comment}"
