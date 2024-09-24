@@ -110,7 +110,7 @@ class IshConsole(ActualBaseConfig):
     def content(self):
         self.ic_detect_console_keyb()
         sys.exit(1)
-        super.content()
+        # super.content()
 
     def ic_detect_console_keyb(self) -> None:
         #
