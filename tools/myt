@@ -60,7 +60,11 @@ EOF
 
 log_it() {
     echo "$1"
-    [ -n "$myt_log" ] && echo "$1" >>"$myt_log"
+    [ -n "$myt_log" ] && {
+        echo "$1" >>"$myt_log" || {
+            error_msg "Failed to log python output to: $myt_log" 3
+        }
+    }
 }
 
 error_msg() {
@@ -352,17 +356,14 @@ create_tmux_conf() {
             error_msg "Failed to log python output" 2
         }
     else
-        ex_code=""
         _s="$("$profile" -r -t "$TMUX_BIN" "$conf_file")" || {
             ex_code="$?"
-            log_it "ERROR: Failed to build tmux.conf"
+            log_it "$_s"
+            error_msg "Failed to build tmux.conf [$ex_code]"
         }
-        echo "$_s" | tee -a "$myt_log" || {
-            error_msg "Failed to log python output" 3
-        }
-        [ -n "$ex_code" ] && exit "$ex_code"
+        log_it "$_s"
     fi
-    exit 1
+
     log_it # spacer line
 
     $use_python_venv && py_venv_deactivate
