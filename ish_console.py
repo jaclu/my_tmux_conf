@@ -26,6 +26,7 @@
 """Checks if this is run on the iSH console"""
 
 import os
+import sys
 
 from base import ActualBaseConfig
 from mtc_utils import IS_ISH, IS_ISH_AOK, run_shell
@@ -106,6 +107,7 @@ class IshConsole(ActualBaseConfig):
         self.muc_par_close = "M-)"
         self.muc_underscore = "M-_"
         self.ic_detect_console_keyb()
+        sys.exit(1)
 
     def ic_detect_console_keyb(self) -> None:
         #

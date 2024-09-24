@@ -1708,10 +1708,9 @@ timer_end() {{
 if 'ish_console' not in sys.modules:
     # aovid circular import
     if "LC_KEYBOARD" in os.environ:
-        import ish_console
-
+        from ish_console import IshConsole
         print("><> Using IshConsole")
-        BaseClass = (ish_console.IshConsole,)
+        BaseClass = (IshConsole,)
     else:
         print("><> Using ActualBaseConfig")
         BaseClass = (ActualBaseConfig,)
