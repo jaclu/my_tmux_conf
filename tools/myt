@@ -77,8 +77,8 @@ error_msg() {
 py_venv_create() {
     venv_location="$my_tmux_conf_location"/.venv
     [ -d "$venv_location" ] && {
-	log_it "---  Removing previous venv: $venv_location"
-	rm -rf "$venv_location"
+        log_it "---  Removing previous venv: $venv_location"
+        rm -rf "$venv_location"
     }
     log_it "---  Creating py venv: $venv_location"
     echo
@@ -89,7 +89,7 @@ py_venv_create() {
     log_it " --  Using py venv: $venv_location"
     #  shellcheck source=/dev/null
     . "$venv_location"/bin/activate || {
-	error_msg "Failure to activate new venv"
+        error_msg "Failure to activate new venv"
     }
     log_it " --  pip install -U pip"
     pip install -U pip
@@ -111,8 +111,8 @@ py_venv_activate() {
         #  shellcheck source=/dev/null
         . "$scr_activate"
     else
-	log_it "---  Not found: $scr_activate - (re-)creating venv..."
-	py_venv_create
+        log_it "---  Not found: $scr_activate - (re-)creating venv..."
+        py_venv_create
     fi
 }
 
@@ -154,8 +154,8 @@ select_tmux_bin() {
         # here are some common locations, worthwhile to examine
         #
         if ! source_asdf_if_found "$HOME"/.asdf/asdf.sh \
-             /usr/local/opt/asdf/libexec/asdf.sh \
-             /home/linuxbrew/.linuxbrew/opt/asdf/libexec/asdf.sh; then
+            /usr/local/opt/asdf/libexec/asdf.sh \
+            /home/linuxbrew/.linuxbrew/opt/asdf/libexec/asdf.sh; then
 
             msg="tmux not initially found - ~/.asdf hinted at asdf being used,"
             msg="$msg but this failed to initialize it"
@@ -218,7 +218,7 @@ source_asdf_if_found() {
     done
     return 1 # false
 }
-            
+
 chk_incompatible_socket() {
     #
     #  Ensure tmux socket is not used by another running version of tmux
@@ -242,7 +242,7 @@ $(ps ax | grep -v grep | grep "$socket")"
 indicate_tmux_connection_type() {
     connect_type="$1"
     [ -z "$connect_type" ] && {
-	error_msg "indicate_tmux_connection_type() - no param1"
+        error_msg "indicate_tmux_connection_type() - no param1"
     }
     log_it "$connect_type $TMUX_BIN [$tmux_vers]"
     log_it "    socket: $socket - config: $conf_file"
@@ -254,7 +254,7 @@ is_tmux_ses_running() {
 }
 
 is_tmux_cli_connected() {
-   [ -n "$( $TMUX_BIN -L "$socket" list-clients)" ]
+    [ -n "$($TMUX_BIN -L "$socket" list-clients)" ]
 }
 
 drop_other_clients() {
@@ -264,12 +264,12 @@ drop_other_clients() {
         #  tmux -d just kills other clients using the same session
         #  this kills all other clients regardless of session
         #
-	log_it "Detatching other clients currently using:"
-	log_it "    $TMUX_BIN [$tmux_vers]"
-	log_it "    socket: $socket"
-	echo
-	$TMUX_BIN -L "$socket" list-clients | cut -d: -f 1 |\
-            xargs -I{}  "$TMUX_BIN" -L "$socket" detach-client -t {}
+        log_it "Detatching other clients currently using:"
+        log_it "    $TMUX_BIN [$tmux_vers]"
+        log_it "    socket: $socket"
+        echo
+        $TMUX_BIN -L "$socket" list-clients | cut -d: -f 1 |
+            xargs -I{} "$TMUX_BIN" -L "$socket" detach-client -t {}
     }
 }
 
@@ -277,16 +277,16 @@ ensure_cfg_file_present() {
     if [ -f "$conf_file" ]; then
         log_it "Using existing config file"
     else
-	log_it "Conf file not found: $conf_file"
-	log_it "Creating empty one to prevent 'No such file or directory' error"
-	touch "$conf_file"
+        log_it "Conf file not found: $conf_file"
+        log_it "Creating empty one to prevent 'No such file or directory' error"
+        touch "$conf_file"
     fi
     echo
 }
 
 start_tmux() {
     if $quick_mode; then
-	ensure_cfg_file_present
+        ensure_cfg_file_present
     else
         create_tmux_conf
     fi
@@ -296,10 +296,10 @@ start_tmux() {
     }
     if is_tmux_ses_running; then
         $single_session && drop_other_clients
-	indicate_tmux_connection_type "Attaching to"
+        indicate_tmux_connection_type "Attaching to"
         eval "$TMUX_BIN" -L "$socket" -f "$conf_file" attach-session -t main
     else
-	indicate_tmux_connection_type "Starting"
+        indicate_tmux_connection_type "Starting"
         $TMUX_BIN -L "$socket" -f "$conf_file" new-session -s main
     fi
     log_it "[$(date)] [$?] exited tmux"
@@ -315,16 +315,16 @@ get_my_tmux_conf_location() {
     #  where  my_tmux_conf is located
     f_destination="$HOME"/.config/my_tmux_conf_location
     [ ! -f "$f_destination" ] && {
-	echo "Location of my_tmux_conf repo not stored, go to repo folder"
-	echo "and run ./deploy to solve his"
-	exit 1
-    }    
+        echo "Location of my_tmux_conf repo not stored, go to repo folder"
+        echo "and run ./deploy to solve his"
+        exit 1
+    }
 
     my_tmux_conf_location="$(cat "$f_destination")"
     [ ! -d "$my_tmux_conf_location" ] && {
-	echo "Location of my_tmux_conf repo incorrect, go to repo folder"
-	echo "and run ./deploy to solve his"
-	exit 1
+        echo "Location of my_tmux_conf repo incorrect, go to repo folder"
+        echo "and run ./deploy to solve his"
+        exit 1
     }
 }
 
@@ -339,9 +339,9 @@ create_tmux_conf() {
     echo
     log_it "===  Buidling new tmux conf"
     $use_python_venv && {
-	py_venv_activate || {
-	error_msg "Failed to activate venv - run: myt --venv"
-	}
+        py_venv_activate || {
+            error_msg "Failed to activate venv - run: myt --venv"
+        }
     }
     # f_py_output=$(mktemp)
 
@@ -352,15 +352,16 @@ create_tmux_conf() {
             error_msg "Failed to log python output" 2
         }
     else
-        "$profile" -r -t "$TMUX_BIN" "$conf_file" | tee -a "$myt_log" || {
-            error_msg "Failed to log python output" 2
+        "$profile" -r -t "$TMUX_BIN" "$conf_file" || error_msg "Failed to build tmux.conf" 2 |
+            tee -a "$myt_log" || {
+            error_msg "Failed to log python output" 3
         }
     fi
     log_it # spacer line
 
     $use_python_venv && py_venv_deactivate
     if grep -q "Dependency tmux_conf not installed!" "$myt_log"; then
-	error_msg "venv seems broken - run: myt --venv"
+        error_msg "venv seems broken - run: myt --venv"
     elif ! grep -q "Writing tmux" "$myt_log"; then
         error_msg "Python build failed to complete, check: $myt_log"
     fi
@@ -373,7 +374,7 @@ regular_tmux() {
     #  Start the normal tmux env
     #
     [ -n "$TMUX" ] && {
-	error_msg "sessions should be nested with care, unset \$TMUX to force"
+        error_msg "sessions should be nested with care, unset \$TMUX to force"
     }
     # log_it "-> running regular_tmux($profile) [$(hostname)]"
     if [ -z "$profile" ]; then
@@ -455,11 +456,11 @@ while [ -n "$1" ]; do
     "-q") quick_mode=true ;;
     "-s") single_session=false ;;
     "--venv")
-	log_it "===  Prepare the Python venv"
-	py_venv_create
-	deactivate
-	exit 0
-	;;
+        log_it "===  Prepare the Python venv"
+        py_venv_create
+        deactivate
+        exit 0
+        ;;
     "-2") t2_env=true ;;
     *) profile="$1" ;;
     esac
