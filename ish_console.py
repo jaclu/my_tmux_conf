@@ -128,9 +128,6 @@ class IshConsole(ActualBaseConfig):
             #  and if no outer tmux is already handling the nav keys
             #
             return
-        # if NAV_KEY_HANDLED_TAG in os.environ:
-        #     print("iSH console keyboard already handled by outer tmux!")
-        #     return
 
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
@@ -257,6 +254,9 @@ class IshConsole(ActualBaseConfig):
         # Only set esc_key, if different from prefix
         w = self.write
         print(f"Assuming keyboard is: {self.ic_keyboard}")
+        if NAV_KEY_HANDLED_TAG in os.environ:
+            print("iSH console nav key already handled by outer tmux!")
+            return
 
         if prefix_comment:
             prefix_comment = f"# {prefix_comment}"
@@ -300,19 +300,19 @@ class IshConsole(ActualBaseConfig):
             )
         else:
             w(
-                """#
+                f"""#
             #  Use nav prefix for navigation
             #
             bind -T navPrefix  -N "Send PageUp" Up       send PageUp
             bind -T navPrefix  -N "Send PageDown" Down     send PageDown
             bind -T navPrefix  -N "Send Home" Left     send Home
             bind -T navPrefix  -N "Send End" Right    send End
+            #
+            #  Indicates this tmux is handling ISH_NAV_KEY, to ensure
+            #  nested tmuxes, dont parse it again.
+            #
+            # {NAV_KEY_HANDLED_TAG}=1
             """
-                #
-                #  Indicates this tmux is handling ISH_NAV_KEY, to ensure
-                #  nested tmuxes, dont parse it again.
-                #
-                # {NAV_KEY_HANDLED_TAG}=1
             )
 
     def ic_common_setup(self) -> None:
