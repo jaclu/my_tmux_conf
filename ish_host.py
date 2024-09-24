@@ -24,12 +24,12 @@
 
 # import os
 
-from default_plugins import DefaultPlugins  # noqa: F401
 from sb.sb_muted_ish import SB
 
 
 class IshHostWithStyle(SB):
     """iSH host with default style"""
+
     # status_interval = 10
 
     # plugin_handler = ""

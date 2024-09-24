@@ -1705,9 +1705,9 @@ timer_end() {{
         sys.exit(1)
 
 
-print("><> is ish_console imported")
+# print("><> is ish_console imported")
 if "ish_console" not in sys.modules:
-    print("><> Checking LC_KEYBOARD")
+    # print("><> Checking LC_KEYBOARD")
     # aovid circular import
     if "LC_KEYBOARD" in os.environ:
         print("><> Using IshConsole")
@@ -1715,7 +1715,7 @@ if "ish_console" not in sys.modules:
 
         BaseClass = (IshConsole,)
     else:
-        print("><> Using ActualBaseConfig")
+        # print("><> Using ActualBaseConfig")
         BaseClass = (ActualBaseConfig,)
 
     # BaseClass = (IshConsole) if "LC_KEYBOARD" in os.environ else (ActualBaseConfig)
