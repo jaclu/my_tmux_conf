@@ -239,16 +239,16 @@ class IshConsole(ActualBaseConfig):
         self.ic_nav_key_prefix(esc_key, prefix_comment="§")
         w('set -s user-keys[220]  "\\302\\261"')  # ±
         self.muc_plus = "User220"
-        w(
-            """
-        #
-        #  On this keyb, in iSH back-tick sends Escape
-        #  this changes it back, Esc is available via §
-        #
-        set -s user-keys[221]  "\\033"
-        bind -N "Send backtick"  -n User221  send "\\`" # map backtick back from Escape
-        """
-        )
+        # w(
+        #     """
+        # #
+        # #  On this keyb, in iSH back-tick sends Escape
+        # #  this changes it back, Esc is available via §
+        # #
+        # set -s user-keys[221]  "\\033"
+        # bind -N "Send backtick"  -n User221  send "\\`" # map backtick back from Escape
+        # """
+        # )
 
     def ic_nav_key_prefix(self, prefix_key, esc_key="", prefix_comment="") -> None:
         # Only set esc_key, if different from prefix
