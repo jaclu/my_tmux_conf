@@ -352,17 +352,15 @@ create_tmux_conf() {
     log_it # spacer line
     # echo "Building tmux env using: $profile - saving it in: $conf_file"
     if $t2_env; then
-        T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file" | tee -a "$myt_log" || {
-            error_msg "Failed to log python output" 2
+        _s="$(T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file")" || {
+            error_msg "Failed to build tmux.conf [$?]"
         }
     else
         _s="$("$profile" -r -t "$TMUX_BIN" "$conf_file")" || {
-            ex_code="$?"
-            log_it "$_s"
-            error_msg "Failed to build tmux.conf [$ex_code]"
+            error_msg "Failed to build tmux.conf [$?]"
         }
-        log_it "$_s"
     fi
+    log_it "$_s"
 
     log_it # spacer line
 
