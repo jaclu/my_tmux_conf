@@ -50,7 +50,7 @@ NAV_KEY_HANDLED_TAG = "TMUX_HANDLING_ISH_NAV_KEY"
 #
 
 # in use
-KBD_LOGITECH_COMBO_TOUCH = "Logitech Combo Touch"
+KBD_LOGITECH_COMBO_TOUCH = "Logitech Combo Touch NOT"
 KBD_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
 
 # KBD_BRYDGE_10_2_ESC = "Brydge 10.2 MAX+ esc"
