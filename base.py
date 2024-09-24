@@ -1705,6 +1705,7 @@ timer_end() {{
         sys.exit(1)
 
 
+print("><> is ish_console imported")
 if "ish_console" not in sys.modules:
     print("><> Checking LC_KEYBOARD")
     # aovid circular import
