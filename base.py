@@ -1706,10 +1706,12 @@ timer_end() {{
 
 
 if "LC_KEYBOARD" in os.environ:
-    from ish_console import IshConsole
+    import ish_console
 
-    BaseClass = (IshConsole,)
+    print("><> Using IshConsole")
+    BaseClass = (ish_console.IshConsole,)
 else:
+    print("><> Using ActualBaseConfig")
     BaseClass = (ActualBaseConfig,)
 
 # BaseClass = (IshConsole) if "LC_KEYBOARD" in os.environ else (ActualBaseConfig)
