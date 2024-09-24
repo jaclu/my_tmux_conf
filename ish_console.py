@@ -154,10 +154,11 @@ class IshConsole(ActualBaseConfig):
         #     self.ic_keyboard = None
 
         self.write(
-            """
+            f"""
             #======================================================
             #
             #  Remap keys for limited console
+            #  using keyboard: {self.ic_keyboard}
             #
             #======================================================
             """
@@ -174,7 +175,9 @@ class IshConsole(ActualBaseConfig):
         # ):
         #     self.ic_keyb_type_2()
         else:
-            print(f"><> Unrecognized LC_KEYBOARD: {self.ic_keyboard}")
+            msg = f"Unrecognized LC_KEYBOARD: {self.ic_keyboard}"
+            self.write(msg)
+            print("$msg")
             sys.exit(1)  # f"ERROR: Unknown LC_KEYBOARD: {self.ic_keyboard}")
             # #
             # #  keyboard handling Esc directly, no custom keys
