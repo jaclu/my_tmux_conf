@@ -311,7 +311,7 @@ class IshConsole(ActualBaseConfig):
             #  Indicates this tmux is handling ISH_NAV_KEY, to ensure
             #  nested tmuxes, dont parse it again.
             #
-            # {NAV_KEY_HANDLED_TAG}=1
+            {NAV_KEY_HANDLED_TAG}=1
             """
             )
 
