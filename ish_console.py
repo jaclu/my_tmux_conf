@@ -107,6 +107,7 @@ class IshConsole(ActualBaseConfig):
         self.muc_underscore = "M-_"
 
     def content(self):
+        # Map special keys before generating rest of conf
         self.ic_detect_console_keyb()
         super().content()
 
@@ -171,15 +172,6 @@ class IshConsole(ActualBaseConfig):
         self.general_keyb_settings()
 
         self.ic_setup()
-        self.write(
-            """
-            #======================================================
-            #
-            #  End of Remap keys for limited console
-            #
-            #======================================================
-            """
-        )
 
     #
     #  Specific Keyboards
@@ -239,6 +231,7 @@ class IshConsole(ActualBaseConfig):
         pm_key = "\\302\\261"  # S-±
         esc_key = "\\302\\247"  # §
         muc_plus = "\\302\\261"  # ±
+        self.write(f'set -s user-keys[220]  "{muc_plus}"')
         self.muc_plus = "User220"
         self.ic_nav_key_prefix(pm_key, esc_key, "§")
         self.write(
@@ -254,6 +247,7 @@ class IshConsole(ActualBaseConfig):
         )
 
     def ic_nav_key_prefix(self, prefix_key, esc_key="", prefix_comment="") -> None:
+        # Only set esc_key, if different from prefix
         w = self.write
         print(f"Assuming keyboard is: {self.ic_keyboard}")
 
