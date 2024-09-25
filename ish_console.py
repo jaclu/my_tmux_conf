@@ -181,10 +181,6 @@ class IshConsole(base_config.BaseConfig):
             self.write(msg)
             print(msg)
             sys.exit(1)  # f"ERROR: Unknown LC_KEYBOARD: {self.ic_keyboard}")
-            # #
-            # #  keyboard handling Esc directly, no custom keys
-            # #
-            # self.ic_nav_key_prefix("\\033")
 
         self.ic_common_setup()
 
@@ -195,22 +191,11 @@ class IshConsole(base_config.BaseConfig):
         #
         #  General settings seems to work for several keyboards
         #
-        w = self.write
         self.ic_virtual_escape_key("\\302\\247")
-
-        w(
-            """
-        #
-        #  Send ~ by shifting the "Escape key"
-        #  Send back-tick by shifting it the key the 2nd time, ie
-        #  pressing what normally would be ~ in order not to collide
-        #  with Escape
-        #
-        set -s user-keys[220]  "\\302\\261"
-        bind -N "Enables ~" -n User220 send '~'
-        bind -T escPrefix -N "Enables backtick" -n  User220  send "\\`"
-        """
-        )
+        # both S-§ and M-+ generate this key
+        # Since M-+ is used, just ignore S-§ also triggering this feature
+        self.write('set -s user-keys[220]  "\\302\\261"')  # ±
+        self.muc_plus = "User220"
 
     def ic_keyb_type_2(self):
         #
@@ -238,19 +223,12 @@ class IshConsole(base_config.BaseConfig):
         #
         #  Logitech Combo Touch
         #
-        w = self.write
-        self.ic_virtual_escape_key("\\302\\247")
-
-        # both S-§ and M-+ generate this key
-        # Since M-+ is used, just ignore S-§ also triggering this feature
-        w('set -s user-keys[220]  "\\302\\261"')  # ±
-        self.muc_plus = "User220"
-
+        self.ic_keyb_type_1()
         #
         #  On this keyb, in iSH back-tick sends Escape
         #  this changes it back, Esc is available via §
         #
-        w(
+        self.write(
             """
         set -s user-keys[221]  "\\033"
         bind -N "Send backtick"  -n User221  send "\\`" # map backtick back from Escape

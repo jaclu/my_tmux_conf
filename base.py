@@ -20,7 +20,6 @@ import os
 
 # print("><> is ish_console imported")
 if "LC_KEYBOARD" in os.environ:
-    print("><> Using IshConsole")
     from ish_console import IshConsole
 
     BaseClass = (IshConsole,)
