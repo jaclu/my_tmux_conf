@@ -196,8 +196,7 @@ class IshConsole(base_config.BaseConfig):
         #  General settings seems to work for several keyboards
         #
         w = self.write
-        esc_key = "\\302\\247"
-        self.ic_nav_key_prefix(esc_key)
+        self.ic_virtual_escape_key("\\302\\247")
 
         w(
             """
@@ -240,22 +239,35 @@ class IshConsole(base_config.BaseConfig):
         #  Logitech Combo Touch
         #
         w = self.write
-        esc_key = "\\302\\247"
-        self.ic_nav_key_prefix(esc_key, prefix_comment="§")
+        self.ic_virtual_escape_key("\\302\\247")
+
+        # both S-§ and M-+ generate this key
+        # Since M-+ is used, just ignore S-§ also triggering this feature
         w('set -s user-keys[220]  "\\302\\261"')  # ±
         self.muc_plus = "User220"
-        # w(
-        #     """
-        # #
-        # #  On this keyb, in iSH back-tick sends Escape
-        # #  this changes it back, Esc is available via §
-        # #
-        # set -s user-keys[221]  "\\033"
-        # bind -N "Send backtick"  -n User221  send "\\`" # map backtick back from Escape
-        # """
-        # )
 
-    def ic_nav_key_prefix(self, prefix_key, esc_key="", prefix_comment="") -> None:
+        #
+        #  On this keyb, in iSH back-tick sends Escape
+        #  this changes it back, Esc is available via §
+        #
+        w(
+            """
+        set -s user-keys[221]  "\\033"
+        bind -N "Send backtick"  -n User221  send "\\`" # map backtick back from Escape
+        """
+        )
+
+    def ic_virtual_escape_key(self, esc_key: str) -> None:
+        self.write(
+            f"""#
+                #  Virtual Escape key
+                #
+                set -s user-keys[201]  "{esc_key}"
+                bind -N "Send Escape" -n User201  send Escape
+                """
+        )
+
+    def NOT_ic_nav_key_prefix(self, prefix_key, esc_key="", prefix_comment="") -> None:
         # Only set esc_key, if different from prefix
         w = self.write
         print(f"Assuming keyboard is: {self.ic_keyboard}")
