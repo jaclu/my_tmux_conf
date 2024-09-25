@@ -52,11 +52,9 @@ NAV_KEY_HANDLED_TAG = "TMUX_HANDLING_ISH_NAV_KEY"
 # in use
 KBD_LOGITECH_COMBO_TOUCH = "Logitech Combo Touch"
 KBD_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
-
-# KBD_BRYDGE_10_2_ESC = "Brydge 10.2 MAX+ esc"
-# KBD_YOOZON3 = "Yoozon 3"  # same as brydge
-# KBD_OMNITYPE = "Omnitype Keyboard"
-# KBD_BLUETOOTH = "Bluetooh Keyboard"  # sadly generic name
+KBD_YOOZON3 = "Yoozon 3"  # same as brydge
+KBD_OMNITYPE = "Omnitype Keyboard"
+KBD_BLUETOOTH = "Bluetooh Keyboard"  # sadly generic name
 
 
 class IshConsole(base_config.BaseConfig):
@@ -165,14 +163,10 @@ class IshConsole(base_config.BaseConfig):
 
         if self.ic_keyboard == KBD_LOGITECH_COMBO_TOUCH:
             self.ic_keyb_type_combo_touch()
-        elif self.ic_keyboard == KBD_BRYDGE_10_2_MAX:
+        elif self.ic_keyboard in (KBD_BRYDGE_10_2_MAX, KBD_YOOZON3):
             self.ic_keyb_type_1()
-        # elif self.ic_keyboard in (
-        #     KBD_BRYDGE_10_2_ESC,
-        #     KBD_OMNITYPE,
-        #     KBD_BLUETOOTH,
-        # ):
-        #     self.ic_keyb_type_2()
+        elif self.ic_keyboard in (KBD_OMNITYPE, KBD_BLUETOOTH):
+            self.ic_keyb_type_2()
         else:
             msg = f"Unrecognized LC_KEYBOARD: {self.ic_keyboard}"
             self.write(msg)
@@ -196,25 +190,28 @@ class IshConsole(base_config.BaseConfig):
 
     def ic_keyb_type_2(self):
         #
-        #  General generating Esc directly
+        #  This keyb type generates Esc on the backtick, backtick is done
+        #  using C-backtick
         #
-        w = self.write
-        esc_key = "\\033"
-        self.ic_nav_key_prefix(esc_key)
 
-        w(
-            """
-        #
-        #  Send ~ by shifting the "Escape key"
-        #  Send back-tick by shifting it the key the 2nd time, ie
-        #  pressing what normally would be ~ in order not to collide
-        #  with Escape
-        #
-        set -s user-keys[220]  "\\176"
-        bind -N "Enables ~" -n User220 send '~'
-        bind -T escPrefix -N "Send backtick"  User220  send "\\`"
-        """
-        )
+        # missing keys:
+        #   covered: M-_  M-+ (generates ±) M-{ M-} M-| M-: M-" M-< M-> M-?
+
+        # w = self.write
+        # w(
+        #     """
+        # #
+        # #  Send ~ by shifting the "Escape key"
+        # #  Send back-tick by shifting it the key the 2nd time, ie
+        # #  pressing what normally would be ~ in order not to collide
+        # #  with Escape
+        # #
+        # set -s user-keys[220]  "\\176"
+        # bind -N "Enables ~" -n User220 send '~'
+        # bind -T escPrefix -N "Send backtick"  User220  send "\\`"
+        # """
+        # )
+        pass
 
     def ic_keyb_type_combo_touch(self):
         #
@@ -429,13 +426,19 @@ class IshConsole(base_config.BaseConfig):
         set -s user-keys[25]  "\\303\\201"       #  M-Y
         set -s user-keys[26]  "\\302\\270"       #  M-Z
 
-        set -s user-keys[30]  "\\342\\200\\235"  # M-{
-        set -s user-keys[31]  "\\342\\200\\231"  # M-}
-        set -s user-keys[32]  "\\303\\232"       # M-:
-        set -s user-keys[33]  "\\303\\206"       # M-\"
-        set -s user-keys[34]  "\\302\\273"       # M-\\
-        set -s user-keys[37]  "\\302\\277"       # M-?
-        set -s user-keys[38]  "\\342\\200\\224"  # M-_
+        # 0-39 has been renumbered check all references!
+        set -s user-keys[60]  "\\342\\200\\224"  # M-_
+        set -s user-keys[61]  "\\342\\200\\235"  # M-{
+        set -s user-keys[62]  "\\342\\200\\231"  # M-}
+
+        set -s user-keys[63]  "\\302\\273"       # M-|
+        set -s user-keys[64]  "\\303\\232"       # M-:
+        set -s user-keys[65]  "\\303\\206"       # M-\"
+
+        set -s user-keys[66]  "\\302\\257"       # M-<
+        set -s user-keys[67]  "\\313\\230"       # M->
+
+        set -s user-keys[68]  "\\302\\277"       # M-?
         """
         )
 
@@ -466,19 +469,16 @@ class IshConsole(base_config.BaseConfig):
             ("24", "X"),
             ("25", "Y"),
             ("26", "Z"),
-            ("30", "{"),
-            ("31", "}"),
-            ("32", ":"),
-            ("33", '\\"'),
-            ("34", "|"),
-            #  Fails on Omnitype, Yoozon3
-            #  ends up generating:
-            # ¯
-            # ("35", "<"), - used in  auc_swap_window()
-            # ("36", ">"), - used in  auc_swap_window()
-            ("37", "?"),
+            # ("30", "_"), - used in  auc_meta_ses_handling()
+            ("31", "{"),
+            ("32", "}"),
+            ("33", "|"),
+            ("34", ":"),
+            ("35", '\\"'),
+            # ("36", "<"), - used in  auc_swap_window()
+            # ("37", ">"), - used in  auc_swap_window()
+            ("38", "?"),
             # Doesn't work on Omnitype Keyboard, works on Yoozon3
-            # ("38", "_"), - used in  auc_meta_ses_handling()
         ):
             if c == "N":
                 #  Special case to avoid cutof at second -N
@@ -491,16 +491,16 @@ class IshConsole(base_config.BaseConfig):
             #  Collides with F1 - F10 remapping
             w(
                 """
-            set -s user-keys[51]  "\\342\\201\\204"  # M-!
-            set -s user-keys[52]  "\\342\\202\\254"  # M-@
-            set -s user-keys[53]  "\\342\\200\\271"  # M-#
-            set -s user-keys[54]  "\\342\\200\\272"  # M-$
-            set -s user-keys[55]  "\\357\\254\\201"  # M-%
-            set -s user-keys[56]  "\\357\\254\\202"  # M-^
-            set -s user-keys[57]  "\\342\\200\\241"  # M-&
-            set -s user-keys[58]  "\\302\\260"       # M-*
-            set -s user-keys[59]  "\\302\\267"       # M-(
-            set -s user-keys[60]  "\\342\\200\\232"  # M-)
+            set -s user-keys[80]  "\\342\\200\\232"  # M-)
+            set -s user-keys[81]  "\\342\\201\\204"  # M-!
+            set -s user-keys[82]  "\\342\\202\\254"  # M-@
+            set -s user-keys[83]  "\\342\\200\\271"  # M-#
+            set -s user-keys[84]  "\\342\\200\\272"  # M-$
+            set -s user-keys[85]  "\\357\\254\\201"  # M-%
+            set -s user-keys[86]  "\\357\\254\\202"  # M-^
+            set -s user-keys[87]  "\\342\\200\\241"  # M-&
+            set -s user-keys[88]  "\\302\\260"       # M-*
+            set -s user-keys[89]  "\\302\\267"       # M-(
             """
             )
             for i, c in (
@@ -525,33 +525,27 @@ class IshConsole(base_config.BaseConfig):
         #  we need to override and bind the user-key to this action.
         #  this is handled by the auc_ methods
         #
-        w(
-            """
-        #
-        # Alt - HJKL splits pane
-        #"""
-        )
-        #
-        #  Do these one line at a time, in order for the source to be
-        #  more readable
-        #
-        w(
-            'bind -N "Split pane to the right" -n  User12  '
-            'split-window -h  -c "#{pane_current_path}"'
-        )
-        w(
-            'bind -N "Split pane below"        -n  User10  '
-            'split-window -v  -c "#{pane_current_path}"'
-        )
-        if self.vers_ok("2.0"):
-            w(
-                'bind -N "Split pane to the left"  -n  User8   '
-                'split-window -hb -c "#{pane_current_path}"'
-            )
-            w(
-                'bind -N "Split pane above"        -n  User11  '
-                'split-window -vb -c "#{pane_current_path}"'
-            )
+        # #
+        # #  Do these one line at a time, in order for the source to be
+        # #  more readable
+        # #
+        # w(
+        #     'bind -N "Split pane to the right" -n  User12  '
+        #     'split-window -h  -c "#{pane_current_path}"'
+        # )
+        # w(
+        #     'bind -N "Split pane below"        -n  User10  '
+        #     'split-window -v  -c "#{pane_current_path}"'
+        # )
+        # if self.vers_ok("2.0"):
+        #     w(
+        #         'bind -N "Split pane to the left"  -n  User8   '
+        #         'split-window -hb -c "#{pane_current_path}"'
+        #     )
+        #     w(
+        #         'bind -N "Split pane above"        -n  User11  '
+        #         'split-window -vb -c "#{pane_current_path}"'
+        #     )
 
     #  Not used stuff
     #
@@ -571,9 +565,9 @@ class IshConsole(base_config.BaseConfig):
     def auc_meta_ses_handling(  # used by iSH Console
         self,
         muc_plus: str = "M-+",
-        muc_par_open: str = "User59",
-        muc_par_close: str = "User60",
-        muc_underscore: str = "User38",
+        muc_par_open: str = "User89",
+        muc_par_close: str = "User80",
+        muc_underscore: str = "User60",
     ):
         # doesnt seem possible to use self.variables as defaults...
         if self.muc_plus != "M-+":
@@ -583,12 +577,12 @@ class IshConsole(base_config.BaseConfig):
         )
 
     def auc_swap_window(  # used by iSH Console
-        self, muc_less_than: str = "User35", muc_greater_than: str = "User36"
+        self, muc_less_than: str = "User66", muc_greater_than: str = "User67"
     ):
         super().auc_swap_window(muc_less_than, muc_greater_than)
 
-    def auc_display_plugins_used(self, muc_p: str = "User16"):  # used by iSH Console
-        super().auc_display_plugins_used(muc_p)
+    def auc_display_plugins_used(self, muc_s_p: str = "User16"):  # used by iSH Console
+        super().auc_display_plugins_used(muc_s_p)
 
     def auc_kill_tmux_server(self, muc_x: str = "User24"):  # used by iSH Console
         super().auc_kill_tmux_server(muc_x)  # used by iSH Console

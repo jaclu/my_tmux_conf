@@ -1400,7 +1400,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             """
             )
 
-    def auc_display_plugins_used(self, muc_p: str = "M-P"):  # used by iSH Console
+    def auc_display_plugins_used(self, muc_s_p: str = "M-P"):  # used by iSH Console
         """iSH console doesn't generate correct ALT - Upper Case sequences,
         so when that is the env, intended keys must be bound as user keys.
         To make that without having two separate snippets of code doing
@@ -1413,7 +1413,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             # There is no plugin support...
             return
 
-        if muc_p != "M-P":
+        if muc_s_p != "M-P":
             note_prefix = "M-P - "
         else:
             note_prefix = ""
@@ -1423,7 +1423,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         # it wont be over-written!
         #
         w(
-            f'bind -N "{note_prefix}List all plugins defined"  {muc_p}  '
+            f'bind -N "{note_prefix}List all plugins defined"  {muc_s_p}  '
             'run "$TMUX_BIN display \\"Generating response...\\" ;'
             f' {__main__.__file__} {self.conf_file} -p2"'
         )
