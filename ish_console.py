@@ -29,7 +29,7 @@ import os
 import sys
 
 import base_config
-from mtc_utils import IS_ISH, IS_ISH_AOK
+from mtc_utils import IS_ISH
 
 #
 #  To make it easier to identify what keyboard to config
