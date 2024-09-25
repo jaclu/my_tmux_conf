@@ -67,7 +67,8 @@ class IshConsole(base_config.BaseConfig):
 
       1-60  Alt Upper case
     100-129 Function keys
-    200     Navkey
+    200     Escape
+    201     Navkey - no longer used
     210-219 General keyboard bindings
     220-    Specific Keyboard bindings
 
@@ -236,8 +237,8 @@ class IshConsole(base_config.BaseConfig):
             f"""#
                 #  Virtual Escape key
                 #
-                set -s user-keys[201]  "{esc_key}"
-                bind -N "Send Escape" -n User201  send Escape
+                set -s user-keys[200]  "{esc_key}"
+                bind -N "Send Escape" -n User200  send Escape
                 """
         )
 
@@ -259,8 +260,8 @@ class IshConsole(base_config.BaseConfig):
             f"""#
         #  Handle Prefix key
         #
-        set -s user-keys[200]  "{prefix_key}"
-        bind -N "Switch to -T navPrefix" -n User200 switch-client {s}
+        set -s user-keys[201]  "{prefix_key}"
+        bind -N "Switch to -T navPrefix" -n User201 switch-client {s}
         """
         )
         if esc_key:
@@ -268,13 +269,13 @@ class IshConsole(base_config.BaseConfig):
                 f"""#
                 #  Virtual Escape key
                 #
-                set -s user-keys[201]  "{esc_key}"
-                bind -N "Send Escape" -n User201  send Escape
+                set -s user-keys[200]  "{esc_key}"
+                bind -N "Send Escape" -n User200  send Escape
                 """
             )
         else:
             # Double tap for actual Esc
-            w("bind -T navPrefix -N 'Send Escape'  User200  send Escape")
+            w("bind -T navPrefix -N 'Send Escape'  User201  send Escape")
         if IS_ISH_AOK:
             w(
                 """#
@@ -313,16 +314,21 @@ class IshConsole(base_config.BaseConfig):
         #  This does general iSH mapping, not focusing on keyboard specific
         #  customization needs
         #
-        self.write(
-            """
+
         #
-        #  General Keyboard bindings
+        # Move this to base_config ?
         #
-        #  € is Option+Shift+2 in United States layout
-        set -s user-keys[210]  "\\342\\202\\254" # Usually: €
-        bind -N "Enables €" -n User210 send '€'
-        """
-        )
+        # self.write(
+        #     """
+        # #
+        # #  General Keyboard bindings
+        # #
+        # #  € is Option+Shift+2 in United States layout
+        # set -s user-keys[210]  "\\342\\202\\254" # Usually: €
+        # bind -N "Enables €" -n User210 send '€'
+        # """
+        # )
+
         #
         #  Some keybs have issues with M-<
         #  the initial binding for this char
@@ -331,6 +337,7 @@ class IshConsole(base_config.BaseConfig):
         #
         # set -s user-keys[211]  "\\302\\257"
         # bind -N "Enables M-<" -n User211 send "M-<"
+
         use_m_for_f_keys = True
         if use_m_for_f_keys:
             self.ic_m_fn_keys()
