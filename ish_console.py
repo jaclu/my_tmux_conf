@@ -348,16 +348,16 @@ class IshConsole(base_config.BaseConfig):
         #
         #  This will map M-S number to F1 - F10
         #
-        set -s user-keys[101] "\\33\\061"  #  M-1
-        set -s user-keys[102] "\\33\\062"  #  M-2
-        set -s user-keys[103] "\\33\\063"  #  M-3
-        set -s user-keys[104] "\\33\\064"  #  M-4
-        set -s user-keys[105] "\\33\\065"  #  M-5
-        set -s user-keys[106] "\\33\\066"  #  M-6
-        set -s user-keys[107] "\\33\\067"  #  M-7
-        set -s user-keys[108] "\\33\\070"  #  M-8
-        set -s user-keys[109] "\\33\\071"  #  M-9
-        set -s user-keys[110] "\\33\\060"  #  M-0
+        set -s user-keys[101] "\\033\\061"  #  M-1
+        set -s user-keys[102] "\\033\\062"  #  M-2
+        set -s user-keys[103] "\\033\\063"  #  M-3
+        set -s user-keys[104] "\\033\\064"  #  M-4
+        set -s user-keys[105] "\\033\\065"  #  M-5
+        set -s user-keys[106] "\\033\\066"  #  M-6
+        set -s user-keys[107] "\\033\\067"  #  M-7
+        set -s user-keys[108] "\\033\\070"  #  M-8
+        set -s user-keys[109] "\\033\\071"  #  M-9
+        set -s user-keys[110] "\\033\\060"  #  M-0
         """
         )
         for i in range(1, 10):
