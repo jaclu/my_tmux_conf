@@ -1,5 +1,9 @@
 # TODO
 
+## M-9 & M-0 collides with ish_console
+
+windows_handling() - M-9 & M-0 collides with ish_console
+
 ## Multi user deploy plan
 
 Make this possible to use by more than one user on the same system
