@@ -306,8 +306,7 @@ class IshConsole(base_config.BaseConfig):
         set -s user-keys[25]  "\\303\\201"       #  M-Y
         set -s user-keys[26]  "\\302\\270"       #  M-Z
 
-        # 61-69 has been renumbered check all references!
-        set -s user-keys[60]  "\\342\\200\\224  # M-_
+        set -s user-keys[60]  "\\342\\200\\224"  # M-_
 
         # both S-§ and M-+ generate ±. Since M-+ is used, and S-§ not,
         # just ignore that S-§ also triggers this feature
