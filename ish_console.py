@@ -339,6 +339,32 @@ class IshConsole(base_config.BaseConfig):
         self.ic_alt_upper_case(fn_keys_mapped=True)
 
     def ic_fn_keys(self) -> None:
+        self.ic_m_fn_keys()
+
+    def ic_m_fn_keys(self) -> None:
+        w = self.write
+        w(
+            """
+        #
+        #  This will map M-S number to F1 - F10
+        #
+        set -s user-keys[101] "\\33\\061"  #  M-1
+        set -s user-keys[102] "\\33\\062"  #  M-2
+        set -s user-keys[103] "\\33\\063"  #  M-3
+        set -s user-keys[104] "\\33\\064"  #  M-4
+        set -s user-keys[105] "\\33\\065"  #  M-5
+        set -s user-keys[106] "\\33\\066"  #  M-6
+        set -s user-keys[107] "\\33\\067"  #  M-7
+        set -s user-keys[108] "\\33\\070"  #  M-8
+        set -s user-keys[109] "\\33\\071"  #  M-9
+        set -s user-keys[110] "\\33\\060"  #  M-0
+        """
+        )
+        for i in range(1, 10):
+            w(f'bind -N "M-{i} -> F{i}"  -n  User10{i}  send-keys F{i}')
+        w('bind -N "M-0 -> F10" -n  User110  send-keys F10')
+
+    def ic_ms_fn_keys(self) -> None:
         w = self.write
         w(
             """
@@ -359,7 +385,7 @@ class IshConsole(base_config.BaseConfig):
         )
         for i in range(1, 10):
             w(f'bind -N "M-S-{i} -> F{i}"  -n  User10{i}  send-keys F{i}')
-        w('bind -N "M-0 -> F10" -n  User110  send-keys F10')
+        w('bind -N "M-S-0 -> F10" -n  User110  send-keys F10')
 
     def ic_alt_upper_case(self, fn_keys_mapped: bool) -> None:
         w = self.write
