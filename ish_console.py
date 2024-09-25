@@ -11,14 +11,14 @@
 #
 #  This checks if the session running this originates from an iSH node.
 #  The iSH console has a very limited keyboard, very few keys are
-#  defined, and most of the ALT keys are incorrect. So here ALT
+#  defined, and most of the shifted alt keys are incorrect. So here ALT
 #  uppercase is remapped and things bound to such keys are overridden to
 #  use redefined keys, since a key configured to send the correct
 #  sequence to applications inside tmux will not trigger actions bound
 #  to those keys.
 #
 #  Find key codes using for example:  showkey -a and examine the output
-#  in the 2nd collumn (octal)
+#  in the 2nd collumn (octal) rememer to 0 pad all numbers to three digits
 #
 
 # pylint: disable=C0116
@@ -31,22 +31,11 @@ import sys
 import base_config
 from mtc_utils import IS_ISH, IS_ISH_AOK
 
-NAV_KEY_HANDLED_TAG = "TMUX_HANDLING_ISH_NAV_KEY"
-
 #
 #  To make it easier to identify what keyboard to config
-#  the names here match what you see in Bluetooth settings
-#
-#  Some don't seem to need any specific settings, and do fine
-#  by just defining their nav key using the AOK nav_keys.sh
-#  This goes for Keyboad names:
-#    Omnitype
-#
-#  Brydge issues
-#  M-+ works on regular Brydge, on Brydge prints ±
-#  M-< fails to map special-key 35, inside tmux prints ¯ generates \302\257
-
-#  Check base.py - search for switch-client -l - defined twice!!
+#  the names here match what you see in Bluetooth settings when listed
+#  otherwise just the deviced product name.
+#  They are defined in the env based on hostname in ~/.common_rc
 #
 
 # in use
@@ -117,7 +106,6 @@ class IshConsole(base_config.BaseConfig):
         #     1) tmux >= 2.6
         #     2) kernel is ish
         #     3) not an ssh session,
-        #     3) keyboard remappings not handled by an outer tmux
         #
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
@@ -126,30 +114,15 @@ class IshConsole(base_config.BaseConfig):
 
         if (not IS_ISH) or os.environ.get("SSH_CONNECTION"):
             #
-            #  This c is only relevant on the iSH console itself
-            #  and if no outer tmux is already handling the nav keys
+            #  This is only relevant on the iSH console itself.
+            #  If a ssh session was first made into the ish node,
+            #  it should not be used.
             #
             return
 
-        if NAV_KEY_HANDLED_TAG in os.environ:
-            print("iSH console nav key already handled by outer tmux!")
-            return
         self.ic_keyboard = os.environ.get("LC_KEYBOARD")
         self.is_ish_console = True
-        print("This is an iSH console, keyboard adoptions will be implemented")
-        # host_name = run_shell("hostname -s").lower()
-        # print(f"hostname: {host_name}")
-        # if host_name in ("jacpad", "jacpad-aok"):
-        #     self.ic_keyboard = KBD_LOGITECH_COMBO_TOUCH
-        # elif host_name in ("pad5", "pad5-aok"):
-        #     self.ic_keyboard = KBD_BRYDGE_10_2_ESC
-        # else:
-        #     sys.exit(
-        #         f"ERROR: Style already assiged as: {self.style}, "
-        #         f"Can not use style: {this_style}"
-        #     )
-        #     self.ic_keyboard = None
-
+        print(f"This is an iSH console, detected keyboard: {self.ic_keyboard}")
         self.write(
             f"""
             #======================================================
@@ -161,12 +134,13 @@ class IshConsole(base_config.BaseConfig):
             """
         )
 
-        if self.ic_keyboard == KBD_LOGITECH_COMBO_TOUCH:
-            self.ic_keyb_type_combo_touch()
-        elif self.ic_keyboard in (KBD_BRYDGE_10_2_MAX, KBD_YOOZON3):
+        if self.ic_keyboard in (KBD_OMNITYPE, KBD_BLUETOOTH):
+            # already handles esc
             self.ic_keyb_type_1()
-        elif self.ic_keyboard in (KBD_OMNITYPE, KBD_BLUETOOTH):
+        elif self.ic_keyboard in (KBD_BRYDGE_10_2_MAX, KBD_YOOZON3):
             self.ic_keyb_type_2()
+        elif self.ic_keyboard == KBD_LOGITECH_COMBO_TOUCH:
+            self.ic_keyb_type_combo_touch()
         else:
             msg = f"Unrecognized LC_KEYBOARD: {self.ic_keyboard}"
             self.write(msg)
@@ -180,6 +154,13 @@ class IshConsole(base_config.BaseConfig):
     #
     def ic_keyb_type_1(self):
         #
+        #  This keyb type generates Esc on the backtick, backtick is done
+        #  using C-backtick
+        #
+        pass
+
+    def ic_keyb_type_2(self):
+        #
         #  General settings seems to work for several keyboards
         #
         self.ic_virtual_escape_key("\\302\\247")
@@ -188,39 +169,14 @@ class IshConsole(base_config.BaseConfig):
         self.write('set -s user-keys[220]  "\\302\\261"')  # ±
         self.muc_plus = "User220"  # used in  auc_meta_ses_handling()
 
-    def ic_keyb_type_2(self):
-        #
-        #  This keyb type generates Esc on the backtick, backtick is done
-        #  using C-backtick
-        #
-
-        # missing keys:
-        #   covered: M-_  M-+ (generates ±) M-{ M-} M-| M-: M-" M-< M-> M-?
-
-        # w = self.write
-        # w(
-        #     """
-        # #
-        # #  Send ~ by shifting the "Escape key"
-        # #  Send back-tick by shifting it the key the 2nd time, ie
-        # #  pressing what normally would be ~ in order not to collide
-        # #  with Escape
-        # #
-        # set -s user-keys[220]  "\\176"
-        # bind -N "Enables ~" -n User220 send '~'
-        # bind -T escPrefix -N "Send backtick"  User220  send "\\`"
-        # """
-        # )
-        pass
-
     def ic_keyb_type_combo_touch(self):
         #
         #  Logitech Combo Touch
         #
-        self.ic_keyb_type_1()
+        self.ic_keyb_type_2()  # Same esc handling
         #
-        #  On this keyb, in iSH back-tick sends Escape
-        #  this changes it back, Esc is available via §
+        #  On this keyb, in iSH backtick sends Escape
+        #  this changes it back to send backtick, Esc is available via §
         #
         self.write(
             """
@@ -239,74 +195,7 @@ class IshConsole(base_config.BaseConfig):
                 """
         )
 
-    def NOT_ic_nav_key_prefix(self, prefix_key, esc_key="", prefix_comment="") -> None:
-        # Only set esc_key, if different from prefix
-        w = self.write
-        print(f"Assuming keyboard is: {self.ic_keyboard}")
-
-        if prefix_comment:
-            prefix_comment = f"# {prefix_comment}"
-
-        if self.vers_ok(2.1):
-            tbl_opt = "T"
-        else:
-            tbl_opt = "t"
-
-        s = f"-{tbl_opt} navPrefix  {prefix_comment}"
-        w(
-            f"""#
-        #  Handle Prefix key
-        #
-        set -s user-keys[201]  "{prefix_key}"
-        bind -N "Switch to -T navPrefix" -n User201 switch-client {s}
-        """
-        )
-        if esc_key:
-            w(
-                f"""#
-                #  Virtual Escape key
-                #
-                set -s user-keys[200]  "{esc_key}"
-                bind -N "Send Escape" -n User200  send Escape
-                """
-            )
-        else:
-            # Double tap for actual Esc
-            w("bind -T navPrefix -N 'Send Escape'  User201  send Escape")
-        if IS_ISH_AOK:
-            w(
-                """#
-            #  Use shift-arrows for navigation
-            #
-            bind -N "Send PageUp" -n  S-Up     send-keys PageUp
-            bind -N "Send PageDown" -n  S-Down   send-keys PageDown
-            bind -N "Send Home" -n  S-Left   send-keys Home
-            bind -N "Send End" -n  S-Right  send-keys End
-            """
-            )
-        else:
-            w(
-                f"""#
-            #  Use nav prefix for navigation
-            #
-            bind -T navPrefix  -N "Send PageUp" Up       send PageUp
-            bind -T navPrefix  -N "Send PageDown" Down     send PageDown
-            bind -T navPrefix  -N "Send Home" Left     send Home
-            bind -T navPrefix  -N "Send End" Right    send End
-            #
-            #  Indicates this tmux is handling ISH_NAV_KEY, to ensure
-            #  nested tmuxes, dont parse it again.
-            #
-            {NAV_KEY_HANDLED_TAG}=1
-            """
-            )
-
     def ic_common_setup(self) -> None:
-        #
-        #  Since iSH console is limited to only M-numbers and M-S-numbers
-        #  I use M-S-number for function keys normally, thus not being
-        #  able to use keys like M-(
-        #  To avoid this collision, set fn_keys_mapped accordingly
         #
         #  This does general iSH mapping, not focusing on keyboard specific
         #  customization needs
@@ -525,42 +414,9 @@ class IshConsole(base_config.BaseConfig):
         #  we need to override and bind the user-key to this action.
         #  this is handled by the auc_ methods
         #
-        # #
-        # #  Do these one line at a time, in order for the source to be
-        # #  more readable
-        # #
-        # w(
-        #     'bind -N "Split pane to the right" -n  User12  '
-        #     'split-window -h  -c "#{pane_current_path}"'
-        # )
-        # w(
-        #     'bind -N "Split pane below"        -n  User10  '
-        #     'split-window -v  -c "#{pane_current_path}"'
-        # )
-        # if self.vers_ok("2.0"):
-        #     w(
-        #         'bind -N "Split pane to the left"  -n  User8   '
-        #         'split-window -hb -c "#{pane_current_path}"'
-        #     )
-        #     w(
-        #         'bind -N "Split pane above"        -n  User11  '
-        #         'split-window -vb -c "#{pane_current_path}"'
-        #     )
-
-    #  Not used stuff
-    #
-    # def ic_nav_key_mod(self, mod_char: str) -> None:
-    #     self.write(
-    #         f"""
-    #     bind -N "S-Up = PageUp"     -n  {mod_char}-Up     send-keys PageUp
-    #     bind -N "S-Down = PageDown" -n  {mod_char}-down   send-keys PageDown
-    #     bind -N "S-Left = Home"     -n  {mod_char}-Left   send-keys Home
-    #     bind -N "S-Right = End"     -n  {mod_char}-Right  send-keys End
-    #     """
-    #     )
 
     #
-    #  Overrides for things defining shifted meta chars
+    #  Overrides for things using shifted meta chars
     #
     def auc_meta_ses_handling(  # used by iSH Console
         self,
