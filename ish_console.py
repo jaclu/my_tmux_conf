@@ -308,6 +308,7 @@ class IshConsole(base_config.BaseConfig):
 
         set -s user-keys[60]  "\\342\\200\\224"  # M-_
 
+        # On some keybs with a § there is a glitch in that
         # both S-§ and M-+ generate ±. Since M-+ is used, and S-§ not,
         # just ignore that S-§ also triggers this feature
         set -s user-keys[61] "\\302\\261"       # M-+
