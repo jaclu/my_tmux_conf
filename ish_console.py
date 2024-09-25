@@ -74,7 +74,6 @@ class IshConsole(base_config.BaseConfig):
     If ISH_NAV_KEY is defined and not "None" use it
     """
 
-    is_ish_console = False
     ic_keyboard = None
     # aok_nav_key_handling = "/etc/opt/AOK/tmux_nav_key_handling"
     # aok_nav_key = "/etc/opt/AOK/tmux_nav_key"

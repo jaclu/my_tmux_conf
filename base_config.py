@@ -116,6 +116,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
     # Disables tmux deault popup menus, instead relying on the plugin jaclu/tmux-menus
     skip_default_popups: bool = True
 
+    # Will be true if this is setup as an iSH console
+    is_ish_console = False
+
     plugin_handler: str = "jaclu/tpm"  # overrides of tmux-conf package default
 
     def __init__(
@@ -877,11 +880,17 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #  I tend to bind ^[9 & ^[0 to Alt-Left/Right in my terminal apps
         #
         if self.bind_meta:
+            w("# adv key win nav")
+            if not self.is_ish_console:
+                w(
+                    'bind -N "Select the previous window '
+                    '- P-p  or  P 9"  -n  M-9  previous-window'
+                )
+            s = 'bind -N "Select the'
             w(
-                """# adv key win nav
-            bind -N "Select the previous window  - P-p  or  P 9"  -n  M-9  previous-window
-            bind -N "Select the next window      - P-n  or  P 0"  -n  M-0  next-window
-            bind -N "Select the previously current window - P -"  -n  M--  last-window"""
+                f"""
+            {s} next window      - P-n  or  P 0"  -n  M-0  next-window
+            {s} previously current window - P -"  -n  M--  last-window"""
             )
             if self.vers_ok(2.1):
                 w2 = "window"  # hackish strings to make sure

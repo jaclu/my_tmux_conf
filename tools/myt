@@ -354,6 +354,7 @@ create_tmux_conf() {
     if $t2_env; then
         _s="$(T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file")" || {
             ex_code="$?"
+            echo "ERROR: build failed!"
             log_it "$_s" # failed build
             error_msg "Failed to build tmux.conf [$ex_code]"
         }
