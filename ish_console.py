@@ -335,41 +335,45 @@ class IshConsole(base_config.BaseConfig):
         #
         # set -s user-keys[211]  "\\302\\257"
         # bind -N "Enables M-<" -n User211 send "M-<"
-        self.ic_fn_keys()
-        self.ic_alt_upper_case(fn_keys_mapped=True)
-
-    def ic_fn_keys(self) -> None:
-        self.ic_m_fn_keys()
+        use_m_for_f_keys = True
+        if use_m_for_f_keys:
+            self.ic_m_fn_keys()
+            self.ic_alt_upper_case()
+        else:
+            self.ic_ms_fn_keys()
+            self.ic_alt_upper_case(ms_fn_keys_mapped=True)
 
     def ic_m_fn_keys(self) -> None:
         w = self.write
-        w(
-            """
-        #
-        #  This will map M-S number to F1 - F10
-        #
-        set -s user-keys[101] "\\033\\061"  #  M-1
-        set -s user-keys[102] "\\033\\062"  #  M-2
-        set -s user-keys[103] "\\033\\063"  #  M-3
-        set -s user-keys[104] "\\033\\064"  #  M-4
-        set -s user-keys[105] "\\033\\065"  #  M-5
-        set -s user-keys[106] "\\033\\066"  #  M-6
-        set -s user-keys[107] "\\033\\067"  #  M-7
-        set -s user-keys[108] "\\033\\070"  #  M-8
-        set -s user-keys[109] "\\033\\071"  #  M-9
-        set -s user-keys[110] "\\033\\060"  #  M-0
-        """
-        )
+        # w(
+        #     """
+        # #
+        # #  This will map M-number to F1 - F10
+        # #
+        # set -s user-keys[101] "\\033\\061"  #  M-1
+        # set -s user-keys[102] "\\033\\062"  #  M-2
+        # set -s user-keys[103] "\\033\\063"  #  M-3
+        # set -s user-keys[104] "\\033\\064"  #  M-4
+        # set -s user-keys[105] "\\033\\065"  #  M-5
+        # set -s user-keys[106] "\\033\\066"  #  M-6
+        # set -s user-keys[107] "\\033\\067"  #  M-7
+        # set -s user-keys[108] "\\033\\070"  #  M-8
+        # set -s user-keys[109] "\\033\\071"  #  M-9
+        # set -s user-keys[110] "\\033\\060"  #  M-0
+        # """
+        # )
         for i in range(1, 10):
-            w(f'bind -N "M-{i} -> F{i}"  -n  User10{i}  send-keys F{i}')
-        w('bind -N "M-0 -> F10" -n  User110  send-keys F10')
+            # w(f'bind -N "M-{i} -> F{i}"  -n  User10{i}  send-keys F{i}')
+            w(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
+        # w('bind -N "M-0 -> F10" -n  User110  send-keys  F10')
+        w('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
 
     def ic_ms_fn_keys(self) -> None:
         w = self.write
         w(
             """
         #
-        #  This will map M-S number to F1 - F10
+        #  This will map M-S-number to F1 - F10
         #
         set -s user-keys[101] "\\342\\201\\204"  #  M-S-1
         set -s user-keys[102] "\\342\\202\\254"  #  M-S-2
@@ -387,7 +391,7 @@ class IshConsole(base_config.BaseConfig):
             w(f'bind -N "M-S-{i} -> F{i}"  -n  User10{i}  send-keys F{i}')
         w('bind -N "M-S-0 -> F10" -n  User110  send-keys F10')
 
-    def ic_alt_upper_case(self, fn_keys_mapped: bool) -> None:
+    def ic_alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
         w = self.write
         w(
             """
@@ -426,9 +430,7 @@ class IshConsole(base_config.BaseConfig):
         set -s user-keys[31]  "\\342\\200\\231"  # M-}
         set -s user-keys[32]  "\\303\\232"       # M-:
         set -s user-keys[33]  "\\303\\206"       # M-\"
-        set -s user-keys[34]  "\\302\\273"       # M-\\
-        set -s user-keys[35]  "\\302\\257"       # M-<
-        set -s user-keys[36]  "\\313\\230"       # M->
+        # set -s user-keys[34]  "\\302\\273"       # M-\\
         set -s user-keys[37]  "\\302\\277"       # M-?
         set -s user-keys[38]  "\\342\\200\\224"  # M-_
         """
@@ -467,7 +469,7 @@ class IshConsole(base_config.BaseConfig):
             ("31", "}"),
             ("32", ":"),
             ("33", '\\"'),
-            ("34", "|"),
+            # ("34", "|"),
             #  Fails on Omnitype, Yoozon3
             #  ends up generating:
             # ¯
@@ -478,8 +480,6 @@ class IshConsole(base_config.BaseConfig):
             ("37", "?"),
             # Doesn't work on Omnitype Keyboard, works on Yoozon3
             ("38", "_"),
-            # Doesn't work on Omnitype,Yoozon3, generates ~
-            # ("39", "+"),
         ):
             if c == "N":
                 #  Special case to avoid cutof at second -N
@@ -488,7 +488,7 @@ class IshConsole(base_config.BaseConfig):
             else:
                 w(f'bind -N "Enables M-{c}" -n  User{i}  send "M-{c}"')
 
-        if not fn_keys_mapped:
+        if not ms_fn_keys_mapped:
             #  Collides with F1 - F10 remapping
             w(
                 """
@@ -516,8 +516,9 @@ class IshConsole(base_config.BaseConfig):
                 ("56", "^"),
                 ("57", "&"),
                 ("58", "*"),
-                ("59", "("),
-                ("60", ")"),
+                # Used by auc_meta_ses_handling() dont map as chars
+                # ("59", "("),
+                # ("60", ")"),
             ):
                 w(f'bind -N "Enables M-{c}" -n  User{i}  send "M-{c}"')
         w()
@@ -527,20 +528,8 @@ class IshConsole(base_config.BaseConfig):
         #  User-keys aren't parsed by tmux if they are bound to
         #  send-keys. If the resulting key has an action,
         #  we need to override and bind the user-key to this action.
+        #  this is handled by the auc_ methods
         #
-        # self.auc_split_entire_window(
-        #     m_h="User8", m_j="User10", m_k="User11", m_l="User12"
-        # )
-        # self.auc_display_plugins_used(m_p="User16")
-        # self.auc_kill_tmux_server(m_x="User24")
-        # self.auc_swap_window(m_less_than="User35", m_greater_than="User36")
-        # self.auc_meta_ses_handling(
-        #     m_plus=self.usr_key_meta_plus,
-        #     muc_par_open=muc_par_open,
-        #     muc_par_close=muc_par_close,
-        #     m_underscore="User38",
-        # )
-
         w(
             """
         #
