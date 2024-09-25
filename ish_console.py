@@ -101,8 +101,7 @@ class IshConsole(base_config.BaseConfig):
         #
         #  Only use this if the following conditions are met:
         #     1) tmux >= 2.6
-        #     2) kernel is ish
-        #     3) not an ssh session,
+        #     2) LC_KEYBOARD is set
         #
         if not self.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
@@ -165,7 +164,7 @@ class IshConsole(base_config.BaseConfig):
         #
         self.ic_keyb_type_2()  # Same esc handling
         #
-        #  On this keyb, in iSH backtick sends Escape
+        #  On this keyb, in backtick sends Escape
         #  this changes it back to send backtick, Esc is available via §
         #
         self.write(
