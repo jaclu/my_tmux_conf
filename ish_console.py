@@ -430,7 +430,7 @@ class IshConsole(base_config.BaseConfig):
         set -s user-keys[31]  "\\342\\200\\231"  # M-}
         set -s user-keys[32]  "\\303\\232"       # M-:
         set -s user-keys[33]  "\\303\\206"       # M-\"
-        # set -s user-keys[34]  "\\302\\273"       # M-\\
+        set -s user-keys[34]  "\\302\\273"       # M-\\
         set -s user-keys[37]  "\\302\\277"       # M-?
         set -s user-keys[38]  "\\342\\200\\224"  # M-_
         """
@@ -446,11 +446,11 @@ class IshConsole(base_config.BaseConfig):
             ("5", "E"),
             ("6", "F"),
             ("7", "G"),
-            ("8", "H"),
+            # ("8", "H"), -  used in  auc_split_entire_window()
             ("9", "I"),
-            ("10", "J"),
-            ("11", "K"),
-            ("12", "L"),
+            # ("10", "J"), - used in  auc_split_entire_window()
+            # ("11", "K"), - used in  auc_split_entire_window()
+            # ("12", "L"), - used in  auc_split_entire_window()
             ("13", "M"),
             ("14", "N"),
             ("15", "O"),
@@ -469,14 +469,12 @@ class IshConsole(base_config.BaseConfig):
             ("31", "}"),
             ("32", ":"),
             ("33", '\\"'),
-            # ("34", "|"),
+            ("34", "|"),
             #  Fails on Omnitype, Yoozon3
             #  ends up generating:
             # ¯
-            # 194 0302 0xc2
-            # 175 0257 0xaf
-            # ("35", "<"), - used in self.auc_swap_window()
-            # ("36", ">"), - used in self.auc_swap_window()
+            # ("35", "<"), - used in  self.auc_swap_window()
+            # ("36", ">"), - used in  self.auc_swap_window()
             ("37", "?"),
             # Doesn't work on Omnitype Keyboard, works on Yoozon3
             ("38", "_"),
