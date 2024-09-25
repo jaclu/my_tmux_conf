@@ -26,14 +26,14 @@
 
 import os
 
+from base import BaseConfig  # BaseConfig
+
 #
 #  Since I often run this on iSH, this class will bind missing keys in the
 #  case this is run directly on the ishConsole, in all other cases it will
 #  do nothing
 #
 from mtc_utils import IS_ISH
-
-from base import BaseConfig
 
 
 class DefaultPlugins(BaseConfig):
@@ -85,27 +85,34 @@ class DefaultPlugins(BaseConfig):
         used_plugins = self.plugins.found(short_name=True)
 
         if "tmux-suspend" in used_plugins:
+            # pylint: disable=E0203
             self.sb_right += "#{@mode_indicator_custom_prompt}"
 
         if "tmux-mullvad" in used_plugins:
+            # pylint: disable=E1101
             self.sb_left += "#{mullvad_city}#{mullvad_country}"
             self.sb_left += "#{mullvad_status}"
 
         if "tmux-nordvpn" in used_plugins:
+            # pylint: disable=E1101
             self.sb_left += "#{nordvpn_country}#{nordvpn_status}"
 
         if "tmux-keyboard-type" in used_plugins:
+            # pylint: disable=W0201
             self.sb_right = "#{keyboard_type}" + self.sb_right
 
         if "tmux-battery" in used_plugins:
+            # pylint: disable=W0201
             self.sb_right = "#{battery_smart} " + self.sb_right
 
         if "tmux-spotify-info" in used_plugins:
+            # pylint: disable=W0201
             self.sb_right = (
                 "#[bg=colour28]#(tmux-spotify-info)#[default] " + self.sb_right
             )
 
         if "tmux-packet-loss" in used_plugins:
+            # pylint: disable=W0201
             self.sb_right = "#{packet_loss}" + self.sb_right
 
         return True  # request footer to be printed

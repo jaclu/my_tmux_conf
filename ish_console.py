@@ -28,7 +28,7 @@
 import os
 import sys
 
-from base import ActualBaseConfig
+import base_config
 from mtc_utils import IS_ISH, IS_ISH_AOK
 
 NAV_KEY_HANDLED_TAG = "TMUX_HANDLING_ISH_NAV_KEY"
@@ -59,7 +59,7 @@ KBD_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
 # KBD_BLUETOOTH = "Bluetooh Keyboard"  # sadly generic name
 
 
-class IshConsole(ActualBaseConfig):
+class IshConsole(base_config.BaseConfig):
     """When running tmux from an iSH console this redefines the rather
     limited keyboard in order to make it more useful.
 
@@ -95,6 +95,7 @@ class IshConsole(ActualBaseConfig):
         clear_plugins: bool = False,  # remove all current plugins
         plugins_display: int = 0,  # Display info about plugins
     ):
+        print("Using IshConsole()")
         super().__init__(
             parse_cmd_line=parse_cmd_line,
             conf_file=conf_file,
