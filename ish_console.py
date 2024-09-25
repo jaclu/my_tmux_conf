@@ -29,7 +29,6 @@ import os
 import sys
 
 import base_config
-from mtc_utils import IS_ISH
 
 #
 #  To make it easier to identify what keyboard to config
@@ -92,8 +91,6 @@ class IshConsole(base_config.BaseConfig):
             clear_plugins=clear_plugins,
             plugins_display=plugins_display,
         )
-        # set to defaults, in case a keyb doesnt rebind the key
-        self.muc_plus = "M-+"
 
     def content(self):
         # Map special keys before generating rest of conf
@@ -112,17 +109,14 @@ class IshConsole(base_config.BaseConfig):
             print("         keyboard adaptions not supported on this version")
             return
 
-        if (not IS_ISH) or os.environ.get("SSH_CONNECTION"):
-            #
-            #  This is only relevant on the iSH console itself.
-            #  If a ssh session was first made into the ish node,
-            #  it should not be used.
-            #
+        self.ic_keyboard = os.environ.get("LC_KEYBOARD")
+        if not self.ic_keyboard:
+            print("WARNING: IshConsole() was used without LC_KEYBOARD being set")
+            print("         base.py should not have used this class")
             return
 
-        self.ic_keyboard = os.environ.get("LC_KEYBOARD")
         self.is_ish_console = True
-        print(f"This is an iSH console, detected keyboard: {self.ic_keyboard}")
+        print(f"This originated on an iSH console - keyboard: {self.ic_keyboard}")
         self.write(
             f"""
             #======================================================
@@ -164,10 +158,6 @@ class IshConsole(base_config.BaseConfig):
         #  General settings seems to work for several keyboards
         #
         self.ic_virtual_escape_key("\\302\\247")
-        # both S-§ and M-+ generate this key
-        # Since M-+ is used, just ignore S-§ also triggering this feature
-        self.write('set -s user-keys[220]  "\\302\\261"')  # ±
-        self.muc_plus = "User220"  # used in  auc_meta_ses_handling()
 
     def ic_keyb_type_combo_touch(self):
         #
@@ -210,7 +200,8 @@ class IshConsole(base_config.BaseConfig):
         # #  General Keyboard bindings
         # #
         # #  € is Option+Shift+2 in United States layout
-        # set -s user-keys[210]  "\\342\\202\\254" # Usually: €
+        # on regular pc keyb: "\\033\\100" # M-@
+        # on ish console:  "\\342\\202\\254"
         # bind -N "Enables €" -n User210 send '€'
         # """
         # )
@@ -315,19 +306,21 @@ class IshConsole(base_config.BaseConfig):
         set -s user-keys[25]  "\\303\\201"       #  M-Y
         set -s user-keys[26]  "\\302\\270"       #  M-Z
 
-        # 0-39 has been renumbered check all references!
-        set -s user-keys[60]  "\\342\\200\\224"  # M-_
-        set -s user-keys[61]  "\\342\\200\\235"  # M-{
-        set -s user-keys[62]  "\\342\\200\\231"  # M-}
+        # 61-69 has been renumbered check all references!
+        set -s user-keys[60]  "\\342\\200\\224  # M-_
 
-        set -s user-keys[63]  "\\302\\273"       # M-|
-        set -s user-keys[64]  "\\303\\232"       # M-:
-        set -s user-keys[65]  "\\303\\206"       # M-\"
+        # both S-§ and M-+ generate ±. Since M-+ is used, and S-§ not,
+        # just ignore that S-§ also triggers this feature
+        set -s user-keys[61] "\\302\\261"       # M-+
 
-        set -s user-keys[66]  "\\302\\257"       # M-<
-        set -s user-keys[67]  "\\313\\230"       # M->
-
-        set -s user-keys[68]  "\\302\\277"       # M-?
+        set -s user-keys[62]  "\\342\\200\\235" # M-{
+        set -s user-keys[63]  "\\342\\200\\231" # M-}
+        set -s user-keys[64]  "\\302\\273"      # M-|
+        set -s user-keys[65]  "\\303\\232"      # M-:
+        set -s user-keys[66]  "\\303\\206"      # M-\"
+        set -s user-keys[67]  "\\302\\257"      # M-<
+        set -s user-keys[68]  "\\313\\230"      # M->
+        set -s user-keys[69]  "\\302\\277"      # M-?
         """
         )
 
@@ -358,15 +351,16 @@ class IshConsole(base_config.BaseConfig):
             ("24", "X"),
             ("25", "Y"),
             ("26", "Z"),
-            # ("30", "_"), - used in  auc_meta_ses_handling()
-            ("31", "{"),
-            ("32", "}"),
-            ("33", "|"),
-            ("34", ":"),
-            ("35", '\\"'),
-            # ("36", "<"), - used in  auc_swap_window()
-            # ("37", ">"), - used in  auc_swap_window()
-            ("38", "?"),
+            # ("60", "_"), - used in  auc_meta_ses_handling()
+            # ("61", "+"), - used in  auc_meta_ses_handling()
+            ("62", "{"),
+            ("63", "}"),
+            ("64", "|"),
+            ("65", ":"),
+            ("66", '\\"'),
+            # ("67", "<"), - used in  auc_swap_window()
+            # ("68", ">"), - used in  auc_swap_window()
+            ("69", "?"),
             # Doesn't work on Omnitype Keyboard, works on Yoozon3
         ):
             if c == "N":
@@ -393,16 +387,16 @@ class IshConsole(base_config.BaseConfig):
             """
             )
             for i, c in (
-                ("51", "!"),
-                ("52", "@"),
-                ("53", "#"),
-                ("54", "$"),
-                ("55", "%"),
-                ("56", "^"),
-                ("57", "&"),
-                ("58", "*"),
-                # ("59", "("), - used in  auc_meta_ses_handling()
-                # ("60", ")"), - used in  auc_meta_ses_handling()
+                # ("80", ")"), - used in  auc_meta_ses_handling()
+                ("81", "!"),
+                ("82", "@"),
+                ("83", "#"),
+                ("84", "$"),
+                ("85", "%"),
+                ("86", "^"),
+                ("87", "&"),
+                ("88", "*"),
+                # ("89", "("), - used in  auc_meta_ses_handling()
             ):
                 w(f'bind -N "Enables M-{c}" -n  User{i}  send "M-{c}"')
         w()
@@ -420,20 +414,17 @@ class IshConsole(base_config.BaseConfig):
     #
     def auc_meta_ses_handling(  # used by iSH Console
         self,
-        muc_plus: str = "M-+",
+        muc_plus: str = "User61",
         muc_par_open: str = "User89",
         muc_par_close: str = "User80",
         muc_underscore: str = "User60",
     ):
-        # doesnt seem possible to use self.variables as defaults...
-        if self.muc_plus != "M-+":
-            muc_plus = self.muc_plus
         super().auc_meta_ses_handling(
             muc_plus, muc_par_open, muc_par_close, muc_underscore
         )
 
     def auc_swap_window(  # used by iSH Console
-        self, muc_less_than: str = "User66", muc_greater_than: str = "User67"
+        self, muc_less_than: str = "User67", muc_greater_than: str = "User68"
     ):
         super().auc_swap_window(muc_less_than, muc_greater_than)
 
