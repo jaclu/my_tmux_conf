@@ -106,9 +106,6 @@ class IshConsole(base_config.BaseConfig):
         )
         # set to defaults, in case a keyb doesnt rebind the key
         self.muc_plus = "M-+"
-        self.muc_par_open = "M-("
-        self.muc_par_close = "M-)"
-        self.muc_underscore = "M-_"
 
     def content(self):
         # Map special keys before generating rest of conf
@@ -194,7 +191,7 @@ class IshConsole(base_config.BaseConfig):
         # both S-§ and M-+ generate this key
         # Since M-+ is used, just ignore S-§ also triggering this feature
         self.write('set -s user-keys[220]  "\\302\\261"')  # ±
-        self.muc_plus = "User220"
+        self.muc_plus = "User220"  # used in  auc_meta_ses_handling()
 
     def ic_keyb_type_2(self):
         #
@@ -434,8 +431,6 @@ class IshConsole(base_config.BaseConfig):
         set -s user-keys[38]  "\\342\\200\\224"  # M-_
         """
         )
-        # set -s user-keys[39]  "\\302\\261"       # M-+
-        # set -s user-keys[39]  "\\176"     # brydge generates ~ inside tmux
 
         for i, c in (
             ("1", "A"),
@@ -472,11 +467,11 @@ class IshConsole(base_config.BaseConfig):
             #  Fails on Omnitype, Yoozon3
             #  ends up generating:
             # ¯
-            # ("35", "<"), - used in  self.auc_swap_window()
-            # ("36", ">"), - used in  self.auc_swap_window()
+            # ("35", "<"), - used in  auc_swap_window()
+            # ("36", ">"), - used in  auc_swap_window()
             ("37", "?"),
             # Doesn't work on Omnitype Keyboard, works on Yoozon3
-            ("38", "_"),
+            # ("38", "_"), - used in  auc_meta_ses_handling()
         ):
             if c == "N":
                 #  Special case to avoid cutof at second -N
@@ -501,9 +496,6 @@ class IshConsole(base_config.BaseConfig):
             set -s user-keys[60]  "\\342\\200\\232"  # M-)
             """
             )
-            self.muc_par_open = "User59"
-            self.muc_par_close = "User60"
-
             for i, c in (
                 ("51", "!"),
                 ("52", "@"),
@@ -513,9 +505,8 @@ class IshConsole(base_config.BaseConfig):
                 ("56", "^"),
                 ("57", "&"),
                 ("58", "*"),
-                # Used by auc_meta_ses_handling() dont map as chars
-                # ("59", "("),
-                # ("60", ")"),
+                # ("59", "("), - used in  auc_meta_ses_handling()
+                # ("60", ")"), - used in  auc_meta_ses_handling()
             ):
                 w(f'bind -N "Enables M-{c}" -n  User{i}  send "M-{c}"')
         w()
@@ -573,19 +564,13 @@ class IshConsole(base_config.BaseConfig):
     def auc_meta_ses_handling(  # used by iSH Console
         self,
         muc_plus: str = "M-+",
-        muc_par_open: str = "M-(",
-        muc_par_close: str = "M-)",
-        muc_underscore: str = "M-_",
+        muc_par_open: str = "User59",
+        muc_par_close: str = "User60",
+        muc_underscore: str = "User38",
     ):
         # doesnt seem possible to use self.variables as defaults...
         if self.muc_plus != "M-+":
             muc_plus = self.muc_plus
-        if self.muc_par_open != "M-(":
-            muc_par_open = self.muc_par_open
-        if self.muc_par_close != "M-)":
-            muc_par_close = self.muc_par_close
-        if self.muc_underscore != "M-)":
-            muc_underscore = self.muc_underscore
         super().auc_meta_ses_handling(
             muc_plus, muc_par_open, muc_par_close, muc_underscore
         )
