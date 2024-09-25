@@ -420,7 +420,10 @@ class IshConsole(base_config.BaseConfig):
         muc_underscore: str = "User60",
     ):
         super().auc_meta_ses_handling(
-            muc_plus, muc_par_open, muc_par_close, muc_underscore
+            muc_plus=muc_plus,
+            muc_par_open=muc_par_open,
+            muc_par_close=muc_par_close,
+            muc_underscore=muc_underscore,
         )
 
     def auc_swap_window(  # used by iSH Console
