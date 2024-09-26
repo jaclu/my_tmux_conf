@@ -817,19 +817,19 @@ class BaseConfig(TmuxConfig):  # type: ignore
         w(
             f"""
         # window navigation
-        {pref} previous window  - M-9  or  C-M-S-Left"  -r  9   previous-window
-        {pref} next window  - M-0  or C-M-S-Right"      -r  0   next-window
-        {pref} previously current window  - M--"        -r  -  last-window
+        # {pref} previous window  - M-9  or  C-M-S-Left"  -r  9   previous-window
+        # {pref} next window  - M-0  or C-M-S-Right"      -r  0   next-window
+        {pref} previously current window  - M--"            -  last-window
         # override default to add my note
-        {pref} previous window  - M-9  or  C-M-S-Left"  -r  p   previous-window
-        {pref} next window      - M-0  or C-M-S-Right"      -r  n   next-window"""
+        {pref} previous window  - C-M-S-Left"  -r  p   previous-window
+        {pref} next window      - C-M-S-Right"  -r  n   next-window"""
         )
         if self.bind_meta:
             pref = 'bind -N "Select the '
             w(
                 f"""
-                {pref}previous window  - P p  or  P 9"  -n C-M-S-Left   previous-window
-                {pref}next window      - P n  or  P 0"  -n C-M-S-Right  next-window"""
+                {pref}previous window  - P p"  -n C-M-S-Left   previous-window
+                {pref}next window      - P n"  -n C-M-S-Right  next-window"""
             )
         else:
             w(
