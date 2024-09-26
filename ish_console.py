@@ -373,8 +373,8 @@ class IshConsole(base_config.BaseConfig):
             ("64", "|"),
             ("65", ":"),
             ("66", '\\"'),
-            # ("67", "<"), - used in  auc_swap_window()
-            # ("68", ">"), - used in  auc_swap_window()
+            ("67", "<"),
+            ("68", ">"),
             ("69", "?"),
             # Doesn't work on Omnitype Keyboard, works on Yoozon3
         ):
@@ -440,11 +440,6 @@ class IshConsole(base_config.BaseConfig):
             muc_par_close=muc_par_close,
             muc_underscore=muc_underscore,
         )
-
-    def auc_swap_window(  # used by iSH Console
-        self, muc_less_than: str = "User67", muc_greater_than: str = "User68"
-    ):
-        super().auc_swap_window(muc_less_than, muc_greater_than)
 
     def auc_display_plugins_used(self, muc_s_p: str = "User16"):  # used by iSH Console
         super().auc_display_plugins_used(muc_s_p)

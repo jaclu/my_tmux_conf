@@ -924,13 +924,11 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #  This is also avilable as no-prefix:  M-<  and  M->
         #  regardles of default popup status.
         #
-        if self.skip_default_popups:
-            w(
-                """# window shuffle
-                bind -N "Swap window left  - M-<"         -r  <    swap-window -dt:-1
-                bind -N "Swap window right  - M->"        -r  >    swap-window -dt:+1"""
-            )
-        self.auc_swap_window()  # used by iSH Console
+        w(
+            """# window shuffle
+            bind -N "Swap window left"         -r  <    swap-window -dt:-1
+            bind -N "Swap window right"        -r  >    swap-window -dt:+1"""
+        )
 
         # if self.vers_ok(2.3) and not self.is_tmate():
         #     #
@@ -1372,33 +1370,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
                 )
             else:
                 w(f"unbind -n  {muc_par_close}")
-
-    def auc_swap_window(  # used by iSH Console
-        self, muc_less_than: str = "M-<", muc_greater_than: str = "M->"
-    ):
-        if not self.vers_ok(1.8):
-            return
-
-        if self.bind_meta:
-            note_lt = "Swap window left"
-            note_gt = "Swap window right"
-            if self.skip_default_popups:
-                # indicate alternate sequences
-                note_lt += "  - P <"
-                note_gt += "  - P >"
-            self.write(
-                f"""
-            bind -N "{note_lt}"  -n  {muc_less_than}  swap-window -dt:-1
-            bind -N "{note_gt}" -n  {muc_greater_than}  swap-window -dt:+1
-            """
-            )
-        else:
-            self.write(
-                f"""#  skipping adv keys, if resourced
-            unbind -n  {muc_less_than}
-            unbind -n  {muc_greater_than}
-            """
-            )
 
     def auc_display_plugins_used(self, muc_s_p: str = "M-P"):  # used by iSH Console
         """iSH console doesn't generate correct ALT - Upper Case sequences,
