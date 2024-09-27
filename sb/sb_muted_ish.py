@@ -11,10 +11,16 @@
 
 """ Style muted """
 
+import os
+import sys
 
+# Put the "project path first to support relative imports"
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, root_dir)
+
+# flake8: noqa: E402
+# pylint: disable=wrong-import-position
 import mtc_utils
-
-# pylint: disable=E0401
 from default_plugins import DefaultPlugins
 
 THEME_TEXT = "colour186"  # green with a yellowish tint

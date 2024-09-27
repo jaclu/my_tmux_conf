@@ -19,7 +19,7 @@ sys.path.insert(0, root_dir)
 
 # flake8: noqa: E402
 # pylint: disable=wrong-import-position
-from sb.sb_tst import SB
+from sb.sb_test import SB
 
 
 if __name__ == "__main__":

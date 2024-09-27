@@ -8,27 +8,38 @@
 #  Template giving the status bar the colors I use for an acceptance system
 #
 
-""" Style aceptance """
+""" Style aceptance node """
 
-# pylint: disable=E0401
+import os
+import sys
+
+# Put the "project path first to support relative imports"
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, root_dir)
+
+# flake8: noqa: E402
+# pylint: disable=wrong-import-position
 from default_plugins import DefaultPlugins
 
 
 # pylint: disable=R0903
 class SB(DefaultPlugins):
-    """Style aceptance"""
+    """Style aceptance node"""
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """override statusbar config"""
+        fg_clr = "black"
+        bg_clr = "colour172"
         self.assign_style(__file__)
         super().status_bar_customization(print_header=print_header)
+
         if self.vers_ok("1.9"):
-            self.write("set -g status-style fg=black,bg=colour172")
+            self.write(f"set -g status-style fg={fg_clr},bg={bg_clr}")
         else:
             self.write(
-                """
-                set -g status-fg black
-                set -g status-bg colour172
+                f"""
+                set -g status-fg {fg_clr}
+                set -g status-bg {bg_clr}
                 """
             )
         return print_header  # request footer to be printed
