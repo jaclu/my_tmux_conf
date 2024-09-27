@@ -1396,6 +1396,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         w(
             f'bind -N "{note_prefix}List all plugins defined"  {muc_s_p}  '
             'run "$TMUX_BIN display \\"Generating response...\\" ;'
+            'cd $HOME//git_repos/mine/my_tmux_conf; '
             f' {__main__.__file__} {self.conf_file} -p2"'
         )
 
