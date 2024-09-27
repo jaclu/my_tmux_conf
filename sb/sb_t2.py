@@ -8,29 +8,31 @@
 #  Template giving the status bar the colors I use for a test system
 #
 
-""" Style test """
+""" Style t2"""
 
-from mtc_utils import IS_ISH
-from sb.sb_tst import SB as SB_tst
+from default_plugins import DefaultPlugins
 
 
 # pylint: disable=R0903
-class SB(SB_tst):
-    """Style test"""
+class SB(DefaultPlugins):
+    """Style t2"""
 
     def status_bar_customization(self, print_header=True):
         """override statusbar config"""
-        # self.assign_style(__file__)
+        self.assign_style(__file__)
         super().status_bar_customization(print_header=print_header)
-        if self.vers_ok("1.9"):
-            if IS_ISH:
-                # only need to overwrite if this is running on iSH,
-                # otherwise leave already defined styling as is
-                # this gives iSH a slightly different color theme, makes
-                # it easier to spot that
-                self.write("# iSH override")
-                self.write("set -g status-style fg=black,bg=yellow")
 
+        color_fg = "black"
+        color_bg = "yellow"
+        if self.vers_ok("1.9"):
+            self.write(f"set -g status-style fg={color_fg},bg={color_bg}")
+        else:
+            self.write(
+                f"""
+                set -g status-fg {color_fg}
+                set -g status-bg {color_bg}
+                """
+            )
         return print_header  # request footer to be printed
 
 
