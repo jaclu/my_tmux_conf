@@ -62,6 +62,17 @@ class T2(SB):
                 """
             )
 
+    def plugin_menus(self) -> list:  # 1.8
+        conf = """
+        set -g @menus_log_file ~/tmp/tmux-menus-t2.log
+        # set -g @menus_use_cache no
+        """
+        #
+        #  This plugin works in tmux 1.7, but that version do not support
+        #  @variables, so we say 1.8 here...
+        #
+        return ["jaclu/tmux-menus", 1.8, conf]
+
     #
     #  Override default plugins with empty stubs for plugins
     #  not wanted in T2_ENV
