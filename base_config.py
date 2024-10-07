@@ -76,6 +76,15 @@ class BaseConfig(TmuxConfig):  # type: ignore
     show_pane_size: bool = True  # If enabled pane frane lines will display pane size
 
     #
+    #  Most iPad keyboards dont have navigation keys - PageUp/Down Home/End
+    #  This in combination with the fact that iSH only supports the arrows
+    #  without modifiers, creates a need for using something simple for
+    #  nav keys. If this is True, <prefix> arrows will serve as nav keys
+    #  The drawback is that this pushes pane navigation to something else
+    #  By default I use vim style <prefix> h j k l
+    #
+    prefix_arrow_nav_keys = False
+    #
     #  This causes most colors on MacOS Term.app to fail
     #
     use_24bit_color: bool = os.environ.get("TERM_PROGRAM") != "Apple_Terminal"
@@ -116,7 +125,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     # Disables tmux deault popup menus, instead relying on the plugin jaclu/tmux-menus
     skip_default_popups: bool = True
 
-    # Will be true if this is setup as an iSH console
+    # Will be true if this tmux is run on the iSH console
     is_ish_console = False
 
     plugin_handler: str = "jaclu/tpm"  # overrides of tmux-conf package default
@@ -483,23 +492,23 @@ class BaseConfig(TmuxConfig):  # type: ignore
                 f'bind -N "pOpup not available warning"  {scrpad_key}  '
                 f'display "pOpup scratchpad session needs {scrpad_min_vers}"'
             )
-
         self.auc_kill_tmux_server()  # used by iSH Console
-        w(
+        if self.prefix_arrow_nav_keys:
+            w(
+                """
+            #
+            #  Due to the limited keyboad handling in iSH , only supporting
+            #  unmodified arrorw, they are used as navigation keys.
+            #  <prefix> <arrow> generates: PageUp/Down Home End
+            #
+            #  For pane nav Use M-<arrow> / <prefix> hjkl
+            #
+            bind -N "Page up"    Up     send-key PageUp
+            bind -N "Page Down"  Down   send-key PageDown
+            bind -N "Home"       Left   send-key Home
+            bind -N "End"        Right  send-key End
             """
-        #
-        #  Catering to BT keyboards without num-keys
-        #  <prefix> <arrow> is used for PageUp/Down Home End
-        #
-        #  For pane nav Use M-<arrow> / <prefix> hjkl
-        #
-        bind -N "Page up"    Up     send-key PageUp
-        bind -N "Page Down"  Down   send-key PageDown
-        bind -N "Home"       Left   send-key Home
-        bind -N "End"        Right  send-key End
-        """
-        )
-
+            )
         w()  # spacer between sections
 
     def remove_unwanted_default_bindings(self):
@@ -1185,14 +1194,24 @@ class BaseConfig(TmuxConfig):  # type: ignore
             unbind -n  M-Down"""
             )
 
-        w(
-            """
-            bind -N "Select pane left"  -r  h      select-pane -L
-            bind -N "Select pane right" -r  l      select-pane -R
-            bind -N "Select pane up"    -r  k      select-pane -U
-            bind -N "Select pane down"  -r  j      select-pane -D
-            """
-        )
+        if self.prefix_arrow_nav_keys:
+            w(
+                """
+                bind -N "Select pane left"  -r  h      select-pane -L
+                bind -N "Select pane right" -r  l      select-pane -R
+                bind -N "Select pane up"    -r  k      select-pane -U
+                bind -N "Select pane down"  -r  j      select-pane -D
+                """
+            )
+        else:
+            w(
+                """
+                bind -N "Select pane left"  Left    select-pane -L
+                bind -N "Select pane right" Right   select-pane -R
+                bind -N "Select pane up"    Up      select-pane -U
+                bind -N "Select pane down"  Down    select-pane -D
+                """
+            )
 
     def pane_splitting(self):
         w = self.write
@@ -1396,7 +1415,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         w(
             f'bind -N "{note_prefix}List all plugins defined"  {muc_s_p}  '
             'run "$TMUX_BIN display \\"Generating response...\\" ;'
-            'cd $HOME//git_repos/mine/my_tmux_conf; '
+            "cd $HOME//git_repos/mine/my_tmux_conf; "
             f' {__main__.__file__} {self.conf_file} -p2"'
         )
 

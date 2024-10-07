@@ -57,16 +57,9 @@ class IshConsole(base_config.BaseConfig):
     201     Navkey - no longer used
     210-219 General keyboard bindings
     220-    Specific Keyboard bindings
-
-    If ISH_NAV_KEY is defined and not "None" use it
     """
 
     ic_keyboard = None
-    # aok_nav_key_handling = "/etc/opt/AOK/tmux_nav_key_handling"
-    # aok_nav_key = "/etc/opt/AOK/tmux_nav_key"
-    ish_nav_key = None
-
-    usr_key_meta_plus = "User211"
 
     def __init__(
         self,
@@ -115,6 +108,9 @@ class IshConsole(base_config.BaseConfig):
             return
 
         self.is_ish_console = True
+        # use <prefix> arrows as PageUp/Dn Home/End
+        self.prefix_arrow_nav_keys = True
+
         print(f"This originated on an iSH console - keyboard: {self.ic_keyboard}")
         self.write(
             f"""
