@@ -109,7 +109,8 @@ class IshConsole(base_config.BaseConfig):
 
         self.is_ish_console = True
         # use <prefix> arrows as PageUp/Dn Home/End
-        self.prefix_arrow_nav_keys = True
+        if self.use_ish_prefix_arrow_nav_keys:
+            self.prefix_arrow_nav_keys = True
 
         print(f"This originated on an iSH console - keyboard: {self.ic_keyboard}")
         self.write(

@@ -80,10 +80,12 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  This in combination with the fact that iSH only supports the arrows
     #  without modifiers, creates a need for using something simple for
     #  nav keys. If this is True, <prefix> arrows will serve as nav keys
+    #  on the iSH console, for other envs this setting will not have any
+    #  meaning.
     #  The drawback is that this pushes pane navigation to something else.
     #  By default it will use vim style <prefix> h j k l
     #
-    prefix_arrow_nav_keys = False
+    use_ish_prefix_arrow_nav_keys = True
     #
     #  This causes most colors on MacOS Term.app to fail
     #
@@ -154,6 +156,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
             clear_plugins=clear_plugins,
             plugins_display=plugins_display,
         )
+
+        self.prefix_arrow_nav_keys = False
 
         #
         #  If tpm is used, this is set once tpm has completed
