@@ -244,6 +244,14 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
+    #
+    #  wont work in an inner tmux, outer is capturing key
+    #  in both states. If this is really needed in the inner tmux
+    #  a separate capture key for t2 could be defined
+    #
+    # def plugin_which_key(self) -> list:
+    #     return ['alexwforsythe/tmux-which-key', 3.0, ""]
+
     def plugin_menus(self) -> list:  # 1.8
         conf = """
         set -g @menus_log_file ~/tmp/tmux-menus.log
@@ -289,13 +297,6 @@ class DefaultPlugins(BaseConfig):
             set -g @power_zoom_mouse_action "S-DoubleClick3Pane"
             """,
         ]
-
-    def not_plugin_prefix_highlight(self) -> list:  # 2.0
-        #
-        #  prevent actual plugin from being used, the equivalent code
-        #  is now harcoded in base:status_bar_prepare()
-        #
-        return ["jaclu/tmux-prefix-highlight", 99.0, ""]
 
     def plugin_resurrect(self) -> list:  # 1.9
         #

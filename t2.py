@@ -18,6 +18,7 @@
 #  your primary tmux is running, without having colliding prefix issues
 #
 
+
 # everything, a lot of this is setup
 #  in the default file, this is for color theme and selection of often
 #  changing list of plugins I am testing
@@ -27,11 +28,11 @@ import mtc_utils
 if mtc_utils.HOSTNAME == "ish-hetz1":
     from sb.sb_acceptance import SB
 else:
-    # normal theme
     from sb.sb_t2 import SB
 
 
-class T2(SB):
+# Pylance complains about the base class here, the above conditon confuses it
+class T2(SB):  # type: ignore
     """Inner tmux session"""
 
     t2_env = "1"
@@ -43,35 +44,33 @@ class T2(SB):
     # is_limited_host = True
     status_interval = 5
 
-    def local_overides(self):
-        """Local overrides applied last in the config, not related to
-        status bar, for that see status_bar_customization()
+    def local_overrides(self) -> None:
         """
-        super().local_overides()
+        Applies local configuration overrides, executed after all other
+        configuration steps. These overrides do not affect the status bar
+        configuration (see `status_bar_customization()` for that).
+
+        When overriding this method in a subclass, ensure that
+        `super().local_overrides()` is called first, to retain any overrides
+        defined by parent classes before applying additional customizations.
+        """
+        super().local_overrides()
+        w = self.write
+        w("# T2.local_overides")
+
         if self.vers_ok(1.9):
             #
             #  Works both on bright and dark backgrounds
             #
-            self.write(
+            w(
                 """
+                set -g @menus_log_file ~/tmp/tmux-menus-t2.log
+
                 # t2 border style
-                # yellow - was 38 bluish
                 set -g pane-active-border-style fg=colour3
-                # blue - was XS 95 131 grey with a bit red
                 set -g pane-border-style        fg=colour241
                 """
             )
-
-    def plugin_menus(self) -> list:  # 1.8
-        conf = """
-        set -g @menus_log_file ~/tmp/tmux-menus-t2.log
-        # set -g @menus_use_cache no
-        """
-        #
-        #  This plugin works in tmux 1.7, but that version do not support
-        #  @variables, so we say 1.8 here...
-        #
-        return ["jaclu/tmux-menus", 1.8, conf]
 
     #
     #  Override default plugins with empty stubs for plugins
@@ -79,15 +78,6 @@ class T2(SB):
     #  not_ prefix is when I temp allow them, but keeping the opt out
     #  in case I want them gone again
     #
-
-    #
-    #  wont work in an inner tmux, outer is capturing key
-    #  in both states. If this is really needed in the inner tmux
-    #  a separate capture key for t2 could be defined
-    #
-
-    # def plugin_which_key(self) -> list:
-    #     return ['alexwforsythe/tmux-which-key', 3.0, ""]
 
     def not_plugin_packet_loss(self):  # 1.9
         # normally this is better run in the outer tmux session

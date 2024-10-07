@@ -38,29 +38,31 @@
 
 import os
 import sys
-from pydoc import locate
 
 import __main__
 
+# from pydoc import locate
+from tmux_conf import TmuxConfig  # type: ignore
+
 import mtc_utils
 
-TMUX_CONF_NEEDED = "0.16.8"
+TMUX_CONF_NEEDED = "0.17.0"
 
 #
 #  Special import handling for debugging, is ignored in normal usage
 #
-cfb = os.environ.get("__CFBundleIdentifier")
-if cfb and (cfb.find("sublime") > -1 or cfb.find("VSCode") > -1):
-    #  Makes debugging easier, being able to use the lib without deployment
-    #  assumes tmux-conf is checked out inside this repository
-    TmuxConfig = locate("local_tmux_conf.src.tmux_conf.tmux_conf.TmuxConfig")
-else:
-    # import as package
-    try:
-        from tmux_conf import TmuxConfig  # type: ignore
-    except ModuleNotFoundError:
-        print("Dependency tmux_conf not installed!")
-        sys.exit(1)
+# cfb = os.environ.get("__CFBundleIdentifier")
+# if cfb and (cfb.find("sublime") > -1 or cfb.find("VSCode") > -1):
+#     #  Makes debugging easier, being able to use the lib without deployment
+#     #  assumes tmux-conf is checked out inside this repository
+#     TmuxConfig = locate("local_tmux_conf.src.tmux_conf.tmux_conf.TmuxConfig")
+# else:
+#     # import as package
+#     try:
+
+# except ModuleNotFoundError:
+#     print("Dependency tmux_conf not installed!")
+#     sys.exit(1)
 
 
 class BaseConfig(TmuxConfig):  # type: ignore
@@ -249,8 +251,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
         available via prefix, in order to still be accessible on dumb
         terminals.
         """
-        w = self.write
-
         self.connecting_terminal()
         self.general_environment()
         self.mouse_handling()
@@ -259,25 +259,20 @@ class BaseConfig(TmuxConfig):  # type: ignore
         self.windows_handling()
         self.pane_handling()
 
-        w(
-            """
-
-        #======================================================
-        #
-        #   Local overrides
-        #
-        #======================================================
-        """
-        )
-        self.local_overides()
         self.__base_overrides()
 
-    def local_overides(self):
-        """Local overrides applied last in the config, not related to
-        status bar, for that see status_bar_customization()
-
-        If this is used, remember to call: super().local_overides()
+    def local_overrides(self) -> None:
         """
+        Applies local configuration overrides, executed after all other
+        configuration steps. These overrides do not affect the status bar
+        configuration (see `status_bar_customization()` for that).
+
+        When overriding this method in a subclass, ensure that
+        `super().local_overrides()` is called first, to retain any overrides
+        defined by parent classes before applying additional customizations.
+        """
+        super().local_overrides()
+        self.write("# BaseConfig.local_overides")
 
     def __base_overrides(self):
         """This should be at the very end of content subclasses
@@ -663,32 +658,44 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #
             self.sb_right += "#{?window_zoomed_flag, Z ,}"
 
-        if self.vers_ok(1.9) and not self.vers_ok(2.0):
-            #
-            #  Before 1.9 the pane_synchronized doesn't exist
-            #  and from 2.0 #{prefix_highlight} from the
-            #  tmux-plugins/tmux-prefix-highlight plugin
-            #  better indicates sync mode
-            #
-            self.sb_right += "#[reverse]#{?pane_synchronized,sync,}#[default]"
+        # if self.vers_ok(1.9) and not self.vers_ok(2.0):
+        #     #
+        #     #  Before 1.9 the pane_synchronized doesn't exist
+        #     #  and from 2.0 #{prefix_highlight} from the
+        #     #  tmux-plugins/tmux-prefix-highlight plugin
+        #     #  better indicates sync mode
+        #     #
+        #     self.sb_right += "#[reverse]#{?pane_synchronized,sync,}#[default]"
 
-        #
-        #  bypass tmux-prefix-highlight, hardcoding it to avoid countless
-        #  variable parsings
-        #
-        sync_indicator = "#{?synchronize-panes,#[fg=black#,bg=yellow#,blink] Sync ,}"
+        if self.vers_ok(1.8):
+            #
+            #  bypass tmux-prefix-highlight, hardcoding it to avoid countless
+            #  variable parsings
+            #
+            if self.vers_ok(1.9):
+                sync_indicator = (
+                    "#{?synchronize-panes,#[default]#"
+                    "[fg=black]#[bg=yellow]#[blink]#[bold] Sync ,#[default]}"
+                )
+                if self.vers_ok(2.5):
+                    mode_str = "#{pane_mode}"
+                else:
+                    mode_str = "Copy"
+                mode_indicator = (  # will display sync_indicator if not active
+                    "#{"
+                    f"?pane_in_mode,#[fg=black]#[bg=yellow]#[bold] {mode_str} ,"
+                    f"{sync_indicator}"
+                    "}"
+                )  #
+            else:
+                mode_indicator = ""
 
-        mode_indicator = (  # will display sync_indicator if not active
-            "#{?pane_in_mode,#[fg=black#,bg=yellow#,blink] #{pane_mode} ,"
-            f"{sync_indicator}"
-            "}"
-        )
-        prefix_indicator = (  # will display copy_indicator if not active
-            "#{?client_prefix,#[fg=colour231#,bg=colour04]"
-            f" {self.display_prefix()} ,{mode_indicator}"
-            "}#[default]"
-        )
-        self.sb_right += prefix_indicator
+            prefix_indicator = (  # will display copy_indicator if not active
+                "#{?client_prefix,#[fg=colour231]#[bg=colour04]"
+                f" {self.display_prefix()} ,{mode_indicator}"
+                "}#[default]"
+            )
+            self.sb_right += prefix_indicator
 
     def status_bar(self):
         w = self.write
@@ -1095,9 +1102,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         #  Pane title and size
         #
-        pane_label = ""
         if self.vers_ok(2.3) and not self.is_tmate():
-            if self.show_pane_title:
+            pane_label = ""
+            if self.vers_ok(2.6) and self.show_pane_title:
                 pane_label += "#T "
             if self.show_pane_size:
                 pane_label += "(#{pane_width}x#{pane_height}) "
@@ -1106,10 +1113,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
                 w(f'\nset -g pane-border-format "{pane_label}"')
 
         if self.vers_ok(2.6):
-            if pane_label:
-                #
-                #  Default label is pane nr
-                #
+            #
+            #  Default label is pane nr
+            #
+            if self.vers_ok(2.7):
                 w(
                     """
                 set-hook -g after-split-window  "selectp -T '#D'"
@@ -1117,34 +1124,16 @@ class BaseConfig(TmuxConfig):  # type: ignore
                 set-hook -g after-new-window    "selectp -T '#D'"
                 """
                 )
-
-                #
-                #  Display pane frame lines when
-                #   a) more than one pane is present
-                #   b) not in a zoomed state
-                #
+            else:
+                # odd on 2.6 display "#D" shows pane id but it cant be used
+                # as pane title
                 w(
-                    "set-hook -g window-layout-changed "
-                    '"set -w -F pane-border-status '
-                    '\\"#{?#{==:#{window_panes},1},off,top}\\""'
+                    """
+                set-hook -g after-split-window  "selectp -T ''"
+                set-hook -g after-new-session   "selectp -T ''"
+                set-hook -g after-new-window    "selectp -T ''"
+                """
                 )
-
-                #
-                # TODO: avoid using shell and TMUX_BIN here
-                #
-                # orig works
-                w(
-                    'set-hook -g after-resize-pane      "run-shell \\"'
-                    "if [ #{window_zoomed_flag} -eq 1 ]; then "
-                    '$TMUX_BIN set pane-border-status off; fi\\""\n'
-                )
-
-                # doesnt work
-                # w(
-                #    "set-hook -g  after-resize-pane "
-                #    '"set pane-border-status '
-                #    '\\"#{?#{==:#{window_zoomed_flag},1},off,top}\\""'
-                # )
 
             if self.show_pane_title:
                 w(
@@ -1152,13 +1141,30 @@ class BaseConfig(TmuxConfig):  # type: ignore
                     '"Pane title: " "select-pane -T \\"%%\\""'
                 )
         elif self.vers_ok(2.3) and not self.is_tmate():
-            w(
-                """
-            set -g pane-border-status top
+            w("set -g pane-border-status top")
+            if not self.vers_ok(2.6):
+                w("bind  P  display 'Pane title setting needs 2.6'")
 
-            bind  P  display "Pane title setting needs 2.6"
-            """
+        if self.vers_ok(2.3):
+            # Hide frame lines when zoomed
+            # zoom was introduced in tmux 1.8
+            # set-hook in 2.3
+            w(
+                'set-hook -g after-resize-pane "if-shell '
+                '\\"[ #{window_zoomed_flag} -eq 1 ]\\" '
+                '\\"set pane-border-status off\\" '
+                '\\"set pane-border-status top\\""'
             )
+
+        #  Display pane frame lines when more than one pane is present
+        if self.vers_ok(2.6):
+            # works in 2.4 but not in 2.5 - odd
+            w(
+                "set-hook -g window-layout-changed "
+                '"set -w -F pane-border-status '
+                '\\"#{?#{==:#{window_panes},1},off,top}\\""'
+            )
+            # w("run -b 'sleep 2 ; set pane-border-status off'")
 
     def pane_navigation(self):
         w = self.write
