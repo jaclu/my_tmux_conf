@@ -76,17 +76,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
     show_pane_size: bool = True  # If enabled pane frane lines will display pane size
 
     #
-    #  Most iPad keyboards dont have navigation keys - PageUp/Down Home/End
-    #  This in combination with the fact that iSH only supports the arrows
-    #  without modifiers, creates a need for using something simple for
-    #  nav keys. If this is True, <prefix> arrows will serve as nav keys
-    #  on the iSH console, for other envs this setting will not have any
-    #  meaning.
-    #  The drawback is that this pushes pane navigation to something else.
-    #  By default it will use vim style <prefix> h j k l
-    #
-    use_ish_prefix_arrow_nav_keys = True
-    #
     #  This causes most colors on MacOS Term.app to fail
     #
     use_24bit_color: bool = os.environ.get("TERM_PROGRAM") != "Apple_Terminal"
@@ -127,10 +116,24 @@ class BaseConfig(TmuxConfig):  # type: ignore
     # Disables tmux deault popup menus, instead relying on the plugin jaclu/tmux-menus
     skip_default_popups: bool = True
 
-    # Will be true if this tmux is run on the iSH console
+    plugin_handler: str = "jaclu/tpm"  # overrides of tmux-conf package default
+
+    # Indicates if this tmux is run on the iSH console
     is_ish_console = False
 
-    plugin_handler: str = "jaclu/tpm"  # overrides of tmux-conf package default
+    #
+    #  Most iPad keyboards dont have navigation keys - PageUp/Down Home/End
+    #  This in combination with the fact that iSH only supports the arrows
+    #  without modifiers, creates a need for using something simple for
+    #  nav keys. If this is True, <prefix> arrows will serve as nav keys
+    #  on the iSH console, for other envs this setting will not have any
+    #  meaning.
+    #  The drawback is that this pushes pane navigation to something else.
+    #  By default it will use vim style <prefix> h j k l
+    #  By setting this to False in your hostname class, this feature will
+    #  not be used.
+    #
+    use_ish_prefix_arrow_nav_keys = True
 
     def __init__(
         self,
@@ -1210,6 +1213,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
             )
 
         if self.prefix_arrow_nav_keys:
+            # no point in mentioning M-arrows as alt keys, since
+            # on the iSH console they can't be generated
             w(
                 """
                 # <prefix> arrows are used for document navigation...
@@ -1222,10 +1227,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
         else:
             w(
                 """
-                bind -N "Select pane left"  Left    select-pane -L
-                bind -N "Select pane right" Right   select-pane -R
-                bind -N "Select pane up"    Up      select-pane -U
-                bind -N "Select pane down"  Down    select-pane -D
+                bind -N "Select pane left - M-Left"  Left    select-pane -L
+                bind -N "Select pane right - M-Right" Right   select-pane -R
+                bind -N "Select pane up - M-Up"    Up      select-pane -U
+                bind -N "Select pane down - M-Down"  Down    select-pane -D
                 """
             )
 
