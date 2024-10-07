@@ -498,10 +498,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
                 """
             #
             #  Due to the limited keyboad handling in iSH , only supporting
-            #  unmodified arrorw, they are used as navigation keys.
-            #  <prefix> <arrow> generates: PageUp/Down Home End
+            #  unmodified arrorws, here they are used as document navigation keys.
+            #  <prefix> <arrow> generates: PageUp/PageDown Home & End
             #
-            #  For pane nav Use M-<arrow> / <prefix> hjkl
+            #  For pane navigation in this case, use <prefix> hjkl
             #
             bind -N "Page up"    Up     send-key PageUp
             bind -N "Page Down"  Down   send-key PageDown
@@ -1164,13 +1164,24 @@ class BaseConfig(TmuxConfig):  # type: ignore
         )
 
         if self.bind_meta:
-            w(
-                """bind -N "Select pane left  - P h"  -n  M-Left   select-pane -L
-            bind -N "Select pane right  - P l" -n  M-Right  select-pane -R
-            bind -N "Select pane up  - P k"    -n  M-Up     select-pane -U
-            bind -N "Select pane down  - P j"  -n  M-Down   select-pane -D
-            """
-            )
+            # indicate the right alternate keys
+            if self.prefix_arrow_nav_keys:
+                w(
+                    """bind -N "Select pane left  - P h"  -n  M-Left   select-pane -L
+                bind -N "Select pane right  - P l" -n  M-Right  select-pane -R
+                bind -N "Select pane up  - P k"    -n  M-Up     select-pane -U
+                bind -N "Select pane down  - P j"  -n  M-Down   select-pane -D
+                """
+                )
+            else:
+                w(
+                    """bind -N "Select pane left  - P Left"  -n  M-Left   select-pane -L
+                bind -N "Select pane right  - P Right" -n  M-Right  select-pane -R
+                bind -N "Select pane up  - P Up"    -n  M-Up     select-pane -U
+                bind -N "Select pane down  - P Down"  -n  M-Down   select-pane -D
+                """
+                )
+
             if self.vers_ok(2.4):
                 #
                 #  In copy-mode M-Up/Down Scrolls half page, doesn't seem
@@ -1197,6 +1208,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         if self.prefix_arrow_nav_keys:
             w(
                 """
+                # <prefix> arrows are used for document navigation...
                 bind -N "Select pane left"  -r  h      select-pane -L
                 bind -N "Select pane right" -r  l      select-pane -R
                 bind -N "Select pane up"    -r  k      select-pane -U
