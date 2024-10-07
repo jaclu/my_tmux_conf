@@ -80,8 +80,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  This in combination with the fact that iSH only supports the arrows
     #  without modifiers, creates a need for using something simple for
     #  nav keys. If this is True, <prefix> arrows will serve as nav keys
-    #  The drawback is that this pushes pane navigation to something else
-    #  By default I use vim style <prefix> h j k l
+    #  The drawback is that this pushes pane navigation to something else.
+    #  By default it will use vim style <prefix> h j k l
     #
     prefix_arrow_nav_keys = False
     #
@@ -497,9 +497,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
             w(
                 """
             #
-            #  Due to the limited keyboad handling in iSH , only supporting
-            #  unmodified arrorws, here they are used as document navigation keys.
-            #  <prefix> <arrow> generates: PageUp/PageDown Home & End
+            #  Due to the limited keyboad handling in iSH, only supporting
+            #  unmodified arrorws, here they are used for document navigation.
+            #
+            #  <prefix> <arrow> generates: PageUp, PageDown, Home, End
             #
             #  For pane navigation in this case, use <prefix> hjkl
             #
@@ -509,7 +510,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
             bind -N "End"        Right  send-key End
             """
             )
-        w()  # spacer between sections
 
     def remove_unwanted_default_bindings(self):
         w = self.write
