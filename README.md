@@ -85,6 +85,10 @@ and even run a different version of tmux for compatiblity tests.
 
 I normally start tmux with myt (in tools) it compiles a fresh tmux.conf
 based on hostname.
+I have supplied some samples in sample_hosts. Create a folder hostnames and define
+hostname based configs there, using the lowercased version of `hostname -s`
+for each host.
+
 This way it is dead easy to adopt the setup depending on where it runs.
 In most cases I just ~~soft-link~~ (weird no longer works, now I need
 to copy the template to the hostname file if not in same dir) one of the
