@@ -396,7 +396,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         set -g display-time 4000
         set -g repeat-time 750   # I want it a bit longer than 500')
         set -s escape-time 0
-        set -g history-limit 50000
+        set -g history-limit 2000
         set -g status-keys emacs
 
         # not sure about this one...
