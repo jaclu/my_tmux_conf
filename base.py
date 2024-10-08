@@ -18,19 +18,29 @@
 
 import os
 
-# print("><> is ish_console imported")
+# # print("><> is ish_console imported")
+# if "LC_KEYBOARD" in os.environ:
+#     from ish_console import IshConsole
+
+#     BaseClass = (IshConsole,)
+# else:
+#     import base_config
+
+#     BaseClass = (base_config.BaseConfig,)
+
+
 if "LC_KEYBOARD" in os.environ:
     from ish_console import IshConsole
 
-    BaseClass = (IshConsole,)
+    # Since IshConsole inherits from BaseConfig, we can set BaseConfig to IshConsole
+    class BaseConfig(IshConsole):  # type: ignore
+        pass
+
 else:
-    import base_config
+    from base_config import BaseConfig as BaseConfigFromBase
 
-    BaseClass = (base_config.BaseConfig,)
-
-
-class BaseConfig(*BaseClass):
-    pass
+    class BaseConfig(BaseConfigFromBase):  # type: ignore
+        pass
 
 
 if __name__ == "__main__":

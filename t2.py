@@ -28,7 +28,7 @@ import mtc_utils
 if mtc_utils.HOSTNAME == "ish-hetz1":
     from sb.sb_acceptance import SB
 else:
-    from sb.sb_t2 import SB
+    from sb.sb_t2 import SB  # type: ignore
 
 
 # Pylance complains about the base class here, the above conditon confuses it

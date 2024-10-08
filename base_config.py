@@ -42,14 +42,14 @@ import sys
 import __main__
 
 # from pydoc import locate
-from tmux_conf import TmuxConfig  # type: ignore
+from tmux_conf import TmuxConfig
 
 import mtc_utils
 
 TMUX_CONF_NEEDED = "0.17.0"
 
 
-class BaseConfig(TmuxConfig):  # type: ignore
+class BaseConfig(TmuxConfig):
     """Defines the general tmux setup, key binds etc"""
 
     prefix_key: str = "C-a"
@@ -96,7 +96,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
     # Disables tmux deault popup menus, instead relying on the plugin jaclu/tmux-menus
     skip_default_popups: bool = True
 
-    plugin_handler: str = "jaclu/tpm"  # overrides of tmux-conf package default
+    plugin_handler = "jaclu/tpm"  # overrides of tmux-conf package default
 
     #
     #  iPad keyboards typically lack dedicated navigation keys such as PageUp,
@@ -238,6 +238,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         available via prefix, in order to still be accessible on dumb
         terminals.
         """
+        self.remove_unwanted_default_bindings()
         self.connecting_terminal()
         self.general_environment()
         self.mouse_handling()
@@ -293,6 +294,55 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #
     #  content methods broken up in parts, by content
     #
+    def remove_unwanted_default_bindings(self):
+        w = self.write
+        w(
+            """
+        #======================================================
+        #
+        #   Remove unwanted default bindings
+        #
+        #======================================================
+        """
+        )
+        w(
+            """#
+        #  Chooses next layout, potentially ruining a carefully crafted one.
+        #  I can't really see any purpose with this one. You can access
+        #  the layouts directly using <prefix> M-[1-5],
+        #  so the safe bet is to disable
+        #
+        unbind  Space    #  Select next layout"""
+        )
+        if self.skip_default_popups:
+            if self.vers_ok(2.1) and "tmux-menus" in self.plugins.found(
+                short_name=True
+            ):
+                w(
+                    """
+                    #
+                    #  Remove the default popup menus
+                    #  Instead using the plugin jaclu/tmux-menus - <prefix> \\
+                    #
+                    unbind  -n  MouseDown3Pane
+                    unbind  -n  MouseDown3Status
+                    unbind  -n  M-MouseDown3Pane
+                    unbind  -n  M-MouseDown3Status"""
+                )
+                if self.vers_ok(2.9):
+                    w(
+                        """unbind  -n  MouseDown3StatusLeft
+                        unbind  -n  M-MouseDown3StatusLeft
+                        unbind  -n  MouseDown3StatusRight"""
+                    )
+                if self.vers_ok("3.0a"):
+                    w(
+                        """unbind  <
+                        unbind  >"""
+                    )
+
+        w()  # spacer
+
     def connecting_terminal(self):  # cmd: 2 + optional
         w = self.write
         w(
@@ -391,15 +441,16 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         #   General environment
         #
-        #======================================================"""
+        #======================================================
+        """
         )
         w(
-            """
-        set -g display-time 4000
+            """set -g display-time 4000
         set -g repeat-time 750   # I want it a bit longer than 500')
         set -s escape-time 0
         set -g history-limit 2000
-        set -g status-keys emacs""")
+        set -g status-keys emacs"""
+        )
         if self.vers_ok(3.2):
             #  will switch to any detached session, when no more active ones
             w("set -g detach-on-destroy no-detached")
@@ -415,9 +466,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         if self.vers_ok(3.3):
             #  needs a short wait, so that display has time to be created
-            w("run -b 'sleep 0.2 ; $TMUX_BIN set -w popup-border-lines rounded'")
-
-        self.remove_unwanted_default_bindings()
+            w("run-shell -b 'sleep 0.2 ; $TMUX_BIN set -w popup-border-lines rounded'")
 
         if self.prefix_key.lower() != "c-b":
             w(
@@ -495,53 +544,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
             bind -N "Page up"    Up     send-key PageUp
             bind -N "Page Down"  Down   send-key PageDown
             bind -N "Home"       Left   send-key Home
-            bind -N "End"        Right  send-key End
-            """
+            bind -N "End"        Right  send-key End"""
             )
-
-    def remove_unwanted_default_bindings(self):
-        w = self.write
-        w(
-            """
-        #
-        #  Remove unwanted default bindings
-        #
-
-        #
-        #  Chooses next layout, potentially ruining a carefully crafted one.
-        #  I can't really see any purpose with this one. You can access
-        #  the layouts directly using <prefix> M-[1-5],
-        #  so the safe bet is to disable
-        #
-        unbind  Space    #  Select next layout
-        """
-        )
-        if self.skip_default_popups:
-            if self.vers_ok(2.1):
-                w(
-                    """
-                    #
-                    #  Remove the default popup menus
-                    #  Instead using the plugin jaclu/tmux-menus - <prefix> \\
-                    #
-                    unbind  -n  MouseDown3Pane
-                    unbind  -n  MouseDown3Status
-                    unbind  -n  M-MouseDown3Pane
-                    unbind  -n  M-MouseDown3Status"""
-                )
-                if self.vers_ok(2.9):
-                    w(
-                        """unbind  -n  MouseDown3StatusLeft
-                        unbind  -n  M-MouseDown3StatusLeft
-                        unbind  -n  MouseDown3StatusRight"""
-                    )
-                if self.vers_ok("3.0a"):
-                    w(
-                        """unbind  <
-                        unbind  >"""
-                    )
-
-                w()  # spacer
+        w()  # spacer between sections
 
     def mouse_handling(self):
         w = self.write
@@ -786,12 +791,15 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         set -g  renumber-windows on
         set -g  allow-rename off
-        set -wg automatic-rename off
-
-        set -g set-titles on
-        set -g set-titles-string "#{host_short} #{session_name}:#{window_name}"
+        set -g automatic-rename off
         """
         )
+        if self.vers_ok(1.8) and False:  # not sure if this is desired
+            w("set -g set-titles on")
+            w(
+                'set -g set-titles-string "#{host_short} '
+                '#{session_name}:#{window_name}"'
+            )
 
         if self.vers_ok(3.2):
             w("set -g aggressive-resize on")
@@ -943,7 +951,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         w(
             'bind -N "Clear history & screen"    M-l  send-keys C-l \\; '
-            'run "sleep 0.3" \\; clear-history'
+            'run-shell "sleep 0.3" \\; clear-history'
         )
         w()  # spacer
 
@@ -993,6 +1001,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
         self.pane_resizing()
 
     def pane_frame_lines(self):
+        if not self.vers_ok(1.9):
+            return
+
         w = self.write
         w(
             """
@@ -1025,12 +1036,14 @@ class BaseConfig(TmuxConfig):  # type: ignore
             """
             )
 
-        # if self.vers_ok(3.2):
-        #    w("run -b 'sleep 0.2 ; $TMUX_BIN setw -g pane-border-lines single'")  # number
+        if self.vers_ok(3.2):
+            w("run-shell -b '$TMUX_BIN set -g pane-border-lines single'")
 
         if self.vers_ok(3.3):
             # Needs to wait until a window exists
-            w('run -b "sleep 0.2 ; $TMUX_BIN set pane-border-indicators arrows"\n')
+            w(
+                'run-shell -b "sleep 0.2 ; $TMUX_BIN set pane-border-indicators arrows"\n'
+            )
 
         #
         #  Pane title and size
@@ -1097,7 +1110,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
                 '"set -w -F pane-border-status '
                 '\\"#{?#{==:#{window_panes},1},off,top}\\""'
             )
-            # w("run -b 'sleep 2 ; set pane-border-status off'")
+        w()  # spacer between sections
 
     def pane_navigation(self):
         w = self.write
@@ -1112,8 +1125,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         # indicate the right alternate keys
         if self.prefix_arrow_nav_keys:
             w(
-                """
-            bind -N "Select pane left  - P h"  -n  M-Left   select-pane -L
+                """bind -N "Select pane left  - P h"  -n  M-Left   select-pane -L
             bind -N "Select pane right  - P l" -n  M-Right  select-pane -R
             bind -N "Select pane up  - P k"    -n  M-Up     select-pane -U
             bind -N "Select pane down  - P j"  -n  M-Down   select-pane -D
@@ -1121,8 +1133,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             )
         else:
             w(
-                """
-            bind -N "Select pane left  - P Left"   -n  M-Left   select-pane -L
+                """bind -N "Select pane left  - P Left"   -n  M-Left   select-pane -L
             bind -N "Select pane right  - P Right" -n  M-Right  select-pane -R
             bind -N "Select pane up  - P Up"       -n  M-Up     select-pane -U
             bind -N "Select pane down  - P Down"   -n  M-Down   select-pane -D
@@ -1135,8 +1146,8 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #  to be an important feature.
             #  Better to keep them to their normal setting as per above
             #
-            w('bind -N "Select pane up"   -T "copy-mode"  M-Up  ' "  select-pane -U")
-            w('bind -N "Select pane down" -T "copy-mode"  M-Down  ' "select-pane -D")
+            w('bind -N "Select pane up"   -T "copy-mode"  M-Up   select-pane -U')
+            w('bind -N "Select pane down" -T "copy-mode"  M-Down select-pane -D')
 
         if self.prefix_arrow_nav_keys:
             # no point in mentioning M-arrows as alt keys, since
@@ -1318,13 +1329,13 @@ class BaseConfig(TmuxConfig):  # type: ignore
             note_prefix = ""
         #
         # The conf_file needs to be mentioned below to make sure
-        # the -p2 run doesnt complain if a non-standard config is used
+        # the -p2 run-shell doesnt complain if a non-standard config is used
         # it wont be over-written!
         #
         w(
             f'bind -N "{note_prefix}List all plugins defined"  {muc_s_p}  '
-            'run "$TMUX_BIN display \\"Generating response...\\" \\; '
-            'cd $HOME/git_repos/mine/my_tmux_conf \\; pwd \\; '
+            'run-shell "$TMUX_BIN display \\"Generating response...\\" ; '
+            "cd $HOME/git_repos/mine/my_tmux_conf ; pwd ; "
             f' {__main__.__file__} -p2"'
         )
 

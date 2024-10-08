@@ -85,8 +85,8 @@ class DefaultPlugins(BaseConfig):
         used_plugins = self.plugins.found(short_name=True)
 
         if "tmux-suspend" in used_plugins:
-            # pylint: disable=E0203
-            self.sb_right += "#{@mode_indicator_custom_prompt}"
+            # pylint: disable=E0203,W0201
+            self.sb_right = "#{@mode_indicator_custom_prompt}"
 
         if "tmux-mullvad" in used_plugins:
             # pylint: disable=E1101
