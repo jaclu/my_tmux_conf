@@ -120,20 +120,25 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
     plugin_handler: str = "jaclu/tpm"  # overrides of tmux-conf package default
 
-    # Indicates if this tmux is run on the iSH console
-    is_ish_console = False
-
     #
-    #  Most iPad keyboards dont have navigation keys - PageUp/Down Home/End
-    #  This in combination with the fact that iSH only supports the arrows
-    #  without modifiers, creates a need for using something simple for
-    #  nav keys. If this is True, <prefix> arrows will serve as nav keys
-    #  on the iSH console, for other envs this setting will not have any
-    #  meaning.
-    #  The drawback is that this pushes pane navigation to something else.
-    #  By default it will use vim style <prefix> h j k l
-    #  By setting this to False in your hostname class, this feature will
-    #  not be used.
+    #  iPad keyboards typically lack dedicated navigation keys such as PageUp,
+    #  PageDown, Home, and End. Additionally, iSH only supports unmodified
+    #  arrow keys (without Ctrl, Shift, or Alt).
+    #  To compensate for this limitation, enabling this setting allows the
+    #  <prefix> + arrow keys to function as navigation keys within tmux
+    #  on the iSH console.
+    #
+    #  This feature only activates when the terminal is detected as iSH.
+    #  In all other terminals,  the arrow keys and pane navigation remain
+    #  unchanged.
+    #
+    #  Note: Enabling this will reassign tmux pane navigation to use
+    #  Vim-style keybindings (<prefix> + h/j/k/l) by default,
+    #  which may require adjustment if you're used to using the arrow keys
+    #  for pane navigation.
+    #
+    #  If you set this to False in your hostname-specific configuration class,
+    #  this feature will not be enabled on iSH consoles.
     #
     use_ish_prefix_arrow_nav_keys = True
 
@@ -150,6 +155,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
         clear_plugins: bool = False,  # remove all current plugins
         plugins_display: int = 0,  # Display info about plugins
     ):
+        # Indicates if this tmux is run on the iSH console
+        self.is_ish_console = False
+
         self.style = None
         self.check_libs_compatible()
         super().__init__(
