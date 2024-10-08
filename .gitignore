@@ -8,8 +8,12 @@ dist/
 src/tmux_conf.egg-info/
 local_tmux_conf/
 
-.venv/
+# if it is a folder
 hostnames/
+# if it is a softlink
+hostnames
+
+.venv/
 
 # vscode
 *.code-workspace
