@@ -3,5 +3,6 @@
   "python.testing.pytestEnabled": true,
   "workbench.colorCustomizations": {
     "titleBar.activeBackground": "#a74b00"
-  }
+  },
+  "python.defaultInterpreterPath": "./.venv/bin/python"
 }
