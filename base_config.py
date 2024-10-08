@@ -48,22 +48,6 @@ import mtc_utils
 
 TMUX_CONF_NEEDED = "0.17.0"
 
-#
-#  Special import handling for debugging, is ignored in normal usage
-#
-# cfb = os.environ.get("__CFBundleIdentifier")
-# if cfb and (cfb.find("sublime") > -1 or cfb.find("VSCode") > -1):
-#     #  Makes debugging easier, being able to use the lib without deployment
-#     #  assumes tmux-conf is checked out inside this repository
-#     TmuxConfig = locate("local_tmux_conf.src.tmux_conf.tmux_conf.TmuxConfig")
-# else:
-#     # import as package
-#     try:
-
-# except ModuleNotFoundError:
-#     print("Dependency tmux_conf not installed!")
-#     sys.exit(1)
-
 
 class BaseConfig(TmuxConfig):  # type: ignore
     """Defines the general tmux setup, key binds etc"""
@@ -88,12 +72,6 @@ class BaseConfig(TmuxConfig):  # type: ignore
     #  RGB was not supported in older tmux'es
     #
     color_tag_24bit: str = "RGB"
-
-    #
-    #  So that I can disable them and practice the vi keys every now and
-    #  then. If Falde, Meta keys are unbound
-    #
-    bind_meta: bool = True
 
     #
     #  Default templates for the status bar, so that they can easily be
@@ -778,20 +756,10 @@ class BaseConfig(TmuxConfig):  # type: ignore
             """# session navigation
         bind -N "Select previous session  - M-(  or  C-M-S-Up" -r  (  switch-client -p
         bind -N "Select next session  - M-)  or  C-M-S-Down"     -r  )  switch-client -n
-        bind -N "Switch to last session"      _  switch-client -l"""
+        bind -N "Switch to last session"      _  switch-client -l
+        bind -N "Select previous session  - P (" -n C-M-S-Up switch-client -p
+        bind -N "Select next session  - P )" -n C-M-S-Down switch-client -n"""
         )
-
-        if self.bind_meta:
-            w(
-                """bind -N "Select previous session  - P (" -n C-M-S-Up switch-client -p
-            bind -N "Select next session  - P )" -n C-M-S-Down switch-client -n"""
-            )
-        else:
-            w(
-                """#  skipping adv keys, if resourced
-            unbind -n  C-M-S-Up
-            unbind -n  C-M-S-Down"""
-            )
         w(
             'bind -N "Rename Session"  S    command-prompt -I "#S" '
             '"rename-session -- \\"%%\\""'
@@ -839,35 +807,21 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         for key in ("c", "="):  # c is just for compatibility with default key
             w(f'bind -N "New window"           {key}    {cmd_new_win_named}')
-        if self.bind_meta:
-            w(f'bind -N "New window  - P =" -n  M-=  {cmd_new_win_named}')
-        else:
-            w("unbind                      -n  M-=  # skipping adv-key")
+        w(f'bind -N "New window  - P =" -n  M-=  {cmd_new_win_named}')
 
-        pref = 'bind -N "Select the'
+        pref = 'bind -N "Select the '
         w(
             f"""
         # window navigation
-        # {pref} previous window  - M-9  or  C-M-S-Left"  -r  9   previous-window
-        # {pref} next window  - M-0  or C-M-S-Right"      -r  0   next-window
-        {pref} previously current window  - M--"            -  last-window
+        # {pref}previous window  - M-9  or  C-M-S-Left"  -r  9   previous-window
+        # {pref}next window  - M-0  or C-M-S-Right"      -r  0   next-window
+        {pref}previously current window  - M--"            -  last-window
         # override default to add my note
-        {pref} previous window  - C-M-S-Left"  -r  p   previous-window
-        {pref} next window      - C-M-S-Right"  -r  n   next-window"""
+        {pref}previous window  - C-M-S-Left"  -r  p   previous-window
+        {pref}next window      - C-M-S-Right"  -r  n   next-window
+        {pref}previous window  - P p"  -n C-M-S-Left   previous-window
+        {pref}next window      - P n"  -n C-M-S-Right  next-window"""
         )
-        if self.bind_meta:
-            pref = 'bind -N "Select the '
-            w(
-                f"""
-                {pref}previous window  - P p"  -n C-M-S-Left   previous-window
-                {pref}next window      - P n"  -n C-M-S-Right  next-window"""
-            )
-        else:
-            w(
-                """#  skipping adv keys, if resourced
-            unbind -n  C-M-S-Right
-            unbind -n  C-M-S-Left"""
-            )
 
         #
         #  Splitting the entire window
@@ -881,27 +835,17 @@ class BaseConfig(TmuxConfig):  # type: ignore
             #  tmate does not support split-window -f  despite they claim
             #  to be 2.4 compatible and this is a 2.3 feature...
             #
-            if self.bind_meta:
-                sw1 = 'bind -N "Split entire window'  # hackish strings
-                sw2 = " split-window -f"  # to make sure
-                pcb = '-c "#{pane_current_path}"'  # line is not to long
-                w(
-                    f"""# window splitting - bind_meta
-                {sw1} horizontally left"    C-M-Left   {sw2}hb {pcb}
-                {sw1} vertically down"      C-M-Down   {sw2}v  {pcb}
-                {sw1} vertically up"        C-M-Up     {sw2}vb {pcb}
-                {sw1} horizontally right"   C-M-Right  {sw2}h  {pcb}
-                """
-                )
-            else:
-                w(
-                    """#  skipping bind_meta, if resourced
-                  unbind   C-M-Left
-                  unbind   C-M-Down
-                  unbind   C-M-Up
-                  unbind   C-M-Right
-                  """
-                )
+            sw1 = 'bind -N "Split entire window'  # hackish strings
+            sw2 = " split-window -f"  # to make sure
+            pcb = '-c "#{pane_current_path}"'  # line is not to long
+            w(
+                f"""# window splitting
+            {sw1} horizontally left"    C-M-Left   {sw2}hb {pcb}
+            {sw1} vertically down"      C-M-Down   {sw2}v  {pcb}
+            {sw1} vertically up"        C-M-Up     {sw2}vb {pcb}
+            {sw1} horizontally right"   C-M-Right  {sw2}h  {pcb}
+            """
+            )
 
     def windows_handling(self):
         self.windows_handling_part_1()
@@ -910,44 +854,27 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         #  I tend to bind ^[9 & ^[0 to Alt-Left/Right in my terminal apps
         #
-        if self.bind_meta:
-            w("# adv key win nav")
-            if not self.is_ish_console:
-                w(
-                    'bind -N "Select the previous window '
-                    '- P-p  or  P 9"  -n  M-9  previous-window'
-                )
-            s = 'bind -N "Select the'
+        w("# adv key win nav")
+        if not self.is_ish_console:
             w(
-                f"""
-            {s} next window      - P-n  or  P 0"  -n  M-0  next-window
-            {s} previously current window - P -"  -n  M--  last-window"""
+                'bind -N "Select the previous window '
+                '- P-p  or  P 9"  -n  M-9  previous-window'
             )
-            if self.vers_ok(2.1):
-                w2 = "window"  # hackish strings to make sure
-                cm = "-T copy-mode -n M-"  # line is not to long
-                w(
-                    f"""# Overide odd behaviour in copy-mode
-                  bind -N "Previous {w2}  - P 9" {cm}9  previous-{w2}
-                  bind -N "Next {w2} - P 0"      {cm}0  next-{w2}
-                  """
-                )
-        else:
+        s = 'bind -N "Select the'
+        w(
+            f"""
+        {s} next window      - P-n  or  P 0"  -n  M-0  next-window
+        {s} previously current window - P -"  -n  M--  last-window"""
+        )
+        if self.vers_ok(2.1):
+            w2 = "window"  # hackish strings to make sure
+            cm = "-T copy-mode -n M-"  # line is not to long
             w(
-                """#  skipping adv keys, if resourced
-            unbind -n  M-9
-            unbind -n  M-0
-            unbind -n  M--"""
+                f"""# Overide odd behaviour in copy-mode
+                bind -N "Previous {w2}  - P 9" {cm}9  previous-{w2}
+                bind -N "Next {w2} - P 0"      {cm}0  next-{w2}
+                """
             )
-            if self.vers_ok(2.4):
-                # Why can this be bound but not unbound at 2.1?
-                w(
-                    """
-                  unbind -T copy-mode -n M-9
-                  unbind -T copy-mode -n M-0
-                  """
-                )
-
         #
         #  Swap window left/right <prefix>  < / >
         #  This collides with some default popups,
@@ -1184,49 +1111,34 @@ class BaseConfig(TmuxConfig):  # type: ignore
         """
         )
 
-        if self.bind_meta:
-            # indicate the right alternate keys
-            if self.prefix_arrow_nav_keys:
-                w(
-                    """
-                bind -N "Select pane left  - P h"  -n  M-Left   select-pane -L
-                bind -N "Select pane right  - P l" -n  M-Right  select-pane -R
-                bind -N "Select pane up  - P k"    -n  M-Up     select-pane -U
-                bind -N "Select pane down  - P j"  -n  M-Down   select-pane -D
+        # indicate the right alternate keys
+        if self.prefix_arrow_nav_keys:
+            w(
                 """
-                )
-            else:
-                w(
-                    """
-                bind -N "Select pane left  - P Left"   -n  M-Left   select-pane -L
-                bind -N "Select pane right  - P Right" -n  M-Right  select-pane -R
-                bind -N "Select pane up  - P Up"       -n  M-Up     select-pane -U
-                bind -N "Select pane down  - P Down"   -n  M-Down   select-pane -D
-                """
-                )
-
-            if self.vers_ok(2.4):
-                #
-                #  In copy-mode M-Up/Down Scrolls half page, doesn't seem
-                #  to be an important feature.
-                #  Better to keep them to their normal setting as per above
-                #
-                w(
-                    'bind -N "Select pane up"   -T "copy-mode"  M-Up  '
-                    "  select-pane -U"
-                )
-                w(
-                    'bind -N "Select pane down" -T "copy-mode"  M-Down  '
-                    "select-pane -D"
-                )
+            bind -N "Select pane left  - P h"  -n  M-Left   select-pane -L
+            bind -N "Select pane right  - P l" -n  M-Right  select-pane -R
+            bind -N "Select pane up  - P k"    -n  M-Up     select-pane -U
+            bind -N "Select pane down  - P j"  -n  M-Down   select-pane -D
+            """
+            )
         else:
             w(
-                """#  skipping adv keys, if resourced
-            unbind -n  M-Left
-            unbind -n  M-Right
-            unbind -n  M-Up
-            unbind -n  M-Down"""
+                """
+            bind -N "Select pane left  - P Left"   -n  M-Left   select-pane -L
+            bind -N "Select pane right  - P Right" -n  M-Right  select-pane -R
+            bind -N "Select pane up  - P Up"       -n  M-Up     select-pane -U
+            bind -N "Select pane down  - P Down"   -n  M-Down   select-pane -D
+            """
             )
+
+        if self.vers_ok(2.4):
+            #
+            #  In copy-mode M-Up/Down Scrolls half page, doesn't seem
+            #  to be an important feature.
+            #  Better to keep them to their normal setting as per above
+            #
+            w('bind -N "Select pane up"   -T "copy-mode"  M-Up  ' "  select-pane -U")
+            w('bind -N "Select pane down" -T "copy-mode"  M-Down  ' "select-pane -D")
 
         if self.prefix_arrow_nav_keys:
             # no point in mentioning M-arrows as alt keys, since
@@ -1266,37 +1178,26 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
 
         if self.vers_ok(1.7):
-            if self.bind_meta:
+            w(
+                'bind -N "Split pane to the right  - P C-l" -n  '
+                'C-M-Right  split-window -h  -c "#{pane_current_path}"'
+            )
+            w(
+                'bind -N "Split pane below  - P C-j"    -n  '
+                'C-M-Down   split-window -v  -c "#{pane_current_path}"'
+            )
+            if self.vers_ok(2.0):
                 w(
-                    'bind -N "Split pane to the right  - P C-l" -n  '
-                    'C-M-Right  split-window -h  -c "#{pane_current_path}"'
+                    'bind -N "Split pane to the left  - P C-h"  '
+                    "-n  C-M-Left   split-window -hb -c "
+                    '"#{pane_current_path}"'
                 )
                 w(
-                    'bind -N "Split pane below  - P C-j"    -n  '
-                    'C-M-Down   split-window -v  -c "#{pane_current_path}"'
+                    'bind -N "Split pane above  - P C-k"      '
+                    "-n  C-M-Up     split-window -vb -c "
+                    '"#{pane_current_path}"'
                 )
-                if self.vers_ok(2.0):
-                    w(
-                        'bind -N "Split pane to the left  - P C-h"  '
-                        "-n  C-M-Left   split-window -hb -c "
-                        '"#{pane_current_path}"'
-                    )
-                    w(
-                        'bind -N "Split pane above  - P C-k"      '
-                        "-n  C-M-Up     split-window -vb -c "
-                        '"#{pane_current_path}"'
-                    )
-                w()
-            else:
-                w(
-                    """#  skipping adv keys, if resourced
-                unbind -n  C-M-Right
-                unbind -n  C-M-Down
-                unbind -n  C-M-Left
-                unbind -n  C-M-Up
-                """
-                )
-
+            w()
         w(
             'bind -N "Split pane to the right"  C-l  '
             'split-window -h  -c "#{pane_current_path}"'
@@ -1326,29 +1227,16 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         """
         )
-        if self.bind_meta:
-            # keys without prefix never needs repeat set
-            w("bind -N 'Resize pane 1 up    - P K'   -n  C-S-Up     resize-pane -U")
-            w("bind -N 'Resize pane 1 down  - P J'   -n  C-S-Down   resize-pane -D")
-            w("bind -N 'Resize pane 1 left  - P H'   -n  C-S-Left   resize-pane -L")
-            w("bind -N 'Resize pane 1 right - P L'   -n  C-S-Right  resize-pane -R")
+        # keys without prefix never needs repeat set
+        w("bind -N 'Resize pane 1 up    - P K'   -n  C-S-Up     resize-pane -U")
+        w("bind -N 'Resize pane 1 down  - P J'   -n  C-S-Down   resize-pane -D")
+        w("bind -N 'Resize pane 1 left  - P H'   -n  C-S-Left   resize-pane -L")
+        w("bind -N 'Resize pane 1 right - P L'   -n  C-S-Right  resize-pane -R")
 
-            w("bind -N 'Resize pane 5 up'    -n  M-S-Up     resize-pane -U 5")
-            w("bind -N 'Resize pane 5 down'  -n  M-S-Down   resize-pane -D 5")
-            w("bind -N 'Resize pane 5 left'  -n  M-S-Left   resize-pane -L 5")
-            w("bind -N 'Resize pane 5 right' -n  M-S-Right  resize-pane -R 5")
-        else:
-            w(
-                """#  skipping adv keys, if resourced
-            unbind -n  C-S-Up
-            unbind -n  C-S-Down
-            unbind -n  C-S-Left
-            unbind -n  C-S-Right
-            unbind -n  M-S-Up
-            unbind -n  M-S-Down
-            unbind -n  M-S-Left
-            unbind -n  C-M-Right"""
-            )
+        w("bind -N 'Resize pane 5 up'    -n  M-S-Up     resize-pane -U 5")
+        w("bind -N 'Resize pane 5 down'  -n  M-S-Down   resize-pane -D 5")
+        w("bind -N 'Resize pane 5 left'  -n  M-S-Left   resize-pane -L 5")
+        w("bind -N 'Resize pane 5 right' -n  M-S-Right  resize-pane -R 5")
 
         w(
             """
@@ -1392,40 +1280,26 @@ class BaseConfig(TmuxConfig):  # type: ignore
             sys.exit("ERROR: auc_meta_ses_handling() muc_plus undefined!")
 
         w = self.write
-        if self.bind_meta:
-            w(
-                f'bind -N "Create new session  - P +"  -n {muc_plus}  command-prompt '
-                '-I "?" -p "Name of new session: " "new-session -s \\"%%\\""'
-            )
-            w(
-                "bind -N 'Switch to last session  - P _'  "
-                f"-n  {muc_underscore}  switch-client -l"
-            )
-        else:
-            w(
-                f"""#  skipping adv keys, if resourced
-            unbind -n {muc_plus}
-            unbind -n  {muc_underscore}
-            """
-            )
+        w(
+            f'bind -N "Create new session  - P +"  -n {muc_plus}  command-prompt '
+            '-I "?" -p "Name of new session: " "new-session -s \\"%%\\""'
+        )
+        w(
+            "bind -N 'Switch to last session  - P _'  "
+            f"-n  {muc_underscore}  switch-client -l"
+        )
 
         if muc_par_open:
-            if self.bind_meta:
-                w(
-                    "bind -N 'Select previous session  - P "
-                    f"(' -n  {muc_par_open}  switch-client -p"
-                )
-            else:
-                w(f"unbind -n  {muc_par_open}")
+            w(
+                "bind -N 'Select previous session  - P "
+                f"(' -n  {muc_par_open}  switch-client -p"
+            )
 
         if muc_par_close:
-            if self.bind_meta:
-                w(
-                    f"bind -N 'Select next session  - P )'     -n  {muc_par_close}"
-                    "  switch-client -n"
-                )
-            else:
-                w(f"unbind -n  {muc_par_close}")
+            w(
+                f"bind -N 'Select next session  - P )'     -n  {muc_par_close}"
+                "  switch-client -n"
+            )
 
     def auc_display_plugins_used(self, muc_s_p: str = "M-P"):  # used by iSH Console
         """iSH console doesn't generate correct ALT - Upper Case sequences,

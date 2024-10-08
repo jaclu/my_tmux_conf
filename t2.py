@@ -39,7 +39,6 @@ class T2(SB):  # type: ignore
 
     # plugin_handler = "manual"
     # plugin_handler: str = "tmux-plugins/tpm"
-    # bind_meta = False
     # use_embedded_scripts = False
     # is_limited_host = True
     status_interval = 5
