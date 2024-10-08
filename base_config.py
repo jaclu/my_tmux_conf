@@ -178,6 +178,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
             self.is_limited_host = True
 
         #  to avoid typos I use constants for script names
+        self._fnc_list_plugins = "list_plugins"
         self._fnc_toggle_mouse = "toggle_mouse"
         self._fnc_activate_tpm = "activate_tpm"
         self._fnc_tpm_indicator = "tpm_init_indicator"
@@ -258,6 +259,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         defined by parent classes before applying additional customizations.
         """
         super().local_overrides()
+        #  Display what class this override comes from
         self.write("# BaseConfig.local_overides")
 
     def __base_overrides(self):
@@ -397,14 +399,12 @@ class BaseConfig(TmuxConfig):  # type: ignore
         set -g repeat-time 750   # I want it a bit longer than 500')
         set -s escape-time 0
         set -g history-limit 2000
-        set -g status-keys emacs
-
-        # not sure about this one...
-        # set -g detach-on-destroy no-detached")
-
-
-        """
-        )
+        set -g status-keys emacs""")
+        if self.vers_ok(3.2):
+            #  will switch to any detached session, when no more active ones
+            w("set -g detach-on-destroy no-detached")
+        else:
+            w("set -g detach-on-destroy off")
 
         if self.vers_ok(2.6):
             #  Safe, does not allow apps inside tmux to set clipboard
@@ -767,8 +767,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
 
         w(
             'bind -N "Kill session in focus"    M-x  confirm-before -p '
-            '"Kill session: #{session_name}? (y/n)"  '
-            '"set -s detach-on-destroy off \\; kill-session"'
+            '"Kill session: #{session_name}? (y/n)" "kill-session"'
         )
 
         w()  # spacer between sections
@@ -916,8 +915,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         for c in ("&", "X"):
             w(
                 f'bind -N "Kill window in focus"    {c}  confirm-before -p '
-                '"kill current window \\"#W\\"? (y/n)" '
-                '"set -s detach-on-destroy off \\; kill-window"'
+                '"kill current window \\"#W\\"? (y/n)" "kill-window"'
             )
         w()  # spacer between sections
 
@@ -957,19 +955,20 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         #  When saved with escape code, less/most fails to display
         #  cat history-file will display the included colors correctly.
-        #
+        #  ok 1.8
         home_dir = os.path.expandvars("~")
-        w(
-            'bind -N "Save history to prompted file name (includes escapes)"  '
-            'M-e  command-prompt -p "save history (includes escapes) to:" '
-            f'-I "{home_dir}/tmux-e.history" "capture-pane -S - -E - -e ; '
-            'save-buffer %1 ; delete-buffer"'
-        )
+        if self.vers_ok(1.8):
+            w(
+                'bind -N "Save history to prompted file name (includes escapes)"  '
+                'M-e  command-prompt -p "save history (includes escapes) to:" '
+                f'-I "{home_dir}/tmux-e.history" "capture-pane -S - -E - -e \\; '
+                'save-buffer %1 \\; delete-buffer"'
+            )
         w(
             'bind -N "Save history to prompted file name (no escapes)"        '
             'M-h  command-prompt -p "save history (no escapes) to:" '
-            f'-I "{home_dir}/tmux.history" "capture-pane -S - -E - ;'
-            'save-buffer %1 ; delete-buffer"'
+            f'-I "{home_dir}/tmux.history" "capture-pane -S - -E - \\; '
+            'save-buffer %1 \\; delete-buffer"'
         )
 
         w(
@@ -980,8 +979,7 @@ class BaseConfig(TmuxConfig):  # type: ignore
         )
         w(
             'bind -N "Kill pane in focus"       x  confirm-before -p '
-            '"kill-pane #T (#P)? (y/n)" '
-            '"set -s detach-on-destroy off \\; kill-pane"'
+            '"kill-pane #T (#P)? (y/n)" "kill-pane"'
         )
         w()  # spacer between sections
 
@@ -1309,11 +1307,11 @@ class BaseConfig(TmuxConfig):  # type: ignore
         the "normal" case, when used for iSH console, the
         user keys will be given
         """
-        w = self.write
-        if not self.vers_ok(1.9):
+        if not self.vers_ok(1.7):
             # There is no plugin support...
             return
 
+        w = self.write
         if muc_s_p != "M-P":
             note_prefix = "M-P - "
         else:
@@ -1325,9 +1323,9 @@ class BaseConfig(TmuxConfig):  # type: ignore
         #
         w(
             f'bind -N "{note_prefix}List all plugins defined"  {muc_s_p}  '
-            'run "$TMUX_BIN display \\"Generating response...\\" ;'
-            "cd $HOME//git_repos/mine/my_tmux_conf; "
-            f' {__main__.__file__} {self.conf_file} -p2"'
+            'run "$TMUX_BIN display \\"Generating response...\\" \\; '
+            'cd $HOME/git_repos/mine/my_tmux_conf \\; pwd \\; '
+            f' {__main__.__file__} -p2"'
         )
 
     def auc_kill_tmux_server(self, muc_x: str = "M-X"):  # used by iSH Console

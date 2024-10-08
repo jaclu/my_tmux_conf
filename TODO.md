@@ -1,5 +1,9 @@
 # TODO
 
+## <prefix> M-P list plugins fails
+
+same cmd on cmd line works - odd
+
 ## M-9 & M-0 collides with ish_console
 
 windows_handling() - M-9 & M-0 collides with ish_console

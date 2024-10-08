@@ -54,17 +54,18 @@ class T2(SB):  # type: ignore
         defined by parent classes before applying additional customizations.
         """
         super().local_overrides()
-        w = self.write
-        w("# T2.local_overides")
+        #  Display what class this override comes from
+        self.write("# T2.local_overides")
+
+        if self.vers_ok(1.8):
+            self.write("set -g @menus_log_file ~/tmp/tmux-menus-t2.log")
 
         if self.vers_ok(1.9):
             #
             #  Works both on bright and dark backgrounds
             #
-            w(
+            self.write(
                 """
-                set -g @menus_log_file ~/tmp/tmux-menus-t2.log
-
                 # t2 border style
                 set -g pane-active-border-style fg=colour3
                 set -g pane-border-style        fg=colour241

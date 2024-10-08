@@ -55,7 +55,7 @@ class DefaultPlugins(BaseConfig):
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """This is called just before the status bar is rendered,
-        local_overides() is called later so can not modify status bar
+        local_overrides() is called later so can not modify status bar
         left & right without a pointless reassignment
 
         I use this to add hooks for plugins that are currently used.
@@ -252,16 +252,13 @@ class DefaultPlugins(BaseConfig):
     # def plugin_which_key(self) -> list:
     #     return ['alexwforsythe/tmux-which-key', 3.0, ""]
 
-    def plugin_menus(self) -> list:  # 1.8
+    def plugin_menus(self) -> list:  # 0.0
         conf = """
         set -g @menus_log_file ~/tmp/tmux-menus.log
         # set -g @menus_use_cache no
         """
-        #
-        #  This plugin works in tmux 1.7, but that version do not support
-        #  @variables, so we say 1.8 here...
-        #
-        return ["jaclu/tmux-menus", 1.8, conf]
+        #  Tested down to vers 1.7
+        return ["jaclu/tmux-menus", 0.0, conf]
 
     def plugin_mouse_swipe(self) -> list:  # 3.0
         #
