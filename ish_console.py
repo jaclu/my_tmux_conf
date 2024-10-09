@@ -160,14 +160,13 @@ class IshConsole(base_config.BaseConfig):
         #
         self.ic_keyb_type_2()  # Same esc handling
         self.write(
-            """
-        #
+            """#
         #  On this keyb, backtick (next to z) sends Escape
         #  this changes it back to send backtick, Esc is available via §
         #
         set -s user-keys[221]  "\\033"
-        bind -N "Send backtick"  -n User221  send "\\`" # map backtick back from Escape
-        """
+        # map backtick back from Escape
+        bind -N "Send backtick"  -n User221  send "\\`" """
         )
 
     def ic_virtual_escape_key(self, esc_key: str) -> None:
