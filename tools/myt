@@ -190,20 +190,15 @@ select_tmux_bin() {
     #  names not to potentially collide with what is running
     #  on the host
     #
-    if [ -f /etc/opt/AOK/this_fs_is_chrooted ]; then
-        sock_prefix="chr-"
-    else
-        sock_prefix=""
-    fi
-
+    socket="$(id -u)"
+    is_fs_chrooted && socket="${socket}-chr"
     if $t2_env; then
-        socket="$sock_prefix"serv2
+        socket="$socket"-serv2
         conf_file="$HOME/t2/tmux/tmux.conf"
     else
-        socket="$sock_prefix"default
+        socket="$socket"-default
         conf_file="$HOME/.tmux.conf"
     fi
-    is_fs_chrooted && socket="$socket-chr"
     tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
     #
     #  Handle some odd versions
