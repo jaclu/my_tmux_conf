@@ -72,6 +72,18 @@ error_msg() {
     exit "${2:-1}"
 }
 
+is_fs_chrooted() {
+    # cmdline check:
+    # grep -qv " / / " /proc/self/mountinfo || echo "is chrooted"
+
+    # this quick and simple check doesnt work on ish
+    # so lets pretend for now chroot does not happen on ish
+    [ -d /proc/ish ] && return 1
+
+    [ "$(uname -s)" != "Linux" ] && return 1 # can only chroot this on Linux
+    ! grep -q " / / " /proc/self/mountinfo
+}
+
 #---------------------------------------------------------------
 #
 #   venv handling
@@ -191,7 +203,7 @@ select_tmux_bin() {
         socket="$sock_prefix"default
         conf_file="$HOME/.tmux.conf"
     fi
-
+    is_fs_chrooted && socket="$socket-chr"
     tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
     #
     #  Handle some odd versions

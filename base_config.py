@@ -327,8 +327,9 @@ class BaseConfig(TmuxConfig):
                     """unbind  -n  MouseDown3Pane
                     unbind  -n  MouseDown3Status
                     unbind  -n  MouseDown3StatusLeft
-                    unbind  -n  MouseDown3StatusRight
                     unbind  -n  M-MouseDown3Pane""")
+                if not self.vers_ok(3.1):
+                    w("unbind  -n  MouseDown3StatusRight")
             if self.vers_ok("3.0a"):
                 w(
                     """unbind  <
