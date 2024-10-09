@@ -13,8 +13,8 @@ check if a given feature is available on that tmux, and either skip an
 unavailable feature, or set something as close as possible up, given that
 versions limitations.
 
-Secondly I want to easily see what type of system I am working on via the
-status bar color scheme.
+Secondly I want to easily see what type of system I am working on via
+the status bar color scheme.
 Local machine, iSH on the iPad, local vhost, cloud host, test, acceptance,
 production etc
 
