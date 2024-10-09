@@ -15,6 +15,7 @@ versions limitations.
 
 Secondly I want to easily see what type of system I am working on via
 the status bar color scheme.
+
 Local machine, iSH on the iPad, local vhost, cloud host, test, acceptance,
 production etc
 
