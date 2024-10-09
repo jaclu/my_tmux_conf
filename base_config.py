@@ -314,33 +314,29 @@ class BaseConfig(TmuxConfig):
         #
         unbind  Space    #  Select next layout"""
         )
-        if self.skip_default_popups:
-            if self.vers_ok(2.1) and "tmux-menus" in self.plugins.found(
-                short_name=True
-            ):
+        if self.skip_default_popups and self.vers_ok(3.0):
+            w(
+                """
+                #
+                #  Remove the default popup menus""")
+            if "tmux-menus" in self.plugins.found(short_name=True):
+                w("#  Instead using the plugin jaclu/tmux-menus - <prefix> \\")
+            w("#")
+            if self.vers_ok(3.0):
                 w(
-                    """
-                    #
-                    #  Remove the default popup menus
-                    #  Instead using the plugin jaclu/tmux-menus - <prefix> \\
-                    #
-                    unbind  -n  MouseDown3Pane
+                    """unbind  -n  MouseDown3Pane
                     unbind  -n  MouseDown3Status
-                    unbind  -n  M-MouseDown3Pane
-                    unbind  -n  M-MouseDown3Status"""
-                )
-                if self.vers_ok(2.9):
-                    w(
-                        """unbind  -n  MouseDown3StatusLeft
-                        unbind  -n  M-MouseDown3StatusLeft
-                        unbind  -n  MouseDown3StatusRight"""
-                    )
-                if self.vers_ok("3.0a"):
-                    w(
-                        """unbind  <
-                        unbind  >"""
-                    )
-
+                    unbind  -n  MouseDown3StatusLeft
+                    unbind  -n  MouseDown3StatusRight
+                    unbind  -n  M-MouseDown3Pane""")
+            if self.vers_ok("3.0a"):
+                w(
+                    """unbind  <
+                    unbind  >""")
+            if self.vers_ok(3.4):
+                w(
+                    """unbind  -n  M-MouseDown3Status
+                    unbind  -n  M-MouseDown3StatusLeft""")
         w()  # spacer
 
     def connecting_terminal(self):  # cmd: 2 + optional
