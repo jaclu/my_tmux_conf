@@ -144,8 +144,7 @@ class IshConsole(base_config.BaseConfig):
     #
     def ic_keyb_type_1(self):
         #
-        #  This keyb type generates Esc on the backtick, backtick is done
-        #  using C-backtick
+        #  This keyb type already generates Esc on the key above tab
         #
         pass
 
@@ -160,12 +159,12 @@ class IshConsole(base_config.BaseConfig):
         #  Logitech Combo Touch
         #
         self.ic_keyb_type_2()  # Same esc handling
-        #
-        #  On this keyb, in backtick sends Escape
-        #  this changes it back to send backtick, Esc is available via §
-        #
         self.write(
             """
+        #
+        #  On this keyb, backtick (next to z) sends Escape
+        #  this changes it back to send backtick, Esc is available via §
+        #
         set -s user-keys[221]  "\\033"
         bind -N "Send backtick"  -n User221  send "\\`" # map backtick back from Escape
         """
