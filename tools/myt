@@ -236,8 +236,14 @@ chk_incompatible_socket() {
     #
     socket_identifier=" -L $socket "
 
+    #
+    # verssion will just be mentioned in the path if it is a asdf tmux or similar
+    # so the typical basic paths are excluded from this check
+    #
+    # ps ax | grep "$socket_identifier" | grep -qv -e /usr/bin/tmux -e /usr/local/bin/tmux -e "$tmux_vers" -e grep && {
+    #
     #  shellcheck disable=SC2009
-    ps ax | grep "$socket_identifier" | grep -qv -e /usr/bin/tmux -e "$tmux_vers" -e grep && {
+    ps ax | grep "$socket_identifier" | grep -i asdf | grep -v -e "$tmux_vers" -e grep && {
         #  shellcheck disable=SC2009
         log_it "
 ERROR: instances for version other than $tmux_vers using socket: $socket  running!
