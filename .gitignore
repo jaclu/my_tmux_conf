@@ -8,10 +8,7 @@ dist/
 src/tmux_conf.egg-info/
 local_tmux_conf/
 
-# if it is a folder
-hostnames/*
-# if it is a softlink
-#hostnames
+hostnames
 
 .venv/
 
