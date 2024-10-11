@@ -318,7 +318,8 @@ class BaseConfig(TmuxConfig):
             w(
                 """
                 #
-                #  Remove the default popup menus""")
+                #  Remove the default popup menus"""
+            )
             if "tmux-menus" in self.plugins.found(short_name=True):
                 w("#  Instead using the plugin jaclu/tmux-menus - <prefix> \\")
             w("#")
@@ -327,17 +328,20 @@ class BaseConfig(TmuxConfig):
                     """unbind  -n  MouseDown3Pane
                     unbind  -n  MouseDown3Status
                     unbind  -n  MouseDown3StatusLeft
-                    unbind  -n  M-MouseDown3Pane""")
+                    unbind  -n  M-MouseDown3Pane"""
+                )
                 if not self.vers_ok(3.1):
                     w("unbind  -n  MouseDown3StatusRight")
             if self.vers_ok("3.0a"):
                 w(
                     """unbind  <
-                    unbind  >""")
+                    unbind  >"""
+                )
             if self.vers_ok(3.4):
                 w(
                     """unbind  -n  M-MouseDown3Status
-                    unbind  -n  M-MouseDown3StatusLeft""")
+                    unbind  -n  M-MouseDown3StatusLeft"""
+                )
         w()  # spacer
 
     def connecting_terminal(self):  # cmd: 2 + optional
@@ -448,29 +452,56 @@ class BaseConfig(TmuxConfig):
         set -g history-limit 2000
         set -g status-keys emacs"""
         )
-        if self.vers_ok(3.2):
-            #  will switch to any detached session, when no more active ones
-            w("set -g detach-on-destroy no-detached")
-        else:
-            w("set -g detach-on-destroy off")
-
         if self.vers_ok(2.6):
             #  Safe, does not allow apps inside tmux to set clipboard
             #  for terminal
             w("set -g  set-clipboard external")
         else:
             w("set -g  set-clipboard on")
-
+        if self.vers_ok(3.2):
+            #  will switch to any detached session, when no more active ones
+            w("set -g detach-on-destroy no-detached")
+        else:
+            w("set -g detach-on-destroy off")
         if self.vers_ok(3.3):
-            #  needs a short wait, so that display has time to be created
-            w("run-shell -b 'sleep 0.2 ; $TMUX_BIN set -w popup-border-lines rounded'")
+            w("set -g popup-border-lines rounded")
+
+        #
+        # This prevents /usr/libexec/path_helper from messing up PATH
+        # inside tmux. On MacOS it is used by default.
+        #
+        # Example of what it does: assume ~/bin is first in PATH
+        # Inside tmux shells it will now be almost last...
+        #
+        # If /usr/libexec/path_helper is not present/used this has no impact
+        #
+        w(
+            """
+            # prevents /usr/libexec/path_helper from messing up PATH
+            set -g default-command "${SHELL}" """
+        )
+        #
+        #  Common variable telling plugins if -N notation is wanted
+        #  (assuming tmux version supports it)
+        #  Since the plugin init code cant use the vers_ok() found here
+        #  this is a more practical way to instruct them to use it or not.
+        #
+        if self.vers_ok(3.1):
+            w(
+                """
+                # Hint that plugins can check, will only be true if hints
+                # are supported by running tmux, so plugins will not need
+                # to check tmux version for this
+                set -g @use_bind_key_notes_in_plugins Yes
+                """
+            )
 
         if self.prefix_key.lower() != "c-b":
             w(
-                f"""
-            # remove default prefix key, do it before in case C-b is selected
-            unbind  C-b
-            set -g  prefix  {self.prefix_key}"""
+                f"""# Remove the default prefix, do it before assigning
+                # the selected one, in case it was some variant of C-b
+                unbind  C-b
+                set -g  prefix  {self.prefix_key}"""
             )
             w(
                 f'bind -N "Repeats sends {self.prefix_key} through"  '
@@ -481,20 +512,6 @@ class BaseConfig(TmuxConfig):
         #  Seems to mess with ish-console, so trying without it
         # if self.vers_ok(2.8):
         #     w('bind Any display "This key is not bound to any action"\n')
-
-        #
-        #  Common variable telling plugins if -N notation is wanted
-        #  (assuming tmux version supports it)
-        #  Since the plugin init code cant use the vers_ok() found here
-        #  this is a more practical way to instruct them to use it or not.
-        #
-        if self.vers_ok(3.1):
-            w('set -g @use_bind_key_notes_in_plugins "Yes"\n')
-
-        w(
-            f'bind -N  "Source {self.conf_file}"  R  '
-            f'source {self.conf_file} \\; display "{self.conf_file} sourced"'
-        )
 
         nav_key = "N"
         if self.vers_ok(2.7):
@@ -507,9 +524,7 @@ class BaseConfig(TmuxConfig):
                 f'bind -N "Navigate ses/win/pane not available warning"  {nav_key}  '
                 'display "Navigate needs 2.7"'
             )
-        w()  # Spacer
-
-        self.auc_display_plugins_used()  # used by iSH Console
+        # w()  # Spacer
 
         scrpad_key = "O"  # P being taken this is pOpup :)
         scrpad_min_vers = 3.2
@@ -526,7 +541,12 @@ class BaseConfig(TmuxConfig):
                 f'bind -N "pOpup not available warning"  {scrpad_key}  '
                 f'display "pOpup scratchpad session needs {scrpad_min_vers}"'
             )
-        self.auc_kill_tmux_server()  # used by iSH Console
+        w(
+            f'bind -N  "Source {self.conf_file}"  R  '
+            f'source {self.conf_file} \\; display "{self.conf_file} sourced"'
+        )
+        self.auc_display_plugins_used()
+        self.auc_kill_tmux_server()
         if self.prefix_arrow_nav_keys:
             w(
                 """
