@@ -8,8 +8,6 @@ dist/
 src/tmux_conf.egg-info/
 local_tmux_conf/
 
-hostnames
-
 .venv/
 
 # vscode
