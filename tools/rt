@@ -29,9 +29,9 @@ class Host:
     #  run dest command as an interactive bash shell in order to pick up
     #  the user environment, since the mosh session itself will not.
     #  if params need to be passed to the cmd bash runs, wrap them inside
-    #  the inner quotes, like '.local/bin/myt -2' instead of '.local/bin/myt'
+    #  the inner quotes, like 'bin/myt -2' instead of 'bin/myt'
     #
-    tmux = "bash -i -c '~/bin/myt'"
+    tmux = "bash -i -c '$HOME/bin/myt'"
 
     use_mosh = False
     mosh_client = "mosh"  # local mosh command
