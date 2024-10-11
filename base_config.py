@@ -467,7 +467,7 @@ class BaseConfig(TmuxConfig):
             w("set -g popup-border-lines rounded")
 
         #
-        # This prevents path_helper and similar toos from messing up PATH
+        # This prevents path_helper and similar tools from messing up PATH
         # inside tmux. On MacOS it is used by default,
         # maybe also on other platforms?
         #
