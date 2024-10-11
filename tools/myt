@@ -399,12 +399,14 @@ regular_tmux() {
     [ -n "$TMUX" ] && {
         error_msg "sessions should be nested with care, unset \$TMUX to force"
     }
-    if [ -z "$profile" ] && [ -f "hostname.py" ]; then
-        profile="hostname.py"
-        # log_it "-> Using prepared host profile"
+    _def_profile="$my_tmux_conf_location"/hostname.py
+    if [ -z "$profile" ] && [ -f "$_def_profile" ]; then
+        profile="$_def_profile"
+        # log_it "-> Using prepared host profile: $profile"
     fi
+    unset _def_profile
 
-    if [ ! -f "${profile}" ]; then
+    if [ ! -f "$profile" ]; then
         echo
         log_it "*** Warning: no profile found"
         echo "***            using default profile after 3 seconds"
