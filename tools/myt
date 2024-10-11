@@ -42,7 +42,7 @@ display_help() {
 Usage: myt [-q] [-2] [profile]
 
 Generates config and starts tmux
-Default profile is hostname
+Default profile is hostname.py
 Options can be given in any order.
 
 Availlable options:
@@ -399,18 +399,15 @@ regular_tmux() {
     [ -n "$TMUX" ] && {
         error_msg "sessions should be nested with care, unset \$TMUX to force"
     }
-    # log_it "-> running regular_tmux($profile) [$(hostname)]"
-    if [ -z "$profile" ]; then
-        detected_hostname="$(hostname -s | tr '[:upper:]' '[:lower:]')"
-        # log_it "-> detected hostname [$detected_hostname]"
-        profile="${my_tmux_conf_location}/hostnames/${detected_hostname}.py"
-        # log_it "-> Automatically built profile-name: [$profile]"
+    if [ -z "$profile" ] && [ -f "hostname.py" ]; then
+        profile="hostname.py"
+        # log_it "-> Using prepared host profile"
     fi
 
     if [ ! -f "${profile}" ]; then
         echo
-        log_it "*** Warning: no profile found for: $profile"
-        echo "***          using default profile after 3 seconds"
+        log_it "*** Warning: no profile found"
+        echo "***            using default profile after 3 seconds"
         echo
         sleep 3
         profile="$my_tmux_conf_location/default_plugins.py"

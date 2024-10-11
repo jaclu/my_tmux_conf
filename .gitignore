@@ -9,13 +9,14 @@ src/tmux_conf.egg-info/
 local_tmux_conf/
 .venv/
 
-hostnames
+# config for local host
+hostname.py
 
 # vscode
 *.code-workspace
 
 ### VisualStudioCode ###
-.vscode/*      # Maybe .vscode/**/* instead - see comments
+.vscode/* # Maybe .vscode/**/* instead - see comments
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -29,7 +30,6 @@ hostnames
 
 #  olint linter config
 .cache.olint
-
 
 #  deploy location hint
 .destination
