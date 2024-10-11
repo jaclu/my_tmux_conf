@@ -466,21 +466,19 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(3.3):
             w("set -g popup-border-lines rounded")
 
-        path_helper = "/usr/libexec/path_helper"
-        if os.path.exists(path_helper):
-            #
-            # This prevents path_helper from messing up PATH
-            # inside tmux. On MacOS it is used by default, maybe on
-            # other platforms?
-            #
-            # Example of what it does: assume ~/bin is first in PATH
-            # Inside tmux shells it will now be almost last...
-            #
-            w(
-                """
-                # prevents /usr/libexec/path_helper from messing up PATH
-                set -g default-command "${SHELL}" """
-            )
+        #
+        # This prevents path_helper and similar toos from messing up PATH
+        # inside tmux. On MacOS it is used by default,
+        # maybe also on other platforms?
+        #
+        # Example of what it does: assume ~/bin is first in PATH
+        # Inside tmux shells it will now be almost last...
+        #
+        w(
+            """
+            # prevents /usr/libexec/path_helper from messing up PATH
+            set -g default-command "${SHELL}" """
+        )
         #
         #  Common variable telling plugins if -N notation is wanted
         #  (assuming tmux version supports it)
