@@ -20,11 +20,13 @@
 #  compatibility.
 #
 
+
 # pylint: disable=C0116
 
 """Defines default plugins"""
 
 import os
+import sys
 
 from base import BaseConfig  # BaseConfig
 
@@ -39,11 +41,23 @@ from mtc_utils import IS_ISH
 class DefaultPlugins(BaseConfig):
     """This defines all the plugins I normally use, local only and very
     resource demanding ones are not added here.
-    I use this as my primary base class
+    I use this asmy primary base class
     If you never plan to use iSH you can subclass BaseConfig directly
     We use IshConsole as parent, so that the running node is propperly
     configured
     """
+
+    #
+    #  Override all other env settings like is_limited_host or is_tmate
+    #  and ensure plugin is used
+    #
+    force_plugin_continuum = False
+
+    #
+    #  Default plugins that can be disabled
+    #
+    use_plugin_mouse_swipe = True
+    use_plugin_session_wizard = True
 
     #
     #  The default is to use jaclu/tpm, with built in support for
@@ -83,6 +97,9 @@ class DefaultPlugins(BaseConfig):
         #  I also include plugins only used on some nodes here.
         #
         used_plugins = self.plugins.found(short_name=True)
+
+        #  Consider adding placement for
+        #   tmux-1password
 
         if "tmux-suspend" in used_plugins:
             # pylint: disable=E0203,W0201
@@ -213,37 +230,6 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_jump(self) -> list:  # 1.8
-        #
-        #  Jump to word(-s) on the screen that you want to copy,
-        #  without having to use the mouse.
-        #
-        #
-        #  Default trigger: <prefix> j
-        #
-        k = "-n  M-j"
-        if self.t2_env or self.is_limited_host or self.is_tmate():
-            # make sure this is never used, generates too much lag
-            vers_min = 99.0
-            self.write(
-                f"bind -N 'tmux-jump'  {k}  display "
-                "'tmux-jump disabled on limited hosts'"
-            )
-        else:
-            vers_min = 1.8
-        return [
-            "jaclu/tmux-jump",  # was Lenbok
-            vers_min,
-            #
-            #  The weird jump key syntax below is how I both sneak in
-            #  a note and make the key not to depend on prefix :)
-            #
-            f"""#  Additional dependency: ruby >= 2.3
-            set -g @jump-key "-N plugin_Lenbok/tmux-jump {k}"
-            set -g @jump-keys-position 'off_left'
-            """,
-        ]
-
     #
     #  wont work in an inner tmux, outer is capturing key
     #  in both states. If this is really needed in the inner tmux
@@ -264,13 +250,13 @@ class DefaultPlugins(BaseConfig):
         #
         #  right-click & swipe switches Windows / Sessions
         #
-        if self.is_limited_host or self.t2_env:
-            vers_min = 99.0  # make sure this is never used
+        if not self.use_plugin_mouse_swipe or (self.t2_env or self.is_limited_host):
+            min_vers = 99.0  # dont use this one
         else:
-            vers_min = 3.0
+            min_vers = 3.0
         return [
             "jaclu/tmux-mouse-swipe",
-            vers_min,
+            min_vers,
             """
             #  right-click & swipe switches Windows / Sessions
             """,
@@ -340,7 +326,9 @@ class DefaultPlugins(BaseConfig):
         return ["jaclu/tmux-resurrect", 1.9, conf]
 
     def plugin_session_wizard(self) -> list:  # 3.2
-        if self.is_limited_host or self.is_termux:
+        if not self.use_plugin_session_wizard or (
+            self.is_limited_host or self.is_termux
+        ):
             vers_min = 99.0  # make sure this is never used
         else:
             vers_min = 3.2
@@ -351,7 +339,7 @@ class DefaultPlugins(BaseConfig):
             "#  Default trigger: <prefix> T",
         ]
 
-    def plugin_suspend(self) -> list:  # 2.4
+    def plugin_suspend(self) -> list:  # 2.4  - status_bar_customization
         #
         #  {@mode_indicator_custom_prompt}
         #
@@ -375,21 +363,6 @@ class DefaultPlugins(BaseConfig):
             '"@mode_indicator_custom_prompt::#[bg=yellow]💤#[default], "\n',
         ]
 
-    def not_plugin_yank(self) -> list:  # 1.8
-        #
-        #  copies text from the command line to the clipboard.
-        #
-        min_vers = 1.8
-        if self.is_limited_host or self.is_tmate():
-            min_vers = 99.0  # disable for tmate
-        return [
-            "jaclu/tmux-yank",
-            min_vers,
-            """#  Default trigger: <prefix> y
-            # seems to only work on local system
-            """,
-        ]
-
     def plugin_zz_continuum(self) -> list:  # 1.9
         #
         #  Auto restoring a session just as tmux starts on a limited
@@ -399,7 +372,9 @@ class DefaultPlugins(BaseConfig):
         #  typically for testing purposes, being able to manually restore
         #  a session makes sense, but auto-resuming does not.
         #
-        if self.is_limited_host or self.t2_env or self.is_tmate():
+        if not self.force_plugin_continuum and (
+            self.is_limited_host or self.t2_env or self.is_tmate()
+        ):
             vers_min = 99.0  # make sure this is never used
         else:
             vers_min = 1.9
@@ -428,6 +403,264 @@ class DefaultPlugins(BaseConfig):
         set -g @continuum-restore        on
         """
         return ["jaclu/tmux-continuum", vers_min, conf]
+
+
+class OptionalPlugins(BaseConfig):
+
+    #
+    #  Optional plugins, need to be enabled
+    #
+    use_plugin_1password = False
+    use_plugin_battery = False
+    use_plugin_jump = False
+    use_plugin_keyboard_type = False
+    use_plugin_mullvad = False
+    use_use_plugin_nordvpn = False
+    use_plugin_packet_loss = False
+    use_plugin_spotify = False
+    use_plugin_plugin_yank = False
+
+    def plugin_1password(self):  # ?.?  local
+        #
+        #  Plugin for 1password CLI tool op
+        #
+        if not self.use_plugin_1password:
+            min_vers = 99.0  # dont use this one
+        else:
+            min_vers = 0.0  # Unknown min version
+        return [
+            "yardnsm/tmux-1password",
+            min_vers,
+            """
+                # set -g @1password-key 'u' # default 'u'
+                # set -g @1password-account 'acme' # default 'my'
+                # set -g @1password-vault 'work' # default '' (all)
+                # set -g @1password-copy-to-clipboard 'on' # default 'off'
+                # set -g @1password-filter-tags 'development,servers'
+                # set -g @1password-debug 'on' # default 'off'
+                """,
+        ]
+
+    def plugin_battery(self):  # 2.2 - localstatus_bar_customization
+        #
+        #  #{battery_smart} takes < 5s ATM
+        #
+        #  Only meaningful for local tmux!
+        #
+        #  Forked from: https://github.com/tmux-plugins/tmux-battery
+        #
+        #  My modifications: all important stats can be displayed by using
+        #  #{battery_smart} in status bar. When plugged in and fully
+        #  charged only the "connected" icon is displayed. If on battery or
+        #  charging the percentage is displayed, and remaining time in
+        #  colors indicating approximately how full the battery is.
+        #
+        #  #{battery_smart}
+        #
+        if not self.use_plugin_battery or self.is_tmate():
+            min_vers = 99.0  # dont use this one
+        else:
+            #  1.8 accd to orig devel, but i get issues below 2.2
+            min_vers = 2.2
+        return [
+            "jaclu/tmux-battery",
+            min_vers,
+            """
+            set -g @batt_remain_short 'true'
+            """,
+        ]
+
+    def plugin_jump(self) -> list:  # 1.8
+        #
+        #  Jump to word(-s) on the screen that you want to copy,
+        #  without having to use the mouse.
+        #
+        #
+        #  Default trigger: <prefix> j
+        #
+        if not self.use_plugin_jump or (
+            self.t2_env or self.is_limited_host or self.is_tmate()
+        ):
+            min_vers = 99.0  # dont use this one
+        else:
+            min_vers = 1.8
+        return [
+            "jaclu/tmux-jump",  # was Lenbok
+            min_vers,
+            #
+            #  The weird jump key syntax below is how I both sneak in
+            #  a note and make the key not to depend on prefix :)
+            #
+            """#  Additional dependency: ruby >= 2.3
+            set -g @jump-key "-N plugin_Lenbok/tmux-jump -n  M-j"
+            set -g @jump-keys-position 'off_left'
+            """,
+        ]
+
+    def plugin_keyboard_type(self):  # 1.9 - localstatus_bar_customization
+        #
+        #  When displaying takes 0.8 s to process...
+        #
+        #  Only meaningful for local tmux!
+        #   Tested envs: Darwin, Linux
+        #
+        #  Display in status-bar with:  #{keyboard_type}
+        #
+        if not self.use_plugin_keyboard_type:
+            min_vers = 99.0  # dont use this one
+        else:
+            min_vers = 1.9
+        return [
+            "jaclu/tmux-keyboard-type",
+            min_vers,
+            """
+            set -g @keyboard_type_hidden  "ABC|U.S.|USInternational-PC"
+            set -g @keyboard_type_aliases "Swe=Swedish-Pro|Swe=Swedish|US=U.S."
+            set -g @keyboard_type_fg ""
+            set -g @keyboard_type_bg "green"
+            set -g @keyboard_type_prefix ""
+            set -g @keyboard_type_suffix " "
+            """,
+        ]
+
+    def plugin_mullvad(self):  # 2.2  - localstatus_bar_customization
+        #
+        #   #{mullvad_city}#{mullvad_country}#{mullvad_status}
+        #
+        if not self.use_plugin_mullvad or self.is_tmate():
+            min_vers = 99.0  # dont use this one
+        else:
+            min_vers = 2.2
+
+        return [
+            "jaclu/tmux-mullvad",
+            min_vers,
+            """
+            set -g @mullvad_cache_time ''
+
+            #
+            #  I only want to be notified about where the VPN is connected if
+            #  not connected to my normal location, typically when avoiding Geo
+            #  blocks.
+            #  Since this will negatively impact bandwidth and lag, its good to
+            #  have a visual reminder.
+            #
+            # set -g @mullvad_excluded_country 'Netherlands'
+            # set -g @mullvad_excluded_city    'Amsterdam'
+
+            #  No colors wanted for disconnected status, just distracting.
+            set -g @mullvad_disconnected_bg_color ' '
+
+            #  Since nothing is printed when connected, we don't need to
+            #  bother with the colors
+            set -g @mullvad_connected_text ' '
+
+            #  When city/country is printed, use comma as separator
+            set -g @mullvad_city_suffix ','
+
+            #
+            #  Keep separation if items are displayed
+            #
+            set -g @mullvad_country_no_color_suffix 1
+            set -g @mullvad_status_no_color_suffix 1
+            """,
+        ]
+
+    def plugin_nordvpn(self):  # - localstatus_bar_customization
+        if not self.use_use_plugin_nordvpn:
+            min_vers = 99.0  # dont use this one
+        else:
+            min_vers = 0.0  # Not sure of its min version
+
+        return [
+            "maxrodrigo/tmux-nordvpn",
+            min_vers,
+            """
+        set -g @nordvpn_connected_text=""
+        set -g @nordvpn_connecting_text="🔒"
+        set -g @nordvpn_disconnected_text="🔓"
+        """,
+        ]
+
+    def plugin_packet_loss(self):  # 1.9 - localstatus_bar_customization
+        if not self.use_plugin_packet_loss or self.is_tmate():
+            min_vers = 99.0  # dont use this one
+        else:
+            min_vers = 1.9
+
+        return [
+            "jaclu/tmux-packet-loss",
+            min_vers,
+            """
+            set -g @packet-loss-ping_host 1.1.1.1
+            set -g @packet-loss-ping_count     6
+            set -g @packet-loss-history_size   6
+            set -g @packet-loss-level_alert 18 # 4-26 6-18 7-15
+
+            set -g @packet-loss-weighted_average  yes
+            set -g @packet-loss-display_trend     no
+            set -g @packet-loss-hist_avg_display  yes
+            set -g @packet-loss-run_disconnected  yes
+
+            set -g @packet-loss-level_disp  5
+
+            set -g @packet-loss-level_crit 50
+
+            set -g @packet-loss-color_alert  colour21
+            set -g @packet-loss-color_bg     colour226
+
+            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss.log
+
+            """,
+        ]
+
+    def plugin_spotify(self):  # 1.8 - localstatus_bar_customization
+        #
+        #  Ensure this is only used on MacOS
+        #
+        #
+        name = "jaclu/tmux-spotify-info"
+        if sys.platform == "darwin" and self.use_plugin_spotify and not self.is_tmate():
+            min_vers = 1.8
+        else:
+            min_vers = 99.0
+            name = name + "-requires-MacOS"
+        #
+        #  Only meaningful for local tmux!     Only works on MacOS
+        #
+        #  Forked from https://github.com/jdxcode/tmux-spotify-info
+        #  My modifications:
+        #   Limited max output length - the default sometimes completely
+        #   filled the status line if one of the reported fields were
+        #   really long
+        #
+        #  Display in status-bar with: #(tmux-spotify-info)
+        #
+        if self.vers_ok(2.9):
+            conf = """
+            #  Version dependent settings for jaclu/tmux-spotify-info
+            """
+            conf += "bind -N 'Toggle Spotify' -n MouseDown3StatusRight "
+            conf += 'run "spotify pause > /dev/null"'
+        else:
+            conf = ""
+        return [name, min_vers, conf]
+
+    def plugin_yank(self) -> list:  # 1.8
+        #
+        #  copies text from the command line to the clipboard.
+        #
+        if not self.use_plugin_plugin_yank or (self.is_limited_host or self.is_tmate()):
+            min_vers = 99.0  # dont use this one
+        else:
+            min_vers = 1.8
+        return [
+            "jaclu/tmux-yank",
+            min_vers,
+            """#  Default trigger: <prefix> y
+            # seems to only work on local system
+            """,
+        ]
 
 
 if __name__ == "__main__":

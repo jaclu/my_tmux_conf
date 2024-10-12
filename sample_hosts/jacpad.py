@@ -39,36 +39,8 @@ class JacPad(IshHostWithStyle):
     status_interval = 5
     # use_ish_prefix_arrow_nav_keys = False
 
-    def plugin_packet_loss(self):  # 1.9
-        min_vers = 1.9
-        if self.is_tmate():
-            min_vers = 99.1  # disable for tmate
-        return [
-            "jaclu/tmux-packet-loss",
-            min_vers,
-            """
-            set -g @packet-loss-ping_host 1.1.1.1
-
-            # set -g @packet-loss-ping_count   7
-            # set -g @packet-loss-history_size 5
-            # set -g @packet-loss-level_alert 15 # 4-26 6-18 7-15
-
-            set -g @packet-loss-display_trend    no
-            set -g @packet-loss-hist_avg_display yes
-            set -g @packet-loss-run_disconnected no
-
-            set -g @packet-loss-level_disp   5
-
-            set -g @packet-loss-color_alert colour21
-
-            set -g @packet-loss-level_crit 50
-
-            set -g @packet-loss-color_bg    colour226
-
-            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-jacpad.log
-
-            """,
-        ]
+    # optionals selected
+    use_plugin_packet_loss = True
 
 
 if __name__ == "__main__":
