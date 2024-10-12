@@ -32,5 +32,4 @@ class Hetz1(SB, OptionalPlugins):
 
 
 if __name__ == "__main__":
-    # SB().run()
     Hetz1().run()

@@ -48,5 +48,4 @@ class JacDroid(SB, OptionalPlugins):
 
 
 if __name__ == "__main__":
-    # IshHostWithStyle().run()
     JacDroid().run()
