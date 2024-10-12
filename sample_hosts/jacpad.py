@@ -38,7 +38,6 @@ from ish_host import IshHostWithStyle
 
 class JacPad(IshHostWithStyle, OptionalPlugins):
     status_interval = 5
-    # use_ish_prefix_arrow_nav_keys = False
 
     # optionals selected
     use_plugin_packet_loss = True
