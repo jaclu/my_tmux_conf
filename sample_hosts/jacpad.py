@@ -32,10 +32,11 @@ sys.path.insert(0, root_dir)
 
 # flake8: noqa: E402
 # pylint: disable=wrong-import-position
+from default_plugins import OptionalPlugins
 from ish_host import IshHostWithStyle
 
 
-class JacPad(IshHostWithStyle):
+class JacPad(IshHostWithStyle, OptionalPlugins):
     status_interval = 5
     # use_ish_prefix_arrow_nav_keys = False
 
