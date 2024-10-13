@@ -414,17 +414,23 @@ find_host_profile() {
     fi
 
     #
+    #  Step 1 check hardcoded profile
+    #
+    profile="${my_tmux_conf_location}/hostnames/_def_profile.py"
+    [ -f "$profile" ] && return 0
+
+    #
     #  Hostname profiles are named as hostname -s with suffix .py
     #
     _p="$(hostname -s | tr '[:upper:]' '[:lower:]').py"
 
     #
-    #  Step 1 check user suplied hostnames folder
+    #  Step 2 check user suplied hostnames folder
     #
     profile="${my_tmux_conf_location}/hostnames/$_p"
     [ -f "$profile" ] && return 0
     #
-    #  Step 2 check repo suplied hostnames folder
+    #  Step 3 check repo suplied hostnames folder
     #
     profile="${my_tmux_conf_location}/sample_hosts/$_p"
     [ -f "$profile" ] && return 0
