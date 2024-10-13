@@ -154,21 +154,21 @@ select_tmux_bin() {
     if [ -n "$tmux_bin" ]; then
         # User defined tmux
         TMUX_BIN="$tmux_bin"
-        log_it "><> user defined tmux: $TMUX_BIN"
+        # log_it "><> user defined tmux: $TMUX_BIN"
         unset tmux_bin
         return
     fi
     if [ -n "$ASDF_DIR" ]; then
         if ls "$HOME"/.asdf/shims | grep -q tmux; then
             TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
-            log_it "><> asdf defined tmux: $TMUX_BIN"
+            # log_it "><> asdf defined tmux: $TMUX_BIN"
             return
         fi
     fi
 
     TMUX_BIN="$(command -v tmux)"
     if [ -n "$TMUX_BIN" ]; then
-        log_it "><> tmux found in PATH: $TMUX_BIN"
+        # log_it "><> tmux found in PATH: $TMUX_BIN"
         return
     fi
 
@@ -189,7 +189,7 @@ select_tmux_bin() {
         log_it "Checking if it contains a tmux..."
         # hopefully now it is found!
         TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
-        log_it "><> un-iniziated asdf activated - now found tmux: $TMUX_BIN"
+        # log_it "><> un-iniziated asdf activated - now found tmux: $TMUX_BIN"
     fi
     [ -z "$TMUX_BIN" ] && error_msg "no tmux in PATH!"
 }
