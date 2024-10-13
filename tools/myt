@@ -191,7 +191,7 @@ select_tmux_bin() {
     [ -z "$TMUX_BIN" ] && error_msg "no tmux in PATH!"
 }
 
-select_tmux_env() {
+define_tmux_env() {
     select_tmux_bin
     #
     #  To not collide when checking for colliding versions
@@ -401,6 +401,19 @@ create_tmux_conf() {
     echo
 }
 
+find_default_host_profile() {
+    #
+    #  Step 1 check hostnames folder
+    #
+    hostname_profile="$(hostname -s | tr '[:upper:]' '[:lower:]').py"
+
+    _f="${my_tmux_conf_location}/hostnames/$hostname_profile"
+    [ -f "$_f" ] && profile="$_f" && return 0
+    _f="${my_tmux_conf_location}/sample_hosts/$hostname_profile"
+    [ -f "$_f" ] && profile="$_f" && return 0
+    return 1
+}
+
 regular_tmux() {
     #
     #  Start the normal tmux env
@@ -408,15 +421,17 @@ regular_tmux() {
     [ -n "$TMUX" ] && {
         error_msg "sessions should be nested with care, unset \$TMUX to force"
     }
-    _def_profile="$my_tmux_conf_location"/hostname.py
-    if [ -z "$profile" ] && [ -f "$_def_profile" ]; then
-        profile="$_def_profile"
-        # log_it "-> Using prepared host profile: $profile"
-    fi
-    unset _def_profile
 
-    if [ ! -f "$profile" ]; then
-        echo
+    # _def_profile="$my_tmux_conf_location"/hostname.py
+    # if [ -z "$profile" ] && [ -f "$_def_profile" ]; then
+    #     profile="$_def_profile"
+    #     # log_it "-> Using prepared host profile: $profile"
+    # fi
+    # unset _def_profile
+
+    [ -z "$profile" ] && find_default_host_profile
+
+    if [ -z "$profile" ]; then
         log_it "*** Warning: no profile found"
         echo "***            using default profile after 3 seconds"
         echo
@@ -427,7 +442,7 @@ regular_tmux() {
         profile="$(realpath "$profile")"
     fi
 
-    select_tmux_env
+    define_tmux_env
     start_tmux
     #$TMUX_BIN -u new-session -ADs main
 }
@@ -451,7 +466,7 @@ tmux_2() {
         error_msg "ERROR: Failed to cd back to [$d_initial]"
     }
 
-    select_tmux_env
+    define_tmux_env
     start_tmux
 }
 

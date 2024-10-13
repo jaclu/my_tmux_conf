@@ -9,8 +9,8 @@ src/tmux_conf.egg-info/
 local_tmux_conf/
 .venv/
 
-# config for local host
-hostname.py
+# Userdefined host configs
+hostnames/
 
 # vscode
 *.code-workspace
