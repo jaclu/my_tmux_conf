@@ -313,6 +313,11 @@ ensure_cfg_file_present() {
 
 start_tmux() {
     define_tmux_env
+
+    pgrep -f "$socket" >/dev/null && {
+        error_msg "tmux $profile is already running!"
+    }
+
     if $quick_mode; then
         ensure_cfg_file_present
     else
@@ -445,10 +450,6 @@ regular_tmux() {
     #
     #  Start the normal tmux env
     #
-    [ -n "$TMUX" ] && {
-        error_msg "sessions should be nested with care, unset \$TMUX to force"
-    }
-
     if ! find_host_profile; then
         log_it "*** Warning: no profile found"
         echo "***            using default profile after 3 seconds"
