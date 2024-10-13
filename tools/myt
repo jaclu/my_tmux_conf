@@ -69,7 +69,8 @@ log_it() {
 
 error_msg() {
     log_it "ERROR: $1"
-    exit "${2:-1}"
+    ex_code="${2:-1}"
+    [ "$ex_code" -ge 0 ] && exit "$ex_code"
 }
 
 is_fs_chrooted() {
@@ -401,17 +402,35 @@ create_tmux_conf() {
     echo
 }
 
-find_default_host_profile() {
-    #
-    #  Step 1 check hostnames folder
-    #
-    hostname_profile="$(hostname -s | tr '[:upper:]' '[:lower:]').py"
+find_host_profile() {
 
-    _f="${my_tmux_conf_location}/hostnames/$hostname_profile"
-    [ -f "$_f" ] && profile="$_f" && return 0
-    _f="${my_tmux_conf_location}/sample_hosts/$hostname_profile"
-    [ -f "$_f" ] && profile="$_f" && return 0
-    return 1
+    if [ -n "$profile" ]; then
+        if [ ! -f "$profile" ]; then
+            error_msg "Defined profile not found: $profile" -1
+            profile=""
+            return 1
+        fi
+        return 0
+    fi
+
+    #
+    #  Hostname profiles are named as hostname -s with suffix .py
+    #
+    _p="$(hostname -s | tr '[:upper:]' '[:lower:]').py"
+
+    #
+    #  Step 1 check user suplied hostnames folder
+    #
+    profile="${my_tmux_conf_location}/hostnames/$_p"
+    [ -f "$profile" ] && return 0
+    #
+    #  Step 2 check repo suplied hostnames folder
+    #
+    profile="${my_tmux_conf_location}/sample_hosts/$_p"
+    [ -f "$profile" ] && return 0
+
+    profile=""
+    return 1 # no hostname based profile found
 }
 
 regular_tmux() {
@@ -422,24 +441,15 @@ regular_tmux() {
         error_msg "sessions should be nested with care, unset \$TMUX to force"
     }
 
-    # _def_profile="$my_tmux_conf_location"/hostname.py
-    # if [ -z "$profile" ] && [ -f "$_def_profile" ]; then
-    #     profile="$_def_profile"
-    #     # log_it "-> Using prepared host profile: $profile"
-    # fi
-    # unset _def_profile
-
-    [ -z "$profile" ] && find_default_host_profile
-
-    if [ -z "$profile" ]; then
+    if ! find_host_profile; then
         log_it "*** Warning: no profile found"
         echo "***            using default profile after 3 seconds"
         echo
         sleep 3
         profile="$my_tmux_conf_location/default_plugins.py"
-    else
-        # handle soft links to other directories
-        profile="$(realpath "$profile")"
+    # else
+    #     # handle soft links to other directories
+    #     profile="$(realpath "$profile")"
     fi
 
     define_tmux_env
