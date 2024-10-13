@@ -24,7 +24,6 @@
 #  changing list of plugins I am testing
 #  out.
 import mtc_utils
-from default_plugins import OptionalPlugins
 
 if mtc_utils.HOSTNAME == "ish-hetz1":
     from sb.sb_acceptance import SB
@@ -33,17 +32,17 @@ else:
 
 
 # Pylance complains about the base class here, the above conditon confuses it
-class T2(SB, OptionalPlugins):  # type: ignore
+class T2(SB):  # type: ignore
     """Inner tmux session"""
 
     t2_env = "1"
 
+    status_interval = 5
     # plugin_handler = "manual"
     # plugin_handler: str = "tmux-plugins/tpm"
     # use_embedded_scripts = False
     # is_limited_host = True
-    status_interval = 5
-
+    # skip_plugin_session_wizard = True
     # force_plugin_continuum = True
     # use_plugin_packet_loss = True
 

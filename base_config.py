@@ -46,7 +46,7 @@ from tmux_conf import TmuxConfig
 
 import mtc_utils
 
-TMUX_CONF_NEEDED = "0.17.0"
+TMUX_CONF_NEEDED = "0.17.4"
 
 
 class BaseConfig(TmuxConfig):
@@ -132,7 +132,9 @@ class BaseConfig(TmuxConfig):
         replace_config: bool = False,  # replace config with no prompt
         clear_plugins: bool = False,  # remove all current plugins
         plugins_display: int = 0,  # Display info about plugins
-    ):
+    ) -> None:
+        print("><> base_config:BaseConfig()")
+
         # Indicates if this tmux is run on the iSH console
         self.is_ish_console = False
 
@@ -183,7 +185,7 @@ class BaseConfig(TmuxConfig):
         self._fnc_activate_tpm = "activate_tpm"
         self._fnc_tpm_indicator = "tpm_init_indicator"
 
-    def assign_style(self, style_name):
+    def assign_style(self, style_name) -> None:
         """Use this to name the style being used, and to ensure that
         multiple styles are not unintentionally assigned.
         """
@@ -200,10 +202,11 @@ class BaseConfig(TmuxConfig):
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """This is called just before the status bar is rendered,
-        local_overides() is called later so can not modify status bar
+        local_overides() is called later so that can not modify status bar
         left & right without a pointless reassignment.
 
-        I use this to add hooks for plugins that are currently used.
+        I use this to modify status bar colors in subclasses
+        add hooks for plugins that are currently used.
 
         I have come to realize that leaving them in for non active
         plugins is not desired. If the plugin code is present in
@@ -226,7 +229,21 @@ class BaseConfig(TmuxConfig):
 
         return print_header
 
-    def content(self):
+    def local_overrides(self) -> None:
+        """
+        Applies local configuration overrides, executed after all other
+        configuration steps. These overrides do not affect the status bar
+        configuration (see `status_bar_customization()` for that).
+
+        When overriding this method in a subclass, ensure that
+        `super().local_overrides()` is called first, to retain any overrides
+        defined by parent classes before applying additional customizations.
+        """
+        super().local_overrides()
+        #  Display what class this override comes from
+        self.write("# BaseConfig.local_overides")
+
+    def content(self) -> None:
         """This generates the majority of the tmux.conf.
 
         Plugins can be handled by plugin_foo() methods, but its
@@ -249,21 +266,7 @@ class BaseConfig(TmuxConfig):
 
         self.__base_overrides()
 
-    def local_overrides(self) -> None:
-        """
-        Applies local configuration overrides, executed after all other
-        configuration steps. These overrides do not affect the status bar
-        configuration (see `status_bar_customization()` for that).
-
-        When overriding this method in a subclass, ensure that
-        `super().local_overrides()` is called first, to retain any overrides
-        defined by parent classes before applying additional customizations.
-        """
-        super().local_overrides()
-        #  Display what class this override comes from
-        self.write("# BaseConfig.local_overides")
-
-    def __base_overrides(self):
+    def __base_overrides(self) -> None:
         """This should be at the very end of content subclasses
         should not change this one!"""
 
@@ -320,7 +323,7 @@ class BaseConfig(TmuxConfig):
                 #
                 #  Remove the default popup menus"""
             )
-            if "tmux-menus" in self.plugins.found(short_name=True):
+            if "tmux-menus" in self.plugins.installed(short_name=True):
                 w("#  Instead using the plugin jaclu/tmux-menus - <prefix> \\")
             w("#")
             if self.vers_ok(3.0):

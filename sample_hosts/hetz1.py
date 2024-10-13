@@ -20,14 +20,15 @@ sys.path.insert(0, root_dir)
 
 # flake8: noqa: E402
 # pylint: disable=wrong-import-position
-from default_plugins import OptionalPlugins
 from sb.sb_cloud import SB
 
 
-class Hetz1(SB, OptionalPlugins):
+class Hetz1(SB):
     """hetz1 config"""
 
     status_interval = 5
+
+    # optionals selected
     use_plugin_packet_loss = True
 
 

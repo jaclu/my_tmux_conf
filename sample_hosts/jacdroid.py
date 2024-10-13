@@ -32,16 +32,15 @@ sys.path.insert(0, root_dir)
 
 # flake8: noqa: E402
 # pylint: disable=wrong-import-position
-from default_plugins import OptionalPlugins
 from sb.sb_ish import SB
 
 
-class JacDroid(SB, OptionalPlugins):
+class JacDroid(SB):
     status_interval = 5
 
     # defaults skipped
-    use_plugin_mouse_swipe = False
-    use_plugin_session_wizard = False
+    skip_plugin_mouse_swipe = True
+    skip_plugin_session_wizard = True
 
     # optionals selected
     use_plugin_packet_loss = True
