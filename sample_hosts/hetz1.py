@@ -27,7 +27,7 @@ from sb.sb_cloud import SB
 class Hetz1(SB, OptionalPlugins):
     """hetz1 config"""
 
-    status_interval = 10
+    status_interval = 5
     use_plugin_packet_loss = True
 
 
