@@ -154,17 +154,25 @@ select_tmux_bin() {
     if [ -n "$tmux_bin" ]; then
         # User defined tmux
         TMUX_BIN="$tmux_bin"
+        log_it "><> user defined tmux: $TMUX_BIN"
         unset tmux_bin
         return
     fi
     if [ -n "$ASDF_DIR" ]; then
-        if asdf list 2>/dev/null | grep -q tmux; then
+        if ls "$HOME"/.asdf/shims | grep -q tmux; then
             TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
+            log_it "><> asdf defined tmux: $TMUX_BIN"
+            return
         fi
-    else
-        TMUX_BIN="$(command -v tmux)"
     fi
-    if [ -z "$TMUX_BIN" ] && [ -d "$HOME"/.asdf ]; then
+
+    TMUX_BIN="$(command -v tmux)"
+    if [ -n "$TMUX_BIN" ]; then
+        log_it "><> tmux found in PATH: $TMUX_BIN"
+        return
+    fi
+
+    if [ -d "$HOME"/.asdf ]; then
         #
         # Consider if asdf is used but has not been initialized
         # here are some common locations, worthwhile to examine
@@ -181,9 +189,13 @@ select_tmux_bin() {
         log_it "Checking if it contains a tmux..."
         # hopefully now it is found!
         TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
+        log_it "><> un-iniziated asdf activated - now found tmux: $TMUX_BIN"
     fi
     [ -z "$TMUX_BIN" ] && error_msg "no tmux in PATH!"
+}
 
+select_tmux_env() {
+    select_tmux_bin
     #
     #  To not collide when checking for colliding versions
     #  add a prefix for chrooted envs, in order for socket
@@ -418,7 +430,7 @@ regular_tmux() {
         profile="$(realpath "$profile")"
     fi
 
-    select_tmux_bin
+    select_tmux_env
     start_tmux
     #$TMUX_BIN -u new-session -ADs main
 }
@@ -442,7 +454,7 @@ tmux_2() {
         error_msg "ERROR: Failed to cd back to [$d_initial]"
     }
 
-    select_tmux_bin
+    select_tmux_env
     start_tmux
 }
 
