@@ -313,9 +313,9 @@ ensure_cfg_file_present() {
 
 start_tmux() {
     define_tmux_env
-
-    pgrep -f "$socket" >/dev/null && {
-        error_msg "tmux $profile is already running!"
+    #  shellcheck disable=SC2154
+    echo "$TMUX" | grep -q "$socket" && {
+        error_msg "Attempt to start tmux $profile from within itself"
     }
 
     if $quick_mode; then
