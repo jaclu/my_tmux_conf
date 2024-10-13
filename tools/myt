@@ -158,14 +158,11 @@ select_tmux_bin() {
         unset tmux_bin
         return
     fi
-    if [ -n "$ASDF_DIR" ]; then
-        if ls "$HOME"/.asdf/shims | grep -q tmux; then
-            TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
-            # log_it "><> asdf defined tmux: $TMUX_BIN"
-            return
-        fi
+    if [ -n "$ASDF_DIR" ] && [ -e "$HOME/.asdf/shims/tmux" ]; then
+        TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
+        # log_it "><> asdf defined tmux: $TMUX_BIN"
+        return
     fi
-
     TMUX_BIN="$(command -v tmux)"
     if [ -n "$TMUX_BIN" ]; then
         # log_it "><> tmux found in PATH: $TMUX_BIN"
