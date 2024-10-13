@@ -312,6 +312,7 @@ ensure_cfg_file_present() {
 }
 
 start_tmux() {
+    define_tmux_env
     if $quick_mode; then
         ensure_cfg_file_present
     else
@@ -414,13 +415,13 @@ find_host_profile() {
     fi
 
     #
-    #  Step 1 check hardcoded profile
+    #  Step 1 check hardcoded default profile
     #
     profile="${my_tmux_conf_location}/hostnames/_def_profile.py"
     [ -f "$profile" ] && return 0
 
     #
-    #  Hostname profiles are named as hostname -s with suffix .py
+    #  Hostname profiles are named as lowercased hostname -s with suffix .py
     #
     _p="$(hostname -s | tr '[:upper:]' '[:lower:]').py"
 
@@ -435,8 +436,9 @@ find_host_profile() {
     profile="${my_tmux_conf_location}/sample_hosts/$_p"
     [ -f "$profile" ] && return 0
 
+    # no hostname based profile found
     profile=""
-    return 1 # no hostname based profile found
+    return 1
 }
 
 regular_tmux() {
@@ -453,14 +455,9 @@ regular_tmux() {
         echo
         sleep 3
         profile="$my_tmux_conf_location/default_plugins.py"
-    # else
-    #     # handle soft links to other directories
-    #     profile="$(realpath "$profile")"
     fi
 
-    define_tmux_env
     start_tmux
-    #$TMUX_BIN -u new-session -ADs main
 }
 
 tmux_2() {
@@ -482,7 +479,6 @@ tmux_2() {
         error_msg "ERROR: Failed to cd back to [$d_initial]"
     }
 
-    define_tmux_env
     start_tmux
 }
 
