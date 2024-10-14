@@ -203,7 +203,7 @@ class DefaultPlugins(BaseConfig):
 
     def plugin_mouse_swipe(self) -> list:  # 3.0
         """right-click & swipe switches Windows / Sessions"""
-        if self.skip_plugin_mouse_swipe or (self.t2_env or self.is_limited_host):
+        if self.skip_plugin_mouse_swipe or self.is_limited_host:
             min_vers = 999.9  # dont use this one
         else:
             min_vers = 3.0

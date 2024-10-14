@@ -49,7 +49,7 @@ class T2(SB):  # type: ignore
     #
     #  Default plugins that can be disabled
     #
-    skip_plugin_mouse_swipe = True
+    # skip_plugin_mouse_swipe = True
     skip_plugin_session_wizard = True
 
     #
