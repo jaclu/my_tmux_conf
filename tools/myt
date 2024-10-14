@@ -313,15 +313,26 @@ ensure_cfg_file_present() {
 }
 
 start_tmux() {
+    if [ -z "$profile" ] && ! find_host_profile; then
+        log_it "*** Warning: no profile found"
+        echo "***            using default profile after 3 seconds"
+        echo
+        sleep 3
+        profile="$my_tmux_conf_location/default_plugins.py"
+
+    fi
+
     define_tmux_env
+
+    # ensure socket is not used inside itself
     [ -n "$TMUX" ] && {
-	# shellcheck disable=SC2154
-	if echo "$TMUX" | grep -q "$socket" || \
-		echo "$TMUX_OUTER" | grep -q "$socket"; then
+        # shellcheck disable=SC2154
+        if echo "$TMUX" | grep -q "$socket" ||
+            echo "$TMUX_OUTER" | grep -q "$socket"; then
 
             error_msg "Attempt to start 'tmux $conf_file' from within itself"
-	fi
-	export TMUX_OUTER="$TMUX"
+        fi
+        export TMUX_OUTER="$TMUX"
     }
 
     if $quick_mode; then
@@ -416,15 +427,6 @@ create_tmux_conf() {
 
 find_host_profile() {
 
-    if [ -n "$profile" ]; then
-        if [ ! -f "$profile" ]; then
-            error_msg "Defined profile not found: $profile" -1
-            profile=""
-            return 1
-        fi
-        return 0
-    fi
-
     #
     #  Step 1 check hardcoded default profile
     #
@@ -452,21 +454,6 @@ find_host_profile() {
     return 1
 }
 
-regular_tmux() {
-    #
-    #  Start the normal tmux env
-    #
-    if ! find_host_profile; then
-        log_it "*** Warning: no profile found"
-        echo "***            using default profile after 3 seconds"
-        echo
-        sleep 3
-        profile="$my_tmux_conf_location/default_plugins.py"
-    fi
-
-    start_tmux
-}
-
 tmux_2() {
     #
     #  Inner tmux server, uses a separate config and prefix
@@ -475,18 +462,18 @@ tmux_2() {
         profile="$my_tmux_conf_location/t2.py"
     fi
 
+    d_t2="$HOME"/t2
+    mkdir -p "$d_t2"
+
+    profile="$(realpath "$profile")" # make it survive the cd
+
     #
     #  run from this location to pick up alternate tmux versions
     #  defined in this location
     #
-    mkdir -p "$HOME"/t2
-
-    #  To help pick up the right tmux go here to search
-    cd ~/t2 || {
-        error_msg "ERROR: Failed to cd back to [$d_initial]"
+    cd "$d_t2" || {
+        error_msg "ERROR: Failed to cd into [$d_t2]"
     }
-
-    start_tmux
 }
 
 #===============================================================
@@ -542,8 +529,16 @@ $quick_mode && [ -n "$profile" ] && {
     export TERM="screen-256color"
 }
 
-if $t2_env && [ -z "$profile" ]; then
+if $t2_env; then
     tmux_2
 else
-    regular_tmux
+    [ -n "$profile" ] && {
+        [ ! -f "$profile" ] && {
+            error_msg "Defined profile not found: $profile"
+        }
+        # cd will be done when generating the tmux.conf
+        # this ensures the path is still valid
+        profile="$(realpath "$profile")"
+    }
 fi
+start_tmux
