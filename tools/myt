@@ -536,7 +536,7 @@ $quick_mode && [ -n "$profile" ] && {
     export TERM="screen-256color"
 }
 
-if $t2_env; then
+if $t2_env && [ -z "$profile" ]; then
     tmux_2
 else
     regular_tmux
