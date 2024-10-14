@@ -30,8 +30,6 @@ from sb.sb_muted_ish import SB
 class IshHostWithStyle(SB):
     """iSH host with default style"""
 
-    print("><> ish_host:IshHostWithStyle()")
-
     # status_interval = 10
 
     # plugin_handler = ""

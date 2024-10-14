@@ -133,7 +133,6 @@ class BaseConfig(TmuxConfig):
         clear_plugins: bool = False,  # remove all current plugins
         plugins_display: int = 0,  # Display info about plugins
     ) -> None:
-        print("><> base_config:BaseConfig()")
 
         # Indicates if this tmux is run on the iSH console
         self.is_ish_console = False
