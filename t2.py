@@ -38,13 +38,33 @@ class T2(SB):  # type: ignore
     t2_env = "1"
 
     status_interval = 5
+
     # plugin_handler = "manual"
     # plugin_handler: str = "tmux-plugins/tpm"
     # use_embedded_scripts = False
     # is_limited_host = True
-    # skip_plugin_session_wizard = True
+
     # force_plugin_continuum = True
+
+    #
+    #  Default plugins that can be disabled
+    #
+    skip_plugin_mouse_swipe = True
+    skip_plugin_session_wizard = True
+
+    #
+    #  Optional plugins, need to be enabled
+    #
+    # use_plugin_1password = True
+    # use_plugin_battery = True
+    # use_plugin_jump = True
+    # use_plugin_keyboard_type = True
+    # use_plugin_mullvad = True
+    # use_use_plugin_nordvpn = True
     # use_plugin_packet_loss = True
+    # use_plugin_spotify_info = True
+    # use_plugin_which_key = True
+    # use_plugin_plugin_yank = True
 
     def local_overrides(self) -> None:
         """
@@ -61,7 +81,13 @@ class T2(SB):  # type: ignore
         self.write("# T2.local_overides")
 
         if self.vers_ok(1.8):
-            self.write("set -g @menus_log_file ~/tmp/tmux-menus-t2.log")
+            # @variables cant be used earlier
+            self.write("""
+            set -g @menus_log_file ~/tmp/tmux-menus-t2.log
+
+            set -g @packet-loss-ping_host 8.8.8.8
+            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
+            """)
 
         if self.vers_ok(1.9):
             #
