@@ -313,9 +313,14 @@ ensure_cfg_file_present() {
 
 start_tmux() {
     define_tmux_env
-    #  shellcheck disable=SC2154
-    echo "$TMUX" | grep -q "$socket" && {
-        error_msg "Attempt to start tmux $profile from within itself"
+    [ -n "$TMUX" ] && {
+	# shellcheck disable=SC2154
+	if echo "$TMUX" | grep -q "$socket" || \
+		echo "$TMUX_OUTER" | grep -q "$socket"; then
+
+            error_msg "Attempt to start 'tmux $conf_file' from within itself"
+	fi
+	export TMUX_OUTER="$TMUX"
     }
 
     if $quick_mode; then
