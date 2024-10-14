@@ -49,8 +49,8 @@ class T2(SB):  # type: ignore
     #
     #  Default plugins that can be disabled
     #
-    # skip_plugin_mouse_swipe = True
-    skip_plugin_session_wizard = True
+    skip_plugin_mouse_swipe = True
+    # skip_plugin_session_wizard = True
 
     #
     #  Optional plugins, need to be enabled
@@ -82,12 +82,15 @@ class T2(SB):  # type: ignore
 
         if self.vers_ok(1.8):
             # @variables cant be used earlier
-            self.write("""
+            self.write(
+                """
             set -g @menus_log_file ~/tmp/tmux-menus-t2.log
 
-            set -g @packet-loss-ping_host 8.8.8.8
             set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
-            """)
+            # Use a different host vs the outer tmux
+            set -g @packet-loss-ping_host 8.8.8.8
+            """
+            )
 
         if self.vers_ok(1.9):
             #
