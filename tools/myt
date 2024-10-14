@@ -68,6 +68,7 @@ log_it() {
 }
 
 error_msg() {
+    echo
     log_it "ERROR: $1"
     ex_code="${2:-1}"
     [ "$ex_code" -ge 0 ] && exit "$ex_code"
