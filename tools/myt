@@ -201,30 +201,65 @@ define_tmux_env() {
     #  names not to potentially collide with what is running
     #  on the host
     #
+    tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
     socket="$(id -u)"
     is_fs_chrooted && socket="${socket}-chr"
     if $t2_env; then
         socket="$socket"-serv2
         conf_file="$HOME/t2/tmux/tmux.conf"
+        #
+        #  Handle some odd long versions, since they will be displayed in
+        #  status bar on t2 envs
+        #
+        case "$tmux_vers" in
+            3.1-rc) tmux_vers="3.1" ;; # asdf tmux 3.1 reports as this
+            
+            next-3.4)
+                #  shellcheck disable=SC2034 # TODO: check why this is alerting
+                tmux_vers="3.4"
+                ;; # Alpine 3.18 reports as this
+            *) ;;
+        esac
     else
         socket="$socket"-default
         conf_file="$HOME/.tmux.conf"
     fi
-    tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
-    #
-    #  Handle some odd versions
-    #
-    case "$tmux_vers" in
-    3.1-rc) tmux_vers="3.1" ;; # asdf tmux 3.1 reports as this
-
-    next-3.4)
-        #  shellcheck disable=SC2034 # TODO: check why this is alerting
-        v_maj="3.4"
-        ;; # Alpine 3.18 reports as this
-    *) ;;
-    esac
-
     chk_incompatible_socket
+}
+
+chk_incompatible_socket() {
+    #
+    #  Ensure tmux socket is not used by another running version of tmux
+    #
+    socket_identifier=" -L $socket "
+
+    #
+    # verssion will just be mentioned in the path if it is a asdf tmux or similar
+    # so the typical basic paths are excluded from this check
+    #
+    # ps ax | grep "$socket_identifier" | grep -qv -e /usr/bin/tmux -e /usr/local/bin/tmux -e "$tmux_vers" -e grep && {
+    #
+    #  shellcheck disable=SC2009
+    #ps ax | grep "$socket_identifier" | grep -i asdf | grep -v -e "$tmux_vers" -e grep && {
+    other_versions_running="$(ps ax | grep "$socket_identifier" | grep -v -e "$TMUX_BIN" -e grep)"
+    if [ -n "$other_versions_running" ]; then
+        #  shellcheck disable=SC2009
+        log_it "
+WARNING: It seems instances for version other than $tmux_vers are using socket: $socket
+
+Intended to use: $TMUX_BIN
+
+Found the following processes:
+
+$other_versions_running
+
+This might not work well, depending on how much the versions differ.
+This tmux will start in five seconds - Press Ctrl-C to abort"
+        sleep 5
+    #else
+        #log_it "><> no other tmux versions runing on this socket"
+    fi
+    unset other_versions_running
 }
 
 source_asdf_if_found() {
@@ -241,32 +276,6 @@ source_asdf_if_found() {
     return 1 # false
 }
 
-chk_incompatible_socket() {
-    #
-    #  Ensure tmux socket is not used by another running version of tmux
-    #
-    socket_identifier=" -L $socket "
-
-    #
-    # verssion will just be mentioned in the path if it is a asdf tmux or similar
-    # so the typical basic paths are excluded from this check
-    #
-    # ps ax | grep "$socket_identifier" | grep -qv -e /usr/bin/tmux -e /usr/local/bin/tmux -e "$tmux_vers" -e grep && {
-    #
-    #  shellcheck disable=SC2009
-    ps ax | grep "$socket_identifier" | grep -i asdf | grep -v -e "$tmux_vers" -e grep && {
-        #  shellcheck disable=SC2009
-        log_it "
-ERROR: instances for version other than $tmux_vers using socket: $socket  running!
-Intended to use: $TMUX_BIN
-
-Found the following processes:
-
-$(ps ax | grep -v grep | grep "$socket")"
-        exit 1
-    }
-}
-
 indicate_tmux_connection_type() {
     connect_type="$1"
     [ -z "$connect_type" ] && {
@@ -278,16 +287,32 @@ indicate_tmux_connection_type() {
 }
 
 is_tmux_ses_running() {
-    $TMUX_BIN -L "$socket" list-sessions >/dev/null 2>&1
+    # log_it "><> doing list-sessions"
+    if $TMUX_BIN -L "$socket" list-sessions >/dev/null 2>&1; then
+        # log_it "><> found sessions"
+        return 0
+    else
+        # log_it "><> no sessions"
+        return 1
+    fi
 }
 
 is_tmux_cli_connected() {
-    [ -n "$($TMUX_BIN -L "$socket" list-clients)" ]
+    # log_it "><> is_tmux_cli_connected() $TMUX_BIN"
+    if [ -n "$($TMUX_BIN -L "$socket" list-clients)" ]; then
+        # log_it "><> was connected"
+        return 0
+    else
+        # log_it "><> nothing connected"
+        return 1
+    fi
 }
 
 drop_other_clients() {
+    # log_it "><> drop_other_clients()"
     # disconnect any other clients
     is_tmux_cli_connected && {
+        # log_it "><> doing detach"
         #
         #  tmux -d just kills other clients using the same session
         #  this kills all other clients regardless of session
@@ -299,6 +324,7 @@ drop_other_clients() {
         $TMUX_BIN -L "$socket" list-clients | cut -d: -f 1 |
             xargs -I{} "$TMUX_BIN" -L "$socket" detach-client -t {}
     }
+    # log_it "><> detach done"
 }
 
 ensure_cfg_file_present() {
@@ -345,10 +371,12 @@ start_tmux() {
         error_msg "ERROR: Failed to cd back to [$d_initial]"
     }
     if is_tmux_ses_running; then
+        # log_it "><> attaching to running tmux"
         $single_session && drop_other_clients
         indicate_tmux_connection_type "Attaching to"
         eval "$TMUX_BIN" -L "$socket" -f "$conf_file" attach-session -t main
     else
+        # log_it "><> starting tmux server"
         indicate_tmux_connection_type "Starting"
         $TMUX_BIN -L "$socket" -f "$conf_file" new-session -s main
     fi

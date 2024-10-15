@@ -84,11 +84,32 @@ class T2(SB):  # type: ignore
             # @variables cant be used earlier
             self.write(
                 """
-            set -g @menus_log_file ~/tmp/tmux-menus-t2.log
+                set -g @menus_log_file ~/tmp/tmux-menus-t2.log
 
-            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
-            # Use a different host vs the outer tmux
-            set -g @packet-loss-ping_host 8.8.8.8
+                set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
+                # Use a different host vs the outer tmux
+                set -g @packet-loss-ping_host 8.8.8.8
+
+                # set -g @menus_use_cache false
+
+
+                # set -g @menus_format_title "'#[align=centre] #[fg=colour34]#{@menu_name}#[default] '"
+
+                #set -g @menus_simple_style_selected "default"
+                #set -g @menus_simple_style "default"
+                #set -g @menus_simple_style_border "defaullt"
+
+                set -g @menus_simple_style_selected "fg=#ff79c6,bg=colour236,blink"
+                set -g @menus_simple_style "fg=colour62"
+                set -g @menus_simple_style_border "fg=colour223"
+
+
+
+                set -g @menus_nav_next "#[fg=yellow]-->"
+                set -g @menus_nav_prev "#[fg=green]<--"
+                set -g @menus_nav_home "#[fg=red]<=="
+
+
             """
             )
 
