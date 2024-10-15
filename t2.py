@@ -50,7 +50,7 @@ class T2(SB):  # type: ignore
     #  Default plugins that can be disabled
     #
     skip_plugin_mouse_swipe = True
-    # skip_plugin_session_wizard = True
+    skip_plugin_session_wizard = True
 
     #
     #  Optional plugins, need to be enabled
@@ -90,26 +90,26 @@ class T2(SB):  # type: ignore
                 # Use a different host vs the outer tmux
                 set -g @packet-loss-ping_host 8.8.8.8
 
-                # set -g @menus_use_cache false
+                # doesnt work well on the layout branch yet
+                set -g @menus_use_cache false
+
+                # set -g @menus_format_title "'#[align=centre,fg=colour34] #{@menu_name} '"
+                # set -g @menus_simple_style_selected "fg=#ff79c6,bg=colour236,blink"
+                # set -g @menus_simple_style "fg=colour62"
+                # set -g @menus_simple_style_border "fg=colour223"
+
+                #
+                #  Slightly catppuccin frappe inspired
+                #
+                #        fg @thm_surface_0 bg @thm_yellow
+                set -g @menus_simple_style_selected "fg=#414559,bg=#e5c890"
+                set -g @menus_simple_style "bg=#414559"        # @thm_surface_0
+                set -g @menus_simple_style_border "bg=#414559" # @thm_surface_0
 
 
-                # set -g @menus_format_title "'#[align=centre] #[fg=colour34]#{@menu_name}#[default] '"
-
-                #set -g @menus_simple_style_selected "default"
-                #set -g @menus_simple_style "default"
-                #set -g @menus_simple_style_border "defaullt"
-
-                set -g @menus_simple_style_selected "fg=#ff79c6,bg=colour236,blink"
-                set -g @menus_simple_style "fg=colour62"
-                set -g @menus_simple_style_border "fg=colour223"
-
-
-
-                set -g @menus_nav_next "#[fg=yellow]-->"
-                set -g @menus_nav_prev "#[fg=green]<--"
-                set -g @menus_nav_home "#[fg=red]<=="
-
-
+                set -g @menus_nav_next "#[fg=colour220]-->"
+                set -g @menus_nav_prev "#[fg=colour71]<--"
+                set -g @menus_nav_home "#[fg=colour84]<=="
             """
             )
 
