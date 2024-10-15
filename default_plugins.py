@@ -560,7 +560,7 @@ class DefaultPlugins(BaseConfig):
 
     def plugin_yank(self) -> list:  # 1.8
         """copies text from the command line to the clipboard."""
-        if self.use_plugin_plugin_yank:
+        if self.use_plugin_yank:
             min_vers = 1.8
         else:
             min_vers = 999.9  # dont use this one

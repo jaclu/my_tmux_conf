@@ -56,8 +56,7 @@ class JacMacConfig(SB):
     use_plugin_packet_loss = True
     # use_plugin_spotify_info = True
     # use_plugin_which_key = True
-    # use_plugin_plugin_yank = True
-
+    # use_plugin_yank = True
 
 if __name__ == "__main__":
     JacMacConfig().run()
