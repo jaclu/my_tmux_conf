@@ -84,7 +84,7 @@ class DefaultPlugins(BaseConfig):
     use_plugin_packet_loss = False
     use_plugin_spotify_info = False
     use_plugin_which_key = False
-    use_plugin_plugin_yank = False
+    use_plugin_yank = False
 
     #
     #  The default is to use jaclu/tpm, with built in support for
