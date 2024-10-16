@@ -90,9 +90,9 @@ class T2(SB):  # type: ignore
                 set -g @packet-loss-ping_host 8.8.8.8
 
                 # doesnt work well on the layout branch yet
-                set -g @menus_use_cache false
+                # set -g @menus_use_cache false
 
-                # set -g @menus_format_title "'#[align=centre,fg=colour34] #{@menu_name} '"
+                # set -g @menus_format_title "'#[align=centre,fg=colour34] TMPL_MENU_NAME '"
                 # set -g @menus_simple_style_selected "fg=#ff79c6,bg=colour236,blink"
                 # set -g @menus_simple_style "fg=colour62"
                 # set -g @menus_simple_style_border "fg=colour223"
