@@ -184,6 +184,16 @@ class BaseConfig(TmuxConfig):
         self._fnc_activate_tpm = "activate_tpm"
         self._fnc_tpm_indicator = "tpm_init_indicator"
 
+        if self.vers_ok(1.7):
+            # the syntax can be used in 1.8, but it fails to set the path
+            # self.cwd_directive = ' -c \\"#{pane_current_path}\\"'
+            self.cwd_directive = ' -c "#{pane_current_path}"'
+        else:
+            self.cwd_directive = ""
+
+    def edit_config(self, edit_key: str = "e") -> None:
+        pass  # Im not really using it, so skip it
+
     def assign_style(self, style_name) -> None:
         """Use this to name the style being used, and to ensure that
         multiple styles are not unintentionally assigned.
@@ -635,7 +645,8 @@ class BaseConfig(TmuxConfig):
         )
         w(f"set -g  status-interval {self.status_interval}")
 
-        w("set -g  status-position bottom")
+        if self.vers_ok(1.7):
+            w("set -g  status-position bottom")
 
         if self.vers_ok(1.9):
             w("set -g  window-status-current-style reverse")
@@ -806,12 +817,13 @@ class BaseConfig(TmuxConfig):
         #======================================================
 
         set -g  base-index 1
-
-        set -g  renumber-windows on
         set -g  allow-rename off
         set -g automatic-rename off
         """
         )
+        if self.vers_ok(1.7):
+            w("set -g  renumber-windows on")
+
         if self.vers_ok(1.8) and False:  # not sure if this is desired
             w("set -g set-titles on")
             w(

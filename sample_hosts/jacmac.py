@@ -52,11 +52,11 @@ class JacMacConfig(SB):
     # use_plugin_jump = True
     use_plugin_keyboard_type = True
     # use_plugin_mullvad = True
-    # use_use_plugin_nordvpn = True
     use_plugin_packet_loss = True
     # use_plugin_spotify_info = True
     # use_plugin_which_key = True
     # use_plugin_yank = True
+
 
 if __name__ == "__main__":
     JacMacConfig().run()

@@ -73,14 +73,15 @@ class DefaultPlugins(BaseConfig):
     skip_plugin_session_wizard = False
 
     #
-    #  Optional plugins, need to be enabled
+    #  Optional plugins, need to be enabled. Be aware since they are
+    #  actively selected, there is no env checks being done if it should
+    #  be used or not
     #
     use_plugin_1password = False
     use_plugin_battery = False
     use_plugin_jump = False
     use_plugin_keyboard_type = False
     use_plugin_mullvad = False
-    use_use_plugin_nordvpn = False
     use_plugin_packet_loss = False
     use_plugin_spotify_info = False
     use_plugin_which_key = False
@@ -136,10 +137,6 @@ class DefaultPlugins(BaseConfig):
             self.sb_left += "#{mullvad_city}#{mullvad_country}"
             self.sb_left += "#{mullvad_status}"
 
-        if "tmux-nordvpn" in used_plugins:
-            # pylint: disable=E1101
-            self.sb_left += "#{nordvpn_country}#{nordvpn_status}"
-
         if "tmux-keyboard-type" in used_plugins:
             # pylint: disable=W0201
             self.sb_right = "#{keyboard_type}" + self.sb_right
@@ -190,12 +187,12 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_menus(self) -> list:  # 0.0
+    def plugin_menus(self) -> list:  # 1.7
         self.write()
         #  Tested down to vers 1.7
         return [
             "jaclu/tmux-menus",
-            0.0,
+            1.7,
             """set -g @menus_log_file ~/tmp/tmux-menus.log
         # set -g @menus_use_cache no
         """,
@@ -343,7 +340,7 @@ class DefaultPlugins(BaseConfig):
         """Plugin for 1password CLI tool
         Does not seem to use the status bar"""
         if self.use_plugin_1password:
-            min_vers = 0.0  # Unknown min version
+            min_vers = 1.9  # Unknown min version 1.9 seems ok
         else:
             min_vers = 999.9  # dont use this one
 
@@ -475,22 +472,6 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_nordvpn(self):
-        if self.use_use_plugin_nordvpn:
-            min_vers = 0.0  # Not sure of its min version
-        else:
-            min_vers = 999.9  # dont use this one
-
-        return [
-            "maxrodrigo/tmux-nordvpn",
-            min_vers,
-            """
-        set -g @nordvpn_connected_text=""
-        set -g @nordvpn_connecting_text="🔒"
-        set -g @nordvpn_disconnected_text="🔓"
-        """,
-        ]
-
     def plugin_packet_loss(self):  # 1.9
         if self.use_plugin_packet_loss:
             min_vers = 1.9
@@ -523,7 +504,7 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_spotify_info(self):  # 1.8
+    def plugin_spotify_info(self):  # 1.9
         """Only usable on MacOS!
 
         Forked from https://github.com/jdxcode/tmux-spotify-info
@@ -534,7 +515,7 @@ class DefaultPlugins(BaseConfig):
 
         Display in status-bar with: #(tmux-spotify-info)"""
         if self.use_plugin_spotify_info:
-            min_vers = 1.8
+            min_vers = 1.9
         else:
             min_vers = 999.9
         if self.vers_ok(2.9):
