@@ -839,7 +839,9 @@ class BaseConfig(TmuxConfig):
 
         cmd_new_win_named = (
             'command-prompt -I "?" -p "Name of new window: "'
-            ' "new-window -n \\"%%\\" -c \\"#{pane_current_path}\\""'
+            " '"
+            f'new-window -n \\"%%\\ {self.cwd_directive}'
+            "'"
         )
 
         for key in ("c", "="):  # c is just for compatibility with default key
@@ -874,13 +876,12 @@ class BaseConfig(TmuxConfig):
             #
             sw1 = 'bind -N "Split entire window'  # hackish strings
             sw2 = " split-window -f"  # to make sure
-            pcb = '-c "#{pane_current_path}"'  # line is not to long
             w(
                 f"""# window splitting
-            {sw1} horizontally left"    C-M-Left   {sw2}hb {pcb}
-            {sw1} vertically down"      C-M-Down   {sw2}v  {pcb}
-            {sw1} vertically up"        C-M-Up     {sw2}vb {pcb}
-            {sw1} horizontally right"   C-M-Right  {sw2}h  {pcb}
+            {sw1} horizontally left"    C-M-Left   {sw2}hb {self.cwd_directive}
+            {sw1} vertically down"      C-M-Down   {sw2}v  {self.cwd_directive}
+            {sw1} vertically up"        C-M-Up     {sw2}vb {self.cwd_directive}
+            {sw1} horizontally right"   C-M-Right  {sw2}h  {self.cwd_directive}
             """
             )
 
@@ -930,14 +931,15 @@ class BaseConfig(TmuxConfig):
         #     #  tmate does not support split-window -f  despite they
         #     #  claim to be 2.4 compatible and this is a 2.3 feature...
         #     #
-        #     sw = 'bind -N "Split window'       # hackish strings to make sure
-        #     pcb = '-c "#{pane_current_path}"'  # line is not to long
-        #     w(f"""# window splitting
-        #     {sw} horizontally right"  M-L  split-window -fh  {pcb}
-        #     {sw} horizontally left"   M-H  split-window -fhb {pcb}
-        #     {sw} vertically down"     M-J  split-window -fv  {pcb}
-        #     {sw} vertically up"       M-K  split-window -fvb {pcb}
-        #     """)
+        #     sw = 'bind -N "Split window'  # hackish strings to make sure
+        #     w(
+        #         f"""# window splitting
+        #     {sw} horizontally right"  M-L  split-window -fh  {self.cwd_directive}
+        #     {sw} horizontally left"   M-H  split-window -fhb {self.cwd_directive}
+        #     {sw} vertically down"     M-J  split-window -fv  {self.cwd_directive}
+        #     {sw} vertically up"       M-K  split-window -fvb {self.cwd_directive}
+        #     """
+        #     )
 
         w("bind -N 'Toggle synchronize'      *   set synchronize-panes")
 
@@ -1216,43 +1218,40 @@ class BaseConfig(TmuxConfig):
         #  also to allow left/up splits.
         #
 
-        if self.vers_ok(1.7):
+        w(
+            'bind -N "Split pane to the right  - P C-l" -n  '
+            f"C-M-Right  split-window -h {self.cwd_directive}"
+        )
+        w(
+            'bind -N "Split pane below  - P C-j"    -n  '
+            f"C-M-Down   split-window -v {self.cwd_directive}"
+        )
+        if self.vers_ok(2.0):
             w(
-                'bind -N "Split pane to the right  - P C-l" -n  '
-                'C-M-Right  split-window -h  -c "#{pane_current_path}"'
+                'bind -N "Split pane to the left  - P C-h"  '
+                f"-n  C-M-Left   split-window -hb {self.cwd_directive}"
             )
             w(
-                'bind -N "Split pane below  - P C-j"    -n  '
-                'C-M-Down   split-window -v  -c "#{pane_current_path}"'
+                'bind -N "Split pane above  - P C-k"      '
+                f"-n  C-M-Up     split-window -vb {self.cwd_directive}"
             )
-            if self.vers_ok(2.0):
-                w(
-                    'bind -N "Split pane to the left  - P C-h"  '
-                    "-n  C-M-Left   split-window -hb -c "
-                    '"#{pane_current_path}"'
-                )
-                w(
-                    'bind -N "Split pane above  - P C-k"      '
-                    "-n  C-M-Up     split-window -vb -c "
-                    '"#{pane_current_path}"'
-                )
-            w()
+        w()
         w(
             'bind -N "Split pane to the right"  C-l  '
-            'split-window -h  -c "#{pane_current_path}"'
+            f"split-window -h {self.cwd_directive}"
         )
         w(
             'bind -N "Split pane below"     C-j  '
-            'split-window -v  -c "#{pane_current_path}"'
+            f"split-window -v {self.cwd_directive}"
         )
         if self.vers_ok(2.0):
             w(
                 'bind -N "Split pane to the left"   C-h  '
-                'split-window -hb -c "#{pane_current_path}"'
+                f"split-window -hb {self.cwd_directive}"
             )
             w(
                 'bind -N "Split pane above"       C-k  '
-                'split-window -vb -c "#{pane_current_path}"'
+                f"split-window -vb {self.cwd_directive}"
             )
 
         w()  # spacer between sections
@@ -1413,31 +1412,42 @@ class BaseConfig(TmuxConfig):
             b = 'bind -N "'
             n_base = "Split window "
             sw = "split-window -f"
-            pcb = '-c "#{pane_current_path}"'  # line is not to long
 
             if muc_h != "M-H":
                 pref = "M-H - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}horizontally left"   {muc_h}  {sw}hb {pcb}')
+            w(
+                f'{b}{pref}{n_base}horizontally left" '
+                f"{muc_h}  {sw}hb {self.cwd_directive}"
+            )
 
             if muc_j != "M-J":
                 pref = "M-J - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}vertically down"     {muc_j}  {sw}v  {pcb}')
+            w(
+                f'{b}{pref}{n_base}vertically down" '
+                f"{muc_j}  {sw}v  {self.cwd_directive}"
+            )
 
             if muc_k != "M-K":
                 pref = "M-K - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}vertically up"       {muc_k}  {sw}vb {pcb}')
+            w(
+                f'{b}{pref}{n_base}vertically up" '
+                f"{muc_k}  {sw}vb {self.cwd_directive}"
+            )
 
             if muc_l != "M-L":
                 pref = "M-L - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}horizontally right"  {muc_l}  {sw}h  {pcb}')
+            w(
+                f'{b}{pref}{n_base}horizontally right" '
+                f"{muc_l}  {sw}h  {self.cwd_directive}"
+            )
 
     #
     #  Utility methods
