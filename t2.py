@@ -86,29 +86,13 @@ class T2(SB):  # type: ignore
                 set -g @menus_log_file ~/tmp/tmux-menus-t2.log
 
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
+
                 # Use a different host vs the outer tmux
                 set -g @packet-loss-ping_host 8.8.8.8
-
-                # doesnt work well on the layout branch yet
-                # set -g @menus_use_cache false
-
                 # set -g @menus_format_title "'#[align=centre,fg=colour34] TMPL_MENU_NAME '"
                 # set -g @menus_simple_style_selected "fg=#ff79c6,bg=colour236,blink"
                 # set -g @menus_simple_style "fg=colour62"
                 # set -g @menus_simple_style_border "fg=colour223"
-
-                #
-                #  Slightly catppuccin frappe inspired
-                #
-                #        fg @thm_surface_0 bg @thm_yellow
-                set -g @menus_simple_style_selected "fg=#414559,bg=#e5c890"
-                set -g @menus_simple_style "bg=#414559"        # @thm_surface_0
-                set -g @menus_simple_style_border "bg=#414559" # @thm_surface_0
-
-
-                set -g @menus_nav_next "#[fg=colour220]-->"
-                set -g @menus_nav_prev "#[fg=colour71]<--"
-                set -g @menus_nav_home "#[fg=colour84]<=="
             """
             )
 

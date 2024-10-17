@@ -194,7 +194,17 @@ class DefaultPlugins(BaseConfig):
             "jaclu/tmux-menus",
             1.7,
             """set -g @menus_log_file ~/tmp/tmux-menus.log
-        # set -g @menus_use_cache no
+            # set -g @menus_use_cache no
+            #
+            #  Slightly catppuccin frappe inspired
+            #
+            #        fg @thm_surface_0 bg @thm_yellow
+            set -g @menus_simple_style_selected "fg=#414559,bg=#e5c890"
+            set -g @menus_simple_style "bg=#414559"        # @thm_surface_0
+            set -g @menus_simple_style_border "bg=#414559" # @thm_surface_0
+            set -g @menus_nav_next "#[fg=colour220]-->"
+            set -g @menus_nav_prev "#[fg=colour71]<--"
+            set -g @menus_nav_home "#[fg=colour84]<=="
         """,
         ]
 
