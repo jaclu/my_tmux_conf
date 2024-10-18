@@ -486,6 +486,8 @@ class BaseConfig(TmuxConfig):
         # Example of what it does: assume ~/bin is first in PATH
         # Inside tmux shells it will now be almost last...
         #
+        # However using this on iSH confuses remote tmux sessions utterly
+        #
         if not mtc_utils.IS_ISH:
             w(
                 """
