@@ -486,11 +486,12 @@ class BaseConfig(TmuxConfig):
         # Example of what it does: assume ~/bin is first in PATH
         # Inside tmux shells it will now be almost last...
         #
-        w(
-            """
-            # prevents /usr/libexec/path_helper from messing up PATH
-            set -g default-command "${SHELL}" """
-        )
+        if not mtc_utils.IS_ISH:
+            w(
+                """
+                # prevents /usr/libexec/path_helper from messing up PATH
+                set -g default-command "${SHELL}" """
+            )
         #
         #  Common variable telling plugins if -N notation is wanted
         #  (assuming tmux version supports it)
