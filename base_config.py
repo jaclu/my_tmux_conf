@@ -1190,19 +1190,19 @@ class BaseConfig(TmuxConfig):
             w(
                 """
                 # <prefix> arrows are used for document navigation...
-                bind -N "Select pane left"  -r  h  select-pane -L
-                bind -N "Select pane right" -r  l  select-pane -R
-                bind -N "Select pane up"    -r  k  select-pane -U
-                bind -N "Select pane down"  -r  j  select-pane -D
+                bind -N "Select pane left"  h  select-pane -L
+                bind -N "Select pane right" l  select-pane -R
+                bind -N "Select pane up"    k  select-pane -U
+                bind -N "Select pane down"  j  select-pane -D
                 """
             )
         else:
             w(
                 """
-                bind -N "Select pane left - M-Left"    -r Left   select-pane -L
-                bind -N "Select pane right - M-Right"  -r Right  select-pane -R
-                bind -N "Select pane up - M-Up"        -r Up     select-pane -U
-                bind -N "Select pane down - M-Down"    -r Down   select-pane -D
+                bind -N "Select pane left - M-Left"    Left   select-pane -L
+                bind -N "Select pane right - M-Right"  Right  select-pane -R
+                bind -N "Select pane up - M-Up"        Up     select-pane -U
+                bind -N "Select pane down - M-Down"    Down   select-pane -D
                 """
             )
 
