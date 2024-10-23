@@ -19,7 +19,26 @@ class Tmate(SB):
     tmux_bin = "tmate"
     is_limited_host = True  # Trigger display of plugin progress
 
-    # use_plugin_packet_loss = True
+    # force_plugin_continuum = True
+
+    #
+    #  Default plugins that can be disabled
+    #
+    # skip_plugin_mouse_swipe = True
+    # skip_plugin_session_wizard = True
+
+    #
+    #  Optional plugins, need to be enabled
+    #
+    use_plugin_1password = True
+    use_plugin_battery = True
+    use_plugin_jump = True
+    use_plugin_keyboard_type = True
+    use_plugin_mullvad = True
+    use_plugin_packet_loss = True
+    use_plugin_spotify_info = True
+    use_plugin_which_key = True
+    use_plugin_plugin_yank = True
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         super().status_bar_customization(print_header=print_header)
