@@ -158,8 +158,6 @@ class IshConsole(base_config.BaseConfig):
         #
         #  Logitech Combo Touch
         #
-        #  £ 302 243    - should be #
-        #  \e@  033 100 - should be €  \\342\\202\254
         #
         self.ic_keyb_type_2()  # Same esc handling
         self.write(
@@ -169,16 +167,19 @@ class IshConsole(base_config.BaseConfig):
             #
             set -s user-keys[221]  "\\033"
             # map backtick back from Escape
-            bind -N "Send backtick"  -n User221  send "\\`"
+            bind -N "Send backtick"  -n User221  send "\\`" """)
 
-            # In iSH this keyb sends £ when it should send #
+        #  S-3 gives £ 302 243     - should be #
+        self.write("""# In iSH this keyb sends £ when it should send #
             set -s user-keys[222] "\\302\\243"
             bind -N "Send #" -n User222 send #
+        """)
 
-            set -s user-keys[223] "\\033\\100"
+        #  M-S-2 gives tm-char  342 204 242 - should be €  \\342\\202\254
+        self.write("""# tm char should be €
+            set -s user-keys[223] "\\342\\202\\242"
             bind -N "Send €" -n User223 send €
-            """
-        )
+            """)
 
     def ic_virtual_escape_key(self, esc_key: str) -> None:
         self.write(
