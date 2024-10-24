@@ -175,9 +175,9 @@ class IshConsole(base_config.BaseConfig):
             bind -N "Send #" -n User222 send '#'
         """)
 
-        #  M-S-2 gives tm-char  342 204 242 - should be €  \\342\\202\254
+        #  M-S-2 gives tm-char  342 204 242 - should be €
         self.write("""# tm char should be €
-            set -s user-keys[223] "\\342\\202\\242"
+            set -s user-keys[223] "\\342\\204\\242"
             bind -N "Send €" -n User223 send '€'
             """)
 
