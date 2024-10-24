@@ -158,15 +158,26 @@ class IshConsole(base_config.BaseConfig):
         #
         #  Logitech Combo Touch
         #
+        #  £ 302 243    - should be #
+        #  \e@  033 100 - should be €
+        #
         self.ic_keyb_type_2()  # Same esc handling
         self.write(
             """#
-        #  On this keyb, backtick (next to z) sends Escape
-        #  this changes it back to send backtick, Esc is available via §
-        #
-        set -s user-keys[221]  "\\033"
-        # map backtick back from Escape
-        bind -N "Send backtick"  -n User221  send "\\`" """
+            #  On this keyb, backtick (next to z) sends Escape
+            #  this changes it back to send backtick, Esc is available via §
+            #
+            set -s user-keys[221]  "\\033"
+            # map backtick back from Escape
+            bind -N "Send backtick"  -n User221  send "\\`"
+
+            # In iSH this keyb sends £ when it should send #
+            set -s user-keys[222] "\\302\\243"
+            bind -N "Send #" -n User222 send #
+
+            set -s user-keys[223] "\\033\\100"
+            bind -N "Send €" -n User223 send €
+            """
         )
 
     def ic_virtual_escape_key(self, esc_key: str) -> None:
@@ -184,21 +195,6 @@ class IshConsole(base_config.BaseConfig):
         #  This does general iSH mapping, not focusing on keyboard specific
         #  customization needs
         #
-
-        #
-        # Move this to base_config ?
-        #
-        # self.write(
-        #     """
-        # #
-        # #  General Keyboard bindings
-        # #
-        # #  € is Option+Shift+2 in United States layout
-        # on regular pc keyb: "\\033\\100" # M-@
-        # on ish console:  "\\342\\202\\254"
-        # bind -N "Enables €" -n User210 send '€'
-        # """
-        # )
 
         #
         #  Some keybs have issues with M-<
