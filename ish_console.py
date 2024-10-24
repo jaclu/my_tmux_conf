@@ -159,7 +159,7 @@ class IshConsole(base_config.BaseConfig):
         #  Logitech Combo Touch
         #
         #  £ 302 243    - should be #
-        #  \e@  033 100 - should be €
+        #  \e@  033 100 - should be €  \\342\\202\254
         #
         self.ic_keyb_type_2()  # Same esc handling
         self.write(
