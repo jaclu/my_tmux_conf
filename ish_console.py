@@ -172,13 +172,13 @@ class IshConsole(base_config.BaseConfig):
         #  S-3 gives £ 302 243     - should be #
         self.write("""# In iSH this keyb sends £ when it should send #
             set -s user-keys[222] "\\302\\243"
-            bind -N "Send #" -n User222 send #
+            bind -N "Send #" -n User222 send '#'
         """)
 
         #  M-S-2 gives tm-char  342 204 242 - should be €  \\342\\202\254
         self.write("""# tm char should be €
             set -s user-keys[223] "\\342\\202\\242"
-            bind -N "Send €" -n User223 send €
+            bind -N "Send €" -n User223 send '€'
             """)
 
     def ic_virtual_escape_key(self, esc_key: str) -> None:
