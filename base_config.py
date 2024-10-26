@@ -49,6 +49,12 @@ import mtc_utils
 TMUX_CONF_NEEDED = "0.17.4"
 
 
+# https://youtu.be/yFLY0SVutgM?si=VoKETDw39BAUHfST&t=420
+# class Environment(StrEnum):
+#     normal = "normal"
+#     t2 = "t2"
+
+
 class BaseConfig(TmuxConfig):
     """Defines the general tmux setup, key binds etc"""
 
@@ -132,6 +138,7 @@ class BaseConfig(TmuxConfig):
         replace_config: bool = False,  # replace config with no prompt
         clear_plugins: bool = False,  # remove all current plugins
         plugins_display: int = 0,  # Display info about plugins
+        # environment: Environment = Environment.normal,
     ) -> None:
 
         # Indicates if this tmux is run on the iSH console
