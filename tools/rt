@@ -25,14 +25,7 @@ class Host:
     server = ""  # server to connect to
     remote_user = ""  # If not given ~/.ssh/config setting will be used
 
-    #
-    #  run dest command as an interactive bash shell in order to pick up
-    #  the user environment, since the mosh session itself will not.
-    #  if params need to be passed to the cmd bash runs, wrap them inside
-    #  the inner quotes, like 'bin/myt -2' instead of 'bin/myt'
-    #
-    tmux = "bash -i -c '$HOME/bin/myt'"
-
+    use_quick = False
     use_mosh = False
     mosh_client = "mosh"  # local mosh command
     mosh_server = ""  # default: 'mosh-server'
@@ -51,11 +44,23 @@ class Host:
         connection_name="",
         remote_user="",
         remote_command="",
+        use_quick=False,
         use_mosh=False,
         mosh_client="mosh",
         mosh_server="",
         mosh_ports="",
     ):
+        #
+        #  run dest command as an interactive bash shell in order to pick up
+        #  the user environment, since the mosh session itself will not.
+        #  if params need to be passed to the cmd bash runs, wrap them inside
+        #  the inner quotes, like 'bin/myt -2' instead of 'bin/myt'
+        #
+        if use_quick:
+            myt_cmd = "$HOME/bin/myt -q"
+        else:
+            myt_cmd = "$HOME/bin/myt"
+        self.tmux = f"bash -i -c '{myt_cmd}'"
         if not server:
             print("ERROR! No server given")
             sys.exit(1)
@@ -74,6 +79,8 @@ class Host:
         if not self.rem_cmd:
             print("ERROR: remote_command can't be empty!")
             sys.exit(1)
+        if use_quick:
+            self.use_quick = True
         if use_mosh:
             self.use_mosh = True
         if mosh_client:
@@ -125,11 +132,13 @@ def get_host_class(
     connection_name="",
     remote_user="",
     remote_command="",
+    use_quick=False,
     use_mosh=False,
     mosh_client="",
     mosh_server="",
     mosh_ports="",
 ):
+    print(f"><> get_host_class() - quck:{use_quick}")
     #
     #  Handle bounce connections
     #
@@ -145,6 +154,7 @@ def get_host_class(
             server=bounce_host,
             connection_name=server,
             remote_user=remote_user,
+            use_quick=use_quick,
             use_mosh=use_mosh,
             mosh_client=mosh_client,
             mosh_server=mosh_server,
@@ -165,6 +175,7 @@ def get_host_class(
                 connection_name=connection_name,
                 remote_user=remote_user,
                 remote_command=remote_command,
+                use_quick=use_quick,
                 use_mosh=use_mosh,
                 mosh_client=mosh_client,
                 mosh_server=mosh_server,
@@ -180,6 +191,7 @@ def get_host_class(
             connection_name=connection_name,
             remote_user=remote_user,
             remote_command=remote_command,
+            use_quick=use_quick,
             use_mosh=use_mosh,
             mosh_client=mosh_client,
             mosh_server=mosh_server,
@@ -240,14 +252,20 @@ def parse_cmd_line():
         "-M", "--mosh-client", help="local mosh cmd to use, default: mosh"
     )
     parser.add_argument(
-        "-S",
-        "--mosh-server",
-        help="mosh server cmd on remote machine, default: mosh-server",
-    )
-    parser.add_argument(
         "-p",
         "--ports",
         help="port span to use for mosh connection\n" "example: 60500:60510",
+    )
+    parser.add_argument(
+        "-q",
+        "--quick",
+        action="store_true",
+        help="quik connect, dont re-generate tmux.conf\n",
+    )
+    parser.add_argument(
+        "-S",
+        "--mosh-server",
+        help="mosh server cmd on remote machine, default: mosh-server",
     )
     return parser.parse_args()
 
@@ -258,6 +276,7 @@ def main():
         server=args.server,
         remote_user=args.user,
         remote_command=args.command,
+        use_quick=args.quick,
         use_mosh=args.use_mosh,
         mosh_client=args.mosh_client,
         mosh_server=args.mosh_server,
@@ -266,11 +285,18 @@ def main():
     if args.display:
         hc.show_info()
     else:
+        print("><> will check for quick on cmd line")
         msg = f"Connecting to {hc.server} using "
         if hc.use_mosh:
             msg += "mosh"
         else:
             msg += "ssh"
+        print("><> checking for quick on cmd line")
+        if hc.use_quick:
+            msg += "quick"
+            print("><> quick found on cmd line")
+        else:
+            print("><> quick not found on cmd line")
         print(msg + "...")
         os.system(hc.full_command_line())  # nosec
 
@@ -278,16 +304,16 @@ def main():
 #
 #  Some host types, pre-defining where tmux can be found
 #
-class HomeBrewHost(Host):
-    tmux = "/usr/local/bin/tmux -u new-session -ADs"
+# class HomeBrewHost(Host):
+#    tmux = "/usr/local/bin/tmux -u new-session -ADs"
 
 
-class LinuxBrewHost(Host):
-    tmux = "/home/linuxbrew/.linuxbrew/bin/tmux -u new-session -ADs"
+# class LinuxBrewHost(Host):
+#    tmux = "/home/linuxbrew/.linuxbrew/bin/tmux -u new-session -ADs"
 
 
-class AsdfHost(Host):
-    tmux = "/home/jaclu/.asdf/shims/tmux -u new-session -ADs"
+# class AsdfHost(Host):
+#    tmux = "/home/jaclu/.asdf/shims/tmux -u new-session -ADs"
 
 
 #
