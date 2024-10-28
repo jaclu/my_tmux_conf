@@ -60,7 +60,7 @@ class Host:
             myt_cmd = "$HOME/bin/myt -q"
         else:
             myt_cmd = "$HOME/bin/myt"
-        self.tmux = f"bash -i -c '{myt_cmd}'"
+        self.tmux = f"bash -i -c -- '{myt_cmd}'"
         if not server:
             print("ERROR! No server given")
             sys.exit(1)
