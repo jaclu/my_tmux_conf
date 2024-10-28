@@ -527,6 +527,8 @@ else
     rm -f "$myt_log"
 fi
 
+echo "><> cmd_line: $*"
+sleep 3
 while [ -n "$1" ]; do
     case "$1" in
     "-h" | "--help") display_help ;;
@@ -534,7 +536,8 @@ while [ -n "$1" ]; do
         shift
         tmux_bin="$1"
         ;;
-    "-q") quick_mode=true ;;
+    "-q")
+	quick_mode=true ;;
     "-s") single_session=false ;;
     "--venv")
         log_it "===  Prepare the Python venv"
