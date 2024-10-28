@@ -293,7 +293,7 @@ def main():
             msg += "ssh"
         print("><> checking for quick on cmd line")
         if hc.use_quick:
-            msg += "quick"
+            msg += " and quick"
             print("><> quick found on cmd line")
         else:
             print("><> quick not found on cmd line")
