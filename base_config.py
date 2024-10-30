@@ -194,7 +194,7 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.7):
             # the syntax can be used in 1.8, but it fails to set the path
             # self.cwd_directive = ' -c \\"#{pane_current_path}\\"'
-            self.cwd_directive = ' -c "#{pane_current_path}"'
+            self.cwd_directive = "-c '#{pane_current_path}'"
         else:
             self.cwd_directive = ""
 
@@ -848,10 +848,10 @@ class BaseConfig(TmuxConfig):
         w()  # spacer
 
         cmd_new_win_named = (
-            'command-prompt -I "?" -p "Name of new window: "'
-            " '"
-            f'new-window -n \\"%%\\ {self.cwd_directive}'
-            "'"
+            'command-prompt -p "Name of new window: "'
+            ' "'  # wrap cmd in "
+            f"new-window -n '%%' {self.cwd_directive}"
+            '"'  # wrap cmd in "
         )
 
         for key in ("c", "="):  # c is just for compatibility with default key
