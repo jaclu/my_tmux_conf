@@ -848,7 +848,7 @@ class BaseConfig(TmuxConfig):
         w()  # spacer
 
         cmd_new_win_named = (
-            'command-prompt -p "Name of new window: "'
+            'command-prompt -I ? -p "Name of new window: "'
             ' "'  # wrap cmd in "
             f"new-window -n '%%' {self.cwd_directive}"
             '"'  # wrap cmd in "
