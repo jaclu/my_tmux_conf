@@ -2,7 +2,13 @@
 
 ## Dependency
 
-pip install [tmux-conf](https://github.com/jaclu/tmux-conf)
+```bash
+tmux 1.4
+```
+
+```bash
+pip install tmux-conf
+```
 
 ## Purpose of my setup style
 
