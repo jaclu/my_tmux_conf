@@ -442,7 +442,7 @@ class BaseConfig(TmuxConfig):
         #    https://github.com/tmux/tmux/wiki/Modifier-Keys#modifiers-and-function-keys
         #
         if not self.vers_ok(2.4):
-            w("set -g  xterm-keys on")
+            w("setw -g  xterm-keys on")
 
         #
         #  Enable focus events for terminals that support them to be passed
@@ -475,7 +475,7 @@ class BaseConfig(TmuxConfig):
             #  Safe, does not allow apps inside tmux to set clipboard
             #  for terminal
             w("set -g  set-clipboard external")
-        else:
+        elif self.vers_ok(1.5):
             w("set -g  set-clipboard on")
         if self.vers_ok(3.2):
             #  will switch to any detached session, when no more active ones
@@ -605,13 +605,10 @@ class BaseConfig(TmuxConfig):
                 f"{self.es.run_it(self._fnc_toggle_mouse)}"
             )
         else:
-            w(
-                """set -g mouse-resize-pane on
-            set -g mouse-select-pane on
-            set -g mouse-select-window on
-
-            bind  M  display "mouse toggle needs 2.1" """
-            )
+            w('set -g mouse-select-pane on')
+            if self.vers_ok(1.5):
+                w("set -g mouse-resize-pane on")
+            w('bind  M  display "mouse toggle needs 2.1"')
 
         #
         #  If enabled, request mouse input as UTF-8 on UTF-8 terminals
@@ -791,10 +788,11 @@ class BaseConfig(TmuxConfig):
         #======================================================
         """
         )
-        w(
-            'bind -N "Create new session  - M-+"             +    command-prompt -I "?" '
-            '-p "Name of new session: " "new-session -s \\"%%\\""'
-        )
+        s = 'bind -N "Create new session  - M-+"  +  command-prompt'
+        if self.vers_ok(1.5):
+            s += ' -I "?"'
+        w(f'{s} -p "Name of new session: " "new-session -s \\"%%\\""')
+
         self.auc_meta_ses_handling()  # used by iSH Console
         w(
             """# session navigation
@@ -804,15 +802,16 @@ class BaseConfig(TmuxConfig):
         bind -N "Select previous session  - P (" -n C-M-S-Up switch-client -p
         bind -N "Select next session  - P )" -n C-M-S-Down switch-client -n"""
         )
-        w(
-            'bind -N "Rename Session"  S    command-prompt -I "#S" '
-            '"rename-session -- \\"%%\\""'
-        )
 
-        w(
-            'bind -N "Kill session in focus"    M-x  confirm-before -p '
-            '"Kill session: #{session_name}? (y/n)" "kill-session"'
-        )
+        s = 'bind -N "Rename Session"  S  command-prompt'
+        if self.vers_ok(1.5):
+            s += ' -I "#S"'
+        w(f'{s} "rename-session -- \\"%%\\""')
+
+        s = 'bind -N "Kill session in focus"  M-x  confirm-before'
+        if self.vers_ok(1.5):
+            s += ' -p "Kill session: #{session_name}? (y/n)"'
+        w(f"{s} kill-session")
 
         w()  # spacer between sections
 
@@ -826,13 +825,12 @@ class BaseConfig(TmuxConfig):
         #
         #======================================================
 
-        set -g  base-index 1
-        set -g  allow-rename off
-        set -g automatic-rename off
-        """
-        )
+        set -g base-index 1
+        setw -g automatic-rename off""")
+        if self.vers_ok(1.6):
+            w("set -g allow-rename off")
         if self.vers_ok(1.7):
-            w("set -g  renumber-windows on")
+            w("set -g renumber-windows on")
 
         if self.vers_ok(1.8) and False:  # not sure if this is desired
             w("set -g set-titles on")
@@ -847,8 +845,12 @@ class BaseConfig(TmuxConfig):
             w("set-window-option -g aggressive-resize on")
         w()  # spacer
 
+        if self.vers_ok(1.5):
+            s = '-I ?'
+        else:
+            s = ''
         cmd_new_win_named = (
-            'command-prompt -I ? -p "Name of new window: "'
+            f'command-prompt {s} -p "Name of new window: "'
             ' "'  # wrap cmd in "
             f"new-window -n '%%' {self.cwd_directive}"
             '"'  # wrap cmd in "
@@ -953,20 +955,23 @@ class BaseConfig(TmuxConfig):
 
         w("bind -N 'Toggle synchronize'      *   set synchronize-panes")
 
-        w(
-            'bind -N "Rename current window"   W  command-prompt -I "#W" '
-            '"rename-window -- \\"%%\\""'
-        )
+        s = 'bind -N "Rename current window"   W  command-prompt'
+        if self.vers_ok(1.5):
+            s += ' -I "#W"'
+        w(f'{s} "rename-window -- \\"%%\\""')
 
         #
         #  If last window of current session is killed, the session
         #  is destroyed and focus is moved to another session
         #
         for c in ("&", "X"):
-            w(
-                f'bind -N "Kill window in focus"    {c}  confirm-before -p '
-                '"kill current window \\"#W\\"? (y/n)" "kill-window"'
-            )
+            if self.vers_ok(1.5):
+                w(
+                    f'bind -N "Kill window in focus"    {c}  confirm-before -p '
+                    '"kill current window \\"#W\\"? (y/n)" "kill-window"'
+                )
+            else:
+                w(f'bind -N "Kill window in focus"  {c}  confirm-before kill-window')
         w()  # spacer between sections
 
     def pane_handling(self):
@@ -1014,12 +1019,12 @@ class BaseConfig(TmuxConfig):
                 f'-I "{home_dir}/tmux-e.history" "capture-pane -S - -E - -e \\; '
                 'save-buffer %1 \\; delete-buffer"'
             )
-        w(
-            'bind -N "Save history to prompted file name (no escapes)"        '
-            'M-h  command-prompt -p "save history (no escapes) to:" '
-            f'-I "{home_dir}/tmux.history" "capture-pane -S - -E - \\; '
-            'save-buffer %1 \\; delete-buffer"'
-        )
+
+        s = 'bind -N "Save history to prompted file name (no escapes)"'
+        s += '  M-h  command-prompt -p "save history (no escapes) to:"'
+        if self.vers_ok(1.5):
+            s += f' -I "{home_dir}/tmux.history"'
+        w(f'{s} "capture-pane -S - -E - \\; save-buffer %1 \\; delete-buffer"')
 
         w(
             """
@@ -1027,10 +1032,10 @@ class BaseConfig(TmuxConfig):
         bind -N "Chose paste buffer(-s)"  B  choose-buffer
         """
         )
-        w(
-            'bind -N "Kill pane in focus"       x  confirm-before -p '
-            '"kill-pane #T (#P)? (y/n)" "kill-pane"'
-        )
+        s = 'bind -N "Kill pane in focus"       x  confirm-before'
+        if self.vers_ok(1.5):
+            s += ' -p "kill-pane #T (#P)? (y/n)"'
+        w(f'{s} kill-pane')
         w()  # spacer between sections
 
         #
@@ -1328,10 +1333,11 @@ class BaseConfig(TmuxConfig):
             sys.exit("ERROR: auc_meta_ses_handling() muc_plus undefined!")
 
         w = self.write
-        w(
-            f'bind -N "Create new session  - P +"  -n {muc_plus}  command-prompt '
-            '-I "?" -p "Name of new session: " "new-session -s \\"%%\\""'
-        )
+        s = f'bind -N "Create new session  - P +"  -n {muc_plus}  command-prompt '
+        if self.vers_ok(1.5):
+            s += ' -I "?"'
+        w(f'{s} -p "Name of new session: " "new-session -s \\"%%\\""')
+
         w(
             "bind -N 'Switch to last session  - P _'  "
             f"-n  {muc_underscore}  switch-client -l"
@@ -1357,7 +1363,7 @@ class BaseConfig(TmuxConfig):
         the "normal" case, when used for iSH console, the
         user keys will be given
         """
-        if not self.vers_ok(1.7):
+        if not self.vers_ok(1.3):
             # There is no plugin support...
             return
 
@@ -1391,11 +1397,11 @@ class BaseConfig(TmuxConfig):
             note_prefix = "M-X - "
         else:
             note_prefix = ""
-        w(
-            f'bind -N "{note_prefix}Kill tmux server"  {muc_x}  '
-            "confirm-before -p "
-            f'"kill tmux server {self.conf_file}? (y/n)" kill-server'
-        )
+
+        s = f'bind -N "{note_prefix}Kill tmux server"  {muc_x}  confirm-before'
+        if self.vers_ok(1.5):
+            s += f' -p "kill tmux server {self.conf_file}? (y/n)"'
+        w(f'{s} kill-server')
 
     def auc_split_entire_window(  # used by iSH Console
         self,
