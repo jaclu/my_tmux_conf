@@ -528,6 +528,11 @@ class BaseConfig(TmuxConfig):
                 f'bind -N "Repeats sends {self.prefix_key} through"  '
                 f"{self.prefix_key}  send-prefix"
             )
+            if self.prefix_key.lower() == "c-a":
+                w(
+                    f'bind -N "Repeat sans prefix sends {self.prefix_key} through"  '
+                    f"a  send-prefix"
+                )
             w()
 
         #  Seems to mess with ish-console, so trying without it
