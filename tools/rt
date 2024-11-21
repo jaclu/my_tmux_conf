@@ -38,6 +38,7 @@ class Host:
     #
     bounce_cmd = __file__
 
+    # pylint: disable=too-many-positional-arguments,too-many-branches
     def __init__(
         self,
         server,
@@ -127,6 +128,7 @@ class Host:
         return s
 
 
+# pylint: disable=too-many-positional-arguments
 def get_host_class(
     server,
     connection_name="",

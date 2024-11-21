@@ -19,10 +19,11 @@ sys.path.insert(0, root_dir)
 
 
 # flake8: noqa: E402
-# pylint: disable=wrong-import-position
-from sb.sb_cloud import SB
+# pylint: disable=E0401, C0413
+from sb.sb_cloud import SB  # noqa: E402
 
 
+# pylint: disable=R0903
 class Hetz1(SB):
     """hetz1 config"""
 

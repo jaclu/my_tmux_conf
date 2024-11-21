@@ -19,14 +19,17 @@ root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root_dir)
 
 # flake8: noqa: E402
-# pylint: disable=wrong-import-position
-from default_plugins import DefaultPlugins
-from mtc_utils import HOSTNAME
+# pylint: disable=wrong-import-position,import-error
+from default_plugins import DefaultPlugins  # noqa: E402
+from mtc_utils import HOSTNAME  # noqa: E402
 
 
 # pylint: disable=R0903
 class SB(DefaultPlugins):
     """Style production node"""
+
+    hostname_template: str = f"#[bg=colour195,fg=colour1]{HOSTNAME}#[default]"
+    tpm_initializing: str = "#[fg=yellow bg=black blink] tpm initializing...#[default]"
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """override statusbar config"""
@@ -37,12 +40,6 @@ class SB(DefaultPlugins):
 
         if self.vers_ok("1.9"):
             self.write(f"set -g status-style fg={fg_clr},bg={bg_clr}")
-            self.hostname_template = (
-                "#[bg=colour195,fg=colour1]" f"{HOSTNAME}#[default]"
-            )
-            self.tpm_initializing: str = (
-                "#[fg=yellow bg=black blink] " "tpm initializing...#[default]"
-            )
         else:
             self.write(
                 f"""

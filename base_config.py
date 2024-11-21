@@ -127,6 +127,7 @@ class BaseConfig(TmuxConfig):
     #
     use_ish_prefix_arrow_nav_keys = True
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         parse_cmd_line: bool = True,
@@ -454,6 +455,7 @@ class BaseConfig(TmuxConfig):
 
         w()  # spacer between sections
 
+    # pylint: disable=too-many-branches
     def general_environment(self):
         w = self.write
         w(
@@ -635,6 +637,7 @@ class BaseConfig(TmuxConfig):
             )
         w()  # spacer between sections
 
+    # pylint: disable=too-many-branches
     def status_bar_prepare(self):
         w = self.write
         w(
@@ -839,7 +842,8 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.7):
             w("set -g renumber-windows on")
 
-        if self.vers_ok(1.8) and False:  # not sure if this is desired
+        # pylint: disable=using-constant-test
+        if False:  # self.vers_ok(1.8)  # not sure if this is desired
             w("set -g set-titles on")
             w(
                 'set -g set-titles-string "#{host_short} '

@@ -61,6 +61,7 @@ class IshConsole(base_config.BaseConfig):
 
     ic_keyboard = None
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         parse_cmd_line: bool = True,

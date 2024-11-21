@@ -29,10 +29,11 @@ sys.path.insert(0, root_dir)
 
 
 # flake8: noqa: E402
-# pylint: disable=wrong-import-position
-from sb.sb_muted import SB
+# pylint: disable=wrong-import-position,import-error
+from sb.sb_muted import SB  # noqa: E402
 
 
+# pylint: disable=R0903
 class JacMacConfig(SB):
     """JacMac config"""
 

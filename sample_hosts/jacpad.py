@@ -31,10 +31,11 @@ root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root_dir)
 
 # flake8: noqa: E402
-# pylint: disable=wrong-import-position
-from ish_host import IshHostWithStyle
+# pylint: disable=wrong-import-position,import-error
+from ish_host import IshHostWithStyle  # noqa: E402
 
 
+# pylint: disable=R0903
 class JacPad(IshHostWithStyle):
     status_interval = 5
 
