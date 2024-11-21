@@ -18,10 +18,11 @@ import sys
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root_dir)
 
+import mtc_utils
+
 # flake8: noqa: E402
 # pylint: disable=wrong-import-position
 from default_plugins import DefaultPlugins
-import mtc_utils
 
 THEME_TEXT = "colour135"  # lilac / magenta, not sure how to label this
 MUTED_TEXT = "colour242"  # grey
@@ -34,7 +35,7 @@ class SB(DefaultPlugins):
     username_template = f"#[fg={THEME_TEXT}] #(whoami)#[default]@"
     sb_left = f"#[fg={THEME_TEXT}]" "#{session_name}" f"#[fg={MUTED_TEXT}]: "
 
-    def status_bar_customization(self, print_header=True):
+    def status_bar_customization(self, print_header: bool = True) -> bool:
         """override statusbar config"""
         self.assign_style(__file__)
         super().status_bar_customization(print_header=print_header)

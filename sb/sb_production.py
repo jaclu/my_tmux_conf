@@ -21,7 +21,6 @@ sys.path.insert(0, root_dir)
 # flake8: noqa: E402
 # pylint: disable=wrong-import-position
 from default_plugins import DefaultPlugins
-
 from mtc_utils import HOSTNAME
 
 
@@ -38,10 +37,12 @@ class SB(DefaultPlugins):
 
         if self.vers_ok("1.9"):
             self.write(f"set -g status-style fg={fg_clr},bg={bg_clr}")
-            self.hostname_template = "#[bg=colour195,fg=colour1]" \
-                f"{HOSTNAME}#[default]"
-            self.tpm_initializing: str = "#[fg=yellow bg=black blink] " \
-                "tpm initializing...#[default]"
+            self.hostname_template = (
+                "#[bg=colour195,fg=colour1]" f"{HOSTNAME}#[default]"
+            )
+            self.tpm_initializing: str = (
+                "#[fg=yellow bg=black blink] " "tpm initializing...#[default]"
+            )
         else:
             self.write(
                 f"""

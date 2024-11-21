@@ -42,7 +42,8 @@ import sys
 import __main__
 
 # from pydoc import locate
-from tmux_conf import TmuxConfig
+# pylint: disable=import-error
+from tmux_conf import TmuxConfig  # type: ignore
 
 import mtc_utils
 
@@ -610,7 +611,7 @@ class BaseConfig(TmuxConfig):
                 f"{self.es.run_it(self._fnc_toggle_mouse)}"
             )
         else:
-            w('set -g mouse-select-pane on')
+            w("set -g mouse-select-pane on")
             if self.vers_ok(1.5):
                 w("set -g mouse-resize-pane on")
             w('bind  M  display "mouse toggle needs 2.1"')
@@ -831,7 +832,8 @@ class BaseConfig(TmuxConfig):
         #======================================================
 
         set -g base-index 1
-        setw -g automatic-rename off""")
+        setw -g automatic-rename off"""
+        )
         if self.vers_ok(1.6):
             w("set -g allow-rename off")
         if self.vers_ok(1.7):
@@ -851,9 +853,9 @@ class BaseConfig(TmuxConfig):
         w()  # spacer
 
         if self.vers_ok(1.5):
-            s = '-I ?'
+            s = "-I ?"
         else:
-            s = ''
+            s = ""
         cmd_new_win_named = (
             f'command-prompt {s} -p "Name of new window: "'
             ' "'  # wrap cmd in "
@@ -1040,7 +1042,7 @@ class BaseConfig(TmuxConfig):
         s = 'bind -N "Kill pane in focus"       x  confirm-before'
         if self.vers_ok(1.5):
             s += ' -p "kill-pane #T (#P)? (y/n)"'
-        w(f'{s} kill-pane')
+        w(f"{s} kill-pane")
         w()  # spacer between sections
 
         #
@@ -1406,7 +1408,7 @@ class BaseConfig(TmuxConfig):
         s = f'bind -N "{note_prefix}Kill tmux server"  {muc_x}  confirm-before'
         if self.vers_ok(1.5):
             s += f' -p "kill tmux server {self.conf_file}? (y/n)"'
-        w(f'{s} kill-server')
+        w(f"{s} kill-server")
 
     def auc_split_entire_window(  # used by iSH Console
         self,

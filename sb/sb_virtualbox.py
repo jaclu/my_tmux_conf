@@ -24,6 +24,7 @@ from default_plugins import DefaultPlugins
 
 class SB(DefaultPlugins):
     """Style virtualbox node"""
+
     fnc_rev_sb_color = "msg_rev_sb_color"
 
     def status_bar_customization(self, print_header: bool = True) -> bool:

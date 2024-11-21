@@ -21,6 +21,7 @@ sys.path.insert(0, root_dir)
 # pylint: disable=wrong-import-position
 from default_plugins import DefaultPlugins
 
+
 # pylint: disable=R0903
 class SB(DefaultPlugins):
     """Style cloud node"""
