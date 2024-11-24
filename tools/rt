@@ -332,16 +332,19 @@ def main():
 #
 class Ubu(Host):
     """definig an ubuntu host"""
+
     mosh_ports = "62020:62021"
 
 
 class Win10(Host):
     """definig a windows host"""
+
     mosh_ports = "62000:62001"
 
 
 class Hetz1(Host):
     """definig host hetz1"""
+
     mosh_ports = "60300:60399"
 
 
