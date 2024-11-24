@@ -18,6 +18,7 @@
 #  your primary tmux is running, without having colliding prefix issues
 #
 
+"""Setup secondary session"""
 
 # everything, a lot of this is setup
 #  in the default file, this is for color theme and selection of often

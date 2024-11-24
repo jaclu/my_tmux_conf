@@ -55,6 +55,7 @@ TMUX_CONF_NEEDED = "0.17.4"
 #     t2 = "t2"
 
 
+# pylint: disable=too-many-instance-attributes,too-many-public-methods
 class BaseConfig(TmuxConfig):
     """Defines the general tmux setup, key binds etc"""
 
@@ -126,7 +127,7 @@ class BaseConfig(TmuxConfig):
     #
     use_ish_prefix_arrow_nav_keys = True
 
-    # pylint: disable=too-many-positional-arguments
+    # pylint: disable=too-many-positional-arguments,too-many-arguments
     def __init__(
         self,
         parse_cmd_line: bool = True,

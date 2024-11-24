@@ -6,6 +6,8 @@
 #  Part of https://github.com/jaclu/my_tmux_conf
 #
 
+"""Setup a tmate env"""
+
 from sb.sb_muted import SB
 
 

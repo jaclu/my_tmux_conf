@@ -34,13 +34,13 @@ if "LC_KEYBOARD" in os.environ:
 
     # Since IshConsole inherits from BaseConfig, we can set BaseConfig to IshConsole
     class BaseConfig(IshConsole):  # type: ignore
-        pass
+        """Running on iSH-console"""
 
 else:
     from base_config import BaseConfig as BaseConfigFromBase
 
     class BaseConfig(BaseConfigFromBase):  # type: ignore
-        pass
+        """normal console"""
 
 
 if __name__ == "__main__":

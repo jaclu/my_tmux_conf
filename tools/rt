@@ -18,6 +18,7 @@ APP_VERSION = "0.4.4   2024-04-10"
 BOUNCE_KEY = "/"  # separator for bounce hosts
 
 
+# pylint: disable=too-many-instance-attributes
 class Host:
     """Handles one host"""
 
@@ -38,7 +39,7 @@ class Host:
     #
     bounce_cmd = __file__
 
-    # pylint: disable=too-many-positional-arguments,too-many-branches
+    # pylint: disable=too-many-positional-arguments,too-many-branches,too-many-arguments
     def __init__(
         self,
         server,
@@ -92,9 +93,11 @@ class Host:
             self.mosh_ports = mosh_ports
 
     def bounce_to(self, bounce_host):
+        """continue to host"""
         self.rem_cmd = f"{self.bounce_cmd} {bounce_host}"
 
     def show_info(self):
+        """display info about session"""
         print("---  session details  ---")
         if self.connection_name != self.server:
             print(f"Connection: {self.connection_name}")
@@ -109,6 +112,7 @@ class Host:
         print(f"cmd line:   {self.full_command_line()}")
 
     def full_command_line(self):
+        """expand cmd line"""
         if self.use_mosh:
             cmd = f"{self.mosh_client} "
             if self.mosh_server:
@@ -121,6 +125,7 @@ class Host:
         return f"{cmd} {self.rem_cmd}"
 
     def remote_session(self):
+        """remote session identifier"""
         if self.remote_user:
             s = f"{self.remote_user}@{self.server}"
         else:
@@ -128,7 +133,7 @@ class Host:
         return s
 
 
-# pylint: disable=too-many-positional-arguments
+# pylint: disable=too-many-positional-arguments,too-many-arguments,too-many-locals
 def get_host_class(
     server,
     connection_name="",
@@ -140,6 +145,7 @@ def get_host_class(
     mosh_server="",
     mosh_ports="",
 ):
+    """get class defining host"""
     print(f"><> get_host_class() - quck:{use_quick}")
     #
     #  Handle bounce connections
@@ -203,6 +209,7 @@ def get_host_class(
 
 
 def parse_cmd_line():
+    """parse the command line"""
     parser = argparse.ArgumentParser(
         description="Main purpose is to make remote tmux connections, "
         "but you can override the\nremote command. "
@@ -273,6 +280,7 @@ def parse_cmd_line():
 
 
 def main():
+    """main function"""
     args = parse_cmd_line()
     hc = get_host_class(
         server=args.server,
@@ -322,19 +330,18 @@ def main():
 #  Custom Hosts, to preset some stuff
 #  class name should match hostname you use when connecting
 #
-class ubu(Host):
+class Ubu(Host):
+    """definig an ubuntu host"""
     mosh_ports = "62020:62021"
 
 
-class win10(Host):
+class Win10(Host):
+    """definig a windows host"""
     mosh_ports = "62000:62001"
 
 
-class hetz1(Host):
-    mosh_ports = "60300:60399"
-
-
-class hetz2(Host):
+class Hetz1(Host):
+    """definig host hetz1"""
     mosh_ports = "60300:60399"
 
 

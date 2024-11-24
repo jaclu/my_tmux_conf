@@ -35,8 +35,9 @@ sys.path.insert(0, root_dir)
 from sb.sb_ish import SB  # noqa: E402
 
 
-# pylint: disable=R0903
+# pylint: disable=too-few-public-methods
 class JacDroid(SB):
+    """Definitions for host jacdroid"""
     status_interval = 5
 
     # defaults skipped

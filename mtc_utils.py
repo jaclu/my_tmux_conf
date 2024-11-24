@@ -16,6 +16,9 @@
 #    IS_ISH_AOK (boolean) true if platform is the iOS-AOK fork
 #               If env is iSH-AOK, IS_ISH will also be true
 #
+
+"""Common utils"""
+
 import os.path
 import shutil
 import subprocess  # nosec

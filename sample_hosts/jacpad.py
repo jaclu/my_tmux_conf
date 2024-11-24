@@ -35,8 +35,9 @@ sys.path.insert(0, root_dir)
 from ish_host import IshHostWithStyle  # noqa: E402
 
 
-# pylint: disable=R0903
+# pylint: disable=too-few-public-methods
 class JacPad(IshHostWithStyle):
+    """Definitions for host jacpad"""
     status_interval = 5
 
     # defaults skipped
