@@ -40,6 +40,7 @@ import os
 import sys
 
 import __main__
+
 # from pydoc import locate
 # pylint: disable=import-error
 from tmux_conf import TmuxConfig  # type: ignore

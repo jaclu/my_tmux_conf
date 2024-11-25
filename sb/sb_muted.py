@@ -20,6 +20,7 @@ sys.path.insert(0, root_dir)
 
 # pylint: disable=wrong-import-position,import-error
 import mtc_utils  # noqa: E402
+
 # flake8: noqa: E402
 # pylint: disable=wrong-import-position,import-error
 from default_plugins import DefaultPlugins  # noqa: E402
