@@ -1,0 +1,12 @@
+[tool.mypy]
+exclude = [
+    ".venv",
+    "local_tmux_conf"
+]
+
+[tool.bandit]
+exclude_dirs = [
+    ".venv",
+    "local_tmux_conf"
+]
+
