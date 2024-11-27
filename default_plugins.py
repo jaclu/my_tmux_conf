@@ -28,7 +28,6 @@
 import os
 
 from base import BaseConfig  # BaseConfig
-
 #
 #  Since I often run this on iSH, this class will bind missing keys in the
 #  case this is run directly on the ishConsole, in all other cases it will

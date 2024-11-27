@@ -106,9 +106,7 @@ class Host:
             print(f"remote user:  {self.remote_user}")
         print(f"rem_cmd:    {self.rem_cmd}")
 
-        print(
-            f"mosh:       {self.mosh_client} - " f"{self.mosh_server} {self.mosh_ports}"
-        )
+        print(f"mosh:       {self.mosh_client} - " f"{self.mosh_server} {self.mosh_ports}")
         print(f"cmd line:   {self.full_command_line()}")
 
     def full_command_line(self):
@@ -242,8 +240,7 @@ def parse_cmd_line():
     parser.add_argument(
         "-u",
         "--user",
-        help="User to connect as to the server.\n"
-        "If not given, ~/.ssh/config decides",
+        help="User to connect as to the server.\n" "If not given, ~/.ssh/config decides",
     )
     parser.add_argument(
         "-c",
@@ -257,9 +254,7 @@ def parse_cmd_line():
         action="store_true",
         help="Connect with mosh, otherwise ssh will be used",
     )
-    parser.add_argument(
-        "-M", "--mosh-client", help="local mosh cmd to use, default: mosh"
-    )
+    parser.add_argument("-M", "--mosh-client", help="local mosh cmd to use, default: mosh")
     parser.add_argument(
         "-p",
         "--ports",
