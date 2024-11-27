@@ -1,11 +1,20 @@
-[tool.mypy]
-exclude = [
+[tool.bandit]
+exclude_dirs = [
     ".venv",
     "local_tmux_conf"
 ]
 
-[tool.bandit]
-exclude_dirs = [
+[tool.black]
+line-length = 92
+# exclude = '''
+# /(
+#     \.venv    # Match .venv directory
+#   | local_tmux_conf # Match local_tmux_conf directory
+# )/
+# '''
+
+[tool.mypy]
+exclude = [
     ".venv",
     "local_tmux_conf"
 ]
