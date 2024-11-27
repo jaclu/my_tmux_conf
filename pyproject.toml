@@ -14,7 +14,7 @@ line-length = 92
 # '''
 
 [tool.isort]
-# profile = "hug"
+profile = "black"
 # src_paths = ["isort", "test"]
 
 [tool.mypy]
