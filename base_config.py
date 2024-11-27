@@ -40,7 +40,6 @@ import os
 import sys
 
 import __main__
-
 # from pydoc import locate
 # pylint: disable=import-error
 from tmux_conf import TmuxConfig  # type: ignore
@@ -843,10 +842,10 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.7):
             w("set -g renumber-windows on")
 
-        # pylint: disable=using-constant-test
-        if False:  # self.vers_ok(1.8)  # not sure if this is desired
+        if self.vers_ok(1.8):
+            # setting terminal app title - not sure if this is desired
             w("set -g set-titles on")
-            w('set -g set-titles-string "#{host_short} ' '#{session_name}:#{window_name}"')
+            w('set -g set-titles-string "#{host_short} #{session_name}:#{window_name}"')
 
         if self.vers_ok(3.2):
             w("set -g aggressive-resize on")
