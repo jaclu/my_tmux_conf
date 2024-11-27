@@ -846,10 +846,7 @@ class BaseConfig(TmuxConfig):
         # pylint: disable=using-constant-test
         if False:  # self.vers_ok(1.8)  # not sure if this is desired
             w("set -g set-titles on")
-            w(
-                'set -g set-titles-string "#{host_short} '
-                '#{session_name}:#{window_name}"'
-            )
+            w('set -g set-titles-string "#{host_short} ' '#{session_name}:#{window_name}"')
 
         if self.vers_ok(3.2):
             w("set -g aggressive-resize on")
@@ -1100,9 +1097,7 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(3.3):
             # Needs to wait until a window exists
-            w(
-                'run-shell -b "sleep 0.2 ; $TMUX_BIN set pane-border-indicators arrows"\n'
-            )
+            w('run-shell -b "sleep 0.2 ; $TMUX_BIN set pane-border-indicators arrows"\n')
 
         #
         #  Pane title and size
@@ -1267,10 +1262,7 @@ class BaseConfig(TmuxConfig):
             'bind -N "Split pane to the right"  C-l  '
             f"split-window -h {self.cwd_directive}"
         )
-        w(
-            'bind -N "Split pane below"     C-j  '
-            f"split-window -v {self.cwd_directive}"
-        )
+        w('bind -N "Split pane below"     C-j  ' f"split-window -v {self.cwd_directive}")
         if self.vers_ok(2.0):
             w(
                 'bind -N "Split pane to the left"   C-h  '
@@ -1454,19 +1446,13 @@ class BaseConfig(TmuxConfig):
                 pref = "M-J - "
             else:
                 pref = ""
-            w(
-                f'{b}{pref}{n_base}vertically down" '
-                f"{muc_j}  {sw}v  {self.cwd_directive}"
-            )
+            w(f'{b}{pref}{n_base}vertically down" ' f"{muc_j}  {sw}v  {self.cwd_directive}")
 
             if muc_k != "M-K":
                 pref = "M-K - "
             else:
                 pref = ""
-            w(
-                f'{b}{pref}{n_base}vertically up" '
-                f"{muc_k}  {sw}vb {self.cwd_directive}"
-            )
+            w(f'{b}{pref}{n_base}vertically up" ' f"{muc_k}  {sw}vb {self.cwd_directive}")
 
             if muc_l != "M-L":
                 pref = "M-L - "
@@ -1685,9 +1671,7 @@ timer_end() {{
         if min_vers_found < min_vers_needed:
             self.incompatible_tmux_conf(lib_vers_found, "Version to old!")
 
-    def incompatible_tmux_conf(
-        self, lib_vers_found: str, reason: str, details: str = ""
-    ):
+    def incompatible_tmux_conf(self, lib_vers_found: str, reason: str, details: str = ""):
         print()
         print("ERROR: Incompatible tmux-conf package")
         print()

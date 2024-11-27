@@ -147,9 +147,7 @@ class DefaultPlugins(BaseConfig):
 
         if "tmux-spotify-info" in used_plugins:
             # pylint: disable=W0201
-            self.sb_right = (
-                "#[bg=colour28]#(tmux-spotify-info)#[default] " + self.sb_right
-            )
+            self.sb_right = "#[bg=colour28]#(tmux-spotify-info)#[default] " + self.sb_right
 
         if "tmux-packet-loss" in used_plugins:
             # pylint: disable=W0201
