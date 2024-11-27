@@ -13,6 +13,10 @@ line-length = 92
 # )/
 # '''
 
+[tool.isort]
+# profile = "hug"
+# src_paths = ["isort", "test"]
+
 [tool.mypy]
 exclude = [
     ".venv",
