@@ -39,12 +39,11 @@
 import os
 import sys
 
-import __main__
-
 # from pydoc import locate
 # pylint: disable=import-error
 from tmux_conf import TmuxConfig  # type: ignore
 
+import __main__
 import mtc_utils
 
 TMUX_CONF_NEEDED = "0.17.4"
@@ -1512,7 +1511,7 @@ class BaseConfig(TmuxConfig):
     os_offset=0
     if [ "$(uname -s)" = "Darwin" ] || [ -d /proc/ish ]; then
         os_offset=2
-    elif [ "$(uname -s)" = "Linux" ] && [ -f etc/alpine-release ]; then
+    elif [ "$(uname -s)" = "Linux" ] && [ -f /etc/alpine-release ]; then
         #
         # Can only check chroot on Linux
         # Only chrooted Alpine needs this offset
