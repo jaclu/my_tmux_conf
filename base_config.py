@@ -39,11 +39,12 @@
 import os
 import sys
 
+import __main__
+
 # from pydoc import locate
 # pylint: disable=import-error
 from tmux_conf import TmuxConfig  # type: ignore
 
-import __main__
 import mtc_utils
 
 TMUX_CONF_NEEDED = "0.17.4"
@@ -489,9 +490,11 @@ class BaseConfig(TmuxConfig):
             w("set -g popup-border-lines rounded")
 
         self.mkscript_shlvl_offset()
-        w(f"""
+        w(
+            f"""
         # Save correction factor for displaying SHLVL inside tmux
-        {self.es.run_it(self._fnc_shlvl_offset)}""")
+        {self.es.run_it(self._fnc_shlvl_offset)}"""
+        )
 
         #
         # This prevents path_helper and similar tools from messing up PATH
@@ -1495,7 +1498,7 @@ class BaseConfig(TmuxConfig):
 
     def mkscript_shlvl_offset(self):
         """Generate a SHLVL offset"""
-        corrected_offset = '$(awk "BEGIN {print $SHLVL - 2}")'
+        corrected_offset = '$(awk "BEGIN {print $SHLVL}")'
         shlvl_offset_sh = [
             # region shlvl_offset_sh
             f"""
