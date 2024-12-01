@@ -1502,7 +1502,7 @@ class BaseConfig(TmuxConfig):
             f"""
 {self._fnc_shlvl_offset}() {{
     f_tmux_socket="$(echo "$TMUX" | cut -d, -f 1)"
-    if [ "$(uname -s)" = "Darwin" ]; then
+    if [ "$(uname -s)" = "Darwin" ] || [ -d /proc/ish ]; then
         os_offset=2
     else
         os_offset=0
