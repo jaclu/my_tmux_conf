@@ -1501,13 +1501,18 @@ class BaseConfig(TmuxConfig):
             # region shlvl_offset_sh
             f"""
 {self._fnc_shlvl_offset}() {{
+    shlvl="$(echo "$SHLVL")"
     f_tmux_socket="$(echo "$TMUX" | cut -d, -f 1)"
     if [ "$(uname -s)" = "Darwin" ] || [ -d /proc/ish ]; then
         os_offset=2
     else
         os_offset=0
     fi
-    corrected_offset="$(echo "$SHLVL - $os_offset" | bc)"
+    if [ "$os_offset" -ne 0 ]; then
+        corrected_offset="$(echo "$shlvl - $os_offset" | bc)"
+    else
+        corrected_offser="$shlvl"
+    fi
     echo "$corrected_offset" >"$f_tmux_socket"-shlvl_offset
 }}
             """
