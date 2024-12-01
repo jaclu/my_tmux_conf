@@ -39,11 +39,12 @@
 import os
 import sys
 
+import __main__
+
 # from pydoc import locate
 # pylint: disable=import-error
 from tmux_conf import TmuxConfig  # type: ignore
 
-import __main__
 import mtc_utils
 
 TMUX_CONF_NEEDED = "0.17.4"
@@ -1511,8 +1512,11 @@ class BaseConfig(TmuxConfig):
     os_offset=0
     if [ "$(uname -s)" = "Darwin" ] || [ -d /proc/ish ]; then
         os_offset=2
-    elif [ "$(uname -s)" = "Linux" ]; then
-        # can only chroot this on Linux
+    elif [ "$(uname -s)" = "Linux" ] && [ -f etc/alpine-release ]; then
+        #
+        # Can only check chroot on Linux
+        # Only chrooted Alpine needs this offset
+        #
         if ! grep -q " / / " /proc/self/mountinfo; then
             os_offset=2
         fi
@@ -1523,7 +1527,8 @@ class BaseConfig(TmuxConfig):
         corrected_offset="$shlvl"
     fi
     echo "$corrected_offset" >"$f_tmux_offset"
-
+    msg="SHLVL[$SHLVL] shlvl[$shlvl] os_offset[$os_offset]"
+    echo "$msg corrected[$corrected_offset]" >>~/tmp/shlvl.log
     # ensure that it was created,
     if [ ! -s "$f_tmux_offset" ]; then
         echo "ERROR: Failed to create: $f_tmux_offset"
