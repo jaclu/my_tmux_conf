@@ -492,7 +492,7 @@ class BaseConfig(TmuxConfig):
         w(
             f"""
         # Save correction factor for displaying SHLVL inside tmux
-        {self.es.run_it(self._fnc_shlvl_offset)}"""
+        {self.es.run_it(self._fnc_shlvl_offset, in_bg=True)}"""
         )
 
         #
@@ -1503,6 +1503,10 @@ class BaseConfig(TmuxConfig):
 {self._fnc_shlvl_offset}() {{
     shlvl="$(echo "$SHLVL")"
     f_tmux_socket="$(echo "$TMUX" | cut -d, -f 1)"
+    f_tmux_offset="$f_tmux_socket"-shlvl_offset
+
+    # clear out the previous one, to ensure the current is created
+    rm -f "$f_tmux_offset"
 
     os_offset=0
     if [ "$(uname -s)" = "Darwin" ] || [ -d /proc/ish ]; then
@@ -1518,7 +1522,13 @@ class BaseConfig(TmuxConfig):
     else
         corrected_offset="$shlvl"
     fi
-    echo "$corrected_offset" >"$f_tmux_socket"-shlvl_offset
+    echo "$corrected_offset" >"$f_tmux_offset"
+
+    # ensure that it was created,
+    if [ ! -s "$f_tmux_offset" ]; then
+        echo "ERROR: Failed to create: $f_tmux_offset"
+        exit 1
+    fi
 }}
             """
             # endregion
