@@ -39,12 +39,11 @@
 import os
 import sys
 
-import __main__
-
 # from pydoc import locate
 # pylint: disable=import-error
 from tmux_conf import TmuxConfig  # type: ignore
 
+import __main__
 import mtc_utils
 
 TMUX_CONF_NEEDED = "0.17.4"
@@ -1498,13 +1497,18 @@ class BaseConfig(TmuxConfig):
 
     def mkscript_shlvl_offset(self):
         """Generate a SHLVL offset"""
-        corrected_offset = '$(awk "BEGIN {print $SHLVL}")'
         shlvl_offset_sh = [
             # region shlvl_offset_sh
             f"""
 {self._fnc_shlvl_offset}() {{
     f_tmux_socket="$(echo "$TMUX" | cut -d, -f 1)"
-    echo "{corrected_offset}" >"$f_tmux_socket"-shlvl_offset
+    if [ "$(uname -s)" = "Darwin" ]; then
+        os_offset=2
+    else
+        os_offset=0
+    fi
+    corrected_offset="$(echo "$SHLVL - $os_offset" | bc)"
+    echo "$corrected_offset" >"$f_tmux_socket"-shlvl_offset
 }}
             """
             # endregion
