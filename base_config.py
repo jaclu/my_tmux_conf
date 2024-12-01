@@ -1511,7 +1511,7 @@ class BaseConfig(TmuxConfig):
     if [ "$os_offset" -ne 0 ]; then
         corrected_offset="$(echo "$shlvl - $os_offset" | bc)"
     else
-        corrected_offser="$shlvl"
+        corrected_offset="$shlvl"
     fi
     echo "$corrected_offset" >"$f_tmux_socket"-shlvl_offset
 }}
