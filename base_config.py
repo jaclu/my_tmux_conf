@@ -39,12 +39,11 @@
 import os
 import sys
 
-import __main__
-
 # from pydoc import locate
 # pylint: disable=import-error
 from tmux_conf import TmuxConfig  # type: ignore
 
+import __main__
 import mtc_utils
 
 TMUX_CONF_NEEDED = "0.17.4"
@@ -143,7 +142,6 @@ class BaseConfig(TmuxConfig):
         plugins_display: int = 0,  # Display info about plugins
         # environment: Environment = Environment.normal,
     ) -> None:
-
         # Indicates if this tmux is run on the iSH console
         self.is_ish_console = False
 
@@ -189,6 +187,7 @@ class BaseConfig(TmuxConfig):
             self.is_limited_host = True
 
         #  to avoid typos I use constants for script names
+        self._fnc_shlvl_offset = "shlvl_offset"
         self._fnc_list_plugins = "list_plugins"
         self._fnc_toggle_mouse = "toggle_mouse"
         self._fnc_activate_tpm = "activate_tpm"
@@ -488,6 +487,11 @@ class BaseConfig(TmuxConfig):
             w("set -g detach-on-destroy off")
         if self.vers_ok(3.3):
             w("set -g popup-border-lines rounded")
+
+        self.mkscript_shlvl_offset()
+        w(f"""
+        # Save correction factor for displaying SHLVL inside tmux
+        {self.es.run_it(self._fnc_shlvl_offset)}""")
 
         #
         # This prevents path_helper and similar tools from messing up PATH
@@ -1489,6 +1493,21 @@ class BaseConfig(TmuxConfig):
         ]
         self.es.create(self._fnc_toggle_mouse, toggle_mouse_sh)
 
+    def mkscript_shlvl_offset(self):
+        """Generate a SHLVL offset"""
+        corrected_offset = '$(awk "BEGIN {print $SHLVL - 2}")'
+        shlvl_offset_sh = [
+            # region shlvl_offset_sh
+            f"""
+{self._fnc_shlvl_offset}() {{
+    f_tmux_socket="$(echo "$TMUX" | cut -d, -f 1)"
+    echo "{corrected_offset}" >"$f_tmux_socket"-shlvl_offset
+}}
+            """
+            # endregion
+        ]
+        self.es.create(self._fnc_shlvl_offset, shlvl_offset_sh)
+
     def mkscript_tpm_deploy(self):
         """Overrides tmux_conf.plugins instance, to add
         toggling of tpm_initializing.
@@ -1513,6 +1532,7 @@ class BaseConfig(TmuxConfig):
         tpm_app = os.path.join(tpm_location, "tpm")
 
         activate_tpm_sh = [
+            # region _fnc_activate_tpm
             f"""
 {self._fnc_activate_tpm}() {{
     timer_start
@@ -1596,6 +1616,7 @@ timer_end() {{
     fi
 }}
 """
+            # endregion
         ]
         self.es.create(self._fnc_activate_tpm, activate_tpm_sh)
 
