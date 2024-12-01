@@ -1503,10 +1503,15 @@ class BaseConfig(TmuxConfig):
 {self._fnc_shlvl_offset}() {{
     shlvl="$(echo "$SHLVL")"
     f_tmux_socket="$(echo "$TMUX" | cut -d, -f 1)"
+
+    os_offset=0
     if [ "$(uname -s)" = "Darwin" ] || [ -d /proc/ish ]; then
         os_offset=2
-    else
-        os_offset=0
+    elif [ "$(uname -s)" = "Linux" ]; then
+        # can only chroot this on Linux
+        if ! grep -q " / / " /proc/self/mountinfo; then
+            os_offset=2
+        fi
     fi
     if [ "$os_offset" -ne 0 ]; then
         corrected_offset="$(echo "$shlvl - $os_offset" | bc)"
