@@ -1517,7 +1517,7 @@ class BaseConfig(TmuxConfig):
         # Only chrooted Alpine needs this offset
         #
         if ! grep -q " / / " /proc/self/mountinfo; then
-            os_offset=2
+            os_offset=1
         fi
     fi
     if [ "$os_offset" -ne 0 ]; then
