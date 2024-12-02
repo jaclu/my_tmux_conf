@@ -156,7 +156,7 @@ def get_host_class(
     mosh_ports="",
 ):
     """get class defining host"""
-    print(f"><> get_host_class() - use_2nd:{use_2nd} quck:{use_quick}")
+    # print(f"><> get_host_class() - use_2nd:{use_2nd} quck:{use_quick}")
     #
     #  Handle bounce connections
     #
@@ -312,18 +312,13 @@ def main():
     if args.display:
         hc.show_info()
     else:
-        print("><> will check for quick on cmd line")
         msg = f"Connecting to {hc.server} using "
         if hc.use_mosh:
             msg += "mosh"
         else:
             msg += "ssh"
-        print("><> checking for quick on cmd line")
         if hc.use_quick:
             msg += " and quick"
-            print("><> quick found on cmd line")
-        else:
-            print("><> quick not found on cmd line")
         print(msg + "...")
         os.system(hc.full_command_line())  # nosec
 
