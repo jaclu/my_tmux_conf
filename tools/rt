@@ -62,7 +62,6 @@ class Host:
             self.use_quick = True
             myt_cmd += " -q"
 
-        self.tmux = f"bash -i -c -- '{myt_cmd}'"
         if not server:
             print("ERROR! No server given")
             sys.exit(1)
@@ -75,14 +74,16 @@ class Host:
         if remote_user:
             self.remote_user = remote_user
         if remote_command:
-            self.rem_cmd = remote_command
-        else:
-            self.rem_cmd = f"{self.tmux}"
-        if not self.rem_cmd:
+            myt_cmd = remote_command
+        if not myt_cmd:
             print("ERROR: remote_command can't be empty!")
             sys.exit(1)
+
         if use_mosh:
             self.use_mosh = True
+            self.rem_cmd = f"bash -i -c '{myt_cmd}'"
+        else:
+            self.rem_cmd = f"\"bash -i -c '{myt_cmd}'\""
         if mosh_client:
             self.mosh_client = mosh_client
         if mosh_server:

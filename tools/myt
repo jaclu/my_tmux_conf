@@ -522,6 +522,8 @@ get_my_tmux_conf_location
 if [ -n "$myt_log" ]; then
     echo "Will log progress to: $myt_log"
     echo
+    [ -f "$myt_log" ] && rm "$myt_log" # clear log on each run
+
 fi
 log_it ""
 log_it "=====   starting   ====="
