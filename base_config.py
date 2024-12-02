@@ -849,7 +849,7 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.7):
             w("set -g renumber-windows on")
 
-        if self.vers_ok(1.8):
+        if self.vers_ok(99.9): # actual 1.8
             # setting terminal app title - not sure if this is desired
             w("set -g set-titles on")
             w('set -g set-titles-string "#{host_short} #{session_name}:#{window_name}"')
