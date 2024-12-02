@@ -91,10 +91,15 @@ class Host:
         #   mosh hetz1 -- bash -i -c 'rt jacdroid'
         #   ssh -t hetz1 "bash -i -c 'rt jacdroid'"
 
-        if self.use_mosh:
-            self.rem_cmd = f"bash -i -c 'rt {bounce_host}'"
+        if self.use_quick:
+            quick_flag = "-q"
         else:
-            self.rem_cmd = f"\"bash -i -c 'rt {bounce_host}'\""
+            quick_flag = ""
+
+        if self.use_mosh:
+            self.rem_cmd = f"bash -i -c 'rt {bounce_host} {quick_flag}'"
+        else:
+            self.rem_cmd = f"\"bash -i -c 'rt {bounce_host} {quick_flag}'\""
 
     def show_info(self):
         """display info about session"""

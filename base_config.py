@@ -1391,7 +1391,7 @@ class BaseConfig(TmuxConfig):
             f'bind -N "{note_prefix}List all plugins defined"  {muc_s_p}  '
             'run-shell "$TMUX_BIN display \\"Generating response...\\" ; '
             "cd $HOME/git_repos/mine/my_tmux_conf ; pwd ; "
-            f' {__main__.__file__} -p2"'
+            f' {__main__.__file__} -p2 foo.conf"'
         )
 
     def auc_kill_tmux_server(self, muc_x: str = "M-X"):  # used by iSH Console
