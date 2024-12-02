@@ -362,7 +362,7 @@ start_tmux() {
     }
 
     if $quick_mode; then
-	echo "><> quick mode ensure config file is there"
+        echo "><> quick mode ensure config file is there"
         ensure_cfg_file_present
     else
         create_tmux_conf
@@ -522,7 +522,7 @@ get_my_tmux_conf_location
 if [ -n "$myt_log" ]; then
     echo "Will log progress to: $myt_log"
     echo
-    echo "[$(date)] - starting $0" >"$myt_log"
+    echo "[$(date)] - starting $*" >"$myt_log"
 else
     rm -f "$myt_log"
 fi
@@ -537,7 +537,8 @@ while [ -n "$1" ]; do
         tmux_bin="$1"
         ;;
     "-q")
-	quick_mode=true ;;
+        quick_mode=true
+        ;;
     "-s") single_session=false ;;
     "--venv")
         log_it "===  Prepare the Python venv"

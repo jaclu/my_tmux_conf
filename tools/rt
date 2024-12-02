@@ -26,6 +26,7 @@ class Host:
     server = ""  # server to connect to
     remote_user = ""  # If not given ~/.ssh/config setting will be used
 
+    use_2nd = False
     use_quick = False
     use_mosh = False
     mosh_client = "mosh"  # local mosh command
@@ -39,6 +40,7 @@ class Host:
         connection_name="",
         remote_user="",
         remote_command="",
+        use_2nd=False,
         use_quick=False,
         use_mosh=False,
         mosh_client="mosh",
@@ -51,10 +53,15 @@ class Host:
         #  if params need to be passed to the cmd bash runs, wrap them inside
         #  the inner quotes, like 'bin/myt -2' instead of 'bin/myt'
         #
+        myt_cmd = "myt"
+        if use_2nd:
+            self.use_2nd = True
+            myt_cmd += " -2"
+
         if use_quick:
-            myt_cmd = "$HOME/bin/myt -q"
-        else:
-            myt_cmd = "$HOME/bin/myt"
+            self.use_quick = True
+            myt_cmd += " -q"
+
         self.tmux = f"bash -i -c -- '{myt_cmd}'"
         if not server:
             print("ERROR! No server given")
@@ -74,8 +81,6 @@ class Host:
         if not self.rem_cmd:
             print("ERROR: remote_command can't be empty!")
             sys.exit(1)
-        if use_quick:
-            self.use_quick = True
         if use_mosh:
             self.use_mosh = True
         if mosh_client:
@@ -91,15 +96,15 @@ class Host:
         #   mosh hetz1 -- bash -i -c 'rt jacdroid'
         #   ssh -t hetz1 "bash -i -c 'rt jacdroid'"
 
+        rt_cmd = "rt"
         if self.use_quick:
-            quick_flag = "-q"
-        else:
-            quick_flag = ""
-
+            rt_cmd += " -q"
+        if self.use_2nd:
+            rt_cmd += " -2"
         if self.use_mosh:
-            self.rem_cmd = f"bash -i -c 'rt {bounce_host} {quick_flag}'"
+            self.rem_cmd = f"bash -i -c '{rt_cmd} {bounce_host}'"
         else:
-            self.rem_cmd = f"\"bash -i -c 'rt {bounce_host} {quick_flag}'\""
+            self.rem_cmd = f"\"bash -i -c '{rt_cmd} {bounce_host}'\""
 
     def show_info(self):
         """display info about session"""
@@ -142,6 +147,7 @@ def get_host_class(
     connection_name="",
     remote_user="",
     remote_command="",
+    use_2nd=False,
     use_quick=False,
     use_mosh=False,
     mosh_client="",
@@ -149,7 +155,7 @@ def get_host_class(
     mosh_ports="",
 ):
     """get class defining host"""
-    print(f"><> get_host_class() - quck:{use_quick}")
+    print(f"><> get_host_class() - use_2nd:{use_2nd} quck:{use_quick}")
     #
     #  Handle bounce connections
     #
@@ -165,6 +171,7 @@ def get_host_class(
             server=bounce_host,
             connection_name=server,
             remote_user=remote_user,
+            use_2nd=use_2nd,
             use_quick=use_quick,
             use_mosh=use_mosh,
             mosh_client=mosh_client,
@@ -186,6 +193,7 @@ def get_host_class(
                 connection_name=connection_name,
                 remote_user=remote_user,
                 remote_command=remote_command,
+                use_2nd=use_2nd,
                 use_quick=use_quick,
                 use_mosh=use_mosh,
                 mosh_client=mosh_client,
@@ -202,6 +210,7 @@ def get_host_class(
             connection_name=connection_name,
             remote_user=remote_user,
             remote_command=remote_command,
+            use_2nd=use_2nd,
             use_quick=use_quick,
             use_mosh=use_mosh,
             mosh_client=mosh_client,
@@ -232,6 +241,18 @@ def parse_cmd_line():
         "If -m is used, mosh will be used when connecting to\n"
         "the first jump-host.\n"
         f">> a{BOUNCE_KEY}b can not be combined with option -c <<\n",
+    )
+    parser.add_argument(
+        "-2",
+        "--use_2nd",
+        action="store_true",
+        help="use 2nd tmux env\n",
+    )
+    parser.add_argument(
+        "-q",
+        "--quick",
+        action="store_true",
+        help="quik connect, dont re-generate tmux.conf\n",
     )
     parser.add_argument(
         "-v", "--version", action="version", version=f"%(prog)s {APP_VERSION}"
@@ -266,12 +287,6 @@ def parse_cmd_line():
         help="port span to use for mosh connection\n" "example: 60500:60510",
     )
     parser.add_argument(
-        "-q",
-        "--quick",
-        action="store_true",
-        help="quik connect, dont re-generate tmux.conf\n",
-    )
-    parser.add_argument(
         "-S",
         "--mosh-server",
         help="mosh server cmd on remote machine, default: mosh-server",
@@ -286,6 +301,7 @@ def main():
         server=args.server,
         remote_user=args.user,
         remote_command=args.command,
+        use_2nd=args.use_2nd,
         use_quick=args.quick,
         use_mosh=args.use_mosh,
         mosh_client=args.mosh_client,
