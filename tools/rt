@@ -32,13 +32,6 @@ class Host:
     mosh_server = ""  # default: 'mosh-server'
     mosh_ports = ""  # default: '60000:61000'
 
-    #
-    # if going indirectly run this command again on bounce host
-    # next destination will be appended. This assumes that this command
-    # is located at the same location on the jump-host
-    #
-    bounce_cmd = "bin/rt"
-
     # pylint: disable=too-many-positional-arguments,too-many-branches,too-many-arguments
     def __init__(
         self,
@@ -94,7 +87,14 @@ class Host:
 
     def bounce_to(self, bounce_host):
         """continue to host"""
-        self.rem_cmd = f"{self.bounce_cmd} {bounce_host}"
+        #  works:
+        #   mosh hetz1 -- bash -i -c 'rt jacdroid'
+        #   ssh -t hetz1 "bash -i -c 'rt jacdroid'"
+
+        if self.use_mosh:
+            self.rem_cmd = f"bash -i -c 'rt {bounce_host}'"
+        else:
+            self.rem_cmd = f"\"bash -i -c 'rt {bounce_host}'\""
 
     def show_info(self):
         """display info about session"""
