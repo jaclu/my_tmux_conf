@@ -37,7 +37,7 @@ class Host:
     # next destination will be appended. This assumes that this command
     # is located at the same location on the jump-host
     #
-    bounce_cmd = __file__
+    bounce_cmd = "bin/rt"
 
     # pylint: disable=too-many-positional-arguments,too-many-branches,too-many-arguments
     def __init__(
