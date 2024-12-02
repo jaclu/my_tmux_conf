@@ -317,8 +317,12 @@ def main():
             msg += "mosh"
         else:
             msg += "ssh"
-        if hc.use_quick:
-            msg += " and quick"
+        if hc.use_2nd or hc.use_quick:
+            msg += " Options: "
+            if hc.use_2nd:
+                msg += " -2"
+            if hc.use_quick:
+                msg += " -q"
         print(msg + "...")
         os.system(hc.full_command_line())  # nosec
 
