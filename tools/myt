@@ -531,7 +531,7 @@ log_it "=====   starting   ====="
 #echo "><> cmd_line: $*"
 #sleep 3
 while [ -n "$1" ]; do
-    log_it "><> processong option: [$1]"
+    # log_it "><> processong option: [$1]"
     case "$1" in
     "-h" | "--help") display_help ;;
     "-c")
