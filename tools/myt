@@ -29,7 +29,7 @@ else
 fi
 
 #  Logs how the latest tmux env was setup
-myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log
+myt_log="${TMPDIR:-/tmp/}"myt-"$USER".log
 
 #---------------------------------------------------------------
 #
@@ -61,7 +61,7 @@ EOF
 log_it() {
     echo "$1"
     [ -n "$myt_log" ] && {
-        echo "$1" >>"$myt_log" || {
+        echo "[$(date)] $1" >>"$myt_log" || {
             error_msg "Failed to log python output to: $myt_log" 3
         }
     }
@@ -522,14 +522,14 @@ get_my_tmux_conf_location
 if [ -n "$myt_log" ]; then
     echo "Will log progress to: $myt_log"
     echo
-    echo "[$(date)] - starting $*" >"$myt_log"
-else
-    rm -f "$myt_log"
 fi
+log_it ""
+log_it "=====   starting   ====="
 
 #echo "><> cmd_line: $*"
 #sleep 3
 while [ -n "$1" ]; do
+    log_it "><> processong option: [$1]"
     case "$1" in
     "-h" | "--help") display_help ;;
     "-c")
