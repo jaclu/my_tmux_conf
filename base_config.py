@@ -1389,12 +1389,12 @@ class BaseConfig(TmuxConfig):
         #
         repo_dir = os.path.dirname(__file__)
         w(
-          f'bind -N "{note_prefix}List all plugins defined"  {muc_s_p}  '
-          'run-shell "'
-          '$TMUX_BIN display-message \\"Generating plugin list\\" \\; '
+            f'bind -N "{note_prefix}List all plugins defined"  {muc_s_p}  '
+            'run-shell "'
+            '$TMUX_BIN display-message \\"Generating plugin list\\" \\; '
             # 1st load venv if used
             f"[ -d { repo_dir }/.venv ] && . {repo_dir}/.venv/bin/activate \\; "
-            f"{__main__.__file__} -t {self.tmux_bin} -p1 {self.conf_file}"
+            f"{__main__.__file__} -t {self.tmux_bin} -p2 {self.conf_file}"
             '"'
         )
 
