@@ -1387,11 +1387,14 @@ class BaseConfig(TmuxConfig):
         # the -p2 run-shell doesnt complain if a non-standard config is used
         # it wont be over-written!
         #
+        # '$TMUX_BIN display \\"Generating response...\\" \\; '
         w(
             f'bind -N "{note_prefix}List all plugins defined"  {muc_s_p}  '
-            'run-shell "$TMUX_BIN display \\"Generating response...\\" ; '
-            "cd $HOME/git_repos/mine/my_tmux_conf ; pwd ; "
-            f' {__main__.__file__} -p2 foo.conf"'
+            'run-shell " '
+            "cd $HOME/git_repos/mine/my_tmux_conf && "
+            ". ./.venv/bin/activate && "
+            f"{__main__.__file__} -p1 {self.conf_file}"
+            '"'
         )
 
     def auc_kill_tmux_server(self, muc_x: str = "M-X"):  # used by iSH Console
