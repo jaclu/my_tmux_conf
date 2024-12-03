@@ -563,8 +563,8 @@ class BaseConfig(TmuxConfig):
         # w()  # Spacer
 
         scrpad_min_vers = 3.2
+        scrpad_key = "O"  # P being taken this is pOpup :)
         if self.vers_ok(scrpad_min_vers):
-            scrpad_key = "O"  # P being taken this is pOpup :)
             display_popup = "display-popup -h 70% -w 70% -E "
             if self.vers_ok(3.3):
                 display_popup += "-T " '"#[align=centre] pOpup Scratchpad Session " '
