@@ -46,7 +46,7 @@ from tmux_conf import TmuxConfig  # type: ignore
 import __main__
 import mtc_utils
 
-TMUX_CONF_NEEDED = "0.17.4"
+TMUX_CONF_NEEDED = "0.18.0"
 
 
 # https://youtu.be/yFLY0SVutgM?si=VoKETDw39BAUHfST&t=420

@@ -163,7 +163,7 @@ class DefaultPlugins(BaseConfig):
         Can adjust scroll-sensitivity."""
 
         if self.t2_env or self.is_tmate():
-            vers_min = 999.9  # make sure this is never used
+            vers_min = -1.0  # Dont use
         else:
             vers_min = 2.1
 
@@ -209,7 +209,7 @@ class DefaultPlugins(BaseConfig):
     def plugin_mouse_swipe(self) -> list:  # 3.0
         """right-click & swipe switches Windows / Sessions"""
         if self.skip_plugin_mouse_swipe or self.is_limited_host:
-            min_vers = 999.9  # dont use this one
+            min_vers = -1.0  # Dont use
         else:
             min_vers = 3.0
 
@@ -225,7 +225,7 @@ class DefaultPlugins(BaseConfig):
         """Zooms to separate Window, to allow for adding support panes"""
         if self.is_tmate():
             print("><> plugin_power_zoom thinks this is tmate")
-            vers_min = 999.9
+            vers_min = -1.0  # Dont use
         else:
             vers_min = 2.0
 
@@ -249,7 +249,7 @@ class DefaultPlugins(BaseConfig):
         devices. so no point enabling tmux-resurrect & tmux-continuum
         on iSH"""
         if IS_ISH or self.is_tmate():
-            min_vers = 999.9
+            min_vers = -1.0  # Dont use
         else:
             min_vers = 1.9
 
@@ -283,11 +283,12 @@ class DefaultPlugins(BaseConfig):
         return ["jaclu/tmux-resurrect", min_vers, conf]
 
     def plugin_session_wizard(self) -> list:  # 3.2
-        if self.skip_plugin_session_wizard or (self.is_limited_host or self.is_termux):
-            vers_min = 999.9  # make sure this is never used
+        if self.skip_plugin_session_wizard or (
+            self.t2_env or self.is_limited_host or self.is_termux
+        ):
+            vers_min = -1.0  # Dont use
         else:
             vers_min = 3.2
-
         return [
             "27medkamal/tmux-session-wizard",
             vers_min,
@@ -314,7 +315,7 @@ class DefaultPlugins(BaseConfig):
 
         Depends on the plugin tmux-resurrect for actual save/restore.
 
-        Due to a "nown issue" mentioned on the plugins GitHub page, this
+        Due to a "known issue" mentioned on the plugins GitHub page, this
         plugin method name is intended to make sure this is the last
         plugin defined. Here is this issue:
 
@@ -326,7 +327,7 @@ class DefaultPlugins(BaseConfig):
         if not self.force_plugin_continuum and (
             self.is_limited_host or self.t2_env or self.is_tmate()
         ):
-            vers_min = 999.9  # make sure this is never used
+            vers_min = -1.0  # Dont use
         else:
             vers_min = 1.9
 
@@ -350,7 +351,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_1password:
             min_vers = 1.9  # Unknown min version 1.9 seems ok
         else:
-            min_vers = 999.9  # dont use this one
+            min_vers = -1.0  # Dont use
 
         return [
             "yardnsm/tmux-1password",
@@ -380,7 +381,7 @@ class DefaultPlugins(BaseConfig):
             #  1.8 accd to orig devel, but i get issues below 2.2
             min_vers = 2.2
         else:
-            min_vers = 999.9  # dont use this one
+            min_vers = -1.0  # dont use this one
 
         return [
             "jaclu/tmux-battery",
@@ -398,7 +399,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_jump:
             min_vers = 1.8
         else:
-            min_vers = 999.9  # dont use this one
+            min_vers = -1.0  # Dont use
 
         return [
             "jaclu/tmux-jump",  # was Lenbok
@@ -422,7 +423,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_keyboard_type:
             min_vers = 1.9
         else:
-            min_vers = 999.9  # dont use this one
+            min_vers = -1.0  # Dont use
 
         return [
             "jaclu/tmux-keyboard-type",
@@ -444,7 +445,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_mullvad:
             min_vers = 2.2
         else:
-            min_vers = 999.9  # dont use this one
+            min_vers = -1.0  # Dont use
 
         return [
             "jaclu/tmux-mullvad",
@@ -484,7 +485,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_packet_loss:
             min_vers = 1.9
         else:
-            min_vers = 999.9  # dont use this one
+            min_vers = -1.0  # Dont use
 
         return [
             "jaclu/tmux-packet-loss",
@@ -525,7 +526,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_spotify_info:
             min_vers = 1.9
         else:
-            min_vers = 999.9
+            min_vers = -1.0  # Dont use
         if self.vers_ok(2.9):
             conf = """
             #  Version dependent settings for jaclu/tmux-spotify-info
@@ -543,7 +544,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_which_key:
             min_vers = 3.0
         else:
-            min_vers = 999.9
+            min_vers = -1.0  # Dont use
 
         return ["alexwforsythe/tmux-which-key", min_vers, ""]
 
@@ -552,7 +553,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_yank:
             min_vers = 1.8
         else:
-            min_vers = 999.9  # dont use this one
+            min_vers = -1.0  # Dont use
 
         return [
             "jaclu/tmux-yank",
