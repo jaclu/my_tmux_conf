@@ -477,9 +477,9 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(2.6):
             #  Safe, does not allow apps inside tmux to set clipboard
             #  for terminal
-            w("set -g  set-clipboard external")
+            w("set -g set-clipboard external")
         elif self.vers_ok(1.5):
-            w("set -g  set-clipboard on")
+            w("set -g set-clipboard on")
         if self.vers_ok(3.2):
             #  will switch to any detached session, when no more active ones
             w("set -g detach-on-destroy no-detached")
@@ -849,7 +849,7 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.7):
             w("set -g renumber-windows on")
 
-        if self.vers_ok(99.9): # actual 1.8
+        if self.vers_ok(99.9):  # actual 1.8
             # setting terminal app title - not sure if this is desired
             w("set -g set-titles on")
             w('set -g set-titles-string "#{host_short} #{session_name}:#{window_name}"')
