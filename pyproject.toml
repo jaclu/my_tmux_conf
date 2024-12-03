@@ -1,8 +1,6 @@
 [tool.bandit]
-exclude_dirs = [
-    ".venv",
-    "local_tmux_conf"
-]
+line-length = 92
+exclude_dirs = [".venv", "local_tmux_conf"]
 
 [tool.black]
 line-length = 92
@@ -13,13 +11,24 @@ line-length = 92
 # )/
 # '''
 
+[tool.mypy]
+exclude = [".venv", "local_tmux_conf"]
+
 [tool.isort]
 profile = "black"
-# src_paths = ["isort", "test"]
+line_length = 92
+# known_first_party = ["mtc_utils"]
+# known_third_party = ["tmux_conf"]
+combine_as_imports = true
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
-[tool.mypy]
-exclude = [
-    ".venv",
-    "local_tmux_conf"
-]
+[tool.pylint]
+line_length = 92
 
+[tool.ruff]
+line-length = 92
+exclude = [".venv"]
+fix = false
+# lint.select = ["E", "F"]
+# lint.ignore = ["I001"]
+# target-version = "py312"

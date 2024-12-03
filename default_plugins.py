@@ -20,7 +20,6 @@
 #  compatibility.
 #
 
-
 # pylint: disable=C0116
 
 """Defines default plugins"""

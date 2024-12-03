@@ -34,17 +34,18 @@
 
 # pylint: disable=C0116,C0302
 
+
 """base class used by tpm"""
 
 import os
 import sys
 
-# from pydoc import locate
-# pylint: disable=import-error
-from tmux_conf import TmuxConfig  # type: ignore
-
 import __main__
+from tmux_conf import TmuxConfig
+
 import mtc_utils
+
+# ruff checks might be relevant F403,F401
 
 TMUX_CONF_NEEDED = "0.18.0"
 
