@@ -1387,13 +1387,13 @@ class BaseConfig(TmuxConfig):
         # the -p2 run-shell doesnt complain if a non-standard config is used
         # it wont be over-written!
         #
-        # '$TMUX_BIN display \\"Generating response...\\" \\; '
+        repo_dir = os.path.dirname(__file__)
         w(
             f'bind -N "{note_prefix}List all plugins defined"  {muc_s_p}  '
-            'run-shell " '
-            "cd $HOME/git_repos/mine/my_tmux_conf && "
-            ". ./.venv/bin/activate && "
-            f"{__main__.__file__} -p1 {self.conf_file}"
+            'run-shell "'
+            # 1st load venv if used
+            f"[ -d { repo_dir }/.venv ] && . {repo_dir}/.venv/bin/activate \\; "
+            f"{__main__.__file__} -t {self.tmux_bin} -p1 {self.conf_file}"
             '"'
         )
 
