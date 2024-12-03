@@ -18,9 +18,7 @@
 #  filtering out or replacing incompatible syntax.
 #
 
-# pylint: disable=C0116
-
-""" A typical iSH host """
+"""A typical iSH host"""
 
 # import os
 

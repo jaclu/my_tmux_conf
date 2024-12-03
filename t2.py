@@ -33,6 +33,7 @@ else:
 
 
 # Pylance complains about the base class here, the above conditon confuses it
+# pylint: disable=too-many-ancestors
 class T2(SB):  # type: ignore
     """Inner tmux session"""
 
@@ -85,6 +86,7 @@ class T2(SB):  # type: ignore
             self.write(
                 """
                 set -g @menus_log_file ~/tmp/tmux-menus-t2.log
+
 
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
 

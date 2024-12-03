@@ -16,9 +16,8 @@
 #  filtering out or replacing incompatible syntax.
 #
 
-# pylint: disable=C0116
 
-""" JacMac config """
+"""JacMac config"""
 
 import os
 import sys
