@@ -86,7 +86,7 @@ C-W as prefix and not accept ~/tmux.conf as config file, you would have to
 supply an alternate config file.
 This tmux instance will be able to run independent of the main tmux,
 either inside or standalone. Ideal for testing out new configs,
-and even run a different version of tmux for compatiblity tests.
+and even run a different version of tmux for compatibility tests.
 
 ## host name based config
 

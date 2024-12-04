@@ -8,7 +8,7 @@
 #  Template giving the status bar the colors I use for an acceptance system
 #
 
-""" Style aceptance node """
+""" Style acceptance node """
 
 import os
 import sys
@@ -24,7 +24,7 @@ from default_plugins import DefaultPlugins  # noqa: E402
 
 # pylint: disable=R0903
 class SB(DefaultPlugins):
-    """Style aceptance node"""
+    """Style acceptance node"""
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """override statusbar config"""

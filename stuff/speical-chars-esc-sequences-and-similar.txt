@@ -24,7 +24,7 @@
 #  replace MacOS-Alt with the Win key & MacOS-Cmd with Windows-Alt
 #
 
-#  Helpers in case your terminal cant generate the keys directly:
+#  Helpers in case your terminal can't generate the keys directly:
 #  The esc-sequences below are including the esc char, if your terminal app
 #  allows you to define Esc sequences and it will send the esc char
 #  itself, just remove the initial ^[

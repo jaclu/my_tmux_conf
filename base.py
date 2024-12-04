@@ -14,7 +14,7 @@
 #  otherwise use the normal BaseConfig
 #
 
-"""Mix in IshConsole when apropriate"""
+"""Mix in IshConsole when appropriate"""
 
 import os
 

@@ -11,7 +11,7 @@ M based short-cuts in everyday usage whenever available.
 I have only listed my own bindings.
 
 Where the M-key is unavailable I use the plugin tmux-menus for M-key
-dependent acctions.
+dependent actions.
 
 ## Key bindings
 
@@ -45,7 +45,7 @@ Key | Description
 ------ | ------
 `<p>` t | Toggle display of status bar
 
-### Session handling (sometimes refered to as clients by tmux man)
+### Session handling (sometimes referred to as clients by tmux man)
 
  Key | Meta key | Default | Description
  ------ | ------ | ------ | ------

@@ -67,7 +67,7 @@ class BaseConfig(TmuxConfig):
     monitor_activity: bool = False  # Notification when other windows change state
 
     show_pane_title: bool = True  # If enabled, Set title with <P> P
-    show_pane_size: bool = True  # If enabled pane frane lines will display pane size
+    show_pane_size: bool = True  # If enabled pane frame lines will display pane size
 
     #
     #  This causes most colors on MacOS Term.app to fail
@@ -76,7 +76,7 @@ class BaseConfig(TmuxConfig):
     #
     #  Tc is more commonly supported by terminals
     #  RGB may provide more accurate color representation
-    #  If running tmux < 2.7, this will be overriden into Tc, since
+    #  If running tmux < 2.7, this will be overridden into Tc, since
     #  RGB was not supported in older tmux'es
     #
     color_tag_24bit: str = "RGB"
@@ -101,7 +101,7 @@ class BaseConfig(TmuxConfig):
     t2_env: str = os.environ.get("T2_ENV", "")
     prefix_key_T2: str = "C-w"  # prefix for inner dev environment
 
-    # Disables tmux deault popup menus, instead relying on the plugin jaclu/tmux-menus
+    # Disables tmux default popup menus, instead relying on the plugin jaclu/tmux-menus
     skip_default_popups: bool = True
 
     plugin_handler = "jaclu/tpm"  # overrides of tmux-conf package default
@@ -211,9 +211,9 @@ class BaseConfig(TmuxConfig):
         this_style = os.path.splitext(os.path.basename(style_name))[0]
         if self.style:
             # return  # error_disabled
-            # used to prevent if multiple styles are inherrited and colliding
+            # used to prevent if multiple styles are inherited and colliding
             sys.exit(
-                f"ERROR: Style already assiged as: {self.style}, "
+                f"ERROR: Style already assigned as: {self.style}, "
                 f"Can not use style: {this_style}"
             )
         self.style = this_style
@@ -515,7 +515,7 @@ class BaseConfig(TmuxConfig):
         #
         #  Common variable telling plugins if -N notation is wanted
         #  (assuming tmux version supports it)
-        #  Since the plugin init code cant use the vers_ok() found here
+        #  Since the plugin init code can't use the vers_ok() found here
         #  this is a more practical way to instruct them to use it or not.
         #
         if self.vers_ok(3.1):
@@ -588,7 +588,7 @@ class BaseConfig(TmuxConfig):
             w(
                 """
             #
-            #  Due to the limited keyboad handling in iSH, only supporting
+            #  Due to the limited keyboard handling in iSH, only supporting
             #  unmodified arrorws, here they are used for document navigation.
             #
             #  <prefix> <arrow> generates: PageUp, PageDown, Home, End
@@ -936,7 +936,7 @@ class BaseConfig(TmuxConfig):
             w2 = "window"  # hackish strings to make sure
             cm = "-T copy-mode -n M-"  # line is not to long
             w(
-                f"""# Overide odd behaviour in copy-mode
+                f"""# Override odd behaviour in copy-mode
                 bind -N "Previous {w2}  - P 9" {cm}9  previous-{w2}
                 bind -N "Next {w2} - P 0"      {cm}0  next-{w2}
                 """
@@ -945,8 +945,8 @@ class BaseConfig(TmuxConfig):
         #  Swap window left/right <prefix>  < / >
         #  This collides with some default popups,
         #  so only use if they are disabled.
-        #  This is also avilable as no-prefix:  M-<  and  M->
-        #  regardles of default popup status.
+        #  This is also available as no-prefix:  M-<  and  M->
+        #  regardless of default popup status.
         #
         w(
             """# window shuffle
@@ -1132,7 +1132,7 @@ class BaseConfig(TmuxConfig):
                 """
                 )
             else:
-                # odd on 2.6 display "#D" shows pane id but it cant be used
+                # odd on 2.6 display "#D" shows pane id but it can't be used
                 # as pane title
                 w(
                     """
@@ -1385,8 +1385,8 @@ class BaseConfig(TmuxConfig):
             note_prefix = ""
         #
         # The conf_file needs to be mentioned below to make sure
-        # the -p2 run-shell doesnt complain if a non-standard config is used
-        # it wont be over-written!
+        # the -p2 run-shell doesn't complain if a non-standard config is used
+        # it won't be over-written!
         #
         repo_dir = os.path.dirname(__file__)
         w(
@@ -1482,7 +1482,7 @@ class BaseConfig(TmuxConfig):
         return self.prefix_key.upper().replace("C-", "^")
 
     def mkscript_toggle_mouse(self):
-        """Toogles mouse handling on/off"""
+        """Toggles mouse handling on/off"""
         #  The {} encapsulating the script needs to be doubled to escape them
         toggle_mouse_sh = [
             f"""
@@ -1551,7 +1551,7 @@ class BaseConfig(TmuxConfig):
         toggling of tpm_initializing.
 
         On iSH sometimes tpm never completes, and thus, indicating
-        that condition helps me having to allways check it manually.
+        that condition helps me having to always check it manually.
         """
 
         output = []

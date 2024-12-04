@@ -32,7 +32,7 @@ else:
     from sb.sb_t2 import SB  # type: ignore
 
 
-# Pylance complains about the base class here, the above conditon confuses it
+# Pylance complains about the base class here, the above condition confuses it
 # pylint: disable=too-many-ancestors
 class T2(SB):  # type: ignore
     """Inner tmux session"""
@@ -82,7 +82,7 @@ class T2(SB):  # type: ignore
         self.write("# T2.local_overides")
 
         if self.vers_ok(1.8):
-            # @variables cant be used earlier
+            # @variables can't be used earlier
             self.write(
                 """
                 set -g @menus_log_file ~/tmp/tmux-menus-t2.log

@@ -18,7 +18,7 @@
 #  to those keys.
 #
 #  Find key codes using for example:  showkey -a and examine the output
-#  in the 2nd collumn (octal) rememer to 0 pad all numbers to three digits
+#  in the 2nd column (octal) remember to 0 pad all numbers to three digits
 #
 
 # pylint: disable=C0116
@@ -42,7 +42,7 @@ KBD_LOGITECH_COMBO_TOUCH = "Logitech Combo Touch"
 KBD_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
 KBD_YOOZON3 = "Yoozon 3"  # same as brydge
 KBD_OMNITYPE = "Omnitype Keyboard"
-KBD_BLUETOOTH = "Bluetooh Keyboard"  # sadly generic name
+KBD_BLUETOOTH = "Bluetooth Keyboard"  # sadly generic name
 
 
 class IshConsole(base_config.BaseConfig):

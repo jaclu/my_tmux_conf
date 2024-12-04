@@ -30,8 +30,8 @@ echo
 echo "Running this in during 'myt --venv' will indicate status of the venv install."
 echo "Be aware that sometimes it takes a while for any changes to happen,"
 echo "so give it time..."
-echo "Expected results when completed (they migt go higher during the process)"
-echo "are aproximately:"
+echo "Expected results when completed (they might go higher during the process)"
+echo "are approximately:"
 
 if [ "$(uname -o)" = "Android" ]; then
     echo "  size  31M  -  file count: 1520"

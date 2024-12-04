@@ -45,11 +45,11 @@ Generates config and starts tmux
 Default profile is hostname.py
 Options can be given in any order.
 
-Availlable options:
+Available options:
 
 -h       Print this help and exit.
 -c       Use this tmux binary (default tmux)
--q       Dont generate config, start tmux direcly
+-q       Dont generate config, start tmux directly
 -s       Share session
 --venv   (Re-) Create venv for building tmux.conf
 -2       Run in T2_ENV (inner tmux, other prefix)
@@ -78,7 +78,7 @@ is_fs_chrooted() {
     # cmdline check:
     # grep -qv " / / " /proc/self/mountinfo || echo "is chrooted"
 
-    # this quick and simple check doesnt work on ish
+    # this quick and simple check doesn't work on ish
     # so lets pretend for now chroot does not happen on ish
     [ -d /proc/ish ] && return 1
 
@@ -101,7 +101,7 @@ py_venv_create() {
     log_it "---  Creating py venv: $venv_location"
     echo
     echo "If this seems to take forever, run: $my_tmux_conf_location/tools/progress-venv-build.sh"
-    echo "in a seperate terminal to see progress"
+    echo "in a separate terminal to see progress"
     echo
     python3 -m venv "$venv_location"
     log_it " --  Using py venv: $venv_location"
@@ -136,7 +136,7 @@ py_venv_activate() {
 
 py_venv_deactivate() {
     #
-    #  Dectivate Python venv, will only be called if use_python_venv ia true
+    #  Deactivate Python venv, will only be called if use_python_venv ia true
     #
     log_it " --  Exiting py venv: $my_tmux_conf_location/.venv"
     deactivate
@@ -257,7 +257,7 @@ This might not work well, depending on how much the versions differ.
 This tmux will start in five seconds - Press Ctrl-C to abort"
         sleep 5
         #else
-        #log_it "><> no other tmux versions runing on this socket"
+        #log_it "><> no other tmux versions running on this socket"
     fi
     unset other_versions_running
 }
@@ -317,7 +317,7 @@ drop_other_clients() {
         #  tmux -d just kills other clients using the same session
         #  this kills all other clients regardless of session
         #
-        log_it "Detatching other clients currently using:"
+        log_it "Detaching other clients currently using:"
         log_it "    $TMUX_BIN [$tmux_vers]"
         log_it "    socket: $socket"
         echo
@@ -416,7 +416,7 @@ create_tmux_conf() {
     }
 
     echo
-    log_it "===  Buidling new tmux conf"
+    log_it "===  Building new tmux conf"
     $use_python_venv && {
         py_venv_activate || {
             error_msg "Failed to activate venv - run: myt --venv"
@@ -468,12 +468,12 @@ find_host_profile() {
     _p="$(hostname -s | tr '[:upper:]' '[:lower:]').py"
 
     #
-    #  Step 2 check user suplied hostnames folder
+    #  Step 2 check user supplied hostnames folder
     #
     profile="${my_tmux_conf_location}/hostnames/$_p"
     [ -f "$profile" ] && return 0
     #
-    #  Step 3 check repo suplied hostnames folder
+    #  Step 3 check repo supplied hostnames folder
     #
     profile="${my_tmux_conf_location}/sample_hosts/$_p"
     [ -f "$profile" ] && return 0
@@ -560,7 +560,7 @@ $quick_mode && [ -n "$profile" ] && {
 }
 
 [ "$TERM" = "xterm-kitty" ] && {
-    # tmux cant handle this terminal type
+    # tmux can't handle this terminal type
     export TERM="screen-256color"
 }
 

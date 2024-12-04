@@ -8,7 +8,7 @@
 #  Part of https://github.com/jaclu/my_tmux_conf
 #
 #  Changes needed when tmux runs inside iSH, regardless if started
-#  localy or via remote shell
+#  locally or via remote shell
 #
 #  The generated config will only include group headers
 #  The more detailed comments in here will not be written, read them here :)

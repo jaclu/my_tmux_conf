@@ -2,9 +2,9 @@
 
 (r) = repeats
 
-## Basics no keyb deps, allways available
+## Basics no keyb deps, always available
 
-For actions not avilable without the M-key, use tmux-menus
+For actions not available without the M-key, use tmux-menus
 
 - pane navigate -  Pfix  hjkl (r) / Pfix Arrows
 - pane split    -  Pfix  C-hjkl

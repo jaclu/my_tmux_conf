@@ -53,7 +53,7 @@ class DefaultPlugins(BaseConfig):
         code snippet defining plugin variables
 
     Plugin definitions can use self.write() in their code block, but this
-    is not recomended, instad generate a string and suply as mentioned above
+    is not recommended, instead generate a string and supply as mentioned above
 
     Calling self.plugins.installed(short_name=True) will give a name of
     all plugins that will be used, so can be used to define the status bar
@@ -295,7 +295,7 @@ class DefaultPlugins(BaseConfig):
         ]
 
     def plugin_suspend(self) -> list:  # 2.4
-        """Suspend tmux from recieving any keyboard commands
+        """Suspend tmux from receiving any keyboard commands
         This plugin inserts its display on status-right, so no need to
         manually add a placeholder"""
         #  {@mode_indicator_custom_prompt}
@@ -340,7 +340,7 @@ class DefaultPlugins(BaseConfig):
     #
     #  Optional pluguins, disables by default
     #  Since thye need to be enabled to be used, here there are
-    #  no env cehcks deciding if they will be enabled
+    #  no env checks deciding if they will be enabled
     #
     # ==========================================================
 
