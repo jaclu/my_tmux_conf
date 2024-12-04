@@ -689,7 +689,7 @@ class BaseConfig(TmuxConfig):
             if self.vers_ok(1.9):
                 w("set -g  window-status-activity-style default")
         else:
-            w("setw -g monitor-activity off")
+            w("set -g  monitor-activity off")
             w("set -g  visual-activity off")
             if self.vers_ok(2.6):
                 w("set -g  monitor-bell off")
@@ -843,7 +843,7 @@ class BaseConfig(TmuxConfig):
         #======================================================
 
         set -g base-index 1
-        setw -g automatic-rename off"""
+        set -g automatic-rename off"""
         )
         if self.vers_ok(1.6):
             w("set -g allow-rename off")
@@ -1004,7 +1004,7 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.6):
             #  Set base index for panes to 1 instead of 0
-            w("setw -g pane-base-index 1\n")
+            w("set -g pane-base-index 1\n")
 
         #
         #  Without a sleep in between the actions, history is not cleared.
@@ -1104,7 +1104,7 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(3.3):
             # Needs to wait until a window exists
-            w('run-shell -b "sleep 0.2 ; $TMUX_BIN set pane-border-indicators arrows"\n')
+            w('run-shell -b "sleep 0.2 ; $TMUX_BIN set -g pane-border-indicators arrows"\n')
 
         #
         #  Pane title and size
