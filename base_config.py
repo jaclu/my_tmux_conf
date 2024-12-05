@@ -445,7 +445,7 @@ class BaseConfig(TmuxConfig):
         #    https://github.com/tmux/tmux/wiki/Modifier-Keys#modifiers-and-function-keys
         #
         if not self.vers_ok(2.4):
-            w("setw -g  xterm-keys on")
+            w("set -g  xterm-keys on")
 
         #
         #  Enable focus events for terminals that support them to be passed
@@ -471,7 +471,7 @@ class BaseConfig(TmuxConfig):
         w(
             """set -g display-time 4000
         set -g repeat-time 750   # I want it a bit longer than 500')
-        set -s escape-time 0
+        set -g escape-time 0
         set -g history-limit 2000
         set -g status-keys emacs"""
         )
@@ -622,6 +622,7 @@ class BaseConfig(TmuxConfig):
             )
         else:
             w("set -g mouse-select-pane on")
+            w("set -g mouse-select-window on")
             if self.vers_ok(1.5):
                 w("set -g mouse-resize-pane on")
             w('bind  M  display "mouse toggle needs 2.1"')
@@ -855,10 +856,10 @@ class BaseConfig(TmuxConfig):
             w("set -g set-titles on")
             w('set -g set-titles-string "#{host_short} #{session_name}:#{window_name}"')
 
-        if self.vers_ok(3.2):
-            w("set -g aggressive-resize on")
-        else:
-            w("set-window-option -g aggressive-resize on")
+        # if self.vers_ok(3.2):
+        w("set -g aggressive-resize on")
+        # else:
+        #    w("set-window-option -g aggressive-resize on")
         w()  # spacer
 
         if self.vers_ok(1.5):

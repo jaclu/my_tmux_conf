@@ -189,7 +189,7 @@ class DefaultPlugins(BaseConfig):
         #  Tested down to vers 1.7
         return [
             "jaclu/tmux-menus",
-            1.7,
+            1.8,
             """set -g @menus_log_file ~/tmp/tmux-menus.log
             # set -g @menus_use_cache no
             #
