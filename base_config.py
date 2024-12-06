@@ -755,7 +755,7 @@ class BaseConfig(TmuxConfig):
         if self.t2_env:
             #
             #  max length of vers is 6 chars, in order to
-            #  not flood status line
+            #  not flood status line if running a devel tmux
             #
             t2_tag = f"{self.vers.get()[:6]} {self.display_prefix()} "
             self.sb_left = f"#[fg=green,bg=black]{t2_tag}#[default]{self.sb_left}"
@@ -1479,8 +1479,8 @@ class BaseConfig(TmuxConfig):
     #  Utility methods
     #
     def display_prefix(self):
-        # Converts c-a into ^A
-        return self.prefix_key.upper().replace("C-", "^")
+        # Using consistent prefix key notation
+        return self.prefix_key  # .lower().replace("c-", "^")
 
     def mkscript_toggle_mouse(self):
         """Toggles mouse handling on/off"""
