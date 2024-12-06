@@ -66,7 +66,7 @@ class DefaultPlugins(BaseConfig):
     skip_plugin_continuum = False
 
     #
-    #  Doesn't make much sence in an inner tmux
+    #  Doesn't make much sense in an inner tmux
     #
     if INNER_TMUX:
         skip_plugin_mouse_swipe = True
