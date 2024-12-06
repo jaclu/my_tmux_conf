@@ -24,9 +24,9 @@
 #  in the default file, this is for color theme and selection of often
 #  changing list of plugins I am testing
 #  out.
-import mtc_utils
+from mtc_utils import HOSTNAME
 
-if mtc_utils.HOSTNAME == "ish-hetz1":
+if HOSTNAME == "ish-hetz1":
     from sb.sb_acceptance import SB
 else:
     from sb.sb_t2 import SB  # type: ignore
@@ -35,7 +35,7 @@ else:
 # Pylance complains about the base class here, the above condition confuses it
 # pylint: disable=too-many-ancestors
 class T2(SB):  # type: ignore
-    """Inner tmux session"""
+    """Normally the Inner tmux session"""
 
     t2_env = "1"
 
@@ -46,14 +46,7 @@ class T2(SB):  # type: ignore
     # use_embedded_scripts = False
     # is_limited_host = True
 
-    # force_plugin_continuum = True
-
-    #
-    #  Default plugins that can be disabled
-    #
-    skip_plugin_mouse_swipe = True
-    skip_plugin_session_wizard = True
-    if mtc_utils.HOSTNAME == "JacDroid":
+    if HOSTNAME == "JacDroid":
         skip_plugin_continuum = True
         skip_plugin_resurrect = True
 

@@ -38,6 +38,8 @@ else:
     cmd = shutil.which("hostname")
     HOSTNAME = run_shell(f"{cmd} -s").lower()
 
+INNER_TMUX = bool(os.getenv("TMUX_OUTER"))
+
 IS_ISH_AOK = False
 if os.path.isdir("/proc/ish"):
     IS_ISH = True

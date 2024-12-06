@@ -21,8 +21,6 @@ class Tmate(SB):
     tmux_bin = "tmate"
     is_limited_host = True  # Trigger display of plugin progress
 
-    # force_plugin_continuum = True
-
     #
     #  Default plugins that can be disabled
     #
