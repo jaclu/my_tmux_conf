@@ -53,6 +53,9 @@ class T2(SB):  # type: ignore
     #
     skip_plugin_mouse_swipe = True
     skip_plugin_session_wizard = True
+    if mtc_utils.HOSTNAME == "jacdroid":
+        skip_plugin_continuum = True
+        skip_plugin_resurrect = True
 
     #
     #  Optional plugins, need to be enabled

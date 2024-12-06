@@ -63,12 +63,13 @@ class DefaultPlugins(BaseConfig):
     #  Override all other env settings like is_limited_host or is_tmate
     #  and ensure plugin is used
     #
-    force_plugin_continuum = False
+    skip_plugin_continuum = False
 
     #
     #  Default plugins that can be disabled
     #
     skip_plugin_mouse_swipe = False
+    skip_plugin_resurrect = False
     skip_plugin_session_wizard = False
 
     #
@@ -247,7 +248,7 @@ class DefaultPlugins(BaseConfig):
         This plugins fails to restore sessions in iSH, at least on my
         devices. so no point enabling tmux-resurrect & tmux-continuum
         on iSH"""
-        if IS_ISH or self.is_tmate():
+        if self.skip_plugin_resurrect or IS_ISH or self.is_tmate():
             min_vers = -1.0  # Dont use
         else:
             min_vers = 1.9
@@ -323,7 +324,7 @@ class DefaultPlugins(BaseConfig):
         overwrites the status-right variable, the autosave feature stops
         working. To fix this issue, place the plugin last in the TPM plugins list.
         """
-        if not self.force_plugin_continuum and (
+        if self.skip_plugin_continuum or (
             self.is_limited_host or self.t2_env or self.is_tmate()
         ):
             vers_min = -1.0  # Dont use
