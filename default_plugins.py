@@ -266,8 +266,8 @@ class DefaultPlugins(BaseConfig):
         # go up one and put it beside plugins_dir
         resurect_dir = f"{os.path.dirname(plugins_dir)}/resurrect"
 
-        procs = 'zsh bash ash ssh sudo top htop watch psql mysql sqlite sqlite3 '
-        procs += 'glow bat batcat "tail *" "~check-connectivity.sh *'
+        procs = "zsh bash ash ssh sudo top htop watch psql mysql sqlite sqlite3 "
+        procs += "glow bat batcat 'tail *' '~check-connectivity.sh *'"
 
         conf = f"""
         #
