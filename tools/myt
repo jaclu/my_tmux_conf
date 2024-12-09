@@ -13,6 +13,9 @@
 #      plugins, using asdf to potentially run this with a different
 #      tmux version
 #
+#  I have not yet tested with tmux 1.2 & 1.3, all checks for 1.2 is essentially
+#  it works in 1.4 but not in 1.1
+#
 
 #
 #  This needs the python module tmux_conf, and by default it will create

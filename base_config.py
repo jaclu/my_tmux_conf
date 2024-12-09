@@ -160,6 +160,13 @@ class BaseConfig(TmuxConfig):
             plugins_display=plugins_display,
         )
 
+        if self.vers_ok(1.5):
+            self.set_window_option = "set -g"
+            self.set_server_option = "set -g"
+        else:
+            self.set_window_option = "set-window-option -g"
+            self.set_server_option = "set -s"
+
         self.prefix_arrow_nav_keys = False
 
         #
@@ -427,18 +434,17 @@ class BaseConfig(TmuxConfig):
                 self.color_tag_24bit = "Tc"
             w(f"set -ga terminal-overrides ',*:{self.color_tag_24bit}'")
 
-        if self.vers_ok(1.2):
-            #
-            #  Making OSC 52 work on mosh connections.
-            #  For this to work the term name used must match
-            #
-            w(
-                """
+        #
+        #  Making OSC 52 work on mosh connections.
+        #  For this to work the term name used must match
+        #
+        w(
+            """
             # Ms modifies OSC 52 clipboard handling to work with mosh, see
             # https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
             set -ag terminal-overrides "*256col*:XT:Ms=\\\\E]52;c;%p2%s\\\\7"
             """
-            )
+        )
 
         #
         #  For old tmux versions, this is needed to support modifiers for
@@ -447,7 +453,7 @@ class BaseConfig(TmuxConfig):
         #    https://github.com/tmux/tmux/wiki/Modifier-Keys#modifiers-and-function-keys
         #
         if not self.vers_ok(2.4):
-            w("set -g  xterm-keys on")
+            w(f"{self.set_window_option} xterm-keys on")
 
         #
         #  Enable focus events for terminals that support them to be passed
@@ -473,10 +479,11 @@ class BaseConfig(TmuxConfig):
         w(
             """set -g display-time 4000
         set -g repeat-time 750   # I want it a bit longer than 500')
-        set -g escape-time 0
         set -g history-limit 2000
         set -g status-keys emacs"""
         )
+        if self.vers_ok(1.2):
+            w(f"{self.set_server_option} escape-time 0")
         if self.vers_ok(2.6):
             #  Safe, does not allow apps inside tmux to set clipboard
             #  for terminal
@@ -486,7 +493,7 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(3.2):
             #  will switch to any detached session, when no more active ones
             w("set -g detach-on-destroy no-detached")
-        else:
+        elif self.vers_ok(1.2):
             w("set -g detach-on-destroy off")
         if self.vers_ok(3.3):
             w("set -g popup-border-lines rounded")
@@ -624,8 +631,9 @@ class BaseConfig(TmuxConfig):
             )
         else:
             w("set -g mouse-select-pane on")
-            w("set -g mouse-select-window on")
+            w(f"{self.set_window_option} mode-mouse on")
             if self.vers_ok(1.5):
+                w("set -g mouse-select-window on")
                 w("set -g mouse-resize-pane on")
             w('bind  M  display "mouse toggle needs 2.1"')
 
@@ -682,9 +690,9 @@ class BaseConfig(TmuxConfig):
 
         if self.monitor_activity:
             w(
-                """#  bell + # on window that had activity,
+                f"""#  bell + # on window that had activity,
             # will only trigger once per window
-            set -g  monitor-activity on
+            {self.set_window_option} monitor-activity on
             set -g  visual-activity off"""
             )
             if self.vers_ok(2.6):
@@ -692,7 +700,7 @@ class BaseConfig(TmuxConfig):
             if self.vers_ok(1.9):
                 w("set -g  window-status-activity-style default")
         else:
-            w("set -g  monitor-activity off")
+            w(f"{self.set_window_option} monitor-activity off")
             w("set -g  visual-activity off")
             if self.vers_ok(2.6):
                 w("set -g  monitor-bell off")
@@ -814,14 +822,20 @@ class BaseConfig(TmuxConfig):
         w(f'{s} -p "Name of new session: " "new-session -s \\"%%\\""')
 
         self.auc_meta_ses_handling()  # used by iSH Console
-        w(
-            """# session navigation
-        bind -N "Select previous session  - M-(  or  C-M-S-Up" -r  (  switch-client -p
-        bind -N "Select next session  - M-)  or  C-M-S-Down"     -r  )  switch-client -n
-        bind -N "Switch to last session"      _  switch-client -l
-        bind -N "Select previous session  - P (" -n C-M-S-Up switch-client -p
-        bind -N "Select next session  - P )" -n C-M-S-Down switch-client -n"""
-        )
+        if self.vers_ok(1.2):
+            # before 1.2 there was no relative switch-client
+
+            # fix a couple of too long lines
+            s1 = "switch-client -p"
+            s2 = "switch-client -n"
+            w(
+                f"""# session navigation
+                bind -N "Select previous session  - M-(  or  C-M-S-Up"  -r  (  {s1}
+                bind -N "Select next session  - M-)  or  C-M-S-Down"    -r  )  {s2}
+                bind -N "Switch to last session"      _  switch-client -l
+                bind -N "Select previous session  - P (" -n C-M-S-Up switch-client -p
+                bind -N "Select next session  - P )" -n C-M-S-Down switch-client -n"""
+            )
 
         s = 'bind -N "Rename Session"  S  command-prompt'
         if self.vers_ok(1.5):
@@ -838,15 +852,16 @@ class BaseConfig(TmuxConfig):
     def windows_handling_part_1(self):
         w = self.write
         w(
-            """
-        #======================================================
+            f"""
+        #====<==================================================
         #
         #   Windows handling
         #
         #======================================================
 
         set -g base-index 1
-        set -g automatic-rename off"""
+        {self.set_window_option} automatic-rename off
+        {self.set_window_option} aggressive-resize on"""
         )
         if self.vers_ok(1.6):
             w("set -g allow-rename off")
@@ -858,10 +873,6 @@ class BaseConfig(TmuxConfig):
             w("set -g set-titles on")
             w('set -g set-titles-string "#{host_short} #{session_name}:#{window_name}"')
 
-        # if self.vers_ok(3.2):
-        w("set -g aggressive-resize on")
-        # else:
-        #    w("set-window-option -g aggressive-resize on")
         w()  # spacer
 
         if self.vers_ok(1.5):
@@ -883,15 +894,19 @@ class BaseConfig(TmuxConfig):
         w(
             f"""
         # window navigation
-        # {pref}previous window  - M-9  or  C-M-S-Left"  -r  9   previous-window
-        # {pref}next window  - M-0  or C-M-S-Right"      -r  0   next-window
+        {pref}previous window  - M-9  or  C-M-S-Left"  -r  9   previous-window
+        {pref}next window  - M-0  or C-M-S-Right"      -r  0   next-window
         {pref}previously current window  - M--"            -  last-window
         # override default to add my note
         {pref}previous window  - C-M-S-Left"  -r  p   previous-window
-        {pref}next window      - C-M-S-Right"  -r  n   next-window
+        {pref}next window      - C-M-S-Right"  -r  n   next-window"""
+        )
+        if self.vers_ok(1.2):
+            w(
+                f"""
         {pref}previous window  - P p"  -n C-M-S-Left   previous-window
         {pref}next window      - P n"  -n C-M-S-Right  next-window"""
-        )
+            )
 
         #
         #  Splitting the entire window
@@ -1045,12 +1060,13 @@ class BaseConfig(TmuxConfig):
             s += f' -I "{home_dir}/tmux.history"'
         w(f'{s} "capture-pane -S - -E - \\; save-buffer %1 \\; delete-buffer"')
 
-        w(
-            """
-        #  Select, search, delete and even edit(!) paste buffers
-        bind -N "Chose paste buffer(-s)"  B  choose-buffer
-        """
-        )
+        if self.vers_ok(1.2):
+            w(
+                """
+                #  Select, search, delete and even edit(!) paste buffers
+                bind -N "Chose paste buffer(-s)"  B  choose-buffer
+                """
+            )
         s = 'bind -N "Kill pane in focus"       x  confirm-before'
         if self.vers_ok(1.5):
             s += ' -p "kill-pane #T (#P)? (y/n)"'
@@ -1062,7 +1078,8 @@ class BaseConfig(TmuxConfig):
         #  split them up in multiple parts.
         #
         self.pane_frame_lines()
-        self.pane_navigation()
+        if self.vers_ok(1.2):
+            self.pane_navigation()
         self.pane_splitting()
         self.pane_resizing()
 
@@ -1249,15 +1266,16 @@ class BaseConfig(TmuxConfig):
         #  I am using PgUp/PgDn & Home/End to get a more logical input, and
         #  also to allow left/up splits.
         #
-
-        w(
-            'bind -N "Split pane to the right  - P C-l" -n  '
-            f"C-M-Right  split-window -h {self.cwd_directive}"
-        )
-        w(
-            'bind -N "Split pane below  - P C-j"    -n  '
-            f"C-M-Down   split-window -v {self.cwd_directive}"
-        )
+        if self.vers_ok(1.2):
+            # Older versions can't bind C-M keys
+            w(
+                'bind -N "Split pane to the right  - P C-l" -n  '
+                f"C-M-Right  split-window -h {self.cwd_directive}"
+            )
+            w(
+                'bind -N "Split pane below  - P C-j"    -n  '
+                f"C-M-Down   split-window -v {self.cwd_directive}"
+            )
         if self.vers_ok(2.0):
             w(
                 'bind -N "Split pane to the left  - P C-h"  '
@@ -1294,16 +1312,17 @@ class BaseConfig(TmuxConfig):
         #
         """
         )
-        # keys without prefix never needs repeat set
-        w("bind -N 'Resize pane 1 up    - P K'   -n  C-S-Up     resize-pane -U")
-        w("bind -N 'Resize pane 1 down  - P J'   -n  C-S-Down   resize-pane -D")
-        w("bind -N 'Resize pane 1 left  - P H'   -n  C-S-Left   resize-pane -L")
-        w("bind -N 'Resize pane 1 right - P L'   -n  C-S-Right  resize-pane -R")
+        if self.vers_ok(1.2):
+            # keys without prefix never needs repeat set
+            w("bind -N 'Resize pane 1 up    - P K'   -n  C-S-Up     resize-pane -U")
+            w("bind -N 'Resize pane 1 down  - P J'   -n  C-S-Down   resize-pane -D")
+            w("bind -N 'Resize pane 1 left  - P H'   -n  C-S-Left   resize-pane -L")
+            w("bind -N 'Resize pane 1 right - P L'   -n  C-S-Right  resize-pane -R")
 
-        w("bind -N 'Resize pane 5 up'    -n  M-S-Up     resize-pane -U 5")
-        w("bind -N 'Resize pane 5 down'  -n  M-S-Down   resize-pane -D 5")
-        w("bind -N 'Resize pane 5 left'  -n  M-S-Left   resize-pane -L 5")
-        w("bind -N 'Resize pane 5 right' -n  M-S-Right  resize-pane -R 5")
+            w("bind -N 'Resize pane 5 up'    -n  M-S-Up     resize-pane -U 5")
+            w("bind -N 'Resize pane 5 down'  -n  M-S-Down   resize-pane -D 5")
+            w("bind -N 'Resize pane 5 left'  -n  M-S-Left   resize-pane -L 5")
+            w("bind -N 'Resize pane 5 right' -n  M-S-Right  resize-pane -R 5")
 
         w(
             """
@@ -1352,22 +1371,23 @@ class BaseConfig(TmuxConfig):
             s += ' -I "?"'
         w(f'{s} -p "Name of new session: " "new-session -s \\"%%\\""')
 
-        w(
-            "bind -N 'Switch to last session  - P _'  "
-            f"-n  {muc_underscore}  switch-client -l"
-        )
-
-        if muc_par_open:
+        if self.vers_ok(1.2):
             w(
-                "bind -N 'Select previous session  - P "
-                f"(' -n  {muc_par_open}  switch-client -p"
+                "bind -N 'Switch to last session  - P _'  "
+                f"-n  {muc_underscore}  switch-client -l"
             )
 
-        if muc_par_close:
-            w(
-                f"bind -N 'Select next session  - P )'     -n  {muc_par_close}"
-                "  switch-client -n"
-            )
+            if muc_par_open:
+                w(
+                    "bind -N 'Select previous session  - P "
+                    f"(' -n  {muc_par_open}  switch-client -p"
+                )
+
+                if muc_par_close:
+                    w(
+                        f"bind -N 'Select next session  - P )'     -n  {muc_par_close}"
+                        "  switch-client -n"
+                    )
 
     def auc_display_plugins_used(self, muc_s_p: str = "M-P"):  # used by iSH Console
         """iSH console doesn't generate correct ALT - Upper Case sequences,
