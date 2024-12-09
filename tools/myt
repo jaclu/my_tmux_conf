@@ -371,6 +371,10 @@ start_tmux() {
     cd "$d_initial" || {
         error_msg "ERROR: Failed to cd back to [$d_initial]"
     }
+    # really old tmux'es < 1.4 complain if TMUX is set,
+    # even if it is using a different socket
+    unset TMUX
+
     if is_tmux_ses_running; then
         # log_it "><> attaching to running tmux"
         $single_session && drop_other_clients
