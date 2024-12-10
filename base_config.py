@@ -43,6 +43,7 @@ import sys
 import __main__
 
 # pylint: disable=import-error
+# pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
 import mtc_utils
