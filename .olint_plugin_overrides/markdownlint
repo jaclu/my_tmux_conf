@@ -1,0 +1,22 @@
+#!/bin/bash
+# This is sourced. Fake bang-path to help editors and linters
+# shellcheck disable=SC2034  # dont warn about unused variables
+
+# Installation methods;
+#  brew install markdownlint-cli (or markdownlint-cli2)
+#  (Ubuntu)
+#   ensure nodejs >= 18 if not:
+#     curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+#   otherwise:
+#     sudo apt install nodejs npm
+#   sudo npm install -g markdownlint-cli
+# project config file: .markdownlint.yaml
+# sample: https://github.com/DavidAnson/markdownlint/blob/main/schema/.markdownlint.yaml
+
+proj_plugin_cmd="markdownlint ."
+
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .md
+)
