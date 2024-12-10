@@ -337,15 +337,16 @@ class BaseConfig(TmuxConfig):
         #======================================================
         """
         )
-        w(
-            """#
-        #  Chooses next layout, potentially ruining a carefully crafted one.
-        #  I can't really see any purpose with this one. You can access
-        #  the layouts directly using <prefix> M-[1-5],
-        #  so the safe bet is to disable
-        #
-        unbind  Space    #  Select next layout"""
-        )
+        if self.vers_ok(1.1):
+            w(
+                """#
+                #  Chooses next layout, potentially ruining a carefully crafted one.
+                #  I can't really see any purpose with this one. You can access
+                #  the layouts directly using <prefix> M-[1-5],
+                #  so the safe bet is to disable
+                #
+                unbind  Space    #  Select next layout"""
+            )
         if self.skip_default_popups and self.vers_ok(3.0):
             w(
                 """
@@ -500,11 +501,12 @@ class BaseConfig(TmuxConfig):
             w("set -g popup-border-lines rounded")
 
         self.mkscript_shlvl_offset()
-        w(
-            f"""
-        # Save correction factor for displaying SHLVL inside tmux
-        {self.es.run_it(self._fnc_shlvl_offset, in_bg=True)}"""
-        )
+        if self.vers_ok(1.1):
+            w(
+                f"""
+                # Save correction factor for displaying SHLVL inside tmux
+                {self.es.run_it(self._fnc_shlvl_offset, in_bg=True)}"""
+            )
 
         #
         # This prevents path_helper and similar tools from messing up PATH
@@ -631,8 +633,9 @@ class BaseConfig(TmuxConfig):
                 f"{self.es.run_it(self._fnc_toggle_mouse)}"
             )
         else:
-            w("set -g mouse-select-pane on")
             w(f"{self.set_window_option} mode-mouse on")
+            if self.vers_ok(1.1):
+                w("set -g mouse-select-pane on")
             if self.vers_ok(1.5):
                 w("set -g mouse-select-window on")
                 w("set -g mouse-resize-pane on")
@@ -1031,11 +1034,12 @@ class BaseConfig(TmuxConfig):
         #  is handled by the terminal. Thus pushing the current screen
         #  back into history
         #
-        w(
-            'bind -N "Clear history & screen"    M-l  send-keys C-l \\; '
-            'run-shell "sleep 0.3" \\; clear-history'
-        )
-        w()  # spacer
+        if self.vers_ok(1.1):
+            w(
+                'bind -N "Clear history & screen"    M-l  send-keys C-l \\; '
+                'run-shell "sleep 0.3" \\; clear-history'
+            )
+            w()  # spacer
 
         #
         #  Save history for current pane, prompts for filename
@@ -1079,8 +1083,7 @@ class BaseConfig(TmuxConfig):
         #  split them up in multiple parts.
         #
         self.pane_frame_lines()
-        if self.vers_ok(1.2):
-            self.pane_navigation()
+        self.pane_navigation()
         self.pane_splitting()
         self.pane_resizing()
 
@@ -1203,22 +1206,33 @@ class BaseConfig(TmuxConfig):
         #
         """
         )
+        if self.vers_ok(1.2):
+            pane_left = "select-pane -L"
+            pane_up = "select-pane -U"
+            pane_right = "select-pane -R"
+            pane_down = "select-pane -D"
+        else:
+            # Really old tmuxes can only navigate up/down by pane index
+            pane_left = "up-pane"
+            pane_up = "up-pane"
+            pane_right = "down-pane"
+            pane_down = "down-pane"
 
         # indicate the right alternate keys
         if self.prefix_arrow_nav_keys:
             w(
-                """bind -N "Select pane left  - P h"  -n  M-Left   select-pane -L
-            bind -N "Select pane right  - P l" -n  M-Right  select-pane -R
-            bind -N "Select pane up  - P k"    -n  M-Up     select-pane -U
-            bind -N "Select pane down  - P j"  -n  M-Down   select-pane -D
+                f"""bind -N "Select pane left  - P h"  -n  M-Left   {pane_left}
+            bind -N "Select pane right  - P l" -n  M-Right  {pane_right}
+            bind -N "Select pane up  - P k"    -n  M-Up     {pane_up}
+            bind -N "Select pane down  - P j"  -n  M-Down   {pane_down}
             """
             )
         else:
             w(
-                """bind -N "Select pane left  - P Left"   -n  M-Left   select-pane -L
-            bind -N "Select pane right  - P Right" -n  M-Right  select-pane -R
-            bind -N "Select pane up  - P Up"       -n  M-Up     select-pane -U
-            bind -N "Select pane down  - P Down"   -n  M-Down   select-pane -D
+                f"""bind -N "Select pane left  - P Left"   -n  M-Left   {pane_left}
+            bind -N "Select pane right  - P Right" -n  M-Right  {pane_right}
+            bind -N "Select pane up  - P Up"       -n  M-Up     {pane_up}
+            bind -N "Select pane down  - P Down"   -n  M-Down   {pane_down}
             """
             )
 
@@ -1228,28 +1242,28 @@ class BaseConfig(TmuxConfig):
             #  to be an important feature.
             #  Better to keep them to their normal setting as per above
             #
-            w('bind -N "Select pane up"   -T "copy-mode"  M-Up   select-pane -U')
-            w('bind -N "Select pane down" -T "copy-mode"  M-Down select-pane -D')
+            w(f'bind -N "Select pane up"   -T "copy-mode"  M-Up   {pane_up}')
+            w(f'bind -N "Select pane down" -T "copy-mode"  M-Down {pane_down}')
 
         if self.prefix_arrow_nav_keys:
             # no point in mentioning M-arrows as alt keys, since
             # on the iSH console they can't be generated
             w(
-                """
+                f"""
                 # <prefix> arrows are used for document navigation...
-                bind -N "Select pane left"  h  select-pane -L
-                bind -N "Select pane right" l  select-pane -R
-                bind -N "Select pane up"    k  select-pane -U
-                bind -N "Select pane down"  j  select-pane -D
+                bind -N "Select pane left"  h  {pane_left}
+                bind -N "Select pane right" l  {pane_right}
+                bind -N "Select pane up"    k  {pane_up}
+                bind -N "Select pane down"  j  {pane_down}
                 """
             )
         else:
             w(
-                """
-                bind -N "Select pane left - M-Left"    Left   select-pane -L
-                bind -N "Select pane right - M-Right"  Right  select-pane -R
-                bind -N "Select pane up - M-Up"        Up     select-pane -U
-                bind -N "Select pane down - M-Down"    Down   select-pane -D
+                f"""
+                bind -N "Select pane left - M-Left"    Left   {pane_left}
+                bind -N "Select pane right - M-Right"  Right  {pane_right}
+                bind -N "Select pane up - M-Up"        Up     {pane_up}
+                bind -N "Select pane down - M-Down"    Down   {pane_down}
                 """
             )
 
