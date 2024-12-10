@@ -17,6 +17,5 @@
 
 # inline-excludes:  # nosec
 
-proj_plugin_cmd="bandit ."  # -q"
-
+proj_plugin_cmd="bandit --exclude './.venv' -r ."
 plugin_priority=50
