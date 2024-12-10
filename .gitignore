@@ -30,7 +30,6 @@ hostnames/
 
 #  olint linter
 .cache.olint
-.olint_plugin_override/
 
 #  deploy location hint
 .destination
