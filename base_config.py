@@ -479,7 +479,7 @@ class BaseConfig(TmuxConfig):
         w(
             """set -g display-time 4000
         set -g repeat-time 750   # I want it a bit longer than 500')
-        set -g history-limit 2000
+        set -g history-limit 5000
         set -g status-keys emacs"""
         )
         if self.vers_ok(1.2):
