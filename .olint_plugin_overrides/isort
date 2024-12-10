@@ -23,7 +23,7 @@ if [[ -n "$(command -v ruff)" ]]; then
     #
     proj_plugin_cmd="/dev/null"
 else
-    proj_plugin_cmd="isort ."
+    proj_plugin_cmd="isort --gitignore ."
 fi
 
 plugin_priority=90
