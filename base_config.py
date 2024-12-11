@@ -470,7 +470,7 @@ class BaseConfig(TmuxConfig):
 
         w()  # spacer between sections
 
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches,too-many-statements
     def general_environment(self):
         w = self.write
         w(
