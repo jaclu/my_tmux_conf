@@ -1078,13 +1078,12 @@ class BaseConfig(TmuxConfig):
         #
         #  When saved with escape code, less/most fails to display
         #  cat history-file will display the included colors correctly.
-        #  ok 1.8
-        home_dir = os.path.expandvars("~")
+        #
         if self.vers_ok(1.8):
             w(
                 'bind -N "Save history to prompted file name (includes escapes)"  '
                 'M-e  command-prompt -p "save history (includes escapes) to:" '
-                f'-I "{home_dir}/tmux-e.history" "capture-pane -S - -E - -e \\; '
+                '-I "$TMPDIR/tmux-e.history" "capture-pane -S - -E - -e \\; '
                 'save-buffer %1 \\; delete-buffer"'
             )
 
@@ -1092,10 +1091,10 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.0):
             s += ' -p "save history (no escapes) to:"'
             if self.vers_ok(1.5):
-                s += f' -I "{home_dir}/tmux.history"'
+                s += ' -I "$TMPDIR"/tmux.history'
             s2 = "%1"
         else:
-            s2 = f"{home_dir}/tmux.history"
+            s2 = "$TMPDIR/tmux.history"
         w(f'{s} "capture-pane -S - -E - \\; save-buffer {s2} \\; delete-buffer"')
 
         if self.vers_ok(1.2):
