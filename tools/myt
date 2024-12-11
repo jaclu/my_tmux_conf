@@ -244,7 +244,7 @@ chk_incompatible_socket() {
     #
     #  shellcheck disable=SC2009
     #ps ax | grep "$socket_identifier" | grep -i asdf | grep -v -e "$tmux_vers" -e grep && {
-    other_versions_running="$(ps ax | grep "$socket_identifier" | grep -v -e "$TMUX_BIN" -e grep)"
+    other_versions_running="$(ps ax | grep "$socket_identifier" | grep -v -e "$TMUX_BIN" -e grep -e real/tmux)"
     if [ -n "$other_versions_running" ]; then
         #  shellcheck disable=SC2009
         log_it "

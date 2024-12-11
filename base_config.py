@@ -38,6 +38,7 @@
 """base class used by tpm"""
 
 import os
+import re
 import sys
 
 import __main__
@@ -287,7 +288,8 @@ class BaseConfig(TmuxConfig):
         self.remove_unwanted_default_bindings()
         self.connecting_terminal()
         self.general_environment()
-        self.mouse_handling()
+        if self.vers_ok(1.0):
+            self.mouse_handling()
         self.status_bar()
         self.session_handling()
         self.windows_handling()
@@ -401,10 +403,11 @@ class BaseConfig(TmuxConfig):
         # # Allow client to pass locale environment variables
         # AcceptEnv LANG LC_*
         #
-        if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
-            w(f"set {param_span}  default-terminal screen-256color")
-        else:
-            w(f"set {param_span}  default-terminal tmux-256color")
+        if self.vers_ok(1.0):
+            if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
+                w(f"set {param_span}  default-terminal screen-256color")
+            else:
+                w(f"set {param_span}  default-terminal tmux-256color")
 
         #
         #  Support for CSI u  extended keys
@@ -440,13 +443,14 @@ class BaseConfig(TmuxConfig):
         #  Making OSC 52 work on mosh connections.
         #  For this to work the term name used must match
         #
-        w(
-            """
-            # Ms modifies OSC 52 clipboard handling to work with mosh, see
-            # https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
-            set -ag terminal-overrides "*256col*:XT:Ms=\\\\E]52;c;%p2%s\\\\7"
-            """
-        )
+        if self.vers_ok(1.0):
+            w(
+                """
+                # Ms modifies OSC 52 clipboard handling to work with mosh, see
+                # https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
+                set -ag terminal-overrides "*256col*:XT:Ms=\\\\E]52;c;%p2%s\\\\7"
+                """
+            )
 
         #
         #  For old tmux versions, this is needed to support modifiers for
@@ -519,11 +523,14 @@ class BaseConfig(TmuxConfig):
         # However using this on iSH confuses remote tmux sessions utterly
         #
         if not mtc_utils.IS_ISH:
-            w(
-                """
-                # prevents /usr/libexec/path_helper from messing up PATH
-                set -g default-command "${SHELL}" """
-            )
+            if self.vers_ok(1.0):
+                w(
+                    """
+                    # prevents /usr/libexec/path_helper from messing up PATH
+                    set -g default-command "${SHELL}" """
+                )
+            else:
+                w('set -g default-command "export TERM=screen-256color \\; ${SHELL}"')
         #
         #  Common variable telling plugins if -N notation is wanted
         #  (assuming tmux version supports it)
@@ -568,7 +575,7 @@ class BaseConfig(TmuxConfig):
                 f'bind -N "Navigate ses/win/pane"     {nav_key}    '
                 "choose-tree -O time -sZ"
             )
-        else:
+        elif self.vers_ok(1.0):
             w(
                 f'bind -N "Navigate ses/win/pane not available warning"  {nav_key}  '
                 'display "Navigate needs 2.7"'
@@ -585,14 +592,18 @@ class BaseConfig(TmuxConfig):
                 f'bind -N "pOpup scratchpad session"  {scrpad_key}  '
                 f'{display_popup} "$TMUX_BIN -u new-session -ADs scratch"'
             )
-        else:
+        elif self.vers_ok(1.0):
             w(
                 f'bind -N "pOpup not available warning"  {scrpad_key}  '
                 f'display "pOpup scratchpad session needs {scrpad_min_vers}"'
             )
+        if self.vers_ok(1.0):
+            show_action = f'\\; display "{self.conf_file} sourced"'
+        else:
+            show_action = ""
         w(
-            f'bind -N  "Source {self.conf_file}"  R  '
-            f'source {self.conf_file} \\; display "{self.conf_file} sourced"'
+            f'bind -N  "Source {self.conf_file}"  R  source {self.conf_file} '
+            f"{show_action}"
         )
         self.auc_display_plugins_used()
         self.auc_kill_tmux_server()
@@ -677,11 +688,15 @@ class BaseConfig(TmuxConfig):
             unlimited = 0
         else:
             unlimited = 999
-        w(
-            f"""set -g  status-left-length  {unlimited}
-            set -g  status-right-length {unlimited}
-            """
-        )
+        if self.vers_ok(1.0):
+            w(
+                f"""set -g  status-left-length  {unlimited}
+                set -g  status-right-length {unlimited}
+                """
+            )
+        else:
+            w("set -g status-left-length 30")
+
         w(f"set -g  status-interval {self.status_interval}")
 
         if self.vers_ok(1.7):
@@ -690,14 +705,15 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.9):
             w("set -g  window-status-current-style reverse")
 
-        w("set -g  status-justify left")
+        if self.vers_ok(1.0):
+            w("set -g  status-justify left")
 
         if self.monitor_activity:
             w(
                 f"""#  bell + # on window that had activity,
-            # will only trigger once per window
-            {self.set_window_option} monitor-activity on
-            set -g  visual-activity off"""
+                # will only trigger once per window
+                {self.set_window_option} monitor-activity on
+                set -g  visual-activity off"""
             )
             if self.vers_ok(2.6):
                 w("set -g  monitor-bell on")
@@ -705,7 +721,8 @@ class BaseConfig(TmuxConfig):
                 w("set -g  window-status-activity-style default")
         else:
             w(f"{self.set_window_option} monitor-activity off")
-            w("set -g  visual-activity off")
+            if self.vers_ok(1.0):
+                w("set -g  visual-activity off")
             if self.vers_ok(2.6):
                 w("set -g  monitor-bell off")
 
@@ -793,6 +810,10 @@ class BaseConfig(TmuxConfig):
             "USERNAME_TEMPLATE", self.username_template
         ).replace("HOSTNAME_TEMPLATE", self.hostname_template)
 
+        if not self.vers_ok(1.0):
+            # setting colors in status line not supported
+            self.sb_left = re.sub(r"#\[.*?\]", "", self.sb_left)
+            self.sb_right = re.sub(r"#\[.*?\]", "", self.sb_right)
         w(
             f"""
         set -g  status-left "{self.sb_left}"
@@ -823,7 +844,9 @@ class BaseConfig(TmuxConfig):
         s = 'bind -N "Create new session  - M-+"  +  command-prompt'
         if self.vers_ok(1.5):
             s += ' -I "?"'
-        w(f'{s} -p "Name of new session: " "new-session -s \\"%%\\""')
+        if self.vers_ok(1.0):
+            s += ' -p "Name of new session: "'
+        w(f'{s} "new-session -s \\"%%\\""')
 
         self.auc_meta_ses_handling()  # used by iSH Console
         if self.vers_ok(1.2):
@@ -863,10 +886,11 @@ class BaseConfig(TmuxConfig):
         #
         #======================================================
 
-        set -g base-index 1
         {self.set_window_option} automatic-rename off
         {self.set_window_option} aggressive-resize on"""
         )
+        if self.vers_ok(1.0):
+            w("set -g base-index 1")
         if self.vers_ok(1.6):
             w("set -g allow-rename off")
         if self.vers_ok(1.7):
@@ -891,8 +915,12 @@ class BaseConfig(TmuxConfig):
         )
 
         for key in ("c", "="):  # c is just for compatibility with default key
-            w(f'bind -N "New window"           {key}    {cmd_new_win_named}')
-        w(f'bind -N "New window  - P =" -n  M-=  {cmd_new_win_named}')
+            if self.vers_ok(1.0):
+                w(f'bind -N "New window"  {key}  {cmd_new_win_named}')
+            else:
+                w(f'bind -N "New window"  {key} new-window')
+        if self.vers_ok(1.0):
+            w(f'bind -N "New window  - P =" -n  M-=  {cmd_new_win_named}')
 
         pref = 'bind -N "Select the '
         w(
@@ -943,17 +971,18 @@ class BaseConfig(TmuxConfig):
         #  I tend to bind ^[9 & ^[0 to Alt-Left/Right in my terminal apps
         #
         w("# adv key win nav")
-        if not self.is_ish_console:
+        if self.vers_ok(1.0) and not self.is_ish_console:
             w(
                 'bind -N "Select the previous window '
                 '- P-p  or  P 9"  -n  M-9  previous-window'
             )
-        s = 'bind -N "Select the'
-        w(
-            f"""
-        {s} next window      - P-n  or  P 0"  -n  M-0  next-window
-        {s} previously current window - P -"  -n  M--  last-window"""
-        )
+        if self.vers_ok(1.0):
+            s = 'bind -N "Select the'
+            w(
+                f"""
+            {s} next window      - P-n  or  P 0"  -n  M-0  next-window
+                {s} previously current window - P -"  -n  M--  last-window"""
+            )
         if self.vers_ok(2.1):
             w2 = "window"  # hackish strings to make sure
             cm = "-T copy-mode -n M-"  # line is not to long
@@ -1059,11 +1088,15 @@ class BaseConfig(TmuxConfig):
                 'save-buffer %1 \\; delete-buffer"'
             )
 
-        s = 'bind -N "Save history to prompted file name (no escapes)"'
-        s += '  M-h  command-prompt -p "save history (no escapes) to:"'
-        if self.vers_ok(1.5):
-            s += f' -I "{home_dir}/tmux.history"'
-        w(f'{s} "capture-pane -S - -E - \\; save-buffer %1 \\; delete-buffer"')
+        s = 'bind -N "Save history to prompted file name (no escapes)"  M-h  command-prompt'
+        if self.vers_ok(1.0):
+            s += ' -p "save history (no escapes) to:"'
+            if self.vers_ok(1.5):
+                s += f' -I "{home_dir}/tmux.history"'
+            s2 = "%1"
+        else:
+            s2 = f"{home_dir}/tmux.history"
+        w(f'{s} "capture-pane -S - -E - \\; save-buffer {s2} \\; delete-buffer"')
 
         if self.vers_ok(1.2):
             w(
@@ -1219,22 +1252,23 @@ class BaseConfig(TmuxConfig):
             pane_down = "down-pane"
 
         # indicate the right alternate keys
-        if self.prefix_arrow_nav_keys:
-            w(
-                f"""bind -N "Select pane left  - P h"  -n  M-Left   {pane_left}
-            bind -N "Select pane right  - P l" -n  M-Right  {pane_right}
-            bind -N "Select pane up  - P k"    -n  M-Up     {pane_up}
-            bind -N "Select pane down  - P j"  -n  M-Down   {pane_down}
-            """
-            )
-        else:
-            w(
-                f"""bind -N "Select pane left  - P Left"   -n  M-Left   {pane_left}
-            bind -N "Select pane right  - P Right" -n  M-Right  {pane_right}
-            bind -N "Select pane up  - P Up"       -n  M-Up     {pane_up}
-            bind -N "Select pane down  - P Down"   -n  M-Down   {pane_down}
-            """
-            )
+        if self.vers_ok(1.0):
+            if self.prefix_arrow_nav_keys:
+                w(
+                    f"""bind -N "Select pane left  - P h"  -n  M-Left   {pane_left}
+                bind -N "Select pane right  - P l" -n  M-Right  {pane_right}
+                    bind -N "Select pane up  - P k"    -n  M-Up     {pane_up}
+                    bind -N "Select pane down  - P j"  -n  M-Down   {pane_down}
+                    """
+                )
+            else:
+                w(
+                    f"""bind -N "Select pane left  - P Left"   -n  M-Left   {pane_left}
+                bind -N "Select pane right  - P Right" -n  M-Right  {pane_right}
+                bind -N "Select pane up  - P Up"       -n  M-Up     {pane_up}
+                bind -N "Select pane down  - P Down"   -n  M-Down   {pane_down}
+                """
+                )
 
         if self.vers_ok(2.4):
             #
@@ -1281,6 +1315,10 @@ class BaseConfig(TmuxConfig):
         #  I am using PgUp/PgDn & Home/End to get a more logical input, and
         #  also to allow left/up splits.
         #
+        if not self.vers_ok(1.0):
+            w('bind -N "Split pane below"   C-j  split-window -p 50')
+            return
+
         if self.vers_ok(1.2):
             # Older versions can't bind C-M keys
             w(
@@ -1343,10 +1381,15 @@ class BaseConfig(TmuxConfig):
             """
         bind -N "Resize pane 1 up"            -r  K          resize-pane -U
         bind -N "Resize pane 1 down"          -r  J          resize-pane -D
-        bind -N "Resize pane 1 left"          -r  H          resize-pane -L
-        bind -N "Resize pane 1 right"         -r  L          resize-pane -R
         """
         )
+        if self.vers_ok(1.0):
+            w(
+                """
+            bind -N "Resize pane 1 left"          -r  H          resize-pane -L
+            bind -N "Resize pane 1 right"         -r  L          resize-pane -R
+            """
+            )
         if self.vers_ok(1.8):
             height_notice = "Pane height"
             if not self.vers_ok(3.3):
@@ -1356,7 +1399,7 @@ class BaseConfig(TmuxConfig):
                 f'"Pane width","{height_notice}" '
                 '"resize-pane -x %1 -y %2"'
             )
-        else:
+        elif self.vers_ok(1.0):
             w(
                 'bind -N "Navigate not available warning"  s  '
                 'display "Set pane size needs 1.8"'
@@ -1381,10 +1424,11 @@ class BaseConfig(TmuxConfig):
             sys.exit("ERROR: auc_meta_ses_handling() muc_plus undefined!")
 
         w = self.write
-        s = f'bind -N "Create new session  - P +"  -n {muc_plus}  command-prompt '
-        if self.vers_ok(1.5):
-            s += ' -I "?"'
-        w(f'{s} -p "Name of new session: " "new-session -s \\"%%\\""')
+        if self.vers_ok(1.0):
+            s = f'bind -N "Create new session  - P +"  -n {muc_plus}  command-prompt '
+            if self.vers_ok(1.5):
+                s += ' -I "?"'
+            w(f'{s} -p "Name of new session: " "new-session -s \\"%%\\""')
 
         if self.vers_ok(1.2):
             w(
