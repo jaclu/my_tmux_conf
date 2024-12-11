@@ -61,10 +61,11 @@ class DefaultPlugins(BaseConfig):
 
     #
     #  Override all other env settings like is_limited_host or is_tmate
-    #  and ensure plugin is used
+    #  and ensure plugin is used or not
     #
+    force_plugin_continuum = False
     skip_plugin_continuum = False
-
+    
     #
     #  Doesn't make much sense in an inner tmux
     #
@@ -334,7 +335,9 @@ class DefaultPlugins(BaseConfig):
         working. To fix this issue, place the plugin last in the TPM plugins list.
         """
         if self.skip_plugin_continuum or (
-            self.is_limited_host or self.t2_env or self.is_tmate()
+            not self.force_plugin_continuum and (
+                self.is_limited_host or self.t2_env or self.is_tmate()
+            )
         ):
             vers_min = -1.0  # Dont use
         else:

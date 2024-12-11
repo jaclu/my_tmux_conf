@@ -31,6 +31,8 @@ class SB(DefaultPlugins):
     hostname_template: str = f"#[bg=colour195,fg=colour1]{HOSTNAME}#[default]"
     tpm_initializing: str = "#[fg=yellow bg=black blink] tpm initializing...#[default]"
 
+    force_plugin_continuum = True
+    
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """override statusbar config"""
         fg_clr = "white"
