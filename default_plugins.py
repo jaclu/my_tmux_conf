@@ -65,7 +65,7 @@ class DefaultPlugins(BaseConfig):
     #
     force_plugin_continuum = False
     skip_plugin_continuum = False
-    
+
     #
     #  Doesn't make much sense in an inner tmux
     #
@@ -335,9 +335,8 @@ class DefaultPlugins(BaseConfig):
         working. To fix this issue, place the plugin last in the TPM plugins list.
         """
         if self.skip_plugin_continuum or (
-            not self.force_plugin_continuum and (
-                self.is_limited_host or self.t2_env or self.is_tmate()
-            )
+            not self.force_plugin_continuum
+            and (self.is_limited_host or self.t2_env or self.is_tmate())
         ):
             vers_min = -1.0  # Dont use
         else:
