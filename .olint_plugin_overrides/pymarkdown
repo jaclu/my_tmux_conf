@@ -1,0 +1,22 @@
+#!/bin/bash
+# This is sourced. Fake bang-path to help editors and linters
+# shellcheck disable=SC2034  # dont warn about unused variables
+
+# python markdown linter, could be used when brew is not available
+# drawback, typically has to be installed in a venv
+
+# Installation methods;
+#  pip install pymarkdownlnt
+
+# project config file: pyproject.toml
+# [tool.pymarkdown]
+# plugins.md033.allowed_elements = "nbsp"
+
+# plugin_cmd="pymarkdown scan"
+# If used on the whole project
+proj_plugin_cmd="pymarkdown scan -r ."
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .md
+)
