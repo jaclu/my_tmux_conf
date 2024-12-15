@@ -83,21 +83,25 @@ class T2(SB):  # type: ignore
                 """
                 set -g @menus_log_file ~/tmp/tmux-menus-t2.log
 
-
-                set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
-
                 # Use a different host vs the outer tmux
                 set -g @packet-loss-ping_host 8.8.8.8
-                # set -g @menus_format_title "'#[align=centre,fg=colour34] TMPL_MENU_NAME '"
-                # set -g @menus_simple_style_selected "fg=#ff79c6,bg=colour236,blink"
-                # set -g @menus_simple_style "fg=colour62"
-                # set -g @menus_simple_style_border "fg=colour223"
+                set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
+
+                #  Separate style from main environment
+                set -g @menus_format_title "'#[align=centre] #{@menu_name} '"
+                set -g @menus_simple_style_selected "default"
+                set -g @menus_simple_style "default"
+                set -g @menus_simple_style_border "default"
+                set -g @menus_nav_next "#[fg=colour220]-->"
+                set -g @menus_nav_prev "#[fg=colour71]<--"
+                set -g @menus_nav_home "#[fg=colour84]<=="
             """
             )
 
         if self.vers_ok(1.9):
             #
             #  Works both on bright and dark backgrounds
+            #  this makes it easier to see if a pane is t2
             #
             self.write(
                 """
