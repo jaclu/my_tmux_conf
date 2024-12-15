@@ -32,6 +32,27 @@ class Hetz1(SB):
     # optionals selected
     use_plugin_packet_loss = True
 
+    def local_overrides(self) -> None:
+        """
+        Applies local configuration overrides, executed after all other
+        configuration steps. These overrides do not affect the status bar
+        configuration (see `status_bar_customization()` for that).
+
+        When overriding this method in a subclass, ensure that
+        `super().local_overrides()` is called first, to retain any overrides
+        defined by parent classes before applying additional customizations.
+        """
+        super().local_overrides()
+        #  Display what class this override comes from
+        self.write("# hetz1.local_overides")
+        log_file = "~/cloud/Dropbox/machines/hetz1/packet-loss/hetz1.log"
+        self.write(
+            f"""
+            set -g @packet-loss-run_disconnected  yes
+            set -g @packet-loss-log_file  "{log_file}"
+            """
+        )
+
 
 if __name__ == "__main__":
     Hetz1().run()
