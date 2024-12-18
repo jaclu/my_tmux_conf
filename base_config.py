@@ -41,12 +41,11 @@ import os
 import re
 import sys
 
-import __main__
-
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
+import __main__
 import mtc_utils
 
 # ruff checks might be relevant F403,F401
@@ -451,8 +450,11 @@ class BaseConfig(TmuxConfig):
                 # works on 3.5a
                 # set -ag terminal-overrides ",*:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
 
-                # works locally/ssh/mosh on 3.5a
-                # works locally on 3.4
+                # works on 3.5a
+                # set -ag terminal-overrides ",*:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
+                # works locally/ssh/mosh on apt 3.4,
+                # asdf 3.5a (latest at that time) but not on other asdf tmux
+                # versions on hetz1. On JacMac (localhost) it works on 1.7>
                 set -ag terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
                 """
             )
