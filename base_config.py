@@ -443,7 +443,7 @@ class BaseConfig(TmuxConfig):
         #  Making OSC 52 work on mosh connections.
         #  For this to work the term name used must match
         #
-        if self.vers_ok(1.0):
+        if self.vers_ok(100.0):  # 1.0  # ruins local clipboard
             w(
                 """
                 # Ms modifies OSC 52 clipboard handling to work with mosh, see
@@ -451,6 +451,8 @@ class BaseConfig(TmuxConfig):
                 set -ag terminal-overrides "*256col*:XT:Ms=\\\\E]52;c;%p2%s\\\\7"
                 """
             )
+
+        # w("""set-hook -g pane-set-clipboard "display 'terminal clipboard is set'" """)
 
         #
         #  For old tmux versions, this is needed to support modifiers for
@@ -490,11 +492,10 @@ class BaseConfig(TmuxConfig):
         )
         if self.vers_ok(1.2):
             w(f"{self.set_server_option} escape-time 0")
-        if self.vers_ok(2.6):
-            #  Safe, does not allow apps inside tmux to set clipboard
-            #  for terminal
-            w("set -g set-clipboard external")
-        elif self.vers_ok(1.5):
+        # if self.vers_ok(2.6):
+        #     #  Prevents clipboard in terminal from being set
+        #     w("set -g set-clipboard external")
+        if self.vers_ok(1.5):
             w("set -g set-clipboard on")
         if self.vers_ok(3.2):
             #  will switch to any detached session, when no more active ones
