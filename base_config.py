@@ -450,9 +450,9 @@ class BaseConfig(TmuxConfig):
                 # https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
                 # works on 3.5a
                 # set -ag terminal-overrides ",*:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
-
-                # works locally/ssh/mosh on 3.5a
-                # works locally on 3.4
+                # works locally/ssh/mosh on apt 3.4,
+                # asdf 3.5a (latest at that time) but not on other asdf tmux
+                # versions on hetz1
                 set -ag terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
                 """
             )
