@@ -41,11 +41,12 @@ import os
 import re
 import sys
 
+import __main__
+
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
-import __main__
 import mtc_utils
 
 # ruff checks might be relevant F403,F401
@@ -440,24 +441,20 @@ class BaseConfig(TmuxConfig):
 
         #
         #  Making OSC 52 work on mosh connections.
-        #  For this to work the term name used must match
+        #  For this to work the term name used must match, hence * :)
+        #  from: https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
         #
-        if self.vers_ok(1.0): # TODO: vers
-            # from: https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
-            # works on 3.5a
-            # set -ag terminal-overrides ",*:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
-            # works on 3.5a
-            # set -ag terminal-overrides ",*:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
-            # works locally/ssh/mosh on apt 3.4,
-            # asdf 3.5a (latest at that time) but not on other asdf tmux
-            # versions on hetz1. On JacMac (localhost) it works on 1.7>
-            # set -ag terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
+        # works on 3.5a - not much tested
+        # set -ag terminal-overrides ",*:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
+
+        if self.vers_ok(1.0):
             w(
                 """
-                # Ms modifies OSC 52 clipboard handling to work with mosh
-                set -ag terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
-                """
+            # Ms modifies OSC 52 clipboard handling to work with mosh
+            set -ag terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
+            """
             )
+
         #
         #  For old tmux versions, this is needed to support modifiers for
         #  function keys
@@ -496,11 +493,19 @@ class BaseConfig(TmuxConfig):
         )
         if self.vers_ok(1.2):
             w(f"{self.set_server_option} escape-time 0")
-        if self.vers_ok(2.6):
-            #  Prevents clipboard in terminal from being set
-            w("set -g set-clipboard external")
-        elif self.vers_ok(1.5):
-            w("set -g set-clipboard on")
+
+        if os.getenv("TMUX_NO_CLIPBOARD"):
+            # on ssh/mosh machines with a local tmux version, tmux
+            # instacraches when anything is selected in tmux if clipboard is not off
+            if self.vers_ok(1.5):
+                w("set -g set-clipboard off")
+        else:
+            if self.vers_ok(2.6):
+                #  Prevents clipboard in terminal from being set
+                w("set -g set-clipboard external")
+            elif self.vers_ok(1.5):
+                w("set -g set-clipboard on")
+
         if self.vers_ok(3.2):
             #  will switch to any detached session, when no more active ones
             w("set -g detach-on-destroy no-detached")
@@ -1062,7 +1067,7 @@ class BaseConfig(TmuxConfig):
             #  Set base index for panes to 1 instead of 0
             w("set -g pane-base-index 1\n")
 
-        if self.vers_ok(2.6):  # TODO: 2.6
+        if self.vers_ok(2.6):
             if self.vers_ok(3.2):
                 delay = "-d 400"
             else:

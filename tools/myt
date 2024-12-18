@@ -501,6 +501,13 @@ tmux_2() {
     d_t2="$HOME"/t2
     mkdir -p "$d_t2"
 
+    [ -f "$d_t2"/.tool-versions ] && [ -n "$SSH_CLIENT" ] && {
+        # on ssh/mosh machines with a local tmux version, tmux
+        # instacraches when anything is selected in tmux if clipboard is not off
+        # this is picked up by base_config.py
+        export TMUX_NO_CLIPBOARD=1
+    }
+
     profile="$(realpath "$profile")" # make it survive the cd
 
     #
