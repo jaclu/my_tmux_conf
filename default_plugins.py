@@ -201,19 +201,28 @@ class DefaultPlugins(BaseConfig):
         return [
             "jaclu/tmux-menus",
             1.8,
-            """set -g @menus_log_file ~/tmp/tmux-menus.log
+            """
+
+            # set -g @menus_trigger \\\\
+            # set -g @menus_without_prefix No
+
+            # set -g @menus_location_x C
+            # set -g @menus_location_y C
+
             # set -g @menus_use_cache no
+            set -g @menus_log_file ~/tmp/tmux-menus.log
+
             #
             #  Slightly catppuccin frappe inspired
             #
-            #        fg @thm_surface_0 bg @thm_yellow
+            # fg @thm_surface_0 bg @thm_yellow
             set -g @menus_simple_style_selected "fg=#414559,bg=#e5c890"
             set -g @menus_simple_style "bg=#414559"        # @thm_surface_0
             set -g @menus_simple_style_border "bg=#414559" # @thm_surface_0
             set -g @menus_nav_next "#[fg=colour220]-->"
             set -g @menus_nav_prev "#[fg=colour71]<--"
             set -g @menus_nav_home "#[fg=colour84]<=="
-        """,
+            """,
         ]
 
     def plugin_mouse_swipe(self) -> list:  # 3.0
