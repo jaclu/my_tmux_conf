@@ -498,7 +498,7 @@ class BaseConfig(TmuxConfig):
             # on ssh/mosh machines with a local tmux version, tmux
             # instacraches when anything is selected in tmux if clipboard is not off
             if self.vers_ok(1.5):
-                w("set -g set-clipboard off")
+                w("set -g set-clipboard off  # TMUX_NO_CLIPBOARD")
         else:
             if self.vers_ok(2.6):
                 #  Prevents clipboard in terminal from being set
