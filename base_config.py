@@ -443,7 +443,7 @@ class BaseConfig(TmuxConfig):
         #  Making OSC 52 work on mosh connections.
         #  For this to work the term name used must match
         #
-        if self.vers_ok(1.0):  # 1.0  # ruins local clipboard
+        if self.vers_ok(1.0):
             w(
                 """
                 # Ms modifies OSC 52 clipboard handling to work with mosh, see
@@ -456,13 +456,6 @@ class BaseConfig(TmuxConfig):
                 set -ag terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
                 """
             )
-
-        w(
-            """
-        set-hook -g pane-set-clipboard "display -d 500 'terminal clipboard is set'"
-        """
-        )
-
         #
         #  For old tmux versions, this is needed to support modifiers for
         #  function keys
@@ -1066,6 +1059,14 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.6):
             #  Set base index for panes to 1 instead of 0
             w("set -g pane-base-index 1\n")
+
+        if self.vers_ok(2.6):  # a bit uncertain of this version #
+            w(
+                """
+            # Displays that tmux picked up clipboard and (hopefully) sent it to the terminal
+            set-hook -g pane-set-clipboard "display -d 400 'terminal clipboard is set'"
+            """
+            )
 
         #
         #  Without a sleep in between the actions, history is not cleared.
