@@ -494,9 +494,9 @@ class BaseConfig(TmuxConfig):
         )
         if self.vers_ok(1.2):
             w(f"{self.set_server_option} escape-time 0")
-        # if self.vers_ok(2.6):
-        #     #  Prevents clipboard in terminal from being set
-        #     w("set -g set-clipboard external")
+        if self.vers_ok(2.6):
+            #  Prevents clipboard in terminal from being set
+            w("set -g set-clipboard external")
         if self.vers_ok(1.5):
             w("set -g set-clipboard on")
         if self.vers_ok(3.2):
@@ -1060,11 +1060,16 @@ class BaseConfig(TmuxConfig):
             #  Set base index for panes to 1 instead of 0
             w("set -g pane-base-index 1\n")
 
-        if self.vers_ok(2.6):  # a bit uncertain of this version #
+        if self.vers_ok(2.6):
+            if self.vers_ok(3.2):
+                delay = "-d 400"
+            else:
+                delay = ""
             w(
-                """
+                f"""
             # Displays that tmux picked up clipboard and (hopefully) sent it to the terminal
-            set-hook -g pane-set-clipboard "display -d 400 'terminal clipboard is set'"
+            set-hook -g pane-set-clipboard "display-message {delay} \
+            'terminal clipboard is set'"
             """
             )
 
