@@ -443,16 +443,21 @@ class BaseConfig(TmuxConfig):
         #  Making OSC 52 work on mosh connections.
         #  For this to work the term name used must match
         #
-        if self.vers_ok(100.0):  # 1.0  # ruins local clipboard
+        if self.vers_ok(10.0):  # 1.0  # ruins local clipboard
             w(
                 """
                 # Ms modifies OSC 52 clipboard handling to work with mosh, see
                 # https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
-                set -ag terminal-overrides "*256col*:XT:Ms=\\\\E]52;c;%p2%s\\\\7"
+                # set -ag terminal-overrides ",*-256color:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
+                set -ag terminal-overrides ",*:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
                 """
             )
 
-        # w("""set-hook -g pane-set-clipboard "display 'terminal clipboard is set'" """)
+        w(
+            """
+        set-hook -g pane-set-clipboard "display -d 500 'terminal clipboard is set'"
+        """
+        )
 
         #
         #  For old tmux versions, this is needed to support modifiers for
