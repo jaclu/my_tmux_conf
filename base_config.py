@@ -452,6 +452,7 @@ class BaseConfig(TmuxConfig):
                 # set -ag terminal-overrides ",*:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
 
                 # works locally/ssh/mosh on 3.5a
+                # works locally on 3.4
                 set -ag terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
                 """
             )
