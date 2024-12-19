@@ -41,11 +41,12 @@ import os
 import re
 import sys
 
+import __main__
+
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
-import __main__
 import mtc_utils
 
 # ruff checks might be relevant F403,F401
@@ -445,8 +446,8 @@ class BaseConfig(TmuxConfig):
         #
         # works on 3.5a - not much tested
         # set -ag terminal-overrides ",*:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
-
-        if self.vers_ok(1.0) and not os.getenv("TMUX_NO_CLIPBOARD"):
+        # not needed
+        if self.vers_ok(91.0) and not os.getenv("TMUX_NO_CLIPBOARD"):
             w(
                 """
             # Ms modifies OSC 52 clipboard handling to work with mosh
