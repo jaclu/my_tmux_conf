@@ -1066,7 +1066,15 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.6):
             #  Set base index for panes to 1 instead of 0
-            w("set -g pane-base-index 1\n")
+            w(
+                """set -g pane-base-index 1
+            set -wg allow-rename off
+            set -wg automatic-rename off
+            """
+            )
+
+        if self.vers_ok(3.5):
+            w("set -g allow-set-title off")
 
         if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
             if self.vers_ok(3.2):
