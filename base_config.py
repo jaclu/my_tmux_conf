@@ -446,8 +446,8 @@ class BaseConfig(TmuxConfig):
         #
         # works on 3.5a - not much tested
         # set -ag terminal-overrides ",*:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
-        # not needed
-        if self.vers_ok(91.0) and not os.getenv("TMUX_NO_CLIPBOARD"):
+        #
+        if self.vers_ok(1.0) and not os.getenv("TMUX_NO_CLIPBOARD"):
             w(
                 """
             # Ms modifies OSC 52 clipboard handling to work with mosh
@@ -495,12 +495,14 @@ class BaseConfig(TmuxConfig):
             w(f"{self.set_server_option} escape-time 0")
 
         if os.getenv("TMUX_NO_CLIPBOARD"):
-            # on ssh/mosh machines with a local tmux version, tmux
-            # instacraches when anything is selected in tmux if clipboard is not off
+            # On ssh/mosh connections, when running an asdf tmux with local
+            # version changed.
+            # tmux instacraches when anything is selected in a tmux buffer
+            # if clipboard is not off
             if self.vers_ok(1.5):
                 w("set -g set-clipboard off  # TMUX_NO_CLIPBOARD")
         else:
-            # # external on the outer, prevents inner tmux from setting terminal clipboard
+            # external on the outer, prevents inner tmux from setting terminal clipboard
             # if self.vers_ok(2.6):
             #     #  Prevents clipboard in terminal from being set
             #     w("set -g set-clipboard external")
