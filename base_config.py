@@ -41,11 +41,12 @@ import os
 import re
 import sys
 
+import __main__
+
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
-import __main__
 import mtc_utils
 
 # ruff checks might be relevant F403,F401
@@ -499,10 +500,11 @@ class BaseConfig(TmuxConfig):
             if self.vers_ok(1.5):
                 w("set -g set-clipboard off  # TMUX_NO_CLIPBOARD")
         else:
-            if self.vers_ok(2.6):
-                #  Prevents clipboard in terminal from being set
-                w("set -g set-clipboard external")
-            elif self.vers_ok(1.5):
+            # external on the outer, prevents inner tmux from setting terminal clipboard
+            # if self.vers_ok(2.6):
+            #     #  Prevents clipboard in terminal from being set
+            #     w("set -g set-clipboard external")
+            if self.vers_ok(1.5):
                 w("set -g set-clipboard on")
 
         if self.vers_ok(3.2):
