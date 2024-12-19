@@ -41,12 +41,11 @@ import os
 import re
 import sys
 
-import __main__
-
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
+import __main__
 import mtc_utils
 
 # ruff checks might be relevant F403,F401
@@ -500,7 +499,7 @@ class BaseConfig(TmuxConfig):
             if self.vers_ok(1.5):
                 w("set -g set-clipboard off  # TMUX_NO_CLIPBOARD")
         else:
-            # external on the outer, prevents inner tmux from setting terminal clipboard
+            # # external on the outer, prevents inner tmux from setting terminal clipboard
             # if self.vers_ok(2.6):
             #     #  Prevents clipboard in terminal from being set
             #     w("set -g set-clipboard external")
@@ -1289,7 +1288,7 @@ class BaseConfig(TmuxConfig):
             if self.prefix_arrow_nav_keys:
                 w(
                     f"""bind -N "Select pane left  - P h"  -n  M-Left   {pane_left}
-                bind -N "Select pane right  - P l" -n  M-Right  {pane_right}
+                    bind -N "Select pane right  - P l" -n  M-Right  {pane_right}
                     bind -N "Select pane up  - P k"    -n  M-Up     {pane_up}
                     bind -N "Select pane down  - P j"  -n  M-Down   {pane_down}
                     """
