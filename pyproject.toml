@@ -13,7 +13,6 @@ line-length = 92
 
 [tool.pymarkdown]
 plugins.md033.allowed_elements = "nbsp,prefix"
-exclude = ["**/.venv/**"]
 
 [tool.mypy]
 exclude = [".venv", "local_tmux_conf"]
