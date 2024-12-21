@@ -354,6 +354,7 @@ start_tmux() {
     define_tmux_env
 
     # ensure socket is not used inside itself
+    # shellcheck disable=SC2154
     [ -n "$TMUX" ] && {
         # shellcheck disable=SC2154
         if echo "$TMUX" | grep -q "$socket" ||
@@ -501,6 +502,7 @@ tmux_2() {
     d_t2="$HOME"/t2
     mkdir -p "$d_t2"
 
+    # shellcheck disable=SC2154
     [ -f "$d_t2"/.tool-versions ] && [ -n "$SSH_CLIENT" ] && {
         # on ssh/mosh machines with a local tmux version, tmux
         # instacraches when anything is selected in tmux if clipboard is not off
