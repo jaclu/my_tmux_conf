@@ -559,7 +559,7 @@ while [ -n "$1" ]; do
         ;;
     "-s") single_session=false ;;
     "--venv")
-        log_it "===  Prepare the Python venv"
+        log_it "===  Prepare the Python venv for my_tmux_conf"
         py_venv_create
         deactivate
         exit 0
