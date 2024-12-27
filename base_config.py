@@ -199,7 +199,7 @@ class BaseConfig(TmuxConfig):
             self.is_limited_host = True
 
         #  to avoid typos I use constants for script names
-        # self._fnc_shlvl_offset = "shlvl_offset"
+        self._fnc_shlvl_offset = "shlvl_offset"
         self._fnc_list_plugins = "list_plugins"
         self._fnc_toggle_mouse = "toggle_mouse"
         self._fnc_activate_tpm = "activate_tpm"
@@ -517,13 +517,13 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(3.3):
             w("set -g popup-border-lines rounded")
 
-        # self.mkscript_shlvl_offset()
-        # if self.vers_ok(1.1):
-        #     w(
-        #         f"""
-        #         # Save correction factor for displaying SHLVL inside tmux
-        #         {self.es.run_it(self._fnc_shlvl_offset, in_bg=True)}"""
-        #     )
+        self.mkscript_shlvl_offset()
+        if self.vers_ok(1.1):
+            w(
+                f"""
+                # Save correction factor for displaying SHLVL inside tmux
+                {self.es.run_it(self._fnc_shlvl_offset, in_bg=True)}"""
+            )
 
         #
         # This prevents path_helper and similar tools from messing up PATH
@@ -1617,52 +1617,51 @@ class BaseConfig(TmuxConfig):
         ]
         self.es.create(self._fnc_toggle_mouse, toggle_mouse_sh)
 
-    # should be obsoleted by new dotfiles 241219
-    #     def not_mkscript_shlvl_offset(self):
-    #         """Generate a SHLVL offset"""
-    #         shlvl_offset_sh = [
-    #             # region shlvl_offset_sh
-    #             f"""
-    # {self._fnc_shlvl_offset}() {{
-    #     shlvl="$(echo "$SHLVL")"
-    #     f_tmux_socket="$(echo "$TMUX" | cut -d, -f 1)"
-    #     f_tmux_offset="$f_tmux_socket"-shlvl_offset
+    def mkscript_shlvl_offset(self):
+        """Generate a SHLVL offset"""
+        shlvl_offset_sh = [
+            # region shlvl_offset_sh
+            f"""
+    {self._fnc_shlvl_offset}() {{
+        shlvl="$(echo "$SHLVL")"
+        f_tmux_socket="$(echo "$TMUX" | cut -d, -f 1)"
+        f_tmux_offset="$f_tmux_socket"-shlvl_offset
 
-    #     # clear out the previous one, to ensure the current is created
-    #     rm -f "$f_tmux_offset"
+        # clear out the previous one, to ensure the current is created
+        rm -f "$f_tmux_offset"
 
-    #     os_offset=0
-    #     if [ "$(uname -s)" = "Darwin" ]; then
-    #         os_offset=2
-    #     elif [ -d /proc/ish ] && [ -f /etc/alpine-release ]; then
-    #         os_offset=2
-    #     elif [ "$(uname -s)" = "Linux" ] && [ -f /etc/alpine-release ]; then
-    #         #
-    #         # Can only check chroot on Linux
-    #         # Only chrooted Alpine needs this offset
-    #         #
-    #         if ! grep -q " / / " /proc/self/mountinfo; then
-    #             os_offset=1
-    #         fi
-    #     fi
-    #     if [ "$os_offset" -ne 0 ]; then
-    #         corrected_offset="$(echo "$shlvl - $os_offset" | bc)"
-    #     else
-    #         corrected_offset="$shlvl"
-    #     fi
-    #     echo "$corrected_offset" >"$f_tmux_offset"
-    #     msg="SHLVL[$SHLVL] shlvl[$shlvl] os_offset[$os_offset]"
-    #     echo "$msg corrected[$corrected_offset]" >>~/tmp/shlvl.log
-    #     # ensure that it was created,
-    #     if [ ! -s "$f_tmux_offset" ]; then
-    #         echo "ERROR: Failed to create: $f_tmux_offset"
-    #         exit 1
-    #     fi
-    # }}
-    #             """
-    #             # endregion
-    #         ]
-    #         self.es.create(self._fnc_shlvl_offset, shlvl_offset_sh)
+        os_offset=0
+        if [ "$(uname -s)" = "Darwin" ]; then
+            os_offset=2
+        elif [ -d /proc/ish ] && [ -f /etc/alpine-release ]; then
+            os_offset=2
+        elif [ "$(uname -s)" = "Linux" ] && [ -f /etc/alpine-release ]; then
+            #
+            # Can only check chroot on Linux
+            # Only chrooted Alpine needs this offset
+            #
+            if ! grep -q " / / " /proc/self/mountinfo; then
+                os_offset=1
+            fi
+        fi
+        if [ "$os_offset" -ne 0 ]; then
+            corrected_offset="$(echo "$shlvl - $os_offset" | bc)"
+        else
+            corrected_offset="$shlvl"
+        fi
+        echo "$corrected_offset" >"$f_tmux_offset"
+        msg="SHLVL[$SHLVL] shlvl[$shlvl] os_offset[$os_offset]"
+        echo "$msg corrected[$corrected_offset]" >>~/tmp/shlvl.log
+        # ensure that it was created,
+        if [ ! -s "$f_tmux_offset" ]; then
+            echo "ERROR: Failed to create: $f_tmux_offset"
+            exit 1
+        fi
+    }}
+                """
+            # endregion
+        ]
+        self.es.create(self._fnc_shlvl_offset, shlvl_offset_sh)
 
     def mkscript_tpm_deploy(self):
         """Overrides tmux_conf.plugins instance, to add
