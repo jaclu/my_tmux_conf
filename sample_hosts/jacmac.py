@@ -57,6 +57,25 @@ class JacMacConfig(SB):
     # use_plugin_which_key = True
     # use_plugin_yank = True
 
+    def local_overrides(self) -> None:
+        """
+        Applies local configuration overrides, executed after all other
+        configuration steps. These overrides do not affect the status bar
+        configuration (see `status_bar_customization()` for that).
+
+        When overriding this method in a subclass, ensure that
+        `super().local_overrides()` is called first, to retain any overrides
+        defined by parent classes before applying additional customizations.
+        """
+        super().local_overrides()
+        #  Display what class this override comes from
+        self.write("# JacMac.local_overides")
+        self.write(
+            """
+            # set -g @packet-loss-ping_host 8.8.8.8
+            """
+        )
+
 
 if __name__ == "__main__":
     JacMacConfig().run()
