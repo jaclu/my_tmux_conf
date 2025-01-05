@@ -39,8 +39,6 @@ from sb.sb_ish import SB  # noqa: E402
 class JacDroid(SB):
     """Definitions for host jacdroid"""
 
-    status_interval = 5
-
     # defaults skipped
     skip_plugin_mouse_swipe = True
     skip_plugin_session_wizard = True

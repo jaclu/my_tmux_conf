@@ -36,8 +36,6 @@ from sb.sb_muted import SB  # noqa: E402
 class JacMacConfig(SB):
     """JacMac config"""
 
-    status_interval = 5
-
     #
     #  Default plugins that can be disabled
     #

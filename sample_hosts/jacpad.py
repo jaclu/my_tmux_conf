@@ -39,8 +39,6 @@ from ish_host import IshHostWithStyle  # noqa: E402
 class JacPad(IshHostWithStyle):
     """Definitions for host jacpad"""
 
-    status_interval = 5
-
     # defaults skipped
     skip_plugin_mouse_swipe = True
     skip_plugin_session_wizard = True

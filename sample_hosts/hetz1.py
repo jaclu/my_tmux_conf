@@ -27,8 +27,6 @@ from sb.sb_cloud import SB  # noqa: E402
 class Hetz1(SB):
     """hetz1 config"""
 
-    status_interval = 5
-
     # optionals selected
     use_plugin_packet_loss = True
 

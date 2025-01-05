@@ -66,7 +66,7 @@ class BaseConfig(TmuxConfig):
 
     prefix_key: str = "C-a"
 
-    status_interval: int = 10  # How often the status bar should be updated
+    status_interval: int = 5  # How often the status bar should be updated
 
     monitor_activity: bool = False  # Notification when other windows change state
 
@@ -571,12 +571,7 @@ class BaseConfig(TmuxConfig):
                 f'bind -N "Repeats sends {self.prefix_key} through"  '
                 f"{self.prefix_key}  send-prefix"
             )
-            if self.prefix_key.lower() == "c-a":
-                w(
-                    f'bind -N "Repeat sans prefix sends {self.prefix_key} through"  '
-                    f"a  send-prefix"
-                )
-            w()
+            w()  # create spacer line
 
         #  Seems to mess with ish-console, so trying without it
         # if self.vers_ok(2.8):
@@ -708,6 +703,7 @@ class BaseConfig(TmuxConfig):
                 """
             )
         else:
+            # For pre 1.0 it needs to be set to something >10
             w("set -g status-left-length 30")
 
         w(f"set -g  status-interval {self.status_interval}")
