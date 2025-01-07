@@ -487,7 +487,7 @@ class BaseConfig(TmuxConfig):
         """
         )
         w(
-            """set -g display-time 4000
+            """
         set -g repeat-time 750   # I want it a bit longer than 500')
         set -g history-limit 5000
         set -g status-keys emacs"""
@@ -692,6 +692,11 @@ class BaseConfig(TmuxConfig):
         #======================================================
         """
         )
+        if self.is_tmate():
+            w("set -g display-time 2000")
+        else:
+            w("set -g display-time 4000")
+
         w("# Allow status to grow as needed")
         if self.vers_ok(3.0):
             unlimited = 0

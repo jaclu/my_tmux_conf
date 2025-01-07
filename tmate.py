@@ -40,8 +40,8 @@ class Tmate(SB):
     use_plugin_which_key = True
     use_plugin_plugin_yank = True
 
-    def __init__(self) -> None:
-        super().__init__(conf_file="~/.tmate.conf", tmux_bin="tmate")
+    #def __init__(self) -> None:
+    #    super().__init__(conf_file="~/.tmate.conf", tmux_bin="tmate")
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         super().status_bar_customization(print_header=print_header)
