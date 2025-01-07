@@ -1644,42 +1644,42 @@ class BaseConfig(TmuxConfig):
         shlvl_offset_sh = [
             # region shlvl_offset_sh
             f"""
-    {self._fnc_shlvl_offset}() {{
-        shlvl="$(echo "$SHLVL")"
-        f_tmux_socket="$(echo "$TMUX" | cut -d, -f 1)"
-        f_tmux_offset="$f_tmux_socket"-shlvl_offset
+{self._fnc_shlvl_offset}() {{
+    shlvl="$(echo "$SHLVL")"
+    f_tmux_socket="$(echo "$TMUX" | cut -d, -f 1)"
+    f_tmux_offset="$f_tmux_socket"-shlvl_offset
 
-        # clear out the previous one, to ensure the current is created
-        rm -f "$f_tmux_offset"
+    # clear out the previous one, to ensure the current is created
+    rm -f "$f_tmux_offset"
 
-        os_offset=0
-        if [ "$(uname -s)" = "Darwin" ]; then
-            os_offset=2
-        elif [ -d /proc/ish ] && [ -f /etc/alpine-release ]; then
-            os_offset=2
-        elif [ "$(uname -s)" = "Linux" ] && [ -f /etc/alpine-release ]; then
-            #
-            # Can only check chroot on Linux
-            # Only chrooted Alpine needs this offset
-            #
-            if ! grep -q " / / " /proc/self/mountinfo; then
-                os_offset=1
-            fi
+    os_offset=0
+    if [ "$(uname -s)" = "Darwin" ]; then
+        os_offset=2
+    elif [ -d /proc/ish ] && [ -f /etc/alpine-release ]; then
+        os_offset=2
+    elif [ "$(uname -s)" = "Linux" ] && [ -f /etc/alpine-release ]; then
+        #
+        # Can only check chroot on Linux
+        # Only chrooted Alpine needs this offset
+        #
+        if ! grep -q " / / " /proc/self/mountinfo; then
+            os_offset=1
         fi
-        if [ "$os_offset" -ne 0 ]; then
-            corrected_offset="$(echo "$shlvl - $os_offset" | bc)"
-        else
-            corrected_offset="$shlvl"
-        fi
-        echo "$corrected_offset" >"$f_tmux_offset"
-        msg="SHLVL[$SHLVL] shlvl[$shlvl] os_offset[$os_offset]"
-        echo "$msg corrected[$corrected_offset]" >>~/tmp/shlvl.log
-        # ensure that it was created,
-        if [ ! -s "$f_tmux_offset" ]; then
-            echo "ERROR: Failed to create: $f_tmux_offset"
-            exit 1
-        fi
-    }}
+    fi
+    if [ "$os_offset" -ne 0 ]; then
+        corrected_offset="$(echo "$shlvl - $os_offset" | bc)"
+    else
+        corrected_offset="$shlvl"
+    fi
+    echo "$corrected_offset" >"$f_tmux_offset"
+    msg="SHLVL[$SHLVL] shlvl[$shlvl] os_offset[$os_offset]"
+    echo "$msg corrected[$corrected_offset]" >>~/tmp/shlvl.log
+    # ensure that it was created,
+    if [ ! -s "$f_tmux_offset" ]; then
+        echo "ERROR: Failed to create: $f_tmux_offset"
+        exit 1
+    fi
+}}
                 """
             # endregion
         ]
