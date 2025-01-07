@@ -1240,7 +1240,7 @@ class BaseConfig(TmuxConfig):
                 """
             )
 
-        if self.vers_ok(2.3):
+        if self.vers_ok(2.3) and not self.is_tmate():
             # Hide frame lines when zoomed
             # zoom was introduced in tmux 1.8
             # set-hook in 2.3
