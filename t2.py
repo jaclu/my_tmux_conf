@@ -99,13 +99,13 @@ class T2(SB):  # type: ignore
         if self.vers_ok(1.9):
             #
             #  Works both on bright and dark backgrounds
-            #  this makes it easier to see if a pane is t2
+            #  this makes it easier to see if a pane is part of a t2 env
             #
             self.write(
                 """
                 # t2 border style
-                set -g pane-active-border-style fg=colour3
-                set -g pane-border-style        fg=colour241
+                set -g pane-active-border-style fg=yellow
+                set -g pane-border-style        fg=colour105
                 """
             )
 
