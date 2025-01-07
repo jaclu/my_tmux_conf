@@ -487,8 +487,7 @@ class BaseConfig(TmuxConfig):
         """
         )
         w(
-            """
-        set -g repeat-time 750   # I want it a bit longer than 500')
+            """set -g repeat-time 750   # I want it a bit longer than 500')
         set -g history-limit 5000
         set -g status-keys emacs"""
         )
@@ -632,7 +631,7 @@ class BaseConfig(TmuxConfig):
             bind -N "Home"       Left   send-key Home
             bind -N "End"        Right  send-key End"""
             )
-        w()  # spacer between sections
+            w()  # spacer between sections
 
     def mouse_handling(self):
         w = self.write
@@ -678,7 +677,6 @@ class BaseConfig(TmuxConfig):
                 'bind -N "Toggle zoom for mouseovered pane" -n  DoubleClick3Pane'
                 ' resize-pane -Z -t= "{mouse}"'
             )
-        w()  # spacer between sections
 
     # pylint: disable=too-many-branches
     def status_bar_prepare(self):
@@ -1458,6 +1456,7 @@ class BaseConfig(TmuxConfig):
                 'bind -N "Navigate not available warning"  s  '
                 'display "Set pane size needs 1.8"'
             )
+        w()  # spacer
 
     #
     #  Actions bound to Alt uppercase keys. The iSH console doesn't
