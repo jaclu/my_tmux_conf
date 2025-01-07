@@ -798,7 +798,11 @@ class BaseConfig(TmuxConfig):
             #  max length of vers is 6 chars, in order to
             #  not flood status line if running a devel tmux
             #
-            t2_tag = f"{self.vers.get()[:6]} {self.display_prefix()} "
+            if self.is_tmate():
+                prefix = "tmate"
+            else:
+                prefix = f"{self.vers.get()[:6]}"
+            t2_tag = f"{prefix} {self.display_prefix()} "
             self.sb_left = f"#[fg=green,bg=black]{t2_tag}#[default]{self.sb_left}"
 
         self.filter_me_from_sb_right()
@@ -1252,7 +1256,8 @@ class BaseConfig(TmuxConfig):
             )
 
         #  Display pane frame lines when more than one pane is present
-        if self.vers_ok(2.6) or (self.vers_ok(2.4) and not self.vers_ok(2.5)):
+        if self.vers_ok(2.6) or (
+                not self.is_tmate() and self.vers_ok(2.4) and not self.vers_ok(2.5)):
             # works in 2.4 but not in 2.5 - odd
             w(
                 "set-hook -g window-layout-changed "

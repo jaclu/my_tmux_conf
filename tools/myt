@@ -52,6 +52,7 @@ Available options:
 
 -h       Print this help and exit.
 -c       Use this tmux binary (default tmux)
+-m       Use tmate
 -q       Dont generate config, start tmux directly
 -s       Share session
 --venv   (Re-) Create venv for building tmux.conf
@@ -156,6 +157,14 @@ select_tmux_bin() {
     #  Selects what tmux bin to use
     #
     TMUX_BIN=""
+    if $tmate_mode; then
+	if command -v tmate >/dev/null; then
+	    TMUX_BIN="tmate"
+	    return
+	else
+	    error_msg "tmate not found"
+	fi
+    fi
     if [ -n "$tmux_bin" ]; then
         # User defined tmux
         TMUX_BIN="$tmux_bin"
@@ -206,10 +215,15 @@ define_tmux_env() {
     #
     tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
     socket="$(id -u)"
+    $tmate_mode && socket="$socket-tmate"
     is_fs_chrooted && socket="${socket}-chr"
     if $t2_env; then
         socket="$socket"-serv2
-        conf_file="$HOME/t2/tmux/tmux.conf"
+	if $tmate_mode; then
+	    conf_file="$HOME/t2/tmate.conf"
+	else
+            conf_file="$HOME/t2/tmux/tmux.conf"
+	fi
         #
         #  Handle some odd long versions, since they will be displayed in
         #  status bar on t2 envs
@@ -225,7 +239,11 @@ define_tmux_env() {
         esac
     else
         socket="$socket"-default
-        conf_file="$HOME/.tmux.conf"
+	if $tmate_mode; then
+	    conf_file="$HOME/.tmate.conf"
+	else
+            conf_file="$HOME/.tmux.conf"
+	fi
     fi
     chk_incompatible_socket
 }
@@ -348,7 +366,6 @@ start_tmux() {
         echo
         sleep 3
         profile="$my_tmux_conf_location/default_plugins.py"
-
     fi
 
     define_tmux_env
@@ -463,7 +480,10 @@ create_tmux_conf() {
 }
 
 find_host_profile() {
-
+    $tmate_mode && {
+	profile="${my_tmux_conf_location}/tmate.py"
+	return 0
+    }
     #
     #  Step 1 check hardcoded default profile
     #
@@ -530,6 +550,7 @@ tmux_2() {
 single_session=true
 quick_mode=false
 t2_env=false
+tmate_mode=false
 profile=""
 d_initial="$PWD" #  original pwd, will switch back to it before starting tmux
 
@@ -547,13 +568,14 @@ log_it "=====   starting   ====="
 #echo "><> cmd_line: $*"
 #sleep 3
 while [ -n "$1" ]; do
-    # log_it "><> processong option: [$1]"
+    # log_it "><> processing option: [$1]"
     case "$1" in
     "-h" | "--help") display_help ;;
     "-c")
         shift
         tmux_bin="$1"
         ;;
+    "-m") tmate_mode=true ;;
     "-q")
         quick_mode=true
         ;;
