@@ -92,7 +92,7 @@ class BaseConfig(TmuxConfig):
     sb_left: str = "|#{session_name}| "
     sb_right: str = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template: str = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
-    hostname_template: str = f"#[fg=colour195,bg=colour1]{mtc_utils.HOSTNAME}#[default]"
+    hostname_template: str = "#[fg=colour195,bg=colour1]" f"{mtc_utils.HOSTNAME}#[default]"
     tpm_initializing: str = "#[reverse,blink] tpm initializing...#[default]"
 
     handle_iterm2: bool = True  # Select screen-256color for iTerm2
@@ -105,7 +105,8 @@ class BaseConfig(TmuxConfig):
     t2_env: str = os.environ.get("T2_ENV", "")
     prefix_key_T2: str = "C-w"  # prefix for inner dev environment
 
-    # Disables tmux default popup menus, instead relying on the plugin jaclu/tmux-menus
+    # Disables tmux default popup menus, instead relying on the plugin
+    # jaclu/tmux-menus
     skip_default_popups: bool = True
 
     plugin_handler = "jaclu/tpm"  # overrides of tmux-conf package default
@@ -178,7 +179,7 @@ class BaseConfig(TmuxConfig):
         #
         self.tpm_working_incicator = "@tpm-is-active"
 
-        self.is_termux = os.environ.get("TERMUX_VERSION") is not None  # noqa: F841
+        self.is_termux = os.environ.get("TERMUX_VERSION") is not None
 
         if self.is_tmate() and (self.show_pane_title or self.show_pane_size):
             print("show_pane_title & show_pane_size disabled for tmate")
@@ -1083,8 +1084,9 @@ class BaseConfig(TmuxConfig):
                 delay = ""
             w(
                 f"""
-            # Displays that tmux picked up clipboard and (hopefully) sent it to the terminal
-            set-hook -g pane-set-clipboard "display-message {delay} \
+                # Displays that tmux picked up clipboard and (hopefully) sent it
+                # to the terminal
+        set-hook -g pane-set-clipboard "display-message {delay} \
             'terminal clipboard is set'"
             """
             )
@@ -1119,7 +1121,10 @@ class BaseConfig(TmuxConfig):
                 'save-buffer %1 \\; delete-buffer"'
             )
 
-        s = 'bind -N "Save history to prompted file name (no escapes)"  M-h  command-prompt'
+        s = (
+            'bind -N "Save history to prompted file name (no escapes)"  M-h  '
+            "command-prompt"
+        )
         if self.vers_ok(1.0):
             s += ' -p "save history (no escapes) to:"'
             if self.vers_ok(1.5):
@@ -1164,6 +1169,11 @@ class BaseConfig(TmuxConfig):
         """
         )
         #
+        #  Remaining issue, in tmux 2.3-2.5 a single pane will show the top
+        #  border unless there are multiple frames and the current is zoomed.
+        #  Slightly annoying I haven't sorted that out, but since these versions
+        #  are rarely used outside tmate, I leave it for now...
+        #
         #  If you get frame lines drawn as x and q, you need to set
         #  an UTF-8 LANG
         #  sample: export LANG=en_US.UTF-8
@@ -1178,8 +1188,8 @@ class BaseConfig(TmuxConfig):
             #
 
             # experimenting with stronger contrast...
-            border_active = "colour120"  # was 112 - bright warm green
-            border_other = "colour241"  # was 245 - low intensity grey
+            border_active = "colour120"  # bright warm green
+            border_other = "colour241"  # low intensity grey
 
             w(
                 f"""set -g pane-active-border-style fg={border_active}
@@ -1192,7 +1202,10 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(3.3):
             # Needs to wait until a window exists
-            w('run-shell -b "sleep 0.2 ; $TMUX_BIN set -g pane-border-indicators arrows"\n')
+            w(
+                'run-shell -b "sleep 0.2 ; $TMUX_BIN set -g '
+                'pane-border-indicators arrows"'
+            )
 
         #
         #  Pane title and size
@@ -1207,38 +1220,25 @@ class BaseConfig(TmuxConfig):
                 pane_label = " " + pane_label  # set initial spacer
                 w(f'\nset -g pane-border-format "{pane_label}"')
 
-        if self.vers_ok(2.6):
-            #
-            #  Default label is pane nr
-            #
-            if self.vers_ok(2.7):
-                w(
-                    """
+        #  Display pane frame lines when more than one pane is present
+        if self.vers_ok(2.7):
+            w(
+                """
                 set-hook -g after-split-window  "selectp -T '#D'"
                 set-hook -g after-new-session   "selectp -T '#D'"
                 set-hook -g after-new-window    "selectp -T '#D'"
                 """
-                )
-            else:
-                # odd on 2.6 display "#D" shows pane id but it can't be used
-                # as pane title
-                w(
-                    """
+            )
+        elif self.vers_ok(2.6):
+            # odd on 2.6 display "#D" shows pane id but it can't be used
+            # as pane title
+            w(
+                """
                 set-hook -g after-split-window  "selectp -T ''"
                 set-hook -g after-new-session   "selectp -T ''"
                 set-hook -g after-new-window    "selectp -T ''"
                 """
-                )
-
-            if self.show_pane_title:
-                w(
-                    'bind -N "Set pane title"  P  command-prompt -p '
-                    '"Pane title: " "select-pane -T \\"%%\\""'
-                )
-        elif self.vers_ok(2.3) and not self.is_tmate():
-            w("set -g pane-border-status top")
-            if not self.vers_ok(2.6):
-                w("bind  P  display 'Pane title setting needs 2.6'")
+            )
 
         if self.vers_ok(2.3):
             # Hide frame lines when zoomed
@@ -1252,13 +1252,26 @@ class BaseConfig(TmuxConfig):
             )
 
         #  Display pane frame lines when more than one pane is present
-        if self.vers_ok(2.6):
+        if self.vers_ok(2.6) or (self.vers_ok(2.4) and not self.vers_ok(2.5)):
             # works in 2.4 but not in 2.5 - odd
             w(
                 "set-hook -g window-layout-changed "
                 '"set -w -F pane-border-status '
                 '\\"#{?#{==:#{window_panes},1},off,top}\\""'
             )
+        if self.show_pane_title:
+            if self.vers_ok(2.6):
+                w(
+                    'bind -N "Set pane title"  P  command-prompt -p '
+                    '"Pane title: " "select-pane -T \\"%%\\""'
+                )
+            elif self.vers_ok(2.3) and not self.is_tmate():
+                w(
+                    """set -g pane-border-status top
+                    bind  P  display 'Pane title setting needs 2.6'<
+                    """
+                )
+
         w()  # spacer between sections
 
     def pane_navigation(self):
@@ -1570,7 +1583,11 @@ class BaseConfig(TmuxConfig):
                 pref = "M-J - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}vertically down" ' f"{muc_j}  {sw}v  {self.cwd_directive}")
+            w(
+                f'{b}{pref}{n_base}vertically down" '
+                f"{muc_j}  "
+                f"{sw}v  {self.cwd_directive}"
+            )
 
             if muc_k != "M-K":
                 pref = "M-K - "
