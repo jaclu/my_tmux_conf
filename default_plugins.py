@@ -239,7 +239,6 @@ class DefaultPlugins(BaseConfig):
     def plugin_power_zoom(self) -> list:  # 2.0
         """Zooms to separate Window, to allow for adding support panes"""
         if self.is_tmate():
-            print("><> plugin_power_zoom thinks this is tmate")
             vers_min = -1.0  # Dont use
         else:
             vers_min = 2.0

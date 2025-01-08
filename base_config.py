@@ -41,12 +41,11 @@ import os
 import re
 import sys
 
-import __main__
-
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
+import __main__
 import mtc_utils
 
 # ruff checks might be relevant F403,F401
@@ -795,10 +794,6 @@ class BaseConfig(TmuxConfig):
         #  Add this after status_bar_customization() to make it
         #  non-obvious to override it, hint local_overides()
         #
-        print()
-        print("><> base_config:status_bar()")
-        print(f"><> t2_env: {bool(self.t2_env)} is_tmate:{self.is_tmate()}")
-        print(f"------> {self.sb_left} <------")
         if self.t2_env:
             #
             #  max length of vers is 6 chars, in order to

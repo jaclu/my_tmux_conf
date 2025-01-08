@@ -26,12 +26,9 @@ class Tmate(SB):
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         super().status_bar_customization(print_header=print_header)
-        print("><> tmate.py:status_bar_customization()")
-        print(f"><> self.sb_left [{self.sb_left}]")
-        print(f"self.prefix_key [{self.prefix_key}]")
         if self.prefix_key.lower() != "c-b":
-            tag = f"Pfx-{self.prefix_key} "
-            self.sb_left = f"#[fg=green,bg=black]{tag}#[default]{self.sb_left}"
+            tag = f"#[fg=green,bg=black]{self.prefix_key} #[default]"
+            self.sb_left = f"{tag}{self.sb_left}"
 
         return print_header
 
