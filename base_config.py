@@ -179,8 +179,6 @@ class BaseConfig(TmuxConfig):
         #
         self.tpm_working_incicator = "@tpm-is-active"
 
-        self.is_termux = os.environ.get("TERMUX_VERSION") is not None
-
         if self.is_tmate() and (self.show_pane_title or self.show_pane_size):
             print("show_pane_title & show_pane_size disabled for tmate")
             self.show_pane_size = self.show_pane_title = False
@@ -784,6 +782,7 @@ class BaseConfig(TmuxConfig):
                 f" {self.display_prefix()} ,{mode_indicator}"
                 "}#[default]"
             )
+            w(f"# prefix_indicator:[{prefix_indicator}]")
             self.sb_right += prefix_indicator
 
     def status_bar(self):
@@ -796,6 +795,10 @@ class BaseConfig(TmuxConfig):
         #  Add this after status_bar_customization() to make it
         #  non-obvious to override it, hint local_overides()
         #
+        print()
+        print("><> base_config:status_bar()")
+        print(f"><> t2_env: {bool(self.t2_env)} is_tmate:{self.is_tmate()}")
+        print(f"------> {self.sb_left} <------")
         if self.t2_env:
             #
             #  max length of vers is 6 chars, in order to
@@ -1260,7 +1263,8 @@ class BaseConfig(TmuxConfig):
 
         #  Display pane frame lines when more than one pane is present
         if self.vers_ok(2.6) or (
-                not self.is_tmate() and self.vers_ok(2.4) and not self.vers_ok(2.5)):
+            not self.is_tmate() and self.vers_ok(2.4) and not self.vers_ok(2.5)
+        ):
             # works in 2.4 but not in 2.5 - odd
             w(
                 "set-hook -g window-layout-changed "

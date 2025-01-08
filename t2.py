@@ -24,7 +24,7 @@
 #  in the default file, this is for color theme and selection of often
 #  changing list of plugins I am testing
 #  out.
-from mtc_utils import HOSTNAME
+from mtc_utils import HOSTNAME, IS_TERMUX
 
 if HOSTNAME == "ish-hetz1":
     from sb.sb_acceptance import SB
@@ -44,7 +44,7 @@ class T2(SB):  # type: ignore
     # use_embedded_scripts = False
     # is_limited_host = True
 
-    if HOSTNAME == "JacDroid":
+    if IS_TERMUX:
         skip_plugin_continuum = True
         skip_plugin_resurrect = True
 
@@ -85,6 +85,7 @@ class T2(SB):  # type: ignore
                 set -g @packet-loss-ping_host 8.8.8.8
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
 
+                # set -g @menus_trigger \\
                 #  Separate style from main environment
                 set -g @menus_format_title "'#[align=centre] #{@menu_name} '"
                 set -g @menus_simple_style_selected "default"

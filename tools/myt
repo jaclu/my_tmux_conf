@@ -41,6 +41,7 @@ myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log
 #---------------------------------------------------------------
 
 display_help() {
+    #region help text
     cat <<EOF
 Usage: myt [-q] [-2] [profile]
 
@@ -59,6 +60,7 @@ Available options:
 -2       Run in T2_ENV (inner tmux, other prefix)
 profile  Run using specific profile
 EOF
+    #endregion
     exit 0
 }
 
@@ -66,7 +68,8 @@ log_it() {
     echo "$1"
     [ -n "$myt_log" ] && {
         echo "[$(date)] $1" >>"$myt_log" || {
-            error_msg "Failed to log python output to: $myt_log" 3
+            echo "ERROR: Failed to log python output to: $myt_log" >/dev/stderr
+            exit 3
         }
     }
 }
@@ -110,9 +113,7 @@ py_venv_create() {
     python3 -m venv "$venv_location"
     log_it " --  Using py venv: $venv_location"
     #  shellcheck source=/dev/null
-    . "$venv_location"/bin/activate || {
-        error_msg "Failure to activate new venv"
-    }
+    . "$venv_location"/bin/activate || error_msg "Failure to activate new venv"
     log_it " --  pip install -U pip"
     pip install -U pip
 
@@ -158,12 +159,12 @@ select_tmux_bin() {
     #
     TMUX_BIN=""
     if $tmate_mode; then
-	if command -v tmate >/dev/null; then
-	    TMUX_BIN="tmate"
-	    return
-	else
-	    error_msg "tmate not found"
-	fi
+        if command -v tmate >/dev/null; then
+            TMUX_BIN="tmate"
+            return
+        else
+            error_msg "tmate not found"
+        fi
     fi
     if [ -n "$tmux_bin" ]; then
         # User defined tmux
@@ -219,11 +220,11 @@ define_tmux_env() {
     is_fs_chrooted && socket="${socket}-chr"
     if $t2_env; then
         socket="$socket"-serv2
-	if $tmate_mode; then
-	    conf_file="$HOME/t2/tmate.conf"
-	else
+        if $tmate_mode; then
+            conf_file="$HOME/t2/tmate.conf"
+        else
             conf_file="$HOME/t2/tmux/tmux.conf"
-	fi
+        fi
         #
         #  Handle some odd long versions, since they will be displayed in
         #  status bar on t2 envs
@@ -239,11 +240,11 @@ define_tmux_env() {
         esac
     else
         socket="$socket"-default
-	if $tmate_mode; then
-	    conf_file="$HOME/.tmate.conf"
-	else
+        if $tmate_mode; then
+            conf_file="$HOME/.tmate.conf"
+        else
             conf_file="$HOME/.tmux.conf"
-	fi
+        fi
     fi
     chk_incompatible_socket
 }
@@ -389,9 +390,8 @@ start_tmux() {
         create_tmux_conf
     fi
 
-    cd "$d_initial" || {
-        error_msg "ERROR: Failed to cd back to [$d_initial]"
-    }
+    cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
+
     # really old tmux'es < 1.4 complain if TMUX is set,
     # even if it is using a different socket
     unset TMUX
@@ -436,16 +436,12 @@ create_tmux_conf() {
     #
     #  Generate a new tmux conf file
     #
-    cd "$my_tmux_conf_location" || {
-        error_msg "ERROR: Failed to cd into: $my_tmux_conf_location"
-    }
+    cd "$my_tmux_conf_location" || error_msg "Failed to cd into: $my_tmux_conf_location"
 
     echo
     log_it "===  Building new tmux conf"
     $use_python_venv && {
-        py_venv_activate || {
-            error_msg "Failed to activate venv - run: myt --venv"
-        }
+        py_venv_activate || error_msg "Failed to activate venv - run: myt --venv"
     }
     # f_py_output=$(mktemp)
 
@@ -454,7 +450,6 @@ create_tmux_conf() {
     if $t2_env; then
         _s="$(T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file")" || {
             ex_code="$?"
-            echo "ERROR: build failed!"
             log_it "$_s" # failed build
             error_msg "Failed to build tmux.conf [$ex_code]"
         }
@@ -481,8 +476,8 @@ create_tmux_conf() {
 
 find_host_profile() {
     $tmate_mode && {
-	profile="${my_tmux_conf_location}/tmate.py"
-	return 0
+        profile="${my_tmux_conf_location}/tmate.py"
+        return 0
     }
     #
     #  Step 1 check hardcoded default profile
@@ -536,9 +531,7 @@ tmux_2() {
     #  run from this location to pick up alternate tmux versions
     #  defined in this location
     #
-    cd "$d_t2" || {
-        error_msg "ERROR: Failed to cd into [$d_t2]"
-    }
+    cd "$d_t2" || error_msg "Failed to cd into [$d_t2]"
 }
 
 #===============================================================
@@ -593,22 +586,18 @@ while [ -n "$1" ]; do
     shift
 done
 
-$quick_mode && [ -n "$profile" ] && {
-    error_msg "Can not be combined: -q and $profile"
-}
+$quick_mode && [ -n "$profile" ] && error_msg "Can not be combined: -q and $profile"
 
-[ "$TERM" = "xterm-kitty" ] && {
-    # tmux can't handle this terminal type
-    export TERM="screen-256color"
-}
+# [ "$TERM" = "xterm-kitty" ] && {
+#     # tmux can't handle this terminal type
+#     export TERM="screen-256color"
+# }
 
 if $t2_env; then
     tmux_2
 else
     [ -n "$profile" ] && {
-        [ ! -f "$profile" ] && {
-            error_msg "Defined profile not found: $profile"
-        }
+        [ ! -f "$profile" ] && error_msg "Defined profile not found: $profile"
         # cd will be done when generating the tmux.conf
         # this ensures the path is still valid
         profile="$(realpath "$profile")"

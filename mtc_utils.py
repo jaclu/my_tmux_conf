@@ -50,3 +50,8 @@ if os.path.isdir("/proc/ish"):
                 break
 else:
     IS_ISH = False
+
+if os.environ.get("TERMUX_VERSION") is not None:
+    IS_TERMUX = True
+else:
+    IS_TERMUX = False

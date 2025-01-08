@@ -33,7 +33,7 @@ from base import BaseConfig  # BaseConfig
 #  case this is run directly on the ishConsole, in all other cases it will
 #  do nothing
 #
-from mtc_utils import INNER_TMUX, IS_ISH
+from mtc_utils import INNER_TMUX, IS_ISH, IS_TERMUX
 
 
 class DefaultPlugins(BaseConfig):
@@ -67,20 +67,16 @@ class DefaultPlugins(BaseConfig):
     skip_plugin_continuum = False
 
     #
-    #  Doesn't make much sense in an inner tmux
+    #  Default plugins that can be disabled
     #
+    skip_plugin_resurrect = False
     if INNER_TMUX:
+        #  Doesn't make much sense in an inner tmux
         skip_plugin_mouse_swipe = True
         skip_plugin_session_wizard = True
     else:
         skip_plugin_mouse_swipe = False
         skip_plugin_session_wizard = False
-
-    #
-    #  Default plugins that can be disabled
-    #
-    skip_plugin_resurrect = False
-    skip_plugin_session_wizard = False
 
     #
     #  Optional plugins, need to be enabled. Be aware since they are
@@ -303,7 +299,7 @@ class DefaultPlugins(BaseConfig):
 
     def plugin_session_wizard(self) -> list:  # 3.2
         if self.skip_plugin_session_wizard or (
-            self.t2_env or self.is_limited_host or self.is_termux
+            self.t2_env or self.is_limited_host or IS_TERMUX
         ):
             vers_min = -1.0  # Dont use
         else:
