@@ -17,7 +17,7 @@ class Tmate(SB):
         jaclu/tmux-better-mouse-mode  - needs testing
     lmost"""
 
-    prefix_key = "C-w"
+    prefix_key = "C-b"
     tmux_bin = "tmate"
     is_limited_host = True  # Trigger display of plugin progress
 
@@ -26,9 +26,9 @@ class Tmate(SB):
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         super().status_bar_customization(print_header=print_header)
-        if self.prefix_key.lower() != "c-b":
-            tag = f"#[fg=green,bg=black]{self.prefix_key} #[default]"
-            self.sb_left = f"{tag}{self.sb_left}"
+        #if self.prefix_key.lower() != "c-b":
+        tag = f"#[fg=green,bg=black]{self.prefix_key} #[default]"
+        self.sb_left = f"{tag}{self.sb_left}"
 
         return print_header
 
