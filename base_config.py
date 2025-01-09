@@ -1193,7 +1193,7 @@ class BaseConfig(TmuxConfig):
             #
 
             # experimenting with stronger contrast...
-            border_active = "colour120"  # bright warm green
+            border_active = "colour40"  # green
             border_other = "colour241"  # low intensity grey
 
             w(
