@@ -25,7 +25,6 @@ Note | Description
 
 Key | Description
 -|-
-`<p>` e   | Edit config
 `<p>` R   | Re-source config
 `<p>` `M-P` | List all plugins defined
 `<p>` N   | Navigate ses/win/pane
@@ -49,12 +48,12 @@ Key | Description
 
  Key | Meta key | Default | Description
  ------ | ------ | ------ | ------
- <nbsp>   | `M-)` `C-M-S-Down` | `<p>` ) | Next session
- `<p>` _  | `M-(` `C-M-S-Up`   | `<p>` ( | Previous session
-<nbsp>    | `M-_`              | <nbsp>  | Previously current session
- `<p>` +  | `M-+`              | <nbsp>  | Create named session
- `<p>` S  | <nbsp>             | `<p>` $ | Rename session
- <nbsp> | `<p> M-x`         | <nbsp>  | Kill session
+ <nbsp> | `M-)` `C-M-S-Down` | `<p>` ) | Next session in order
+ <nbsp> | `M-(` `C-M-S-Up`   | `<p>` ( | Previous session in order
+ `<p>` _ | `M-_`         | <nbsp>  | Previously current session
+ `<p>` +  | `M-+`         | <nbsp>  | Create named session
+ `<p>` S  | <nbsp>        | `<p>` $ | Rename session
+ <nbsp> | `<p> M-x`       | <nbsp>  | Kill session
 
 ### Window handling
 
@@ -80,7 +79,7 @@ Key | Meta key | Default | Description
 Key | Meta key | Default | Description
 -|-|-|-
 `<p>` B   | | | Choose paste buffer(-s)
-`<p>` `M-l` | | | Clear history & screen
+<nbsp> | `M-l` | | Clear history & screen
 `<p>` `M-e` | | | Save history to file (with escapes)
 `<p>` `M-h` | | | Save history to file (no escapes)
 `<p>` s   | | | Set pane size (w x h)
