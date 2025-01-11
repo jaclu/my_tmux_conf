@@ -163,12 +163,11 @@ class BaseConfig(TmuxConfig):
             plugins_display=plugins_display,
         )
 
+        # self.set_server_option = "set-option -s"  # global by default
         if self.vers_ok(1.5):
-            self.set_window_option = "set -g"
-            self.set_server_option = "set -g"
+            self.set_window_option = "set-option -wg"
         else:
             self.set_window_option = "set-window-option -g"
-            self.set_server_option = "set -s"
 
         self.prefix_arrow_nav_keys = False
 
@@ -287,12 +286,12 @@ class BaseConfig(TmuxConfig):
         self.remove_unwanted_default_bindings()
         self.connecting_terminal()
         self.general_environment()
-        if self.vers_ok(1.0):
-            self.mouse_handling()
-        self.status_bar()
         self.session_handling()
         self.windows_handling()
         self.pane_handling()
+        if self.vers_ok(1.0):
+            self.mouse_handling()
+        self.status_bar()
 
         self.__base_overrides()
 
@@ -390,11 +389,6 @@ class BaseConfig(TmuxConfig):
         """
         )
 
-        if self.vers_ok(2.1):
-            param_span = "-s"
-        else:
-            param_span = "-g"
-
         #
         #  If LC_TERMINAL is not passed through, add this to the servers
         #  /etc/ssh/sshd_config:
@@ -404,9 +398,9 @@ class BaseConfig(TmuxConfig):
         #
         if self.vers_ok(1.0):
             if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
-                w(f"set {param_span}  default-terminal screen-256color")
+                w("set-option -g  default-terminal screen-256color")  # serv opt
             else:
-                w(f"set {param_span}  default-terminal tmux-256color")
+                w("set-option -g default-terminal tmux-256color")  # serv opt
 
         #
         #  Support for CSI u  extended keys
@@ -416,12 +410,12 @@ class BaseConfig(TmuxConfig):
         #  Some apps like iTerm2 don't need it, but it never hurts
         #
         if self.vers_ok(3.2):
-            w("set -s  extended-keys on")
+            w("set-option -s  extended-keys on")  # serv opt
             #
             #  not needed for all terminal apps, but since it doesn't hurt,
             #  it makes sense to always include it
             #
-            w("set -as terminal-features 'xterm*:extkeys'")
+            w("set-option -as terminal-features 'xterm*:extkeys'")  # serv opt
 
         #
         #  24-bit color
@@ -429,14 +423,15 @@ class BaseConfig(TmuxConfig):
         #  This causes colors to completely fail on mosh < 1.4 connections,
         #
         if self.vers_ok(3.2):
-            w(f'set -as terminal-features ",gnome*:{self.use_24bit_color}"')
+            # serv opt
+            w(f'set-option -as terminal-features ",gnome*:{self.use_24bit_color}"')
         elif self.vers_ok(2.2) and self.use_24bit_color:
             if not self.vers_ok(2.7):
                 #
                 #  RGB not supported until 2.7
                 #
                 self.color_tag_24bit = "Tc"
-            w(f"set -ga terminal-overrides ',*:{self.color_tag_24bit}'")
+            w(f"set-option -ga terminal-overrides ',*:{self.color_tag_24bit}'")  # serv opt
 
         #
         #  Making OSC 52 work on mosh connections.
@@ -444,13 +439,13 @@ class BaseConfig(TmuxConfig):
         #  from: https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
         #
         # works on 3.5a - not much tested
-        # set -ag terminal-overrides ",*:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
+        # set-option -ag terminal-overrides ",*:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
         #
         if self.vers_ok(1.0) and not os.getenv("TMUX_NO_CLIPBOARD"):
-            w(
+            w(  # serv opt
                 """
             # Ms modifies OSC 52 clipboard handling to work with mosh
-            set -ag terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
+            set-option -ag terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
             """
             )
 
@@ -461,14 +456,14 @@ class BaseConfig(TmuxConfig):
         #    https://github.com/tmux/tmux/wiki/Modifier-Keys#modifiers-and-function-keys
         #
         if not self.vers_ok(2.4):
-            w(f"{self.set_window_option} xterm-keys on")
+            w(f"{self.set_window_option} xterm-keys on")  # win opt
 
         #
         #  Enable focus events for terminals that support them to be passed
         #  through to applications running inside tmux
         #
         if self.vers_ok(1.9):
-            w("set -g  focus-events on")
+            w("set-option -s  focus-events on")  # serv opt
 
         w()  # spacer between sections
 
@@ -479,41 +474,25 @@ class BaseConfig(TmuxConfig):
             """
         #======================================================
         #
-        #   General environment
+        #   General environment - server options
         #
         #======================================================
         """
         )
-        w(
-            """set -g repeat-time 750   # I want it a bit longer than 500')
-        set -g history-limit 5000
-        set -g status-keys emacs"""
-        )
-        if self.vers_ok(1.2):
-            w(f"{self.set_server_option} escape-time 0")
-
         if os.getenv("TMUX_NO_CLIPBOARD"):
             # On ssh/mosh connections, when running an asdf tmux with local
             # version changed.
             # tmux instacraches when anything is selected in a tmux buffer
             # if clipboard is not off
             if self.vers_ok(1.5):
-                w("set -g set-clipboard off  # TMUX_NO_CLIPBOARD")
+                w("set-option -s set-clipboard off  # TMUX_NO_CLIPBOARD")  # serv opt
         else:
             # external on the outer, prevents inner tmux from setting terminal clipboard
             # if self.vers_ok(2.6):
             #     #  Prevents clipboard in terminal from being set
-            #     w("set -g set-clipboard external")
+            #     w("set-option -s set-clipboard external")
             if self.vers_ok(1.5):
-                w("set -g set-clipboard on")
-
-        if self.vers_ok(3.2):
-            #  will switch to any detached session, when no more active ones
-            w("set -g detach-on-destroy no-detached")
-        elif self.vers_ok(1.2):
-            w("set -g detach-on-destroy off")
-        if self.vers_ok(3.3):
-            w("set -g popup-border-lines rounded")
+                w("set-option -s set-clipboard on")  # serv opt
 
         self.mkscript_shlvl_offset()
         if self.vers_ok(1.1):
@@ -523,25 +502,6 @@ class BaseConfig(TmuxConfig):
                 {self.es.run_it(self._fnc_shlvl_offset, in_bg=True)}"""
             )
 
-        #
-        # This prevents path_helper and similar tools from messing up PATH
-        # inside tmux. On MacOS it is used by default,
-        # maybe also on other platforms?
-        #
-        # Example of what it does: assume ~/bin is first in PATH
-        # Inside tmux shells it will now be almost last...
-        #
-        # However using this on iSH confuses remote tmux sessions utterly
-        #
-        if not mtc_utils.IS_ISH:
-            if self.vers_ok(1.0):
-                w(
-                    """
-                    # prevents /usr/libexec/path_helper from messing up PATH
-                    set -g default-command "${SHELL}" """
-                )
-            else:
-                w('set -g default-command "export TERM=screen-256color \\; ${SHELL}"')
         #
         #  Common variable telling plugins if -N notation is wanted
         #  (assuming tmux version supports it)
@@ -554,22 +514,9 @@ class BaseConfig(TmuxConfig):
                 # Hint that plugins can check, will only be true if hints
                 # are supported by running tmux, so plugins will not need
                 # to check tmux version for this
-                set -g @use_bind_key_notes_in_plugins Yes
+                set-option -g @use_bind_key_notes_in_plugins Yes
                 """
             )
-
-        if self.prefix_key.lower() != "c-b":
-            w(
-                f"""# Remove the default prefix, do it before assigning
-                # the selected one, in case it was some variant of C-b
-                unbind  C-b
-                set -g  prefix  {self.prefix_key}"""
-            )
-            w(
-                f'bind -N "Repeats sends {self.prefix_key} through"  '
-                f"{self.prefix_key}  send-prefix"
-            )
-            w()  # create spacer line
 
         #  Seems to mess with ish-console, so trying without it
         # if self.vers_ok(2.8):
@@ -631,221 +578,6 @@ class BaseConfig(TmuxConfig):
             )
             w()  # spacer between sections
 
-    def mouse_handling(self):
-        w = self.write
-        w(
-            """
-        #======================================================
-        #
-        #   Mouse handling
-        #
-        #======================================================
-        """
-        )
-        if self.vers_ok(2.1):
-            w("set  -g mouse on\n")
-            self.mkscript_toggle_mouse()
-            w(
-                'bind -N "Toggle mouse on/off"  M  '
-                f"{self.es.run_it(self._fnc_toggle_mouse)}"
-            )
-        else:
-            w(f"{self.set_window_option} mode-mouse on")
-            if self.vers_ok(1.1):
-                w("set -g mouse-select-pane on")
-            if self.vers_ok(1.5):
-                w("set -g mouse-select-window on")
-                w("set -g mouse-resize-pane on")
-            w('bind  M  display "mouse toggle needs 2.1"')
-
-        #
-        #  If enabled, request mouse input as UTF-8 on UTF-8 terminals
-        #  This often seems to trigger random character output when
-        #  mouse is moved after tmux session terminates, so better to
-        #  disable.
-        #
-        # if self.vers_ok(2.2):
-        #    w('set -gq mouse-utf8 off')
-
-        #
-        #  Zooms pane by right double click
-        #
-        if self.vers_ok(2.4) and not self.is_tmate():
-            w(
-                'bind -N "Toggle zoom for mouseovered pane" -n  DoubleClick3Pane'
-                ' resize-pane -Z -t= "{mouse}"'
-            )
-
-    # pylint: disable=too-many-branches
-    def status_bar_prepare(self):
-        w = self.write
-        w(
-            """
-        #======================================================
-        #
-        #   Status bar
-        #
-        #======================================================
-        """
-        )
-        if self.is_tmate():
-            w("set -g display-time 2000")
-        else:
-            w("set -g display-time 4000")
-
-        w("# Allow status to grow as needed")
-        if self.vers_ok(3.0):
-            unlimited = 0
-        else:
-            unlimited = 999
-        if self.vers_ok(1.0):
-            w(
-                f"""set -g  status-left-length  {unlimited}
-                set -g  status-right-length {unlimited}
-                """
-            )
-        else:
-            # For pre 1.0 it needs to be set to something >10
-            w("set -g status-left-length 30")
-
-        w(f"set -g  status-interval {self.status_interval}")
-
-        if self.vers_ok(1.7):
-            w("set -g  status-position bottom")
-
-        if self.vers_ok(1.9):
-            w("set -g  window-status-current-style reverse")
-
-        if self.vers_ok(1.0):
-            w("set -g  status-justify left")
-
-        if self.monitor_activity:
-            w(
-                f"""#  bell + # on window that had activity,
-                # will only trigger once per window
-                {self.set_window_option} monitor-activity on
-                set -g  visual-activity off"""
-            )
-            if self.vers_ok(2.6):
-                w("set -g  monitor-bell on")
-            if self.vers_ok(1.9):
-                w("set -g  window-status-activity-style default")
-        else:
-            w(f"{self.set_window_option} monitor-activity off")
-            if self.vers_ok(1.0):
-                w("set -g  visual-activity off")
-            if self.vers_ok(2.6):
-                w("set -g  monitor-bell off")
-
-        if self.vers_ok(2.2):
-            self.sb_right += "#{?window_zoomed_flag, 🔍 ,}"
-        elif self.vers_ok(2.0):
-            #
-            #  Before 2.2 graphical chars (utf 8??) crashes the SB
-            #
-            self.sb_right += "#{?window_zoomed_flag, Z ,}"
-
-        # if self.vers_ok(1.9) and not self.vers_ok(2.0):
-        #     #
-        #     #  Before 1.9 the pane_synchronized doesn't exist
-        #     #  and from 2.0 #{prefix_highlight} from the
-        #     #  tmux-plugins/tmux-prefix-highlight plugin
-        #     #  better indicates sync mode
-        #     #
-        #     self.sb_right += "#[reverse]#{?pane_synchronized,sync,}#[default]"
-
-        if self.vers_ok(1.8):
-            #
-            #  bypass tmux-prefix-highlight, hardcoding it to avoid countless
-            #  variable parsings
-            #
-            if self.vers_ok(1.9):
-                sync_indicator = (
-                    "#{?synchronize-panes,#[default]#"
-                    "[fg=black]#[bg=yellow]#[blink]#[bold] Sync ,#[default]}"
-                )
-                if self.vers_ok(2.5):
-                    mode_str = "#{pane_mode}"
-                else:
-                    mode_str = "Copy"
-                mode_indicator = (  # will display sync_indicator if not active
-                    "#{"
-                    f"?pane_in_mode,#[fg=black]#[bg=yellow]#[bold] {mode_str} ,"
-                    f"{sync_indicator}"
-                    "}"
-                )  #
-            else:
-                mode_indicator = ""
-
-            prefix_indicator = (  # will display copy_indicator if not active
-                "#{?client_prefix,#[fg=colour231]#[bg=colour04]"
-                f" {self.display_prefix()} ,{mode_indicator}"
-                "}#[default]"
-            )
-            w(f"# prefix_indicator:[{prefix_indicator}]")
-            self.sb_right += prefix_indicator
-
-    def status_bar(self):
-        w = self.write
-        self.status_bar_prepare()
-        if self.status_bar_customization():
-            w("\n#---   End of status_bar_customization()   ---")
-
-        #
-        #  Add this after status_bar_customization() to make it
-        #  non-obvious to override it, hint local_overides()
-        #
-        if self.t2_env:
-            #
-            #  max length of vers is 6 chars, in order to
-            #  not flood status line if running a devel tmux
-            #
-            if self.is_tmate():
-                prefix = "tmate"
-            else:
-                prefix = f"{self.vers.get()[:6]}"
-            t2_tag = f"{prefix} {self.display_prefix()} "
-            self.sb_left = f"#[fg=green,bg=black]{t2_tag}#[default]{self.sb_left}"
-
-        self.filter_me_from_sb_right()
-
-        if not self.username_template and self.hostname_template:
-            #
-            #  insert spacer after time if no username is displayed
-            #  unless hostname is also empty
-            #
-            self.hostname_template = " " + self.hostname_template
-
-        #
-        #  Before 1.8 only basic text and strftime(3) can be used
-        #
-        if not self.vers_ok(1.8):
-            self.sb_left = self.sb_left.replace("#{session_name}", "#S")
-
-        self.sb_right = self.sb_right.replace(
-            "USERNAME_TEMPLATE", self.username_template
-        ).replace("HOSTNAME_TEMPLATE", self.hostname_template)
-
-        if not self.vers_ok(1.0):
-            # setting colors in status line not supported
-            self.sb_left = re.sub(r"#\[.*?\]", "", self.sb_left)
-            self.sb_right = re.sub(r"#\[.*?\]", "", self.sb_right)
-        w(
-            f"""
-        set -g  status-left "{self.sb_left}"
-        set -g  status-right "{self.sb_right}"
-
-        bind -N "Toggle status bar"  t  set status
-        """
-        )
-
-    def filter_me_from_sb_right(self):
-        """Dont display my primary username."""
-
-        #  If its my default accounts dont show username
-        if os.getenv("USER") in ("jaclu", "u0_a194"):
-            self.username_template = ""
-
     def session_handling(self):
         w = self.write
         w(
@@ -857,6 +589,59 @@ class BaseConfig(TmuxConfig):
         #======================================================
         """
         )
+        if self.prefix_key.lower() != "c-b":
+            w(
+                f"""# Remove the default prefix, do it before assigning
+                # the selected one, in case it was some variant of C-b
+                unbind  C-b
+                set-option -g  prefix  {self.prefix_key}"""  # ses opt
+            )
+            w(
+                f'bind -N "Repeats sends {self.prefix_key} through"  '
+                f"{self.prefix_key}  send-prefix"
+            )
+            w()  # spacer
+
+        if self.vers_ok(3.2):
+            #  will switch to any detached session, when no more active ones
+            w("set-option -g detach-on-destroy no-detached")  # ses opt
+        if self.vers_ok(1.0):
+            w("set-option -g base-index 1")  # ses opt
+        if self.vers_ok(1.7):
+            w("set-option -g renumber-windows on")  # ses opt
+
+        elif self.vers_ok(1.2):
+            w("set-option -g detach-on-destroy off")  # ses opt
+        w(  # ses opts
+            """set-option -g repeat-time 750
+        set-option -g history-limit 5000
+        set-option -g status-keys emacs"""
+        )
+
+        #
+        # This prevents path_helper and similar tools from messing up PATH
+        # inside tmux. On MacOS it is used by default,
+        # maybe also on other platforms?
+        #
+        # Example of what it does: assume ~/bin is first in PATH
+        # Inside tmux shells it will now be almost last...
+        #
+        # However using this on iSH confuses remote tmux sessions utterly
+        #
+        if not mtc_utils.IS_ISH:
+            if self.vers_ok(1.0):
+                w(
+                    """
+                    # prevents /usr/libexec/path_helper from messing up PATH
+                    set-option -g default-command "${SHELL}" """  # ses opt
+                )
+            else:
+                w(
+                    'set-option -g default-command "export '  # ses opt
+                    'TERM=screen-256color \\; ${SHELL}"'
+                )
+            w()  # spacer
+
         s = 'bind -N "Create new session  - M-+"  +  command-prompt'
         if self.vers_ok(1.5):
             s += ' -I "?"'
@@ -905,19 +690,32 @@ class BaseConfig(TmuxConfig):
         {self.set_window_option} automatic-rename off
         {self.set_window_option} aggressive-resize on"""
         )
-        if self.vers_ok(1.0):
-            w("set -g base-index 1")
-        if self.vers_ok(1.7):
-            w("set -g renumber-windows on")
-
         if self.vers_ok(1.8):
             # setting terminal app title - not sure if this is desired
-            w("set -g set-titles on")
+            w(f"{self.set_window_option} set-titles on")  # ses opt
             w(
-                'set -g set-titles-string "#{host_short} - '
+                f"{self.set_window_option} set-titles-string "
+                '"#{host_short} - '
                 f"tmux {self.vers.get()}"
                 ' - #{session_name}:#{window_name}:#T"'
             )
+        if self.monitor_activity:
+            w(
+                f"""#  bell + # on window that had activity,
+                # will only trigger once per window
+                {self.set_window_option} monitor-activity on"""
+            )
+            if self.vers_ok(2.6):
+                w(f"{self.set_window_option} monitor-bell on")
+            if self.vers_ok(1.9):
+                w(f"{self.set_window_option} window-status-activity-style default")
+        else:
+            w(f"{self.set_window_option} monitor-activity off")
+            if self.vers_ok(2.6):
+                w(f"{self.set_window_option} monitor-bell off")
+
+        if self.vers_ok(3.3):
+            w(f"{self.set_window_option} popup-border-lines rounded")
 
         w()  # spacer
 
@@ -1038,8 +836,6 @@ class BaseConfig(TmuxConfig):
         #     """
         #     )
 
-        w("bind -N 'Toggle synchronize'      *   set synchronize-panes")
-
         s = 'bind -N "Rename current window"   W  command-prompt'
         if self.vers_ok(1.5):
             s += ' -I "#W"'
@@ -1070,18 +866,16 @@ class BaseConfig(TmuxConfig):
         #======================================================
         """
         )
-
+        # the sleeps below are needed to wait until a pane exists
         if self.vers_ok(1.6):
             #  Set base index for panes to 1 instead of 0
-            w(
-                """set -g pane-base-index 1
-            set -wg allow-rename off
-            set -wg automatic-rename off
-            """
-            )
+            w("set-option -pg pane-base-index 1")  # pane opt
+            # pane opt
+            w('run-shell -b "sleep 0.2 \\; $TMUX_BIN set-option -pg allow-rename off"')
 
         if self.vers_ok(3.5):
-            w("set -g allow-set-title off")
+            # pane opt
+            w('run-shell -b "sleep 0.2 \\; $TMUX_BIN set-option -pg allow-set-title off"')
 
         if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
             if self.vers_ok(3.2):
@@ -1096,6 +890,8 @@ class BaseConfig(TmuxConfig):
             'terminal clipboard is set'"
             """
             )
+
+        w("bind -N 'Toggle synchronize'      *   set-option synchronize-panes")  # pane opt
 
         #
         #  Without a sleep in between the actions, history is not cleared.
@@ -1198,20 +994,16 @@ class BaseConfig(TmuxConfig):
             border_other = "colour241"  # low intensity grey
 
             w(
-                f"""set -g pane-active-border-style fg={border_active}
-                  set -g pane-border-style fg={border_other}
+                f"""set-option -pg pane-active-border-style fg={border_active}
+                  set-option -pg pane-border-style fg={border_other}
             """
             )
 
         if self.vers_ok(3.2):
-            w("run-shell -b '$TMUX_BIN set -g pane-border-lines single'")
+            w("set-option -pg pane-border-lines single")  # pane opt
 
         if self.vers_ok(3.3):
-            # Needs to wait until a window exists
-            w(
-                'run-shell -b "sleep 0.2 ; $TMUX_BIN set -g '
-                'pane-border-indicators arrows"'
-            )
+            w("set-option -pg pane-border-indicators arrows")
 
         #
         #  Pane title and size
@@ -1224,7 +1016,7 @@ class BaseConfig(TmuxConfig):
                 pane_label += "(#{pane_width}x#{pane_height}) "
             if pane_label:
                 pane_label = " " + pane_label  # set initial spacer
-                w(f'\nset -g pane-border-format "{pane_label}"')
+                w(f'\nset-option -g pane-border-format "{pane_label}"')  # pane opt
 
         #  Display pane frame lines when more than one pane is present
         if self.vers_ok(2.7):
@@ -1253,8 +1045,8 @@ class BaseConfig(TmuxConfig):
             w(
                 'set-hook -g after-resize-pane "if-shell '
                 '\\"[ #{window_zoomed_flag} -eq 1 ]\\" '
-                '\\"set pane-border-status off\\" '
-                '\\"set pane-border-status top\\""'
+                '\\"set-option pane-border-status off\\" '
+                '\\"set-option pane-border-status top\\""'
             )
 
         #  Display pane frame lines when more than one pane is present
@@ -1264,18 +1056,18 @@ class BaseConfig(TmuxConfig):
             # works in 2.4 but not in 2.5 - odd
             w(
                 "set-hook -g window-layout-changed "
-                '"set -w -F pane-border-status '
+                '"set-option -w -F pane-border-status '
                 '\\"#{?#{==:#{window_panes},1},off,top}\\""'
             )
         if self.show_pane_title:
             if self.vers_ok(2.6):
                 w(
-                    'bind -N "Set pane title"  P  command-prompt -p '
+                    'bind -N "Set-Option pane title"  P  command-prompt -p '
                     '"Pane title: " "select-pane -T \\"%%\\""'
                 )
             elif self.vers_ok(2.3) and not self.is_tmate():
                 w(
-                    """set -g pane-border-status top
+                    """set-option -g pane-border-status top
                     bind  P  display 'Pane title setting needs 2.6'<
                     """
                 )
@@ -1447,16 +1239,219 @@ class BaseConfig(TmuxConfig):
             if not self.vers_ok(3.3):
                 height_notice += " (add 1 for panes next to status bar)"
             w(
-                'bind -N "Set pane size (w x h)"  s  command-prompt -p '
+                'bind -N "set-option pane size (w x h)"  s  command-prompt -p '
                 f'"Pane width","{height_notice}" '
                 '"resize-pane -x %1 -y %2"'
             )
         elif self.vers_ok(1.0):
             w(
                 'bind -N "Navigate not available warning"  s  '
-                'display "Set pane size needs 1.8"'
+                'display "set-option pane size needs 1.8"'
             )
         w()  # spacer
+
+    def mouse_handling(self):
+        w = self.write
+        w(
+            """
+        #======================================================
+        #
+        #   Mouse handling
+        #
+        #======================================================
+        """
+        )
+        if self.vers_ok(2.1):
+            w("set-option  -g mouse on\n")  # ses opt
+            self.mkscript_toggle_mouse()
+            w(
+                'bind -N "Toggle mouse on/off"  M  '
+                f"{self.es.run_it(self._fnc_toggle_mouse)}"
+            )
+        else:
+            w(f"{self.set_window_option} mode-mouse on")
+            if self.vers_ok(1.1):
+                w("set-option -g mouse-select-pane on")  # ses opt
+            if self.vers_ok(1.5):
+                w("set-option -g mouse-select-window on")  # serv opt
+                w("set-option -g mouse-resize-pane on")  # serv opt
+            w('bind  M  display "mouse toggle needs 2.1"')
+
+        #
+        #  If enabled, request mouse input as UTF-8 on UTF-8 terminals
+        #  This often seems to trigger random character output when
+        #  mouse is moved after tmux session terminates, so better to
+        #  disable.
+        #
+        # if self.vers_ok(2.2):
+        #    w('set-option -gq mouse-utf8 off')
+
+        #
+        #  Zooms pane by right double click
+        #
+        if self.vers_ok(2.4) and not self.is_tmate():
+            w(
+                'bind -N "Toggle zoom for mouseovered pane" -n  DoubleClick3Pane'
+                ' resize-pane -Z -t= "{mouse}"'
+            )
+
+    # pylint: disable=too-many-branches
+    def status_bar_prepare(self):
+        w = self.write
+        w(
+            """
+        #======================================================
+        #
+        #   Status bar
+        #
+        #======================================================
+        """
+        )
+        if self.is_tmate():
+            w("set-option -g display-time 2000")
+        else:
+            w("set-option -g display-time 4000")
+
+        w("# Allow status to grow as needed")
+        if self.vers_ok(3.0):
+            unlimited = 0
+        else:
+            unlimited = 999
+        if self.vers_ok(1.0):
+            w(  # both are ses opts
+                f"""set-option -g  status-left-length  {unlimited}
+                set-option -g  status-right-length  {unlimited}
+                """
+            )
+        else:
+            # For pre 1.0 it needs to be set to something >10
+            w("set-option -g status-left-length 30")
+
+        w(f"set-option -g  status-interval {self.status_interval}")  # ses opt
+
+        if self.vers_ok(1.7):
+            w("set-option -g  status-position bottom")
+
+        if self.vers_ok(1.9):
+            w("set-option -g  window-status-current-style reverse")
+
+        if self.vers_ok(1.0):
+            w("set-option -g  status-justify left")  # ses opt
+
+        if self.monitor_activity:
+            w("set-option -g  visual-activity off")  # ses opt
+        else:
+            if self.vers_ok(1.0):
+                w("set-option -g  visual-activity off")  # ses opt
+
+        if self.vers_ok(2.2):
+            self.sb_right += "#{?window_zoomed_flag, 🔍 ,}"
+        elif self.vers_ok(2.0):
+            #
+            #  Before 2.2 graphical chars (utf 8??) crashes the SB
+            #
+            self.sb_right += "#{?window_zoomed_flag, Z ,}"
+
+        # if self.vers_ok(1.9) and not self.vers_ok(2.0):
+        #     #
+        #     #  Before 1.9 the pane_synchronized doesn't exist
+        #     #  and from 2.0 #{prefix_highlight} from the
+        #     #  tmux-plugins/tmux-prefix-highlight plugin
+        #     #  better indicates sync mode
+        #     #
+        #     self.sb_right += "#[reverse]#{?pane_synchronized,sync,}#[default]"
+
+        if self.vers_ok(1.8):
+            #
+            #  bypass tmux-prefix-highlight, hardcoding it to avoid countless
+            #  variable parsings
+            #
+            if self.vers_ok(1.9):
+                sync_indicator = (
+                    "#{?synchronize-panes,#[default]#"
+                    "[fg=black]#[bg=yellow]#[blink]#[bold] Sync ,#[default]}"
+                )
+                if self.vers_ok(2.5):
+                    mode_str = "#{pane_mode}"
+                else:
+                    mode_str = "Copy"
+                mode_indicator = (  # will display sync_indicator if not active
+                    "#{"
+                    f"?pane_in_mode,#[fg=black]#[bg=yellow]#[bold] {mode_str} ,"
+                    f"{sync_indicator}"
+                    "}"
+                )  #
+            else:
+                mode_indicator = ""
+
+            prefix_indicator = (  # will display copy_indicator if not active
+                "#{?client_prefix,#[fg=colour231]#[bg=colour04]"
+                f" {self.display_prefix()} ,{mode_indicator}"
+                "}#[default]"
+            )
+            w(f"# prefix_indicator:[{prefix_indicator}]")
+            self.sb_right += prefix_indicator
+
+    def status_bar(self):
+        w = self.write
+        self.status_bar_prepare()
+        if self.status_bar_customization():
+            w("\n#---   End of status_bar_customization()   ---")
+
+        #
+        #  Add this after status_bar_customization() to make it
+        #  non-obvious to override it, hint local_overides()
+        #
+        if self.t2_env:
+            #
+            #  max length of vers is 6 chars, in order to
+            #  not flood status line if running a devel tmux
+            #
+            if self.is_tmate():
+                prefix = "tmate"
+            else:
+                prefix = f"{self.vers.get()[:6]}"
+            t2_tag = f"{prefix} {self.display_prefix()} "
+            self.sb_left = f"#[fg=green,bg=black]{t2_tag}#[default]{self.sb_left}"
+
+        self.filter_me_from_sb_right()
+
+        if not self.username_template and self.hostname_template:
+            #
+            #  insert spacer after time if no username is displayed
+            #  unless hostname is also empty
+            #
+            self.hostname_template = " " + self.hostname_template
+
+        #
+        #  Before 1.8 only basic text and strftime(3) can be used
+        #
+        if not self.vers_ok(1.8):
+            self.sb_left = self.sb_left.replace("#{session_name}", "#S")
+
+        self.sb_right = self.sb_right.replace(
+            "USERNAME_TEMPLATE", self.username_template
+        ).replace("HOSTNAME_TEMPLATE", self.hostname_template)
+
+        if not self.vers_ok(1.0):
+            # setting colors in status line not supported
+            self.sb_left = re.sub(r"#\[.*?\]", "", self.sb_left)
+            self.sb_right = re.sub(r"#\[.*?\]", "", self.sb_right)
+        w(
+            f"""
+        set-option -g  status-left "{self.sb_left}"  # ses opt
+        set-option -g  status-right "{self.sb_right}"  # ses opt
+
+        bind -N "Toggle status bar"  t  set-option status
+        """
+        )
+
+    def filter_me_from_sb_right(self):
+        """Dont display my primary username."""
+
+        #  If its my default accounts dont show username
+        if os.getenv("USER") in ("jaclu", "u0_a194"):
+            self.username_template = ""
 
     #
     #  Actions bound to Alt uppercase keys. The iSH console doesn't
@@ -1633,7 +1628,7 @@ class BaseConfig(TmuxConfig):
     else
         new_state="on"
     fi
-    $TMUX_BIN set -g mouse $new_state
+    $TMUX_BIN set-option -g mouse $new_state
     $TMUX_BIN display "mouse: $new_state"
 }}"""
         ]
@@ -1800,7 +1795,7 @@ timer_end() {{
     def mkscript_tpm_indicator(self):
         """Changes state for tpm_initializing with params: set clear"""
         purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
-        # self.sb_purge_tpm_running = "$TMUX_BIN set -q status-right "
+        # self.sb_purge_tpm_running = "$TMUX_BIN set-option -q status-right "
         # \\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{purge_seq}//')\\"
 
         clear_tpm_init_sh = [
@@ -1827,13 +1822,13 @@ timer_end() {{
         #
         #  Add tpm init to SB-right
         #
-        $TMUX_BIN set -g status-right "$sb_r_now{self.tpm_initializing}"
+        $TMUX_BIN set-option -g status-right "$sb_r_now{self.tpm_initializing}"
     elif [ "$task" = "clear" ] && [ "$tpm_running" -eq 1 ]; then
         #
         #  Remove tpm init from SB-right
         #
         sb_r_filtered="$(echo $sb_r_now | sed 's/{purge_seq}//')"
-        $TMUX_BIN set -g status-right "$sb_r_filtered"
+        $TMUX_BIN set-option -g status-right "$sb_r_filtered"
 
         $TMUX_BIN setenv -gu {self.tpm_working_incicator}
     fi
