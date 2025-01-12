@@ -20,7 +20,7 @@
 #  would be needed in any normal case. Since I often try to make plugins
 #  as backwards compatible as possible, it was convenient to also have
 #  a setup that can run on any available tmux version.
-#  This is tested to work without issues all the way back to version 1.7
+#  This is tested to work without issues all the way back to version 0.8
 #
 #  Alternate session
 #  -----------------
@@ -41,12 +41,11 @@ import os
 import re
 import sys
 
-import __main__
-
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
+import __main__
 import mtc_utils
 
 # ruff checks might be relevant F403,F401
@@ -92,7 +91,7 @@ class BaseConfig(TmuxConfig):
     sb_left: str = "|#{session_name}| "
     sb_right: str = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template: str = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
-    hostname_template: str = "#[fg=colour195,bg=colour1]" f"{mtc_utils.HOSTNAME}#[default]"
+    hostname_template: str = f"#[fg=colour195,bg=colour1]{mtc_utils.HOSTNAME}#[default]"
     tpm_initializing: str = "#[reverse,blink] tpm initializing...#[default]"
 
     handle_iterm2: bool = True  # Select screen-256color for iTerm2
@@ -163,11 +162,35 @@ class BaseConfig(TmuxConfig):
             plugins_display=plugins_display,
         )
 
-        # self.set_server_option = "set-option -s"  # global by default
-        if self.vers_ok(1.5):
-            self.set_window_option = "set-option -wg"
+        self.opt_server = "set-option -g"
+        self.opt_ses = "set-option -g"
+        if self.vers_ok(1.8):
+            self.opt_win = "set-option -wg"
         else:
-            self.set_window_option = "set-window-option -g"
+            self.opt_win = "set-window-option -g"
+        if self.vers_ok(3.1):
+            self.opt_pane = "set-option -pg"
+        else:
+            # prior to 3.1 pane options were listed as win options
+            self.opt_pane = self.opt_win
+
+        if self.vers_ok(1.8):
+            self.shell_bg = "run-shell -b"
+        else:
+            # option -b was introduced in 1.8, this filters out usages on unsitable
+            # versions, since if used, will trigger sometimes hard to trace hangs
+            self.shell_bg = (
+                "\n#================================\n"
+                "#   ERROR - broken code disabled!\n"
+                "#================================\n"
+                "# This usage of run-shell -b would likely "
+                "cause a hang on tmux < 1.8\n# "
+            )
+        if self.vers_ok(1.9):
+            # the syntax can be used in 1.8, but if used path is always set to /
+            self.cwd_directive = " -c '#{pane_current_path}'"
+        else:
+            self.cwd_directive = ""
 
         self.prefix_arrow_nav_keys = False
 
@@ -202,13 +225,6 @@ class BaseConfig(TmuxConfig):
         self._fnc_toggle_mouse = "toggle_mouse"
         self._fnc_activate_tpm = "activate_tpm"
         self._fnc_tpm_indicator = "tpm_init_indicator"
-
-        if self.vers_ok(1.7):
-            # the syntax can be used in 1.8, but it fails to set the path
-            # self.cwd_directive = ' -c \\"#{pane_current_path}\\"'
-            self.cwd_directive = "-c '#{pane_current_path}'"
-        else:
-            self.cwd_directive = ""
 
     def edit_config(self, edit_key: str = "e") -> None:
         pass  # Im not really using it, so skip it
@@ -398,9 +414,9 @@ class BaseConfig(TmuxConfig):
         #
         if self.vers_ok(1.0):
             if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
-                w("set-option -g  default-terminal screen-256color")  # serv opt
+                w(f"{self.opt_server} default-terminal screen-256color")
             else:
-                w("set-option -g default-terminal tmux-256color")  # serv opt
+                w(f"{self.opt_server} default-terminal tmux-256color")
 
         #
         #  Support for CSI u  extended keys
@@ -410,12 +426,12 @@ class BaseConfig(TmuxConfig):
         #  Some apps like iTerm2 don't need it, but it never hurts
         #
         if self.vers_ok(3.2):
-            w("set-option -s  extended-keys on")  # serv opt
+            w(f"{self.opt_server} extended-keys on")
             #
             #  not needed for all terminal apps, but since it doesn't hurt,
             #  it makes sense to always include it
             #
-            w("set-option -as terminal-features 'xterm*:extkeys'")  # serv opt
+            w(f"{self.opt_server} -a terminal-features 'xterm*:extkeys'")
 
         #
         #  24-bit color
@@ -423,29 +439,25 @@ class BaseConfig(TmuxConfig):
         #  This causes colors to completely fail on mosh < 1.4 connections,
         #
         if self.vers_ok(3.2):
-            # serv opt
-            w(f'set-option -as terminal-features ",gnome*:{self.use_24bit_color}"')
+            w(f'{self.opt_server} -a terminal-features ",gnome*:{self.use_24bit_color}"')
         elif self.vers_ok(2.2) and self.use_24bit_color:
             if not self.vers_ok(2.7):
                 #
                 #  RGB not supported until 2.7
                 #
                 self.color_tag_24bit = "Tc"
-            w(f"set-option -ga terminal-overrides ',*:{self.color_tag_24bit}'")  # serv opt
+            w(f"{self.opt_server} -a terminal-overrides ',*:{self.color_tag_24bit}'")
 
         #
         #  Making OSC 52 work on mosh connections.
         #  For this to work the term name used must match, hence * :)
         #  from: https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
         #
-        # works on 3.5a - not much tested
-        # set-option -ag terminal-overrides ",*:Ms=\\\\E]52;c;%p1%s%p2%s\\\\7"
-        #
         if self.vers_ok(1.0) and not os.getenv("TMUX_NO_CLIPBOARD"):
-            w(  # serv opt
-                """
+            w(
+                f"""
             # Ms modifies OSC 52 clipboard handling to work with mosh
-            set-option -ag terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
+            {self.opt_server} -a terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
             """
             )
 
@@ -456,14 +468,14 @@ class BaseConfig(TmuxConfig):
         #    https://github.com/tmux/tmux/wiki/Modifier-Keys#modifiers-and-function-keys
         #
         if not self.vers_ok(2.4):
-            w(f"{self.set_window_option} xterm-keys on")  # win opt
+            w(f"{self.opt_win} xterm-keys on")
 
         #
         #  Enable focus events for terminals that support them to be passed
         #  through to applications running inside tmux
         #
         if self.vers_ok(1.9):
-            w("set-option -s  focus-events on")  # serv opt
+            w(f"{self.opt_server} focus-events on")
 
         w()  # spacer between sections
 
@@ -485,17 +497,17 @@ class BaseConfig(TmuxConfig):
             # tmux instacraches when anything is selected in a tmux buffer
             # if clipboard is not off
             if self.vers_ok(1.5):
-                w("set-option -s set-clipboard off  # TMUX_NO_CLIPBOARD")  # serv opt
+                w(f"{self.opt_server} set-clipboard off  # TMUX_NO_CLIPBOARD")
         else:
             # external on the outer, prevents inner tmux from setting terminal clipboard
             # if self.vers_ok(2.6):
             #     #  Prevents clipboard in terminal from being set
-            #     w("set-option -s set-clipboard external")
+            #     w(f"{self.opt_server}set-clipboard external")
             if self.vers_ok(1.5):
-                w("set-option -s set-clipboard on")  # serv opt
+                w(f"{self.opt_server} set-clipboard on")
 
-        self.mkscript_shlvl_offset()
         if self.vers_ok(1.1):
+            self.mkscript_shlvl_offset()
             w(
                 f"""
                 # Save correction factor for displaying SHLVL inside tmux
@@ -510,11 +522,11 @@ class BaseConfig(TmuxConfig):
         #
         if self.vers_ok(3.1):
             w(
-                """
+                f"""
                 # Hint that plugins can check, will only be true if hints
                 # are supported by running tmux, so plugins will not need
                 # to check tmux version for this
-                set-option -g @use_bind_key_notes_in_plugins Yes
+                {self.opt_server} @use_bind_key_notes_in_plugins Yes
                 """
             )
 
@@ -524,10 +536,7 @@ class BaseConfig(TmuxConfig):
 
         nav_key = "N"
         if self.vers_ok(2.7):
-            w(
-                f'bind -N "Navigate ses/win/pane"     {nav_key}    '
-                "choose-tree -O time -sZ"
-            )
+            w(f'bind -N "Navigate ses/win/pane"     {nav_key}    choose-tree -O time -sZ')
         elif self.vers_ok(1.0):
             w(
                 f'bind -N "Navigate ses/win/pane not available warning"  {nav_key}  '
@@ -540,7 +549,7 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(scrpad_min_vers):
             display_popup = "display-popup -h 70% -w 70% -E "
             if self.vers_ok(3.3):
-                display_popup += "-T " '"#[align=centre] pOpup Scratchpad Session " '
+                display_popup += '-T "#[align=centre] pOpup Scratchpad Session " '
             w(
                 f'bind -N "pOpup scratchpad session"  {scrpad_key}  '
                 f'{display_popup} "$TMUX_BIN -u new-session -ADs scratch"'
@@ -554,10 +563,7 @@ class BaseConfig(TmuxConfig):
             show_action = f'\\; display "{self.conf_file} sourced"'
         else:
             show_action = ""
-        w(
-            f'bind -N  "Source {self.conf_file}"  R  source {self.conf_file} '
-            f"{show_action}"
-        )
+        w(f'bind -N  "Source {self.conf_file}"  R  source {self.conf_file} {show_action}')
         self.auc_display_plugins_used()
         self.auc_kill_tmux_server()
         if self.prefix_arrow_nav_keys:
@@ -576,7 +582,7 @@ class BaseConfig(TmuxConfig):
             bind -N "Home"       Left   send-key Home
             bind -N "End"        Right  send-key End"""
             )
-            w()  # spacer between sections
+        w()  # spacer between sections
 
     def session_handling(self):
         w = self.write
@@ -594,7 +600,7 @@ class BaseConfig(TmuxConfig):
                 f"""# Remove the default prefix, do it before assigning
                 # the selected one, in case it was some variant of C-b
                 unbind  C-b
-                set-option -g  prefix  {self.prefix_key}"""  # ses opt
+                {self.opt_ses} prefix {self.prefix_key}"""
             )
             w(
                 f'bind -N "Repeats sends {self.prefix_key} through"  '
@@ -602,20 +608,30 @@ class BaseConfig(TmuxConfig):
             )
             w()  # spacer
 
+        w(f"{self.opt_ses} set-titles on")
+        if self.vers_ok(1.0):
+            # setting terminal app title - not sure if this is desired
+            w(
+                f"{self.opt_ses} set-titles-string "
+                '"#{host_short} - '
+                f"tmux {self.vers.get()}"
+                ' - #{session_name}:#{window_name}:#T"'
+            )
+
         if self.vers_ok(3.2):
             #  will switch to any detached session, when no more active ones
-            w("set-option -g detach-on-destroy no-detached")  # ses opt
+            w(f"{self.opt_ses} detach-on-destroy no-detached")
         if self.vers_ok(1.0):
-            w("set-option -g base-index 1")  # ses opt
+            w(f"{self.opt_ses} base-index 1")
         if self.vers_ok(1.7):
-            w("set-option -g renumber-windows on")  # ses opt
+            w(f"{self.opt_ses} renumber-windows on")
 
         elif self.vers_ok(1.2):
-            w("set-option -g detach-on-destroy off")  # ses opt
-        w(  # ses opts
-            """set-option -g repeat-time 750
-        set-option -g history-limit 5000
-        set-option -g status-keys emacs"""
+            w(f"{self.opt_ses} detach-on-destroy off")
+        w(
+            f"""{self.opt_ses} repeat-time 750
+        {self.opt_ses} history-limit 5000
+        {self.opt_ses} status-keys emacs"""
         )
 
         #
@@ -630,14 +646,11 @@ class BaseConfig(TmuxConfig):
         #
         if not mtc_utils.IS_ISH:
             if self.vers_ok(1.0):
-                w(
-                    """
-                    # prevents /usr/libexec/path_helper from messing up PATH
-                    set-option -g default-command "${SHELL}" """  # ses opt
-                )
+                # prevents /usr/libexec/path_helper from messing up PATH
+                w(f'{self.opt_ses} default-command "${{SHELL}}"')
             else:
                 w(
-                    'set-option -g default-command "export '  # ses opt
+                    f'{self.opt_ses} default-command "export '
                     'TERM=screen-256color \\; ${SHELL}"'
                 )
             w()  # spacer
@@ -670,10 +683,11 @@ class BaseConfig(TmuxConfig):
             s += ' -I "#S"'
         w(f'{s} "rename-session -- \\"%%\\""')
 
-        s = 'bind -N "Kill session in focus"  M-x  confirm-before'
-        if self.vers_ok(1.5):
-            s += ' -p "Kill session: #{session_name}? (y/n)"'
-        w(f"{s} kill-session")
+        if self.vers_ok(0.9):
+            s = 'bind -N "Kill session in focus"  M-x  confirm-before'
+            if self.vers_ok(1.5):
+                s += ' -p "Kill session: #{session_name}? (y/n)"'
+            w(f"{s} kill-session")
 
         w()  # spacer between sections
 
@@ -687,35 +701,26 @@ class BaseConfig(TmuxConfig):
         #
         #======================================================
 
-        {self.set_window_option} automatic-rename off
-        {self.set_window_option} aggressive-resize on"""
+        {self.opt_win} automatic-rename off
+        {self.opt_win} aggressive-resize on"""
         )
-        if self.vers_ok(1.8):
-            # setting terminal app title - not sure if this is desired
-            w(f"{self.set_window_option} set-titles on")  # ses opt
-            w(
-                f"{self.set_window_option} set-titles-string "
-                '"#{host_short} - '
-                f"tmux {self.vers.get()}"
-                ' - #{session_name}:#{window_name}:#T"'
-            )
         if self.monitor_activity:
             w(
                 f"""#  bell + # on window that had activity,
                 # will only trigger once per window
-                {self.set_window_option} monitor-activity on"""
+                {self.opt_win} monitor-activity on"""
             )
             if self.vers_ok(2.6):
-                w(f"{self.set_window_option} monitor-bell on")
+                w(f"{self.opt_win} monitor-bell on")
             if self.vers_ok(1.9):
-                w(f"{self.set_window_option} window-status-activity-style default")
+                w(f"{self.opt_win} window-status-activity-style default")
         else:
-            w(f"{self.set_window_option} monitor-activity off")
+            w(f"{self.opt_win} monitor-activity off")
             if self.vers_ok(2.6):
-                w(f"{self.set_window_option} monitor-bell off")
+                w(f"{self.opt_win} monitor-bell off")
 
         if self.vers_ok(3.3):
-            w(f"{self.set_window_option} popup-border-lines rounded")
+            w(f"{self.opt_win} popup-border-lines rounded")
 
         w()  # spacer
 
@@ -821,21 +826,6 @@ class BaseConfig(TmuxConfig):
             bind -N "Swap window right"        -r  >    swap-window -dt:+1"""
         )
 
-        # if self.vers_ok(2.3) and not self.is_tmate():
-        #     #
-        #     #  tmate does not support split-window -f  despite they
-        #     #  claim to be 2.4 compatible and this is a 2.3 feature...
-        #     #
-        #     sw = 'bind -N "Split window'  # hackish strings to make sure
-        #     w(
-        #         f"""# window splitting
-        #     {sw} horizontally right"  M-L  split-window -fh  {self.cwd_directive}
-        #     {sw} horizontally left"   M-H  split-window -fhb {self.cwd_directive}
-        #     {sw} vertically down"     M-J  split-window -fv  {self.cwd_directive}
-        #     {sw} vertically up"       M-K  split-window -fvb {self.cwd_directive}
-        #     """
-        #     )
-
         s = 'bind -N "Rename current window"   W  command-prompt'
         if self.vers_ok(1.5):
             s += ' -I "#W"'
@@ -851,7 +841,7 @@ class BaseConfig(TmuxConfig):
                     f'bind -N "Kill window in focus"    {c}  confirm-before -p '
                     '"kill current window \\"#W\\"? (y/n)" "kill-window"'
                 )
-            else:
+            elif self.vers_ok(0.9):
                 w(f'bind -N "Kill window in focus"  {c}  confirm-before kill-window')
         w()  # spacer between sections
 
@@ -869,13 +859,15 @@ class BaseConfig(TmuxConfig):
         # the sleeps below are needed to wait until a pane exists
         if self.vers_ok(1.6):
             #  Set base index for panes to 1 instead of 0
-            w("set-option -pg pane-base-index 1")  # pane opt
-            # pane opt
-            w('run-shell -b "sleep 0.2 \\; $TMUX_BIN set-option -pg allow-rename off"')
+            w(f"{self.opt_pane} pane-base-index 1")
+        if self.vers_ok(1.8):
+            w(f'{self.shell_bg} "sleep 0.2 \\; $TMUX_BIN {self.opt_pane} allow-rename off"')
 
         if self.vers_ok(3.5):
-            # pane opt
-            w('run-shell -b "sleep 0.2 \\; $TMUX_BIN set-option -pg allow-set-title off"')
+            w(
+                f'{self.shell_bg} "sleep 0.2 \\; '
+                f'$TMUX_BIN {self.opt_pane} allow-set-title off"'
+            )
 
         if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
             if self.vers_ok(3.2):
@@ -884,14 +876,14 @@ class BaseConfig(TmuxConfig):
                 delay = ""
             w(
                 f"""
-                # Displays that tmux picked up clipboard and (hopefully) sent it
+            # Displays that tmux picked up clipboard and (hopefully) sent it
                 # to the terminal
-        set-hook -g pane-set-clipboard "display-message {delay} \
+            set-hook -g pane-set-clipboard "display-message {delay} \
             'terminal clipboard is set'"
             """
             )
 
-        w("bind -N 'Toggle synchronize'      *   set-option synchronize-panes")  # pane opt
+        w(f"bind -N 'Toggle synchronize'      *   {self.opt_pane} synchronize-panes")
 
         #
         #  Without a sleep in between the actions, history is not cleared.
@@ -904,7 +896,6 @@ class BaseConfig(TmuxConfig):
                 'bind -N "Clear history & screen" -n  M-l  send-keys C-l \\; '
                 'run-shell "sleep 0.3" \\; clear-history'
             )
-            w()  # spacer
 
         #
         #  Save history for current pane, prompts for filename
@@ -923,10 +914,7 @@ class BaseConfig(TmuxConfig):
                 'save-buffer %1 \\; delete-buffer"'
             )
 
-        s = (
-            'bind -N "Save history to prompted file name (no escapes)"  M-h  '
-            "command-prompt"
-        )
+        s = 'bind -N "Save history to prompted file name (no escapes)"  M-h  command-prompt'
         if self.vers_ok(1.0):
             s += ' -p "save history (no escapes) to:"'
             if self.vers_ok(1.5):
@@ -943,10 +931,11 @@ class BaseConfig(TmuxConfig):
                 bind -N "Chose paste buffer(-s)"  B  choose-buffer
                 """
             )
-        s = 'bind -N "Kill pane in focus"       x  confirm-before'
-        if self.vers_ok(1.5):
-            s += ' -p "kill-pane #T (#P)? (y/n)"'
-        w(f"{s} kill-pane")
+        if self.vers_ok(0.9):
+            s = 'bind -N "Kill pane in focus"       x  confirm-before'
+            if self.vers_ok(1.5):
+                s += ' -p "kill-pane #T (#P)? (y/n)"'
+            w(f"{s} kill-pane")
         w()  # spacer between sections
 
         #
@@ -967,8 +956,7 @@ class BaseConfig(TmuxConfig):
             """
         #
         #   ======  Pane frame lines  ======
-        #
-        """
+        #"""
         )
         #
         #  Remaining issue, in tmux 2.3-2.5 a single pane will show the top
@@ -994,16 +982,17 @@ class BaseConfig(TmuxConfig):
             border_other = "colour241"  # low intensity grey
 
             w(
-                f"""set-option -pg pane-active-border-style fg={border_active}
-                  set-option -pg pane-border-style fg={border_other}
+                f"""
+                {self.opt_pane} pane-active-border-style fg={border_active}
+                {self.opt_pane} pane-border-style fg={border_other}
             """
             )
 
         if self.vers_ok(3.2):
-            w("set-option -pg pane-border-lines single")  # pane opt
+            w(f"{self.opt_pane} pane-border-lines single")
 
         if self.vers_ok(3.3):
-            w("set-option -pg pane-border-indicators arrows")
+            w(f"{self.opt_pane} pane-border-indicators arrows")
 
         #
         #  Pane title and size
@@ -1015,8 +1004,12 @@ class BaseConfig(TmuxConfig):
             if self.show_pane_size:
                 pane_label += "(#{pane_width}x#{pane_height}) "
             if pane_label:
-                pane_label = " " + pane_label  # set initial spacer
-                w(f'\nset-option -g pane-border-format "{pane_label}"')  # pane opt
+                # set initial spacer
+                pane_label = " " + pane_label
+                w(
+                    f'{self.shell_bg} "sleep 0.2 \\; $TMUX_BIN {self.opt_pane} '
+                    f'pane-border-format \\"{pane_label}\\""'
+                )
 
         #  Display pane frame lines when more than one pane is present
         if self.vers_ok(2.7):
@@ -1045,29 +1038,29 @@ class BaseConfig(TmuxConfig):
             w(
                 'set-hook -g after-resize-pane "if-shell '
                 '\\"[ #{window_zoomed_flag} -eq 1 ]\\" '
-                '\\"set-option pane-border-status off\\" '
-                '\\"set-option pane-border-status top\\""'
+                f'\\"{self.opt_pane} pane-border-status off\\" '
+                f'\\"{self.opt_pane} pane-border-status top\\""'
             )
 
         #  Display pane frame lines when more than one pane is present
-        if self.vers_ok(2.6) or (
-            not self.is_tmate() and self.vers_ok(2.4) and not self.vers_ok(2.5)
-        ):
+        # if self.vers_ok(2.6) and not self.is_tmate() or (
+        if self.vers_ok(2.6) or (self.vers_ok(2.4) and not self.vers_ok(2.5)):
             # works in 2.4 but not in 2.5 - odd
             w(
                 "set-hook -g window-layout-changed "
-                '"set-option -w -F pane-border-status '
+                f'"{self.opt_win} -F pane-border-status '
                 '\\"#{?#{==:#{window_panes},1},off,top}\\""'
             )
         if self.show_pane_title:
             if self.vers_ok(2.6):
                 w(
-                    'bind -N "Set-Option pane title"  P  command-prompt -p '
+                    'bind -N "Set pane title"  P  command-prompt -p '
                     '"Pane title: " "select-pane -T \\"%%\\""'
                 )
             elif self.vers_ok(2.3) and not self.is_tmate():
                 w(
-                    """set-option -g pane-border-status top
+                    f"""
+                    {self.opt_pane} pane-border-status top
                     bind  P  display 'Pane title setting needs 2.6'<
                     """
                 )
@@ -1183,11 +1176,8 @@ class BaseConfig(TmuxConfig):
                 f"-n  C-M-Up     split-window -vb {self.cwd_directive}"
             )
         w()
-        w(
-            'bind -N "Split pane to the right"  C-l  '
-            f"split-window -h {self.cwd_directive}"
-        )
-        w('bind -N "Split pane below"     C-j  ' f"split-window -v {self.cwd_directive}")
+        w(f'bind -N "Split pane to the right"  C-l  split-window -h {self.cwd_directive}')
+        w(f'bind -N "Split pane below"     C-j  split-window -v {self.cwd_directive}')
         if self.vers_ok(2.0):
             w(
                 'bind -N "Split pane to the left"   C-h  '
@@ -1221,12 +1211,20 @@ class BaseConfig(TmuxConfig):
             w("bind -N 'Resize pane 5 left'  -n  M-S-Left   resize-pane -L 5")
             w("bind -N 'Resize pane 5 right' -n  M-S-Right  resize-pane -R 5")
 
-        w(
+        if self.vers_ok(0.9):
+            w(
+                """
+            bind -N "Resize pane 1 up"            -r  K          resize-pane -U
+            bind -N "Resize pane 1 down"          -r  J          resize-pane -D
             """
-        bind -N "Resize pane 1 up"            -r  K          resize-pane -U
-        bind -N "Resize pane 1 down"          -r  J          resize-pane -D
-        """
-        )
+            )
+        else:
+            w(
+                """
+            bind -N "Resize pane 1 up"            -r  K          resize-pane-up
+            bind -N "Resize pane 1 down"          -r  J          resize-pane-down
+            """
+            )
         if self.vers_ok(1.0):
             w(
                 """
@@ -1239,14 +1237,14 @@ class BaseConfig(TmuxConfig):
             if not self.vers_ok(3.3):
                 height_notice += " (add 1 for panes next to status bar)"
             w(
-                'bind -N "set-option pane size (w x h)"  s  command-prompt -p '
+                'bind -N "set pane size (w x h)"  s  command-prompt -p '
                 f'"Pane width","{height_notice}" '
                 '"resize-pane -x %1 -y %2"'
             )
         elif self.vers_ok(1.0):
             w(
                 'bind -N "Navigate not available warning"  s  '
-                'display "set-option pane size needs 1.8"'
+                'display "set pane size needs 1.8"'
             )
         w()  # spacer
 
@@ -1262,19 +1260,16 @@ class BaseConfig(TmuxConfig):
         """
         )
         if self.vers_ok(2.1):
-            w("set-option  -g mouse on\n")  # ses opt
+            w(f"{self.opt_ses} mouse on\n")
             self.mkscript_toggle_mouse()
-            w(
-                'bind -N "Toggle mouse on/off"  M  '
-                f"{self.es.run_it(self._fnc_toggle_mouse)}"
-            )
+            w(f'bind -N "Toggle mouse on/off"  M  {self.es.run_it(self._fnc_toggle_mouse)}')
         else:
-            w(f"{self.set_window_option} mode-mouse on")
+            w(f"{self.opt_win} mode-mouse on")
             if self.vers_ok(1.1):
-                w("set-option -g mouse-select-pane on")  # ses opt
+                w(f"{self.opt_ses} mouse-select-pane on")
             if self.vers_ok(1.5):
-                w("set-option -g mouse-select-window on")  # serv opt
-                w("set-option -g mouse-resize-pane on")  # serv opt
+                w(f"{self.opt_ses} mouse-select-window on")
+                w(f"{self.opt_ses} mouse-resize-pane on")
             w('bind  M  display "mouse toggle needs 2.1"')
 
         #
@@ -1284,7 +1279,7 @@ class BaseConfig(TmuxConfig):
         #  disable.
         #
         # if self.vers_ok(2.2):
-        #    w('set-option -gq mouse-utf8 off')
+        #     w(f"{self.opt_ses} mouse-utf8 off")
 
         #
         #  Zooms pane by right double click
@@ -1294,6 +1289,7 @@ class BaseConfig(TmuxConfig):
                 'bind -N "Toggle zoom for mouseovered pane" -n  DoubleClick3Pane'
                 ' resize-pane -Z -t= "{mouse}"'
             )
+        w()  # spacer
 
     # pylint: disable=too-many-branches
     def status_bar_prepare(self):
@@ -1308,9 +1304,9 @@ class BaseConfig(TmuxConfig):
         """
         )
         if self.is_tmate():
-            w("set-option -g display-time 2000")
+            w(f"{self.opt_ses} display-time 2000")
         else:
-            w("set-option -g display-time 4000")
+            w(f"{self.opt_ses} display-time 4000")
 
         w("# Allow status to grow as needed")
         if self.vers_ok(3.0):
@@ -1319,30 +1315,30 @@ class BaseConfig(TmuxConfig):
             unlimited = 999
         if self.vers_ok(1.0):
             w(  # both are ses opts
-                f"""set-option -g  status-left-length  {unlimited}
-                set-option -g  status-right-length  {unlimited}
+                f"""{self.opt_ses} status-left-length  {unlimited}
+                {self.opt_ses} status-right-length  {unlimited}
                 """
             )
         else:
             # For pre 1.0 it needs to be set to something >10
-            w("set-option -g status-left-length 30")
+            w(f"{self.opt_ses} status-left-length 30")
 
-        w(f"set-option -g  status-interval {self.status_interval}")  # ses opt
+        w(f"{self.opt_ses} status-interval {self.status_interval}")
 
         if self.vers_ok(1.7):
-            w("set-option -g  status-position bottom")
+            w(f"{self.opt_ses} status-position bottom")
 
         if self.vers_ok(1.9):
-            w("set-option -g  window-status-current-style reverse")
+            w(f"{self.opt_win} window-status-current-style reverse")
 
         if self.vers_ok(1.0):
-            w("set-option -g  status-justify left")  # ses opt
+            w(f"{self.opt_ses} status-justify left")
 
         if self.monitor_activity:
-            w("set-option -g  visual-activity off")  # ses opt
+            w(f"{self.opt_ses} visual-activity off")
         else:
             if self.vers_ok(1.0):
-                w("set-option -g  visual-activity off")  # ses opt
+                w(f"{self.opt_ses} visual-activity off")
 
         if self.vers_ok(2.2):
             self.sb_right += "#{?window_zoomed_flag, 🔍 ,}"
@@ -1439,10 +1435,11 @@ class BaseConfig(TmuxConfig):
             self.sb_right = re.sub(r"#\[.*?\]", "", self.sb_right)
         w(
             f"""
-        set-option -g  status-left "{self.sb_left}"  # ses opt
-        set-option -g  status-right "{self.sb_right}"  # ses opt
+        {self.opt_ses} status-left "{self.sb_left}"
+        {self.opt_ses} status-right "{self.sb_right}"
 
-        bind -N "Toggle status bar"  t  set-option status
+        bind -N "Toggle status bar"  t  {self.opt_ses} status
+
         """
         )
 
@@ -1504,7 +1501,7 @@ class BaseConfig(TmuxConfig):
         the "normal" case, when used for iSH console, the
         user keys will be given
         """
-        if not self.vers_ok(1.3):
+        if not self.vers_ok(1.8):
             # There is no plugin support...
             return
 
@@ -1543,10 +1540,11 @@ class BaseConfig(TmuxConfig):
         else:
             note_prefix = ""
 
-        s = f'bind -N "{note_prefix}Kill tmux server"  {muc_x}  confirm-before'
-        if self.vers_ok(1.5):
-            s += f' -p "kill tmux server {self.conf_file}? (y/n)"'
-        w(f"{s} kill-server")
+        if self.vers_ok(0.9):
+            s = f'bind -N "{note_prefix}Kill tmux server"  {muc_x}  confirm-before'
+            if self.vers_ok(1.5):
+                s += f' -p "kill tmux server {self.conf_file}? (y/n)"'
+            w(f"{s} kill-server")
 
     def auc_split_entire_window(  # used by iSH Console
         self,
@@ -1578,35 +1576,25 @@ class BaseConfig(TmuxConfig):
                 pref = "M-H - "
             else:
                 pref = ""
-            w(
-                f'{b}{pref}{n_base}horizontally left" '
-                f"{muc_h}  {sw}hb {self.cwd_directive}"
-            )
+            w(f'{b}{pref}{n_base}horizontally left" {muc_h}  {sw}hb {self.cwd_directive}')
 
             if muc_j != "M-J":
                 pref = "M-J - "
             else:
                 pref = ""
-            w(
-                f'{b}{pref}{n_base}vertically down" '
-                f"{muc_j}  "
-                f"{sw}v  {self.cwd_directive}"
-            )
+            w(f'{b}{pref}{n_base}vertically down" {muc_j}  {sw}v  {self.cwd_directive}')
 
             if muc_k != "M-K":
                 pref = "M-K - "
             else:
                 pref = ""
-            w(f'{b}{pref}{n_base}vertically up" ' f"{muc_k}  {sw}vb {self.cwd_directive}")
+            w(f'{b}{pref}{n_base}vertically up" {muc_k}  {sw}vb {self.cwd_directive}')
 
             if muc_l != "M-L":
                 pref = "M-L - "
             else:
                 pref = ""
-            w(
-                f'{b}{pref}{n_base}horizontally right" '
-                f"{muc_l}  {sw}h  {self.cwd_directive}"
-            )
+            w(f'{b}{pref}{n_base}horizontally right" {muc_l}  {sw}h  {self.cwd_directive}')
 
     #
     #  Utility methods
@@ -1628,7 +1616,7 @@ class BaseConfig(TmuxConfig):
     else
         new_state="on"
     fi
-    $TMUX_BIN set-option -g mouse $new_state
+    $TMUX_BIN {self.opt_ses} mouse $new_state
     $TMUX_BIN display "mouse: $new_state"
 }}"""
         ]
@@ -1795,7 +1783,7 @@ timer_end() {{
     def mkscript_tpm_indicator(self):
         """Changes state for tpm_initializing with params: set clear"""
         purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
-        # self.sb_purge_tpm_running = "$TMUX_BIN set-option -q status-right "
+        # self.sb_purge_tpm_running = f"$TMUX_BIN {self.opt_ses} -q status-right "
         # \\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{purge_seq}//')\\"
 
         clear_tpm_init_sh = [
@@ -1822,13 +1810,13 @@ timer_end() {{
         #
         #  Add tpm init to SB-right
         #
-        $TMUX_BIN set-option -g status-right "$sb_r_now{self.tpm_initializing}"
+        $TMUX_BIN {self.opt_ses} status-right "$sb_r_now{self.tpm_initializing}"
     elif [ "$task" = "clear" ] && [ "$tpm_running" -eq 1 ]; then
         #
         #  Remove tpm init from SB-right
         #
         sb_r_filtered="$(echo $sb_r_now | sed 's/{purge_seq}//')"
-        $TMUX_BIN set-option -g status-right "$sb_r_filtered"
+        $TMUX_BIN {self.opt_ses} status-right "$sb_r_filtered"
 
         $TMUX_BIN setenv -gu {self.tpm_working_incicator}
     fi
