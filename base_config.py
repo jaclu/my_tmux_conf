@@ -163,14 +163,14 @@ class BaseConfig(TmuxConfig):
             plugins_display=plugins_display,
         )
 
-        self.opt_server = "set-option -g"
-        self.opt_ses = "set-option -g"
+        self.opt_server = "set -g"
+        self.opt_ses = "set -g"
         if self.vers_ok(1.8):
-            self.opt_win = "set-option -wg"
+            self.opt_win = "set -wg"
         else:
             self.opt_win = "set-window-option -g"
         if self.vers_ok(3.1):
-            self.opt_pane = "set-option -pg"
+            self.opt_pane = "set -g"
         else:
             # prior to 3.1 pane options were listed as win options
             self.opt_pane = self.opt_win
@@ -862,13 +862,10 @@ class BaseConfig(TmuxConfig):
             #  Set base index for panes to 1 instead of 0
             w(f"{self.opt_pane} pane-base-index 1")
         if self.vers_ok(1.8):
-            w(f'{self.shell_bg} "sleep 0.2 \\; $TMUX_BIN {self.opt_pane} allow-rename off"')
+            w(f"{self.opt_pane} allow-rename off")
 
         if self.vers_ok(3.5):
-            w(
-                f'{self.shell_bg} "sleep 0.2 \\; '
-                f'$TMUX_BIN {self.opt_pane} allow-set-title off"'
-            )
+            w(f"{self.opt_pane} allow-set-title off")
 
         if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
             if self.vers_ok(3.2):
@@ -1001,16 +998,13 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(2.3) and not self.is_tmate():
             pane_label = ""
             if self.vers_ok(2.6) and self.show_pane_title:
-                pane_label += "#{pane_title} "
+                pane_label += "#T "
             if self.show_pane_size:
                 pane_label += "(#{pane_width}x#{pane_height}) "
             if pane_label:
                 # set initial spacer
                 pane_label = " " + pane_label
-                w(
-                    f'{self.shell_bg} "sleep 0.2 \\; $TMUX_BIN {self.opt_pane} '
-                    f'pane-border-format \\"{pane_label}\\""'
-                )
+                w(f'{self.opt_pane} pane-border-format "{pane_label}"')
 
         #  Display pane frame lines when more than one pane is present
         if self.vers_ok(2.7):
@@ -1039,8 +1033,8 @@ class BaseConfig(TmuxConfig):
             w(
                 'set-hook -g after-resize-pane "if-shell '
                 '\\"[ #{window_zoomed_flag} -eq 1 ]\\" '
-                f'\\"{self.opt_pane} pane-border-status off\\" '
-                f'\\"{self.opt_pane} pane-border-status top\\""'
+                '\\"set pane-border-status off\\" '
+                '\\"set pane-border-status top\\""'
             )
 
         #  Display pane frame lines when more than one pane is present
@@ -1055,7 +1049,7 @@ class BaseConfig(TmuxConfig):
         if self.show_pane_title:
             if self.vers_ok(2.6):
                 w(
-                    'bind -N "Set pane title"  P  command-prompt -I "#{pane_title}" -p '
+                    'bind -N "Set pane title"  P  command-prompt -p '
                     '"Pane title: " "select-pane -T \\"%%\\""'
                 )
             elif self.vers_ok(2.3) and not self.is_tmate():
