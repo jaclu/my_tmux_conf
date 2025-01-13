@@ -41,12 +41,11 @@ import os
 import re
 import sys
 
-import __main__
-
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
+import __main__
 import mtc_utils
 
 # ruff checks might be relevant F403,F401
@@ -708,10 +707,10 @@ class BaseConfig(TmuxConfig):
                 # will only trigger once per window
                 {self.opt_win} monitor-activity on"""
             )
-            if self.vers_ok(2.6):
-                w(f"{self.opt_win} monitor-bell on")
             if self.vers_ok(1.9):
                 w(f"{self.opt_win} window-status-activity-style default")
+            if self.vers_ok(2.6):
+                w(f"{self.opt_win} monitor-bell on")
         else:
             w(f"{self.opt_win} monitor-activity off")
             if self.vers_ok(2.6):
@@ -861,9 +860,6 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.8):
             w(f"{self.opt_pane} allow-rename off")
 
-        if self.vers_ok(3.5):
-            w(f"{self.opt_pane} allow-set-title off")
-
         if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
             if self.vers_ok(3.2):
                 delay = "-d 400"
@@ -878,7 +874,16 @@ class BaseConfig(TmuxConfig):
             """
             )
 
+        if self.vers_ok(3.5):
+            w(f"{self.opt_pane} allow-set-title off")
+
         w(f"bind -N 'Toggle synchronize'      *   {self.opt_pane} synchronize-panes")
+
+        if self.vers_ok(0.9):
+            s = 'bind -N "Kill pane in focus"       x  confirm-before'
+            if self.vers_ok(1.5):
+                s += ' -p "kill-pane #T (#P)? (y/n)"'
+            w(f"{s} kill-pane")
 
         #
         #  Without a sleep in between the actions, history is not cleared.
@@ -901,14 +906,6 @@ class BaseConfig(TmuxConfig):
         #  When saved with escape code, less/most fails to display
         #  cat history-file will display the included colors correctly.
         #
-        if self.vers_ok(1.8):
-            w(
-                'bind -N "Save history to prompted file name (includes escapes)"  '
-                'M-e  command-prompt -p "save history (includes escapes) to:" '
-                '-I "$TMPDIR/tmux-e.history" "capture-pane -S - -E - -e \\; '
-                'save-buffer %1 \\; delete-buffer"'
-            )
-
         s = 'bind -N "Save history to prompted file name (no escapes)"  M-h  command-prompt'
         if self.vers_ok(1.0):
             s += ' -p "save history (no escapes) to:"'
@@ -918,6 +915,13 @@ class BaseConfig(TmuxConfig):
         else:
             s2 = "$TMPDIR/tmux.history"
         w(f'{s} "capture-pane -S - -E - \\; save-buffer {s2} \\; delete-buffer"')
+        if self.vers_ok(1.8):
+            w(
+                'bind -N "Save history to prompted file name (includes escapes)"  '
+                'M-e  command-prompt -p "save history (includes escapes) to:" '
+                '-I "$TMPDIR/tmux-e.history" "capture-pane -S - -E - -e \\; '
+                'save-buffer %1 \\; delete-buffer"'
+            )
 
         if self.vers_ok(1.2):
             w(
@@ -926,11 +930,6 @@ class BaseConfig(TmuxConfig):
                 bind -N "Chose paste buffer(-s)"  B  choose-buffer
                 """
             )
-        if self.vers_ok(0.9):
-            s = 'bind -N "Kill pane in focus"       x  confirm-before'
-            if self.vers_ok(1.5):
-                s += ' -p "kill-pane #T (#P)? (y/n)"'
-            w(f"{s} kill-pane")
         w()  # spacer between sections
 
         #
@@ -1168,18 +1167,6 @@ class BaseConfig(TmuxConfig):
         #
         """
         )
-        if self.vers_ok(1.2):
-            # keys without prefix never needs repeat set
-            w("bind -N 'Resize pane 1 up    - P K'   -n  C-S-Up     resize-pane -U")
-            w("bind -N 'Resize pane 1 down  - P J'   -n  C-S-Down   resize-pane -D")
-            w("bind -N 'Resize pane 1 left  - P H'   -n  C-S-Left   resize-pane -L")
-            w("bind -N 'Resize pane 1 right - P L'   -n  C-S-Right  resize-pane -R")
-
-            w("bind -N 'Resize pane 5 up'    -n  M-S-Up     resize-pane -U 5")
-            w("bind -N 'Resize pane 5 down'  -n  M-S-Down   resize-pane -D 5")
-            w("bind -N 'Resize pane 5 left'  -n  M-S-Left   resize-pane -L 5")
-            w("bind -N 'Resize pane 5 right' -n  M-S-Right  resize-pane -R 5")
-
         if self.vers_ok(0.9):
             w(
                 """
@@ -1201,6 +1188,17 @@ class BaseConfig(TmuxConfig):
             bind -N "Resize pane 1 right"         -r  L          resize-pane -R
             """
             )
+        if self.vers_ok(1.2):
+            # keys without prefix never needs repeat set
+            w("bind -N 'Resize pane 1 up    - P K'   -n  C-S-Up     resize-pane -U")
+            w("bind -N 'Resize pane 1 down  - P J'   -n  C-S-Down   resize-pane -D")
+            w("bind -N 'Resize pane 1 left  - P H'   -n  C-S-Left   resize-pane -L")
+            w("bind -N 'Resize pane 1 right - P L'   -n  C-S-Right  resize-pane -R")
+
+            w("bind -N 'Resize pane 5 up'    -n  M-S-Up     resize-pane -U 5")
+            w("bind -N 'Resize pane 5 down'  -n  M-S-Down   resize-pane -D 5")
+            w("bind -N 'Resize pane 5 left'  -n  M-S-Left   resize-pane -L 5")
+            w("bind -N 'Resize pane 5 right' -n  M-S-Right  resize-pane -R 5")
         if self.vers_ok(1.8):
             height_notice = "Pane height"
             if not self.vers_ok(3.3):
@@ -1272,10 +1270,16 @@ class BaseConfig(TmuxConfig):
         #======================================================
         """
         )
+        w(f"{self.opt_ses} status-interval {self.status_interval}")
+
         if self.is_tmate():
             w(f"{self.opt_ses} display-time 2000")
         else:
             w(f"{self.opt_ses} display-time 4000")
+        if self.vers_ok(1.0):
+            w(f"{self.opt_ses} status-justify left")
+        if self.vers_ok(1.0) and self.monitor_activity:
+            w(f"{self.opt_ses} visual-activity off")
 
         w("# Allow status to grow as needed")
         if self.vers_ok(3.0):
@@ -1292,23 +1296,15 @@ class BaseConfig(TmuxConfig):
             # For pre 1.0 it needs to be set to something >10
             w(f"{self.opt_ses} status-left-length 30")
 
-        w(f"{self.opt_ses} status-interval {self.status_interval}")
-
         if self.vers_ok(1.7):
             w(f"{self.opt_ses} status-position bottom")
 
         if self.vers_ok(1.9):
             w(f"{self.opt_win} window-status-current-style reverse")
 
-        if self.vers_ok(1.0):
-            w(f"{self.opt_ses} status-justify left")
-
-        if self.monitor_activity:
-            w(f"{self.opt_ses} visual-activity off")
-        else:
-            if self.vers_ok(1.0):
-                w(f"{self.opt_ses} visual-activity off")
-
+        #
+        #  Status bar assignments must come in intent order, not sorted by version!
+        #
         if self.vers_ok(2.2):
             self.sb_right += "#{?window_zoomed_flag, 🔍 ,}"
         elif self.vers_ok(2.0):
