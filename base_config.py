@@ -421,36 +421,6 @@ class BaseConfig(TmuxConfig):
                 w(f"{self.opt_server} default-terminal tmux-256color")
 
         #
-        #  Support for CSI u  extended keys
-        #
-        #    https://github.com/tmux/tmux/wiki/Modifier-Keys#extended-keys
-        #
-        #  Some apps like iTerm2 don't need it, but it never hurts
-        #
-        if self.vers_ok(3.2):
-            w(f"{self.opt_server} extended-keys on")
-            #
-            #  not needed for all terminal apps, but since it doesn't hurt,
-            #  it makes sense to always include it
-            #
-            w(f"{self.opt_server} -a terminal-features 'xterm*:extkeys'")
-
-        #
-        #  24-bit color
-        #
-        #  This causes colors to completely fail on mosh < 1.4 connections,
-        #
-        if self.vers_ok(3.2):
-            w(f'{self.opt_server} -a terminal-features ",gnome*:{self.use_24bit_color}"')
-        elif self.vers_ok(2.2) and self.use_24bit_color:
-            if not self.vers_ok(2.7):
-                #
-                #  RGB not supported until 2.7
-                #
-                self.color_tag_24bit = "Tc"
-            w(f"{self.opt_server} -a terminal-overrides ',*:{self.color_tag_24bit}'")
-
-        #
         #  Making OSC 52 work on mosh connections.
         #  For this to work the term name used must match, hence * :)
         #  from: https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
@@ -464,6 +434,13 @@ class BaseConfig(TmuxConfig):
             )
 
         #
+        #  Enable focus events for terminals that support them to be passed
+        #  through to applications running inside tmux
+        #
+        if self.vers_ok(1.9):
+            w(f"{self.opt_server} focus-events on")
+
+        #
         #  For old tmux versions, this is needed to support modifiers for
         #  function keys
         #
@@ -473,11 +450,28 @@ class BaseConfig(TmuxConfig):
             w(f"{self.opt_win} xterm-keys on")
 
         #
-        #  Enable focus events for terminals that support them to be passed
-        #  through to applications running inside tmux
+        #  Support for CSI u  extended keys
         #
-        if self.vers_ok(1.9):
-            w(f"{self.opt_server} focus-events on")
+        #    https://github.com/tmux/tmux/wiki/Modifier-Keys#extended-keys
+        #
+        #  Some apps like iTerm2 don't need it, but it never hurts
+        #
+        if self.vers_ok(3.2):
+            w(f"{self.opt_server} extended-keys on")
+            #
+            #  not needed for all terminal apps, but since it doesn't hurt,
+            #  it makes sense to always include it
+            #
+            w(f"{self.opt_server} -a terminal-features 'xterm*:extkeys'")
+            w(f'{self.opt_server} -a terminal-features ",gnome*:{self.use_24bit_color}"')
+        elif self.vers_ok(2.2) and self.use_24bit_color:
+            #  24-bit color on older versions
+            #  This causes colors to completely fail on mosh < 1.4 connections,
+            #  so in the unlikely event that is used, disable use_24bit_color
+            if not self.vers_ok(2.7):
+                #  RGB not supported until 2.7
+                self.color_tag_24bit = "Tc"
+            w(f"{self.opt_server} -a terminal-overrides ',*:{self.color_tag_24bit}'")
 
         w()  # spacer between sections
 
@@ -493,6 +487,14 @@ class BaseConfig(TmuxConfig):
         #======================================================
         """
         )
+        if self.vers_ok(1.1):
+            self.mkscript_shlvl_offset()
+            w(
+                f"""
+                # Save correction factor for displaying SHLVL inside tmux
+                {self.es.run_it(self._fnc_shlvl_offset, in_bg=True)}"""
+            )
+
         if os.getenv("TMUX_NO_CLIPBOARD"):
             # On ssh/mosh connections, when running an asdf tmux with local
             # version changed.
@@ -507,14 +509,6 @@ class BaseConfig(TmuxConfig):
             #     w(f"{self.opt_server}set-clipboard external")
             if self.vers_ok(1.5):
                 w(f"{self.opt_server} set-clipboard on")
-
-        if self.vers_ok(1.1):
-            self.mkscript_shlvl_offset()
-            w(
-                f"""
-                # Save correction factor for displaying SHLVL inside tmux
-                {self.es.run_it(self._fnc_shlvl_offset, in_bg=True)}"""
-            )
 
         #
         #  Common variable telling plugins if -N notation is wanted
@@ -532,10 +526,6 @@ class BaseConfig(TmuxConfig):
                 """
             )
 
-        #  Seems to mess with ish-console, so trying without it
-        # if self.vers_ok(2.8):
-        #     w('bind Any display "This key is not bound to any action"\n')
-
         nav_key = "N"
         if self.vers_ok(2.7):
             w(f'bind -N "Navigate ses/win/pane"     {nav_key}    choose-tree -O time -sZ')
@@ -544,7 +534,10 @@ class BaseConfig(TmuxConfig):
                 f'bind -N "Navigate ses/win/pane not available warning"  {nav_key}  '
                 'display "Navigate needs 2.7"'
             )
-        # w()  # Spacer
+
+        if self.vers_ok(2.8) and not mtc_utils.IS_ISH:
+            #  Seems to mess with ish-console
+            w('bind Any display "This key is not bound to any action"\n')
 
         scrpad_min_vers = 3.2
         scrpad_key = "O"  # P being taken this is pOpup :)
@@ -561,11 +554,13 @@ class BaseConfig(TmuxConfig):
                 f'bind -N "pOpup not available warning"  {scrpad_key}  '
                 f'display "pOpup scratchpad session needs {scrpad_min_vers}"'
             )
+
         if self.vers_ok(1.0):
             show_action = f'\\; display "{self.conf_file} sourced"'
         else:
             show_action = ""
         w(f'bind -N  "Source {self.conf_file}"  R  source {self.conf_file} {show_action}')
+
         self.auc_display_plugins_used()
         self.auc_kill_tmux_server()
         if self.prefix_arrow_nav_keys:
@@ -611,30 +606,6 @@ class BaseConfig(TmuxConfig):
             w()  # spacer
 
         w(f"{self.opt_ses} set-titles on")
-        if self.vers_ok(1.0):
-            # setting terminal app title - not sure if this is desired
-            w(
-                f"{self.opt_ses} set-titles-string "
-                '"#{host_short} - '
-                f"tmux {self.vers.get()}"
-                ' - #{session_name}:#{window_name}:#T"'
-            )
-
-        if self.vers_ok(3.2):
-            #  will switch to any detached session, when no more active ones
-            w(f"{self.opt_ses} detach-on-destroy no-detached")
-        if self.vers_ok(1.0):
-            w(f"{self.opt_ses} base-index 1")
-        if self.vers_ok(1.7):
-            w(f"{self.opt_ses} renumber-windows on")
-
-        elif self.vers_ok(1.2):
-            w(f"{self.opt_ses} detach-on-destroy off")
-        w(
-            f"""{self.opt_ses} repeat-time 750
-        {self.opt_ses} history-limit 5000
-        {self.opt_ses} status-keys emacs"""
-        )
 
         #
         # This prevents path_helper and similar tools from messing up PATH
@@ -656,6 +627,37 @@ class BaseConfig(TmuxConfig):
                     'TERM=screen-256color \\; ${SHELL}"'
                 )
             w()  # spacer
+
+        if self.vers_ok(1.0):
+            # setting terminal app title - not sure if this is desired
+            w(f"{self.opt_ses} base-index 1")
+            w(
+                f"{self.opt_ses} set-titles-string "
+                '"#{host_short} - '
+                f"tmux {self.vers.get()}"
+                ' - #{session_name}:#{window_name}:#T"'
+            )
+        if self.vers_ok(1.7):
+            w(f"{self.opt_ses} renumber-windows on")
+        elif self.vers_ok(1.2):
+            w(f"{self.opt_ses} detach-on-destroy off")
+        if self.vers_ok(3.2):
+            #  will switch to any detached session, when no more active ones
+            w(f"{self.opt_ses} detach-on-destroy no-detached")
+
+        w(
+            f"""
+        {self.opt_ses} repeat-time 750
+        {self.opt_ses} history-limit 5000
+        {self.opt_ses} status-keys emacs
+        """
+        )
+
+        if self.vers_ok(0.9):
+            s = 'bind -N "Kill session in focus"  M-x  confirm-before'
+            if self.vers_ok(1.5):
+                s += ' -p "Kill session: #{session_name}? (y/n)"'
+            w(f"{s} kill-session")
 
         s = 'bind -N "Create new session  - M-+"  +  command-prompt'
         if self.vers_ok(1.5):
@@ -684,12 +686,6 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.5):
             s += ' -I "#S"'
         w(f'{s} "rename-session -- \\"%%\\""')
-
-        if self.vers_ok(0.9):
-            s = 'bind -N "Kill session in focus"  M-x  confirm-before'
-            if self.vers_ok(1.5):
-                s += ' -p "Kill session: #{session_name}? (y/n)"'
-            w(f"{s} kill-session")
 
         w()  # spacer between sections
 
