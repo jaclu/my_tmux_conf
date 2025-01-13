@@ -166,9 +166,10 @@ class BaseConfig(TmuxConfig):
         self.opt_server = "set -g"
         self.opt_ses = "set -g"
         if self.vers_ok(1.8):
-            self.opt_win = "set -wg"
+            self.opt_win_loc = "set -w"
         else:
-            self.opt_win = "set-window-option -g"
+            self.opt_win_loc = "set-window-option"
+        self.opt_win = f"{self.opt_win_loc} -g"
         if self.vers_ok(3.1):
             self.opt_pane = "set -g"
         else:
