@@ -957,13 +957,7 @@ class BaseConfig(TmuxConfig):
         #"""
         )
         #
-        #  Remaining issue, in tmux 2.3-2.5 a single pane will show the top
-        #  border unless there are multiple frames and the current is zoomed.
-        #  Slightly annoying I haven't sorted that out, but since these versions
-        #  are rarely used outside tmate, I leave it for now...
-        #
-        #  If you get frame lines drawn as x and q, you need to set
-        #  an UTF-8 LANG
+        #  If you get frame lines drawn as x and q, you need to set an UTF-8 LANG
         #  sample: export LANG=en_US.UTF-8
         #  You should also be able to solve it by starting tmux with param -u
         #  Finally here is an in tmux hack to solve the pane border issue
@@ -986,14 +980,8 @@ class BaseConfig(TmuxConfig):
             """
             )
 
-        if self.vers_ok(3.2):
-            w(f"{self.opt_pane} pane-border-lines single")
-
-        if self.vers_ok(3.3):
-            w(f"{self.opt_pane} pane-border-indicators arrows")
-
         #
-        #  Pane title and size
+        #  Display custom pane borders and title if >= 2.6
         #
         if self.vers_ok(2.3) and not self.is_tmate():
             pane_label = ""
@@ -1006,46 +994,35 @@ class BaseConfig(TmuxConfig):
                 pane_label = " " + pane_label
                 w(f'{self.opt_pane} pane-border-format "{pane_label}"')
 
-        #  Display pane frame lines when more than one pane is present
-        if self.vers_ok(2.7):
+            # new windows with just one pane should not display pane border lines
+            w('set-hook -g after-new-window "set -w pane-border-status off"')
+
+            #  Display pane border lines when more than one pane is present
+            if self.vers_ok(2.6):  # and not self.vers_ok(2.5)):
+                extra_opt = "-F"
+            else:
+                extra_opt = ""
             w(
-                """
-                set-hook -g after-split-window  "selectp -T '#D'"
-                set-hook -g after-new-session   "selectp -T '#D'"
-                set-hook -g after-new-window    "selectp -T '#D'"
-                """
-            )
-        elif self.vers_ok(2.6):
-            # odd on 2.6 display "#D" shows pane id but it can't be used
-            # as pane title
-            w(
-                """
-                set-hook -g after-split-window  "selectp -T ''"
-                set-hook -g after-new-session   "selectp -T ''"
-                set-hook -g after-new-window    "selectp -T ''"
-                """
+                f"set-hook -g window-layout-changed '{self.opt_win_loc} {extra_opt} "
+                'pane-border-status "#{?#{==:#{window_panes},1},off,top}"'
+                "'"  # end quote for 'set
             )
 
-        if self.vers_ok(2.3) and not self.is_tmate():
             # Hide frame lines when zoomed
-            # zoom was introduced in tmux 1.8
-            # set-hook in 2.3
             w(
-                'set-hook -g after-resize-pane "if-shell '
-                '\\"[ #{window_zoomed_flag} -eq 1 ]\\" '
-                '\\"set pane-border-status off\\" '
-                '\\"set pane-border-status top\\""'
+                "set-hook -g after-resize-pane '"
+                'if-shell "[ #{window_zoomed_flag} -eq 1 ]" '
+                f'"{self.opt_win_loc} pane-border-status off" '
+                f'"{self.opt_win_loc} pane-border-status top"'
+                "'"  # end quote for 'if-shell
             )
 
-        #  Display pane frame lines when more than one pane is present
-        # if self.vers_ok(2.6) and not self.is_tmate() or (
-        if self.vers_ok(2.6) or (self.vers_ok(2.4) and not self.vers_ok(2.5)):
-            # works in 2.4 but not in 2.5 - odd
-            w(
-                "set-hook -g window-layout-changed "
-                f'"{self.opt_win} -F pane-border-status '
-                '\\"#{?#{==:#{window_panes},1},off,top}\\""'
-            )
+        if self.vers_ok(3.2):
+            w(f"{self.opt_pane} pane-border-lines single")
+
+        if self.vers_ok(3.3):
+            w(f"{self.opt_pane} pane-border-indicators arrows")
+
         if self.show_pane_title:
             if self.vers_ok(2.6):
                 w(
@@ -1056,7 +1033,7 @@ class BaseConfig(TmuxConfig):
                 w(
                     f"""
                     {self.opt_pane} pane-border-status top
-                    bind  P  display 'Pane title setting needs 2.6'<
+                    bind  P  display 'Pane title setting needs 2.6'
                     """
                 )
 
