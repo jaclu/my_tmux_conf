@@ -1001,7 +1001,7 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(2.3) and not self.is_tmate():
             pane_label = ""
             if self.vers_ok(2.6) and self.show_pane_title:
-                pane_label += "#T "
+                pane_label += "#{pane_title} "
             if self.show_pane_size:
                 pane_label += "(#{pane_width}x#{pane_height}) "
             if pane_label:
@@ -1055,7 +1055,7 @@ class BaseConfig(TmuxConfig):
         if self.show_pane_title:
             if self.vers_ok(2.6):
                 w(
-                    'bind -N "Set pane title"  P  command-prompt -p '
+                    'bind -N "Set pane title"  P  command-prompt -I "#{pane_title}" -p '
                     '"Pane title: " "select-pane -T \\"%%\\""'
                 )
             elif self.vers_ok(2.3) and not self.is_tmate():
