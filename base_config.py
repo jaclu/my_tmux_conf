@@ -535,8 +535,7 @@ class BaseConfig(TmuxConfig):
                 'display "Navigate needs 2.7"'
             )
 
-        if self.vers_ok(2.8) and not mtc_utils.IS_ISH:
-            #  Seems to mess with ish-console
+        if self.vers_ok(2.8):
             w('bind Any display "This key is not bound to any action"\n')
 
         scrpad_min_vers = 3.2
