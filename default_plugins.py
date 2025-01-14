@@ -70,6 +70,7 @@ class DefaultPlugins(BaseConfig):
     #  Default plugins that can be disabled
     #
     skip_plugin_extracto = False
+    skip_plugin_fzf_session_switch = False
     skip_plugin_mouse_swipe = False
     skip_plugin_resurrect = False
     skip_plugin_session_wizard = False
@@ -161,6 +162,13 @@ class DefaultPlugins(BaseConfig):
 
         return True  # request footer to be printed
 
+    #
+    #  Plugin functions should return a list containing:
+    #    - name of plugin (where to download it on github if TPM is used)
+    #    - min version of tmux it supports (-1 means plugin is ignored)
+    #    - text blob, containing plugin config, written to tmux conf
+    #
+
     def plugin_better_mouse_mode(self) -> list:  # [str | float | int]:  # 2.1
         """A tmux plugin to better manage the mouse.
         Emulate mouse scrolling for full-screen programs that doesn't
@@ -205,6 +213,22 @@ class DefaultPlugins(BaseConfig):
             set -g @extrakto_clip_tool_run "tmux_osc52"
             # dont use server clipboard tool paste with <prefix> ]
             set -g @extrakto_clip_tool ">/dev/null"
+            """,
+        ]
+
+    def plugin_fzf_session_switch(self) -> list:  # 3.3
+        # can be used on older versions with limitations
+        if self.skip_plugin_fzf_session_switch:
+            vers_min = -1.0
+        else:
+            vers_min = 3.3
+        return [
+            "vndmp4/tmux-fzf-session-switch",
+            vers_min,
+            """
+            # set -g @fzf-goto-session 's'  # trigger key
+            # set -g @fzf-goto-session-without-prefix 'true'
+            # set-option -g @fzf-goto-session-only 'true'
             """,
         ]
 
@@ -288,7 +312,8 @@ class DefaultPlugins(BaseConfig):
         resurect_dir = f"{os.path.dirname(plugins_dir)}/resurrect"
 
         procs = "zsh bash ash ssh sudo top htop watch psql mysql sqlite sqlite3 "
-        procs += "glow bat batcat 'tail *' '~check-connectivity.sh *'"
+        procs += "glow bat batcat 'tail *' announce_disconnect "
+        procs += "'check-connectivity.sh *' uptime-tracker"
 
         conf = f"""
         #
@@ -306,10 +331,6 @@ class DefaultPlugins(BaseConfig):
         #  Env dependent settings for tmux-plugins/tmux-resurrect
         set -g @resurrect-dir "{resurect_dir}"
         """
-        #  Line continuation without passing col 80 here
-        # conf += "mysql glow sqlite sqlite3 top htop  ~packet_loss "
-        # conf += "~common_pull ~sysload_tracker ~Mbrew ~Mapt'\n"
-
         return ["jaclu/tmux-resurrect", min_vers, conf]
 
     def plugin_session_wizard(self) -> list:  # 3.2
