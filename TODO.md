@@ -1,5 +1,9 @@
 # TODO
 
+## plugins to check
+
+[fzf](https://github.com/cutbypham/tmux-fzf-session-switch)
+
 ## <prefix> M-P list plugins fails
 
 same cmd on cmd line works - odd
