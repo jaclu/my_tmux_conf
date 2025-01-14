@@ -193,7 +193,16 @@ class DefaultPlugins(BaseConfig):
 
     def plugin_extracto(self) -> list:  # 3.2
         # can be used on older versions with limitations
-        return ["laktak/extrakto", 3.2, ""]
+        return [
+            "laktak/extrakto",
+            3.2,
+            """
+                set -g @extrakto_grab_area "window recent"
+                set -g @extrakto_clip_tool_run "tmux_osc52"
+                # dont use server clipboard tool paste with <prefix> ]
+                set -g @extrakto_clip_tool ">/dev/null"
+                """,
+        ]
 
     def plugin_menus(self) -> list:  # 1.7
         self.write()
