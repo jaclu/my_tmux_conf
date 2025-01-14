@@ -602,6 +602,8 @@ class BaseConfig(TmuxConfig):
                 f'bind -N "Repeats sends {self.prefix_key} through"  '
                 f"{self.prefix_key}  send-prefix"
             )
+            # in tmux-sensible it was recommended to bind prefix + same char without ctrl
+            # to last-window, not sure, but perhaps a good idea?
             w()  # spacer
 
         w(f"{self.opt_ses} set-titles on")
