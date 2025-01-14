@@ -2,7 +2,7 @@
 #
 #  -*- mode: python; mode: fold -*-
 #
-#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2025: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -70,14 +70,13 @@ class DefaultPlugins(BaseConfig):
     #  Default plugins that can be disabled
     #
     skip_plugin_extracto = False
-    skip_plugin_fzf_session_switch = False
     skip_plugin_mouse_swipe = False
     skip_plugin_resurrect = False
     skip_plugin_session_wizard = False
     if INNER_TMUX:
         #  Doesn't make much sense in an inner tmux
         skip_plugin_mouse_swipe = True
-        skip_plugin_session_wizard = True
+        # skip_plugin_session_wizard = True
 
     #
     #  Optional plugins, need to be enabled. Be aware since they are
@@ -216,22 +215,6 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_fzf_session_switch(self) -> list:  # 3.3
-        # can be used on older versions with limitations
-        if self.skip_plugin_fzf_session_switch:
-            vers_min = -1.0
-        else:
-            vers_min = 3.3
-        return [
-            "vndmp4/tmux-fzf-session-switch",
-            vers_min,
-            """
-            # set -g @fzf-goto-session 's'  # trigger key
-            # set -g @fzf-goto-session-without-prefix 'true'
-            # set-option -g @fzf-goto-session-only 'true'
-            """,
-        ]
-
     def plugin_menus(self) -> list:  # 1.7
         #  Tested down to vers 1.7
         return [
@@ -343,7 +326,9 @@ class DefaultPlugins(BaseConfig):
         return [
             "27medkamal/tmux-session-wizard",
             vers_min,
-            "#  Default trigger: <prefix> T",
+            """
+            # set -g @session-wizard "T"  # trigger
+            """,
         ]
 
     def plugin_suspend(self) -> list:  # 2.4
