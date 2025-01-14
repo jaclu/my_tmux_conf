@@ -191,6 +191,10 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
+    def plugin_extracto(self) -> list:  # 3.2
+        # can be used on older versions with limitations
+        return ["laktak/extrakto", 3.2, ""]
+
     def plugin_menus(self) -> list:  # 1.7
         self.write()
         #  Tested down to vers 1.7

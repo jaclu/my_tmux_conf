@@ -110,13 +110,6 @@ class T2(SB):  # type: ignore
                 """
             )
 
-    #
-    #  Override default plugins with empty stubs for plugins
-    #  not wanted in T2_ENV
-    #  not_ prefix is when I temp allow them, but keeping the opt out
-    #  in case I want them gone again
-    #
-
 
 if __name__ == "__main__":
     T2().run()
