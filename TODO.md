@@ -2,7 +2,7 @@
 
 ## plugins to check
 
-[fzf](https://github.com/cutbypham/tmux-fzf-session-switch)
+[try to be mostly bind compatible](https://github.com/tmux-plugins/tmux-pain-control)
 
 ## <prefix> M-P list plugins fails
 
