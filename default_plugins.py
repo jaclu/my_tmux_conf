@@ -69,14 +69,14 @@ class DefaultPlugins(BaseConfig):
     #
     #  Default plugins that can be disabled
     #
+    skip_plugin_extracto = False
+    skip_plugin_mouse_swipe = False
     skip_plugin_resurrect = False
+    skip_plugin_session_wizard = False
     if INNER_TMUX:
         #  Doesn't make much sense in an inner tmux
         skip_plugin_mouse_swipe = True
         skip_plugin_session_wizard = True
-    else:
-        skip_plugin_mouse_swipe = False
-        skip_plugin_session_wizard = False
 
     #
     #  Optional plugins, need to be enabled. Be aware since they are
@@ -193,19 +193,22 @@ class DefaultPlugins(BaseConfig):
 
     def plugin_extracto(self) -> list:  # 3.2
         # can be used on older versions with limitations
+        if self.skip_plugin_extracto:
+            vers_min = -1.0
+        else:
+            vers_min = 3.2
         return [
             "laktak/extrakto",
-            3.2,
+            vers_min,
             """
-                set -g @extrakto_grab_area "window recent"
-                set -g @extrakto_clip_tool_run "tmux_osc52"
-                # dont use server clipboard tool paste with <prefix> ]
-                set -g @extrakto_clip_tool ">/dev/null"
-                """,
+            set -g @extrakto_grab_area "window recent"
+            set -g @extrakto_clip_tool_run "tmux_osc52"
+            # dont use server clipboard tool paste with <prefix> ]
+            set -g @extrakto_clip_tool ">/dev/null"
+            """,
         ]
 
     def plugin_menus(self) -> list:  # 1.7
-        self.write()
         #  Tested down to vers 1.7
         return [
             "jaclu/tmux-menus",
