@@ -206,7 +206,10 @@ class DefaultPlugins(BaseConfig):
         ]
 
     def plugin_extrakto(self) -> list:  # 3.2
-        # can be used on older versions with limitations
+        """Can be used on older versions with limitations
+        Popup allowing for selection of items on screen
+        Default trigger: <prefix> Tab
+        """
         if self.skip_plugin_extrakto:
             vers_min = -1.0
         else:
