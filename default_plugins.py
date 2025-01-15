@@ -207,12 +207,12 @@ class DefaultPlugins(BaseConfig):
 
     def plugin_extracto(self) -> list:  # 3.2
         # can be used on older versions with limitations
-        if self.skip_plugin_extracto:
+        if self.skip_plugin_extracto or self.t2_env:
             vers_min = -1.0
         else:
             vers_min = 3.2
         return [
-            "laktak/extrakto",
+            "jaclu/extrakto",
             vers_min,
             """
             set -g @extrakto_grab_area "window recent"
