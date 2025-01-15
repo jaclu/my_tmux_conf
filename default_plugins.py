@@ -33,7 +33,7 @@ from base import BaseConfig  # BaseConfig
 #  case this is run directly on the ishConsole, in all other cases it will
 #  do nothing
 #
-from mtc_utils import INNER_TMUX, IS_ISH
+from mtc_utils import INNER_TMUX, IS_ISH, IS_TERMUX
 
 
 class DefaultPlugins(BaseConfig):
@@ -227,7 +227,8 @@ class DefaultPlugins(BaseConfig):
         without having to use the mouse.
         Default trigger: <prefix> j
         """
-        if self.skip_plugin_jump:
+        if self.skip_plugin_jump or IS_TERMUX:
+            # it seems Termux fails to handle ttys
             min_vers = -1.0  # Dont use
         else:
             min_vers = 2.4
