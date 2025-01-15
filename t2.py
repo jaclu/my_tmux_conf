@@ -53,7 +53,6 @@ class T2(SB):  # type: ignore
     #
     # use_plugin_1password = True
     # use_plugin_battery = True
-    # use_plugin_jump = True
     # use_plugin_keyboard_type = True
     # use_plugin_mullvad = True
     # use_plugin_packet_loss = True

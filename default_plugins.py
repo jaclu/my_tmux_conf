@@ -85,7 +85,6 @@ class DefaultPlugins(BaseConfig):
     #
     use_plugin_1password = False
     use_plugin_battery = False
-    use_plugin_jump = False
     use_plugin_keyboard_type = False
     use_plugin_mullvad = False
     use_plugin_packet_loss = False
@@ -168,6 +167,13 @@ class DefaultPlugins(BaseConfig):
     #    - text blob, containing plugin config, written to tmux conf
     #
 
+    # ----------------------------------------------------------
+    #
+    #  Group one, plugins I typically always use, unless it is redundant
+    #  in an inner session, or is to resource demanding on limited nodes
+    #
+    # ----------------------------------------------------------
+
     def plugin_better_mouse_mode(self) -> list:  # [str | float | int]:  # 2.1
         """A tmux plugin to better manage the mouse.
         Emulate mouse scrolling for full-screen programs that doesn't
@@ -215,8 +221,8 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_menus(self) -> list:  # 1.7
-        #  Tested down to vers 1.7
+    def plugin_menus(self) -> list:  # 1.8
+        #  Tested down to vers 1.8
         return [
             "jaclu/tmux-menus",
             1.8,
@@ -376,32 +382,18 @@ class DefaultPlugins(BaseConfig):
 
     # ==========================================================
     #
-    #  Optional pluguins, disables by default
+    #  Optional pluguins, disablesd by default
     #  Since thye need to be enabled to be used, here there are
     #  no env checks deciding if they will be enabled
     #
     # ==========================================================
 
-    def plugin_1password(self):  # ?.?  local
-        """Plugin for 1password CLI tool
-        Does not seem to use the status bar"""
-        if self.use_plugin_1password:
-            min_vers = 1.9  # Unknown min version 1.9 seems ok
-        else:
-            min_vers = -1.0  # Dont use
-
-        return [
-            "yardnsm/tmux-1password",
-            min_vers,
-            """
-                # set -g @1password-key 'u' # default 'u'
-                # set -g @1password-account 'acme' # default 'my'
-                # set -g @1password-vault 'work' # default '' (all)
-                # set -g @1password-copy-to-clipboard 'on' # default 'off'
-                # set -g @1password-filter-tags 'development,servers'
-                # set -g @1password-debug 'on' # default 'off'
-                """,
-        ]
+    # ----------------------------------------------------------
+    #
+    #  First plugins only meaningful to run on a local server,
+    #  interacting with battery, music players etc
+    #
+    # ----------------------------------------------------------
 
     def plugin_battery(self):  # 2.2
         """Forked from: https://github.com/tmux-plugins/tmux-battery
@@ -425,53 +417,6 @@ class DefaultPlugins(BaseConfig):
             min_vers,
             """
             set -g @batt_remain_short 'true'
-            """,
-        ]
-
-    def plugin_jump(self) -> list:  # 1.8
-        """Jump to word(-s) on the screen that you want to copy,
-        without having to use the mouse.
-        Default trigger: <prefix> j
-        """
-        if self.use_plugin_jump:
-            min_vers = 1.8
-        else:
-            min_vers = -1.0  # Dont use
-
-        return [
-            "jaclu/tmux-jump",  # was Lenbok
-            min_vers,
-            #
-            #  The weird jump key syntax below is how I both sneak in
-            #  a note and make the key not to depend on prefix :)
-            #
-            """#  Additional dependency: ruby >= 2.3
-            set -g @jump-key "-N plugin_Lenbok/tmux-jump -n  M-j"
-            set -g @jump-keys-position 'off_left'
-            """,
-        ]
-
-    def plugin_keyboard_type(self):  # 1.9
-        """Display in status-bar with:  #{keyboard_type}
-        When displaying takes 0.8 s to process...
-
-        Only meaningful for local tmux!
-        Tested envs: Darwin, Linux"""
-        if self.use_plugin_keyboard_type:
-            min_vers = 1.9
-        else:
-            min_vers = -1.0  # Dont use
-
-        return [
-            "jaclu/tmux-keyboard-type",
-            min_vers,
-            """
-            set -g @keyboard_type_hidden  "ABC|U.S.|USInternational-PC"
-            set -g @keyboard_type_aliases "Swe=Swedish-Pro|Swe=Swedish|US=U.S."
-            set -g @keyboard_type_fg ""
-            set -g @keyboard_type_bg "green"
-            set -g @keyboard_type_prefix ""
-            set -g @keyboard_type_suffix " "
             """,
         ]
 
@@ -518,6 +463,82 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
+    def plugin_spotify_info(self):  # 1.9
+        """Only usable on MacOS!
+
+        Forked from https://github.com/jdxcode/tmux-spotify-info
+        My modifications:
+        Limited max output length - the default sometimes completely
+        filled the status line if one of the reported fields were
+        really long
+
+        Display in status-bar with: #(tmux-spotify-info)"""
+        if self.use_plugin_spotify_info:
+            min_vers = 1.9
+        else:
+            min_vers = -1.0  # Dont use
+        if self.vers_ok(2.9):
+            conf = """
+            #  Version dependent settings for jaclu/tmux-spotify-info
+            """
+            conf += "bind -N 'Toggle Spotify' -n MouseDown3StatusRight "
+            conf += 'run "spotify pause > /dev/null"'
+        else:
+            conf = ""
+        return ["jaclu/tmux-spotify-info", min_vers, conf]
+
+    # ----------------------------------------------------------
+    #
+    #  General plugins that makes sense in some conditions
+    #  interacting with battery, music players etc
+    #
+    # ----------------------------------------------------------
+
+    def plugin_1password(self):  # ?.?  local
+        """Plugin for 1password CLI tool
+        Does not seem to use the status bar"""
+        if self.use_plugin_1password:
+            min_vers = 1.9  # Unknown min version 1.9 seems ok
+        else:
+            min_vers = -1.0  # Dont use
+
+        return [
+            "yardnsm/tmux-1password",
+            min_vers,
+            """
+                # set -g @1password-key 'u' # default 'u'
+                # set -g @1password-account 'acme' # default 'my'
+                # set -g @1password-vault 'work' # default '' (all)
+                # set -g @1password-copy-to-clipboard 'on' # default 'off'
+                # set -g @1password-filter-tags 'development,servers'
+                # set -g @1password-debug 'on' # default 'off'
+                """,
+        ]
+
+    def plugin_keyboard_type(self):  # 1.9
+        """Display in status-bar with:  #{keyboard_type}
+        When displaying takes 0.8 s to process...
+
+        Only meaningful for local tmux!
+        Tested envs: Darwin, Linux"""
+        if self.use_plugin_keyboard_type:
+            min_vers = 1.9
+        else:
+            min_vers = -1.0  # Dont use
+
+        return [
+            "jaclu/tmux-keyboard-type",
+            min_vers,
+            """
+            set -g @keyboard_type_hidden  "ABC|U.S.|USInternational-PC"
+            set -g @keyboard_type_aliases "Swe=Swedish-Pro|Swe=Swedish|US=U.S."
+            set -g @keyboard_type_fg ""
+            set -g @keyboard_type_bg "green"
+            set -g @keyboard_type_prefix ""
+            set -g @keyboard_type_suffix " "
+            """,
+        ]
+
     def plugin_packet_loss(self):  # 1.9
         if self.use_plugin_packet_loss:
             min_vers = 1.9
@@ -550,32 +571,9 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_spotify_info(self):  # 1.9
-        """Only usable on MacOS!
-
-        Forked from https://github.com/jdxcode/tmux-spotify-info
-        My modifications:
-        Limited max output length - the default sometimes completely
-        filled the status line if one of the reported fields were
-        really long
-
-        Display in status-bar with: #(tmux-spotify-info)"""
-        if self.use_plugin_spotify_info:
-            min_vers = 1.9
-        else:
-            min_vers = -1.0  # Dont use
-        if self.vers_ok(2.9):
-            conf = """
-            #  Version dependent settings for jaclu/tmux-spotify-info
-            """
-            conf += "bind -N 'Toggle Spotify' -n MouseDown3StatusRight "
-            conf += 'run "spotify pause > /dev/null"'
-        else:
-            conf = ""
-        return ["jaclu/tmux-spotify-info", min_vers, conf]
-
     def plugin_which_key(self) -> list:
-        """Not sure this would work in an inner tmux, outer is capturing key
+        """Somewhat similar to tmux-menus, but more limited.
+        Not sure this would work in an inner tmux, outer is capturing key
         in both states. If this is really needed in the inner tmux
         a separate capture key for t2 could be defined"""
         if self.use_plugin_which_key:

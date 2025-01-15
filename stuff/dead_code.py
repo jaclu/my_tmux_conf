@@ -17,6 +17,7 @@ class NotUsedtPlugins(BaseConfig):
     """Things not used ATM in DefaultPlugins"""
 
     skip_plugin_fzf_session_switch = False
+    use_plugin_jump = False
     skip_plugin_tmux_fzf = False
 
     def plugin_fzf_session_switch(self) -> list:  # 3.3
@@ -32,6 +33,31 @@ class NotUsedtPlugins(BaseConfig):
             # set -g @fzf-goto-session 's'  # trigger key
             # set -g @fzf-goto-session-without-prefix 'true'
             # set-option -g @fzf-goto-session-only 'true'
+            """,
+        ]
+
+    def plugin_jump(self) -> list:  # 1.8
+        """Good idea but doesn't seem to work on upper case
+
+        Jump to word(-s) on the screen that you want to copy,
+        without having to use the mouse.
+        Default trigger: <prefix> j
+        """
+        if self.use_plugin_jump:
+            min_vers = 1.8
+        else:
+            min_vers = -1.0  # Dont use
+
+        return [
+            "jaclu/tmux-jump",  # was Lenbok
+            min_vers,
+            #
+            #  The weird jump key syntax below is how I both sneak in
+            #  a note and make the key not to depend on prefix :)
+            #
+            """#  Additional dependency: ruby >= 2.3
+            set -g @jump-key "-N plugin_Lenbok/tmux-jump -n  M-j"
+            set -g @jump-keys-position 'off_left'
             """,
         ]
 
