@@ -69,7 +69,7 @@ class DefaultPlugins(BaseConfig):
     #
     #  Default plugins that can be disabled
     #
-    skip_plugin_extracto = False
+    skip_plugin_extrakto = False
     skip_plugin_jump = False
     skip_plugin_mouse_swipe = False
     skip_plugin_resurrect = False
@@ -205,9 +205,9 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_extracto(self) -> list:  # 3.2
+    def plugin_extrakto(self) -> list:  # 3.2
         # can be used on older versions with limitations
-        if self.skip_plugin_extracto or self.t2_env:
+        if self.skip_plugin_extrakto:
             vers_min = -1.0
         else:
             vers_min = 3.2
