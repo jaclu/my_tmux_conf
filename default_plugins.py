@@ -208,12 +208,14 @@ class DefaultPlugins(BaseConfig):
     def plugin_extrakto(self) -> list:  # 3.2
         """Can be used on older versions with limitations
         Popup allowing for selection of items on screen
+        tab for insert tested down to 1.8
+        enter to copy instakills asdf local tmux
         Default trigger: <prefix> Tab
         """
         if self.skip_plugin_extrakto:
             vers_min = -1.0
         else:
-            vers_min = 3.2
+            vers_min = 1.8
         return [
             "jaclu/extrakto",
             vers_min,
