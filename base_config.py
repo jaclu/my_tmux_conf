@@ -487,6 +487,8 @@ class BaseConfig(TmuxConfig):
         #======================================================
         """
         )
+        # escape-time < 3.5 = 500 3.5 = 10
+
         if self.vers_ok(1.1):
             self.mkscript_shlvl_offset()
             w(
