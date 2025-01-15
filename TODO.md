@@ -2,6 +2,8 @@
 
 ## plugins to check
 
+inner tmux plugin filyrting
+
 [try to be mostly bind compatible](https://github.com/tmux-plugins/tmux-pain-control)
 
 ## <prefix> M-P list plugins fails

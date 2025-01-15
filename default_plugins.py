@@ -33,7 +33,7 @@ from base import BaseConfig  # BaseConfig
 #  case this is run directly on the ishConsole, in all other cases it will
 #  do nothing
 #
-from mtc_utils import INNER_TMUX, IS_ISH, IS_TERMUX
+from mtc_utils import INNER_TMUX, IS_ISH
 
 
 class DefaultPlugins(BaseConfig):
@@ -181,7 +181,7 @@ class DefaultPlugins(BaseConfig):
         Can scroll in non-active 'mouse over-ed' panes.
         Can adjust scroll-sensitivity."""
 
-        if self.t2_env or self.is_tmate():
+        if INNER_TMUX or self.is_tmate():
             vers_min = -1.0  # Dont use
         else:
             vers_min = 2.1
@@ -323,9 +323,7 @@ class DefaultPlugins(BaseConfig):
         return ["jaclu/tmux-resurrect", min_vers, conf]
 
     def plugin_session_wizard(self) -> list:  # 3.2
-        if self.skip_plugin_session_wizard or (
-            self.t2_env or self.is_limited_host or IS_TERMUX
-        ):
+        if self.skip_plugin_session_wizard:
             vers_min = -1.0  # Dont use
         else:
             vers_min = 3.2
