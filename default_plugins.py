@@ -70,6 +70,7 @@ class DefaultPlugins(BaseConfig):
     #  Default plugins that can be disabled
     #
     skip_plugin_extracto = False
+    skip_plugin_jump = False
     skip_plugin_mouse_swipe = False
     skip_plugin_resurrect = False
     skip_plugin_session_wizard = False
@@ -218,6 +219,29 @@ class DefaultPlugins(BaseConfig):
             set -g @extrakto_clip_tool_run "tmux_osc52"
             # dont use server clipboard tool paste with <prefix> ]
             set -g @extrakto_clip_tool ">/dev/null"
+            """,
+        ]
+
+    def plugin_jump(self) -> list:  # 2.4
+        """Jump to word(-s) on the screen that you want to copy,
+        without having to use the mouse.
+        Default trigger: <prefix> j
+        """
+        if self.skip_plugin_jump:
+            min_vers = -1.0  # Dont use
+        else:
+            min_vers = 2.4
+
+        return [
+            "jaclu/tmux-jump",  # was Lenbok
+            min_vers,
+            #
+            #  The weird jump key syntax below is how I both sneak in
+            #  a note and make the key not to depend on prefix :)
+            #
+            """#  Additional dependency: ruby >= 2.3
+            # set -g @jump-key "-N plugin_Lenbok/tmux-jump -n  M-j"
+            set -g @jump-keys-position 'off_left'
             """,
         ]
 
