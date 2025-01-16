@@ -7,4 +7,5 @@
 #
 #  Pipe to this in oreder send back data through OSC 52
 #
-printf "%s" "\033]52;c;$(base64 | tr -d '\r\n')\a"
+# shellcheck disable=SC2059
+printf "\033]52;c;$(base64 | tr -d '\r\n')\a"
