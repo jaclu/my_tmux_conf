@@ -212,24 +212,37 @@ class DefaultPlugins(BaseConfig):
         enter to copy instakills asdf local tmux
         Default trigger: <prefix> Tab
         """
-        tmux_bin = os.getenv("TMUX_BIN") or ""
-        if self.skip_plugin_extrakto or tmux_bin.find(".asdf") > -1:
+        # tmux_bin = os.getenv("TMUX_BIN") or ""
+        if self.skip_plugin_extrakto:  # or tmux_bin.find(".asdf") > -1:
             # this plugin will cause tmux insta-death if running a local
             # version of tmux, thus disabled in such cases
             # https://github.com/laktak/extrakto/wiki/Remote-Copy-via-OSC52
             vers_min = -1.0
         else:
             vers_min = 1.8
-        return [
-            "jaclu/extrakto",
-            vers_min,
-            """
-            set -g @extrakto_grab_area "window recent"
-            set -g @extrakto_clip_tool_run "tmux_osc52"
-            # dont use server clipboard tool paste with <prefix> ]
+
+        conf = """
+        set -g @extrakto_grab_area "window recent"
+        # dont use server clipboard tool paste with <prefix> ]
+        """
+        if os.getenv("TMUX_NO_CLIPBOARD"):
+            conf += """
+            # Will only paste into tmux clipboard
             set -g @extrakto_clip_tool ">/dev/null"
-            """,
-        ]
+            """
+        else:
+            if self.vers_ok(3.2):
+                conf += """
+                # allow OSC52 to set the clipboard
+                set -g @extrakto_clip_tool_run "tmux_osc52"
+                set -g @extrakto_clip_tool ">/dev/null"
+                """
+            else:
+                conf += """
+                set -g @extrakto_clip_tool_run "fg"
+                set -g @extrakto_clip_tool "osc_52_send"
+                """
+        return ["jaclu/extrakto", vers_min, conf]
 
     def plugin_jump(self) -> list:  # 2.4
         """Jump to word(-s) on the screen that you want to copy,
