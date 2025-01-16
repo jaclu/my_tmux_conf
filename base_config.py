@@ -225,6 +225,7 @@ class BaseConfig(TmuxConfig):
         self._fnc_shlvl_offset = "shlvl_offset"
         self._fnc_list_plugins = "list_plugins"
         self._fnc_toggle_mouse = "toggle_mouse"
+        # self._fnc_manual_osc_52 = "manual_osc_52"
         self._fnc_activate_tpm = "activate_tpm"
         self._fnc_tpm_indicator = "tpm_init_indicator"
 
@@ -420,6 +421,12 @@ class BaseConfig(TmuxConfig):
             else:
                 w(f"{self.opt_server} default-terminal tmux-256color")
 
+        # if not self.vers_ok(3.2):
+        #     self.mkscript_manual_osc_52()
+        #     # self._fnc_manual_osc_52
+        #     # use something like:
+        #     # w(f"{self.es.run_it(self._fnc_toggle_mouse)} {text}')
+
         #
         #  Making OSC 52 work on mosh connections.
         #  For this to work the term name used must match, hence * :)
@@ -507,10 +514,8 @@ class BaseConfig(TmuxConfig):
             if self.vers_ok(1.5):
                 w(f"{self.opt_server} set-clipboard off  # TMUX_NO_CLIPBOARD")
         else:
-            # external on the outer, prevents inner tmux from setting terminal clipboard
-            # if self.vers_ok(2.6):
-            #     #  Prevents clipboard in terminal from being set
-            #     w(f"{self.opt_server}set-clipboard external")
+            # using external on the outer, prevents inner tmux from setting
+            # # terminal clipboard
             if self.vers_ok(1.5):
                 w(f"{self.opt_server} set-clipboard on")
 
@@ -1592,6 +1597,17 @@ class BaseConfig(TmuxConfig):
 }}"""
         ]
         self.es.create(self._fnc_toggle_mouse, toggle_mouse_sh)
+
+    #     def mkscript_manual_osc_52(self):
+    #         """Creates a script sending to terminal clipboard"""
+    #         #  The {} encapsulating the script needs to be doubled to escape them
+    #         manual_osc_52_sh = [
+    #             f"""
+    # {self._fnc_manual_osc_52}() {{
+    #     printf "\033]52;c;$(base64 | tr -d '\r\n')\a"
+    # }}"""
+    #         ]
+    #         self.es.create(self._fnc_manual_osc_52, manual_osc_52_sh)
 
     def mkscript_shlvl_offset(self):
         """Generate a SHLVL offset"""
