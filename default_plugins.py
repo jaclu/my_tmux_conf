@@ -223,11 +223,10 @@ class DefaultPlugins(BaseConfig):
 
         conf = """
         set -g @extrakto_grab_area "window recent"
-        # dont use server clipboard tool paste with <prefix> ]
         """
         if os.getenv("TMUX_NO_CLIPBOARD"):
             conf += """
-            # Will only paste into tmux clipboard
+            # Will only paste into tmux clipboard to prevent tmux insta-crash
             set -g @extrakto_clip_tool ">/dev/null"
             """
         else:
@@ -239,6 +238,7 @@ class DefaultPlugins(BaseConfig):
                 """
             else:
                 conf += """
+                # manually pipe to OSC52
                 set -g @extrakto_clip_tool_run "fg"
                 set -g @extrakto_clip_tool "osc_52_send"
                 """
