@@ -428,7 +428,7 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.0) and not os.getenv("TMUX_NO_CLIPBOARD"):
             w(
                 f"""
-            # Ms modifies OSC 52 clipboard handling to work with mosh
+            # Ms modifies OSC52 clipboard handling to work with mosh
             {self.opt_server} -a terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
             """
             )
@@ -503,12 +503,12 @@ class BaseConfig(TmuxConfig):
             # On ssh/mosh connections, when running an asdf tmux with local
             # version changed.
             # tmux instacraches when anything is selected in a tmux buffer
-            # if clipboard is not off
+            # if set-clipboard is not off
             if self.vers_ok(1.5):
                 w(f"{self.opt_server} set-clipboard off  # TMUX_NO_CLIPBOARD")
         else:
             # using external on the outer, prevents inner tmux from setting
-            # # terminal clipboard
+            # terminal clipboard
             if self.vers_ok(1.5):
                 w(f"{self.opt_server} set-clipboard on")
 
