@@ -182,7 +182,8 @@ class DefaultPlugins(BaseConfig):
         Can scroll in non-active 'mouse over-ed' panes.
         Can adjust scroll-sensitivity."""
 
-        if INNER_TMUX or self.is_tmate():
+        if self.is_tmate():
+            # Is needed also in an inner tmux!
             vers_min = -1.0  # Dont use
         else:
             vers_min = 2.1
