@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#  Copyright (c) 2024: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2024-2025: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -10,8 +10,8 @@
 
 CURRENT_DIR=$(cd -- "$(dirname -- "$0")" && pwd)
 
-mkdir -p  "$HOME"/.config
-echo "$CURRENT_DIR" > "$HOME"/.config/my_tmux_conf_location
+mkdir -p "$HOME"/.config
+echo "$CURRENT_DIR" >"$HOME"/.config/my_tmux_conf_location
 
 f_destination="$(echo "$CURRENT_DIR/.destination" | sed 's#^\./##')"
 
@@ -36,7 +36,6 @@ if [ ! -d "$dest" ]; then
     exit 1
 fi
 
-
 update_if_changed() {
     item="$1"
     if [ -z "$item" ]; then
@@ -50,3 +49,4 @@ update_if_changed() {
 
 update_if_changed myt
 update_if_changed rt
+update_if_changed osc_52_send
