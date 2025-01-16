@@ -212,11 +212,7 @@ class DefaultPlugins(BaseConfig):
         enter to copy instakills asdf local tmux
         Default trigger: <prefix> Tab
         """
-        # tmux_bin = os.getenv("TMUX_BIN") or ""
-        if self.skip_plugin_extrakto:  # or tmux_bin.find(".asdf") > -1:
-            # this plugin will cause tmux insta-death if running a local
-            # version of tmux, thus disabled in such cases
-            # https://github.com/laktak/extrakto/wiki/Remote-Copy-via-OSC52
+        if self.skip_plugin_extrakto:
             vers_min = -1.0
         else:
             vers_min = 1.8
@@ -232,7 +228,7 @@ class DefaultPlugins(BaseConfig):
         else:
             if self.vers_ok(3.2):
                 conf += """
-                # allow OSC52 to set the clipboard
+                # allow tmux OSC52 to set the clipboard
                 set -g @extrakto_clip_tool_run "tmux_osc52"
                 set -g @extrakto_clip_tool ">/dev/null"
                 """
