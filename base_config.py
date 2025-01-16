@@ -440,6 +440,9 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.9):
             w(f"{self.opt_server} focus-events on")
 
+        if self.vers_ok(3.2):
+            w(f"{self.opt_server} extended-keys on")
+
         #
         #  For old tmux versions, this is needed to support modifiers for
         #  function keys
@@ -456,23 +459,22 @@ class BaseConfig(TmuxConfig):
         #
         #  Some apps like iTerm2 don't need it, but it never hurts
         #
-        if self.vers_ok(3.2):
-            w(f"{self.opt_server} extended-keys on")
-            #
-            #  not needed for all terminal apps, but since it doesn't hurt,
-            #  it makes sense to always include it
-            #
-            w(f"{self.opt_server} -a terminal-features 'xterm*:extkeys'")
-            w(f'{self.opt_server} -a terminal-features ",gnome*:{self.use_24bit_color}"')
-        elif self.vers_ok(2.2) and self.use_24bit_color:
-            #  24-bit color on older versions
-            #  This causes colors to completely fail on mosh < 1.4 connections,
-            #  so in the unlikely event that is used, disable use_24bit_color
-            if not self.vers_ok(2.7):
-                #  RGB not supported until 2.7
-                self.color_tag_24bit = "Tc"
-            w(f"{self.opt_server} -a terminal-overrides ',*:{self.color_tag_24bit}'")
-
+        if self.use_24bit_color:
+            if self.vers_ok(3.2):
+                #
+                #  not needed for all terminal apps, but since it doesn't hurt,
+                #  it makes sense to always include it
+                #
+                w(f"{self.opt_server} -a terminal-features 'xterm*:extkeys'")
+                w(f'{self.opt_server} -a terminal-features ",*:{self.color_tag_24bit}"')
+            elif self.vers_ok(2.2):
+                if not self.vers_ok(2.7):
+                    #  24-bit color on older versions
+                    #  This causes colors to completely fail on mosh < 1.4 connections,
+                    #  so in the unlikely event that is used, disable use_24bit_color
+                    #  RGB not supported until 2.7
+                    self.color_tag_24bit = "Tc"
+                w(f"{self.opt_server} -a terminal-overrides ',*:{self.color_tag_24bit}'")
         w()  # spacer between sections
 
     # pylint: disable=too-many-branches,too-many-statements
@@ -1354,6 +1356,7 @@ class BaseConfig(TmuxConfig):
                 f" {self.display_prefix()} ,{mode_indicator}"
                 "}#[default]"
             )
+            w(f"# prefix_indicator:[{prefix_indicator}]")
             self.sb_right += prefix_indicator
 
     def status_bar(self):
