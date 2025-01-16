@@ -212,7 +212,10 @@ class DefaultPlugins(BaseConfig):
         enter to copy instakills asdf local tmux
         Default trigger: <prefix> Tab
         """
-        if self.skip_plugin_extrakto:
+        tmux_bin = os.getenv("TMUX_BIN") or ""
+        if self.skip_plugin_extrakto or tmux_bin.find(".asdf") > -1:
+            # this plugin will cause tmux insta-death if running a local
+            # version of tmux, thus disabled in such cases
             vers_min = -1.0
         else:
             vers_min = 1.8
