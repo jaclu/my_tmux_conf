@@ -29,7 +29,7 @@ class SB(DefaultPlugins):
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """override statusbar config"""
-        fg_clr = "colour19"
+        fg_clr = "colour0"
         bg_clr = "colour244"
         self.assign_style(__file__)
         super().status_bar_customization(print_header=print_header)
