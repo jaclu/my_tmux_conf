@@ -247,8 +247,9 @@ class DefaultPlugins(BaseConfig):
         without having to use the mouse.
         Default trigger: <prefix> j
         """
-        if self.skip_plugin_jump or IS_TERMUX:
+        if self.skip_plugin_jump or IS_ISH or IS_TERMUX:
             # it seems Termux fails to handle ttys
+            # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Dont use
         else:
             min_vers = 2.4
