@@ -433,11 +433,9 @@ class BaseConfig(TmuxConfig):
             """
             )
 
-        #
-        #  Enable focus events for terminals that support them to be passed
-        #  through to applications running inside tmux
-        #
         if self.vers_ok(1.9):
+            #  Enable focus events for terminals that support them to be passed
+            #  through to applications running inside tmux.
             w(f"{self.opt_server} focus-events on")
 
         if self.vers_ok(3.2):
