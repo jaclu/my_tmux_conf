@@ -213,7 +213,8 @@ class DefaultPlugins(BaseConfig):
         enter to copy instakills asdf local tmux
         Default trigger: <prefix> Tab
         """
-        if self.skip_plugin_extrakto:
+        if self.skip_plugin_extrakto or IS_ISH:
+            # the popup gets stuck on iSH
             vers_min = -1.0
         else:
             vers_min = 1.8
