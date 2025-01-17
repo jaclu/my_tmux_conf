@@ -42,7 +42,7 @@ class JacDroid(SB):
     # defaults skipped
     skip_plugin_mouse_swipe = True
     # 250116 can't remember why this is disabled
-    skip_plugin_session_wizard = True
+    # skip_plugin_session_wizard = True
 
     # optionals selected
     use_plugin_packet_loss = True
