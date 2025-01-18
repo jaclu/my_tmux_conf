@@ -1844,7 +1844,8 @@ timer_end() {{
     def euro_fix(self, sequence: str):
         """Some keybs fail to render the Euro sign for M-S-2
         Only do this if local currency is EUR
-        sample sequence that might be generated: \\342\\204\\242"""
+        sample sequence that might be generated: \342\204\242
+        when used as a python parameter it needs to be escaped into "\\342\\204\\242" """
         w = self.write
         if sequence[:1] != "\\":
             sys.exit(f"ERROR: euro_fix({sequence}) must be given in octal notation")
