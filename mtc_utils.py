@@ -19,6 +19,7 @@
 
 """Common utils"""
 
+import json
 import os.path
 import shutil
 import subprocess  # nosec
@@ -29,6 +30,18 @@ def run_shell(_cmd: str) -> str:
     # pylint: disable=subprocess-run-check
     result = subprocess.run(_cmd, capture_output=True, text=True, shell=True)  # nosec: B602
     return result.stdout.strip()
+
+
+def get_currency() -> str:
+    """Returns currency for device location, or "" if not detected"""
+    result = run_shell("curl -s https://ipapi.co/json")
+    # Parse the JSON output
+    if result.strip():  # Ensure the command ran successfully
+        data = json.loads(result)
+        currency = data.get("currency", "Unknown")
+    else:
+        currency = ""
+    return currency
 
 
 HOSTNAME = os.getenv("HOSTNAME_SHORT")
