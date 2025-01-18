@@ -41,9 +41,9 @@ class JacPad(IshHostWithStyle):
 
     # defaults skipped
     skip_plugin_mouse_swipe = True
-    
-    # takes for ever to start, and this host doesn  run long enough 
-    # to have a multitude of sessions to kee track of    
+
+    # takes for ever to start, and this host doesn  run long enough
+    # to have a multitude of sessions to kee track of
     skip_plugin_session_wizard = True
 
     # optionals selected
