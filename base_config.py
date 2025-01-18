@@ -41,11 +41,12 @@ import os
 import re
 import sys
 
+import __main__
+
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
-import __main__
 import mtc_utils
 
 # ruff checks might be relevant F403,F401
@@ -301,7 +302,7 @@ class BaseConfig(TmuxConfig):
         # is Termux: {mtc_utils.IS_TERMUX}
         """
         )
-        if mtc_utils.IS_DARWIN:  # or os.environ.get("SSH_CLIENT"):
+        if mtc_utils.IS_DARWIN or os.environ.get("SSH_CLIENT"):
             # this check isn't perfect for remote sessions, but at least it won't
             # assume Darwin on local sessions on other platforms
             self.euro_fix("\\033\\100")  # typical Darwin kbd key-sequence
