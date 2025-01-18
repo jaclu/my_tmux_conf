@@ -49,10 +49,11 @@ class IshConsole(base_config.BaseConfig):
     """When running tmux from an iSH console this redefines the rather
     limited keyboard in order to make it more useful.
 
-    Groupings of userkeys
+    Groupings of user-keys
 
       1-60  Alt Upper case
     100-129 Function keys
+    180-190 Handled by base_config.py
     200     Escape
     201     Navkey - no longer used
     210-219 General keyboard bindings

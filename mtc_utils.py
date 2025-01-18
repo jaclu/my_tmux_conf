@@ -34,6 +34,29 @@ def run_shell(_cmd: str) -> str:
 
 
 def get_currency() -> str:
+    """Since these resources are rate limited, use multiple, oredering by random"""
+    currency_functions = [
+        _get_currency_from_geoplugin,
+        _get_currency_from_ipapi,
+        _get_currency_from_ipwhois,
+    ]
+
+    # Shuffle the list to call the functions in random order
+    random.shuffle(currency_functions)
+
+    # Call each function in random order until a non-empty string is returned
+    for func in currency_functions:
+        # print(f"using: {func}")
+        result = func()
+        if result:
+            return result
+    return ""  # Return empty string if no function returns a non-empty string
+
+
+#
+#  Internals
+#
+def _currency_request(url, tag="currency") -> str:
     """Returns currency for device location, or "" if not detected"""
     result = run_shell("curl -s https://ipapi.co/json")
     # Parse the JSON output
@@ -43,6 +66,26 @@ def get_currency() -> str:
     else:
         currency = ""
     return currency
+
+
+def _get_currency_from_geoplugin():
+    """retrieving currency"""
+    return _currency_request("http://www.geoplugin.net/json.gp", "geoplugin_currencyCode")
+
+
+def _get_currency_from_ipwhois():
+    """retrieving currency"""
+    return _currency_request("https://ipwhois.app/json/", "currency_code")
+
+
+def _get_currency_from_ipapi() -> str:
+    """retrieving currency"""
+    return _currency_request("https://ipapi.co/json")
+
+
+def _get_short_hostname():
+    cmd = shutil.which("hostname")
+    return run_shell(f"{cmd} -s").lower()
 
 
 HOSTNAME = os.getenv("HOSTNAME_SHORT")

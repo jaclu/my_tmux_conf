@@ -41,11 +41,12 @@ import os
 import re
 import sys
 
+import __main__
+
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
-import __main__
 import mtc_utils
 
 # ruff checks might be relevant F403,F401
@@ -61,7 +62,13 @@ TMUX_CONF_NEEDED = "0.18.0"
 
 # pylint: disable=too-many-instance-attributes,too-many-public-methods
 class BaseConfig(TmuxConfig):
-    """Defines the general tmux setup, key binds etc"""
+    """Defines the general tmux setup, key binds etc
+
+    Groupings of user-keys
+
+    180-190 Space used by this class
+    180 Used for generating Euro sign
+    """
 
     prefix_key: str = "C-a"
 
@@ -286,10 +293,12 @@ class BaseConfig(TmuxConfig):
         """
         super().local_overrides()
         #  Display what class this override comes from
-        self.write("# BaseConfig.local_overides\n")
+        self.write("# BaseConfig.local_overides")
 
-        if mtc_utils.is_darwin:
-            self.euro_fix("\\033\\100")
+        if mtc_utils.IS_DARWIN or os.environ.get("SSH_CLIENT"):
+            # this check isn't perfect, for remote sessions, but at least it won't
+            # assume Darwin on local sessions on other platforms
+            self.euro_fix("\\033\\100")  # typical Darwin kbd key-sequence
 
     def content(self) -> None:
         """This generates the majority of the tmux.conf.
@@ -1834,18 +1843,24 @@ timer_end() {{
         sys.exit(1)
 
     def euro_fix(self, sequence: str):
-        """Some BT keybs fail to render the Euro sign for M-S-2
+        """Some keybs fail to render the Euro sign for M-S-2
         Only do this if local currency is EUR
         sample sequence that might be generated: \\342\\204\\242"""
-        if mtc_utils.get_currency() == "EUR":
-            self.write(
+        w = self.write
+        if sequence[:1] != "\\":
+            sys.exit(f"ERROR: euro_fix({sequence}) must be given in octal notation")
+        currency = mtc_utils.get_currency()
+        if currency == "EUR":
+            w(
                 f"""# M-S-2 should be €
-                set -s user-keys[223] "{sequence}"
-                bind -N "Send €" -n User223 send "€"
+                set -s user-keys[180] "{sequence}"
+                bind -N "Send €" -n User180 send "€"
             """
             )
+        elif currency:
+            w("# this node doesn't seem to use EUR")
         else:
-            self.write("# this node doesn't seem to use EUR")
+            w("# Failed to retrieve currency")
 
 
 if __name__ == "__main__":
