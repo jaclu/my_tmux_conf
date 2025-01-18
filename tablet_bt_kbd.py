@@ -25,10 +25,9 @@
 
 """Checks if this is run on the iSH console"""
 
-import os
 import sys
 
-import base_config
+import mtc_utils
 
 #
 #  To make it easier to identify what keyboard to config
@@ -45,7 +44,7 @@ KBD_OMNITYPE = "Omnitype Keyboard"
 KBD_BLUETOOTH = "Bluetooth Keyboard"  # sadly generic name
 
 
-class IshConsole(base_config.BaseConfig):
+class TabletBtKbd:
     """When running tmux from an iSH console this redefines the rather
     limited keyboard in order to make it more useful.
 
@@ -53,7 +52,7 @@ class IshConsole(base_config.BaseConfig):
 
       1-60  Alt Upper case
     100-129 Function keys
-    180-190 Handled by base_config.py
+    180-190 Handled by base.py
     200     Escape
     201     Navkey - no longer used
     210-219 General keyboard bindings
@@ -63,83 +62,72 @@ class IshConsole(base_config.BaseConfig):
     ic_keyboard = None
 
     # pylint: disable=too-many-positional-arguments,too-many-arguments
-    def __init__(
-        self,
-        parse_cmd_line: bool = True,
-        #
-        #  if parse_cmd_line is True all other params are ignored
-        #
-        conf_file: str = "~/.tmux.conf",  # where to store conf file
-        tmux_bin: str = "",
-        tmux_version: str = "",
-        replace_config: bool = False,  # replace config with no prompt
-        clear_plugins: bool = False,  # remove all current plugins
-        plugins_display: int = 0,  # Display info about plugins
-    ):
-        print("Using IshConsole()")
-        super().__init__(
-            parse_cmd_line=parse_cmd_line,
-            conf_file=conf_file,
-            tmux_bin=tmux_bin,
-            tmux_version=tmux_version,
-            replace_config=replace_config,
-            clear_plugins=clear_plugins,
-            plugins_display=plugins_display,
-        )
+    def __init__(self, tmux_conf_instance):
+        self.tc = tmux_conf_instance
+        print("Using TabletBtKbd() class")
 
-    def content(self):
-        # Map special keys before generating rest of conf
-        self.ic_detect_console_keyb()
-        super().content()
+        self.tc.muc_defaults = {
+            "muc_plus": "User61",
+            "muc_par_open": "User89",
+            "muc_par_close": "User80",
+            "muc_underscore": "User60",
+            "muc_s_p": "User16",
+            "muc_x": "User24",
+            "muc_h": "User8",
+            "muc_j": "User10",
+            "muc_k": "User11",
+            "muc_l": "User12",
+        }
 
-    def ic_detect_console_keyb(self) -> None:
+    # def content(self):
+    #     # Map special keys before generating rest of conf
+    #     self.ic_detect_console_keyb()
+
+    def ic_detect_console_keyb(self) -> bool:
         #
         #  Only use this if the following conditions are met:
         #     1) tmux >= 2.6
         #     2) LC_KEYBOARD is set
         #
-        if not self.vers_ok(2.6):
+        if not mtc_utils.LC_KEYBOARD:
+            print("WARNING: TabletBtKbd() was used without LC_KEYBOARD being set")
+            return False
+
+        if not self.tc.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
             print("         keyboard adaptions not supported on this version")
-            return
+            return False
 
-        self.ic_keyboard = os.environ.get("LC_KEYBOARD")
-        if not self.ic_keyboard:
-            print("WARNING: IshConsole() was used without LC_KEYBOARD being set")
-            print("         base.py should not have used this class")
-            return
-
-        self.is_ish_console = True
         # use <prefix> arrows as PageUp/Dn Home/End
-        if self.use_ish_prefix_arrow_nav_keys:
-            self.prefix_arrow_nav_keys = True
+        self.tc.use_ish_prefix_arrow_nav_keys = True
 
-        print(f"This originated on an iSH console - keyboard: {self.ic_keyboard}")
-        self.write(
+        print(f"This originated on an iSH console - keyboard: {mtc_utils.LC_KEYBOARD}")
+        self.tc.write(
             f"""
             #======================================================
             #
             #  Remap keys for limited console
-            #  using keyboard: {self.ic_keyboard}
+            #  using keyboard: {mtc_utils.LC_KEYBOARD}
             #
             #======================================================
             """
         )
 
-        if self.ic_keyboard in (KBD_OMNITYPE, KBD_BLUETOOTH):
+        if mtc_utils.LC_KEYBOARD in (KBD_OMNITYPE, KBD_BLUETOOTH):
             # already handles esc
             self.ic_keyb_type_1()
-        elif self.ic_keyboard in (KBD_BRYDGE_10_2_MAX, KBD_YOOZON3):
+        elif mtc_utils.LC_KEYBOARD in (KBD_BRYDGE_10_2_MAX, KBD_YOOZON3):
             self.ic_keyb_type_2()
-        elif self.ic_keyboard == KBD_LOGITECH_COMBO_TOUCH:
+        elif mtc_utils.LC_KEYBOARD == KBD_LOGITECH_COMBO_TOUCH:
             self.ic_keyb_type_combo_touch()
         else:
-            msg = f"Unrecognized LC_KEYBOARD: {self.ic_keyboard}"
-            self.write(msg)
+            msg = f"Unrecognized LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
+            self.tc.write(msg)
             print(msg)
-            sys.exit(1)  # f"ERROR: Unknown LC_KEYBOARD: {self.ic_keyboard}")
+            sys.exit(1)  # f"ERROR: Unknown LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}")
 
         self.ic_common_setup()
+        return True
 
     #
     #  Specific Keyboards
@@ -148,7 +136,7 @@ class IshConsole(base_config.BaseConfig):
         #
         #  This keyb type already generates Esc on the key above tab
         #
-        pass
+        self.tc.euro_fix("\\342\\202\\254")
 
     def ic_keyb_type_2(self):
         #
@@ -162,8 +150,8 @@ class IshConsole(base_config.BaseConfig):
         #
         #
         self.ic_keyb_type_2()  # Same esc handling
-        self.euro_fix("\\342\\202\\254")
-        self.write(
+        self.tc.euro_fix("\\342\\202\\254")
+        self.tc.write(
             """#
             #  On this keyb, backtick (next to z) sends Escape
             #  this changes it back to send backtick, Esc is available via §
@@ -171,18 +159,15 @@ class IshConsole(base_config.BaseConfig):
             set -s user-keys[221]  "\\033"
             # map backtick back from Escape
             bind -N "Send backtick"  -n User221  send "\\`"
-            """
-        )
 
-        self.write(
-            """# In iSH this keyb sends £ when it should send #
+            # Tthis keyb sends £ when it should send #
             set -s user-keys[222] "\\302\\243"
             bind -N "Send #" -n User222 send '#'
             """
         )
 
     def ic_virtual_escape_key(self, esc_key: str) -> None:
-        self.write(
+        self.tc.write(
             f"""#
             #  Virtual Escape key
             #
@@ -227,13 +212,13 @@ class IshConsole(base_config.BaseConfig):
         #  For keybs that already handles M-#
         #  this just binds them to send F#
         #
-        w = self.write
+        w = self.tc.write
         for i in range(1, 10):
             w(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
         w('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
 
     def ic_m_fn_keys(self) -> None:
-        w = self.write
+        w = self.tc.write
         w(
             """
         #
@@ -256,7 +241,7 @@ class IshConsole(base_config.BaseConfig):
         w('bind -N "M-0 -> F10" -n  User110  send-keys  F10')
 
     def ic_ms_fn_keys(self) -> None:
-        w = self.write
+        w = self.tc.write
         w(
             """
         #
@@ -279,7 +264,7 @@ class IshConsole(base_config.BaseConfig):
         w('bind -N "M-S-0 -> F10" -n  User110  send-keys F10')
 
     def ic_alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
-        w = self.write
+        w = self.tc.write
         w(
             """
         #
@@ -415,38 +400,3 @@ class IshConsole(base_config.BaseConfig):
         #  we need to override and bind the user-key to this action.
         #  this is handled by the auc_ methods
         #
-
-    #
-    #  Overrides for things using shifted meta chars
-    #
-    def auc_meta_ses_handling(  # used by iSH Console
-        self,
-        muc_plus: str = "User61",
-        muc_par_open: str = "User89",
-        muc_par_close: str = "User80",
-        muc_underscore: str = "User60",
-    ):
-        super().auc_meta_ses_handling(
-            muc_plus=muc_plus,
-            muc_par_open=muc_par_open,
-            muc_par_close=muc_par_close,
-            muc_underscore=muc_underscore,
-        )
-
-    def auc_display_plugins_used(self, muc_s_p: str = "User16"):  # used by iSH Console
-        super().auc_display_plugins_used(muc_s_p)
-
-    def auc_kill_tmux_server(self, muc_x: str = "User24"):  # used by iSH Console
-        super().auc_kill_tmux_server(muc_x)  # used by iSH Console
-
-    def auc_split_entire_window(
-        self, muc_h="User8", muc_j="User10", muc_k="User11", muc_l="User12"
-    ):
-        super().auc_split_entire_window(muc_h, muc_j, muc_k, muc_l)
-
-
-#
-#  If this is run directly
-#
-if __name__ == "__main__":
-    IshConsole().run()
