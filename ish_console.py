@@ -93,8 +93,7 @@ class IshConsole(base_config.BaseConfig):
         sample sequence that might be generated: \\342\\204\\242"""
         if get_currency() == "EUR":
             self.write(
-                f"""
-                # M-S-2 should be €
+                f"""# M-S-2 should be €
                 set -s user-keys[223] "{sequence}"
                 bind -N "Send €" -n User223 send "€"
             """
@@ -183,23 +182,25 @@ class IshConsole(base_config.BaseConfig):
             #
             set -s user-keys[221]  "\\033"
             # map backtick back from Escape
-            bind -N "Send backtick"  -n User221  send "\\`" """
+            bind -N "Send backtick"  -n User221  send "\\`"
+            """
         )
 
         self.write(
             """# In iSH this keyb sends £ when it should send #
             set -s user-keys[222] "\\302\\243"
-            bind -N "Send #" -n User222 send '#'"""
+            bind -N "Send #" -n User222 send '#'
+            """
         )
 
     def ic_virtual_escape_key(self, esc_key: str) -> None:
         self.write(
             f"""#
-                #  Virtual Escape key
-                #
-                set -s user-keys[200]  "{esc_key}"
-                bind -N "Send Escape" -n User200  send Escape
-                """
+            #  Virtual Escape key
+            #
+            set -s user-keys[200]  "{esc_key}"
+            bind -N "Send Escape" -n User200  send Escape
+            """
         )
 
     def ic_common_setup(self) -> None:
