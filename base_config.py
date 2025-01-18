@@ -41,12 +41,11 @@ import os
 import re
 import sys
 
-import __main__
-
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
+import __main__
 import mtc_utils
 
 # ruff checks might be relevant F403,F401
@@ -295,6 +294,11 @@ class BaseConfig(TmuxConfig):
         #  Display what class this override comes from
         self.write("# BaseConfig.local_overides")
 
+        self.write(f"""
+        # is Darwin: {mtc_utils.IS_DARWIN}
+        # is iSH:    {mtc_utils.IS_ISH}
+        # is Termux: {mtc_utils.IS_TERMUX}
+        """)
         if not mtc_utils.IS_ISH or mtc_utils.IS_DARWIN:  # or os.environ.get("SSH_CLIENT"):
             # this check isn't perfect for remote sessions, but at least it won't
             # assume Darwin on local sessions on other platforms
