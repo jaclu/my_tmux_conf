@@ -29,6 +29,7 @@ import os
 import sys
 
 import base_config
+from mtc_utils import get_currency
 
 #
 #  To make it easier to identify what keyboard to config
@@ -85,6 +86,19 @@ class IshConsole(base_config.BaseConfig):
             clear_plugins=clear_plugins,
             plugins_display=plugins_display,
         )
+
+    def ic_euro_fix(self, sequence: str):
+        """Some BT keybs fail to render the Euro sign for M-S-2
+        Only do this if local currency is EUR
+        sample sequence that might be generated: \\342\\204\\242"""
+        if get_currency() == "EUR":
+            self.write(
+                f"""
+                # M-S-2 should be €
+                set -s user-keys[223] "{sequence}"
+                bind -N "Send €" -n User223 send "€"
+            """
+            )
 
     def content(self):
         # Map special keys before generating rest of conf
@@ -147,7 +161,7 @@ class IshConsole(base_config.BaseConfig):
         #
         #  This keyb type already generates Esc on the key above tab
         #
-        pass
+        self.ic_euro_fix("\\342\\204\\242")
 
     def ic_keyb_type_2(self):
         #
@@ -171,20 +185,10 @@ class IshConsole(base_config.BaseConfig):
             bind -N "Send backtick"  -n User221  send "\\`" """
         )
 
-        #  S-3 gives £ 302 243     - should be #
         self.write(
             """# In iSH this keyb sends £ when it should send #
             set -s user-keys[222] "\\302\\243"
-            bind -N "Send #" -n User222 send '#'
-        """
-        )
-
-        #  M-S-2 gives tm-char  342 204 242 - should be €
-        self.write(
-            """# tm char should be €
-            set -s user-keys[223] "\\342\\204\\242"
-            bind -N "Send €" -n User223 send '€'
-            """
+            bind -N "Send #" -n User222 send '#'"""
         )
 
     def ic_virtual_escape_key(self, esc_key: str) -> None:
