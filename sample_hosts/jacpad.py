@@ -21,7 +21,7 @@
 #  filtering out or replacing incompatible syntax.
 #
 
-""" host: jacpad-aok """
+"""host: jacpad"""
 
 import os
 import sys
