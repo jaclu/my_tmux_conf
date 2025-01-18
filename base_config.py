@@ -41,11 +41,12 @@ import os
 import re
 import sys
 
+import __main__
+
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
-import __main__
 import mtc_utils
 
 # ruff checks might be relevant F403,F401

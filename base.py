@@ -18,6 +18,8 @@
 
 import os
 
+import mtc_utils
+
 # # print("><> is ish_console imported")
 # if "LC_KEYBOARD" in os.environ:
 #     from ish_console import IshConsole
@@ -28,8 +30,7 @@ import os
 
 #     BaseClass = (base_config.BaseConfig,)
 
-
-if "LC_KEYBOARD" in os.environ:
+if "LC_KEYBOARD" in os.environ and mtc_utils.IS_ISH:
     from ish_console import IshConsole
 
     # Since IshConsole inherits from BaseConfig, we can set BaseConfig to IshConsole
