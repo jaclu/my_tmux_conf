@@ -8,8 +8,7 @@
 #  Template giving the status bar the colors I use for a production system
 #
 
-""" Style production node """
-
+"""Style production node"""
 
 import os
 import sys
@@ -20,15 +19,15 @@ sys.path.insert(0, root_dir)
 
 # flake8: noqa: E402
 # pylint: disable=wrong-import-position,import-error
+import mtc_utils
 from default_plugins import DefaultPlugins  # noqa: E402
-from mtc_utils import HOSTNAME  # noqa: E402
 
 
 # pylint: disable=R0903
 class SB(DefaultPlugins):
     """Style production node"""
 
-    hostname_template: str = f"#[bg=colour195,fg=colour1]{HOSTNAME}#[default]"
+    hostname_template: str = f"#[bg=colour195,fg=colour1]{mtc_utils.HOSTNAME}#[default]"
     tpm_initializing: str = "#[fg=yellow bg=black blink] tpm initializing...#[default]"
 
     force_plugin_continuum = True

@@ -95,7 +95,7 @@ def _get_short_hostname():
     return run_shell(f"{cmd} -s").lower()
 
 
-HOSTNAME = os.getenv("HOSTNAME_SHORT")
+HOSTNAME = os.getenv("HOSTNAME_SHORT") or ""
 if HOSTNAME:
     HOSTNAME.lower()
 else:
@@ -106,3 +106,5 @@ IS_INNER_TMUX = bool(os.getenv("TMUX_OUTER"))
 IS_DARWIN = platform.system() == "Darwin"
 IS_ISH = os.path.isdir("/proc/ish")
 IS_TERMUX = os.environ.get("TERMUX_VERSION") is not None
+
+LC_KEYBOARD = os.getenv("LC_KEYBOARD") or ""

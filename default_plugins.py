@@ -26,14 +26,13 @@
 
 import os
 
-from base import BaseConfig  # BaseConfig
-
 #
 #  Since I often run this on iSH, this class will bind missing keys in the
 #  case this is run directly on the ishConsole, in all other cases it will
 #  do nothing
 #
-from mtc_utils import IS_INNER_TMUX, IS_ISH, IS_TERMUX
+import mtc_utils
+from base import BaseConfig  # BaseConfig
 
 
 class DefaultPlugins(BaseConfig):
@@ -74,7 +73,7 @@ class DefaultPlugins(BaseConfig):
     skip_plugin_mouse_swipe = False
     skip_plugin_resurrect = False
     skip_plugin_session_wizard = False
-    if IS_INNER_TMUX:
+    if mtc_utils.IS_INNER_TMUX:
         #  Doesn't make much sense in an inner tmux
         skip_plugin_mouse_swipe = True
         # skip_plugin_session_wizard = True
@@ -213,7 +212,7 @@ class DefaultPlugins(BaseConfig):
         enter to copy instakills asdf local tmux
         Default trigger: <prefix> Tab
         """
-        if self.skip_plugin_extrakto or IS_ISH:
+        if self.skip_plugin_extrakto or mtc_utils.IS_ISH:
             # the popup gets stuck on iSH
             vers_min = -1.0
         else:
@@ -247,7 +246,7 @@ class DefaultPlugins(BaseConfig):
         without having to use the mouse.
         Default trigger: <prefix> j
         """
-        if self.skip_plugin_jump or IS_ISH or IS_TERMUX:
+        if self.skip_plugin_jump or mtc_utils.IS_ISH or mtc_utils.IS_TERMUX:
             # it seems Termux fails to handle ttys
             # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Dont use
@@ -337,7 +336,7 @@ class DefaultPlugins(BaseConfig):
         This plugins fails to restore sessions in iSH, at least on my
         devices. so no point enabling tmux-resurrect & tmux-continuum
         on iSH"""
-        if self.skip_plugin_resurrect or IS_ISH or self.is_tmate():
+        if self.skip_plugin_resurrect or mtc_utils.IS_ISH or self.is_tmate():
             min_vers = -1.0  # Dont use
         else:
             min_vers = 1.9

@@ -24,9 +24,9 @@
 #  in the default file, this is for color theme and selection of often
 #  changing list of plugins I am testing
 #  out.
-from mtc_utils import HOSTNAME, IS_TERMUX
+import mtc_utils
 
-if HOSTNAME == "ish-hetz1":
+if mtc_utils.HOSTNAME == "ish-hetz1":
     from sb.sb_acceptance import SB
 else:
     from sb.sb_t2 import SB  # type: ignore
@@ -44,7 +44,7 @@ class T2(SB):  # type: ignore
     # use_embedded_scripts = False
     # is_limited_host = True
 
-    if IS_TERMUX:
+    if mtc_utils.IS_TERMUX:
         skip_plugin_continuum = True
         skip_plugin_resurrect = True
 
