@@ -33,7 +33,7 @@ from base import BaseConfig  # BaseConfig
 #  case this is run directly on the ishConsole, in all other cases it will
 #  do nothing
 #
-from mtc_utils import INNER_TMUX, IS_ISH, IS_TERMUX
+from mtc_utils import IS_INNER_TMUX, IS_ISH, IS_TERMUX
 
 
 class DefaultPlugins(BaseConfig):
@@ -74,7 +74,7 @@ class DefaultPlugins(BaseConfig):
     skip_plugin_mouse_swipe = False
     skip_plugin_resurrect = False
     skip_plugin_session_wizard = False
-    if INNER_TMUX:
+    if IS_INNER_TMUX:
         #  Doesn't make much sense in an inner tmux
         skip_plugin_mouse_swipe = True
         # skip_plugin_session_wizard = True

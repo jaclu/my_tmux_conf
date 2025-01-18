@@ -9,12 +9,15 @@
 #
 #  Some common stuff
 #
+#  Provided methods:
+#   run_shell()     - Runs a shell command, returns result as a str
+#   get_currency()  - Get local currency as a str, based on public IP#
 #  Provides constants:
-#
-#    HOSTNAME   short hostname
-#    IS_ISH     (boolean) true if platform is the iOS iSH App
-#    IS_ISH_AOK (boolean) true if platform is the iOS-AOK fork
-#               If env is iSH-AOK, IS_ISH will also be true
+#   HOSTNAME        hostname -s
+#   IS_INNER_TMUX   (bool) this runs inside another tmux session
+#   IS_DARWIN       (bool) this system is Darwin (MacOS)
+#   IS_ISH          (bool) this system is the iOS iSH App
+#   IS_TERMUX       (bool) this system is Termux
 #
 
 """Common utils"""
@@ -22,10 +25,14 @@
 import json
 import os.path
 import platform
+import random
 import shutil
 import subprocess  # nosec
 
 
+#
+#  Public methods
+#
 def run_shell(_cmd: str) -> str:
     """Run a command in a shell"""
     # pylint: disable=subprocess-run-check
@@ -58,11 +65,11 @@ def get_currency() -> str:
 #
 def _currency_request(url, tag="currency") -> str:
     """Returns currency for device location, or "" if not detected"""
-    result = run_shell("curl -s https://ipapi.co/json")
+    result = run_shell(f"curl -s {url}")
     # Parse the JSON output
     if result.strip():  # Ensure the command ran successfully
         data = json.loads(result)
-        currency = data.get("currency", "Unknown")
+        currency = data.get(tag, "Unknown")
     else:
         currency = ""
     return currency
@@ -92,21 +99,10 @@ HOSTNAME = os.getenv("HOSTNAME_SHORT")
 if HOSTNAME:
     HOSTNAME.lower()
 else:
-    cmd = shutil.which("hostname")
-    HOSTNAME = run_shell(f"{cmd} -s").lower()
+    HOSTNAME = _get_short_hostname()
 
-INNER_TMUX = bool(os.getenv("TMUX_OUTER"))
+IS_INNER_TMUX = bool(os.getenv("TMUX_OUTER"))
 
-IS_ISH_AOK = False
-if os.path.isdir("/proc/ish"):
-    IS_ISH = True
-    with open("/proc/ish/version", "r", encoding="utf-8") as file:
-        for line in file:
-            if "aok" in line.lower():
-                IS_ISH_AOK = True
-                break
-else:
-    IS_ISH = False
-
-is_termux = bool(os.environ.get("TERMUX_VERSION") is not None)
-is_darwin = platform.system() == "Darwin"
+IS_DARWIN = platform.system() == "Darwin"
+IS_ISH = os.path.isdir("/proc/ish")
+IS_TERMUX = os.environ.get("TERMUX_VERSION") is not None
