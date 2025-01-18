@@ -161,7 +161,7 @@ class IshConsole(base_config.BaseConfig):
         #
         #  This keyb type already generates Esc on the key above tab
         #
-        self.ic_euro_fix("\\342\\204\\242")
+        pass
 
     def ic_keyb_type_2(self):
         #
@@ -175,6 +175,7 @@ class IshConsole(base_config.BaseConfig):
         #
         #
         self.ic_keyb_type_2()  # Same esc handling
+        self.ic_euro_fix("\\342\\202\\254")
         self.write(
             """#
             #  On this keyb, backtick (next to z) sends Escape
