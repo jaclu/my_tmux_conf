@@ -41,12 +41,11 @@ import os
 import re
 import sys
 
-import __main__
-
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
+import __main__
 import mtc_utils
 
 # ruff checks might be relevant F403,F401
@@ -287,7 +286,10 @@ class BaseConfig(TmuxConfig):
         """
         super().local_overrides()
         #  Display what class this override comes from
-        self.write("# BaseConfig.local_overides")
+        self.write("# BaseConfig.local_overides\n")
+
+        if mtc_utils.is_darwin:
+            self.euro_fix("\\033\\100")
 
     def content(self) -> None:
         """This generates the majority of the tmux.conf.
@@ -1830,6 +1832,20 @@ timer_end() {{
         print()
         print(f"vers found: {lib_vers_found}   needs: {TMUX_CONF_NEEDED}")
         sys.exit(1)
+
+    def euro_fix(self, sequence: str):
+        """Some BT keybs fail to render the Euro sign for M-S-2
+        Only do this if local currency is EUR
+        sample sequence that might be generated: \\342\\204\\242"""
+        if mtc_utils.get_currency() == "EUR":
+            self.write(
+                f"""# M-S-2 should be €
+                set -s user-keys[223] "{sequence}"
+                bind -N "Send €" -n User223 send "€"
+            """
+            )
+        else:
+            self.write("# this node doesn't seem to use EUR")
 
 
 if __name__ == "__main__":

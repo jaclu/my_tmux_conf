@@ -29,7 +29,6 @@ import os
 import sys
 
 import base_config
-from mtc_utils import get_currency
 
 #
 #  To make it easier to identify what keyboard to config
@@ -86,18 +85,6 @@ class IshConsole(base_config.BaseConfig):
             clear_plugins=clear_plugins,
             plugins_display=plugins_display,
         )
-
-    def ic_euro_fix(self, sequence: str):
-        """Some BT keybs fail to render the Euro sign for M-S-2
-        Only do this if local currency is EUR
-        sample sequence that might be generated: \\342\\204\\242"""
-        if get_currency() == "EUR":
-            self.write(
-                f"""# M-S-2 should be €
-                set -s user-keys[223] "{sequence}"
-                bind -N "Send €" -n User223 send "€"
-            """
-            )
 
     def content(self):
         # Map special keys before generating rest of conf
@@ -174,7 +161,7 @@ class IshConsole(base_config.BaseConfig):
         #
         #
         self.ic_keyb_type_2()  # Same esc handling
-        self.ic_euro_fix("\\342\\202\\254")
+        self.euro_fix("\\342\\202\\254")
         self.write(
             """#
             #  On this keyb, backtick (next to z) sends Escape

@@ -21,6 +21,7 @@
 
 import json
 import os.path
+import platform
 import shutil
 import subprocess  # nosec
 
@@ -64,4 +65,5 @@ if os.path.isdir("/proc/ish"):
 else:
     IS_ISH = False
 
-IS_TERMUX = bool(os.environ.get("TERMUX_VERSION") is not None)
+is_termux = bool(os.environ.get("TERMUX_VERSION") is not None)
+is_darwin = platform.system() == "Darwin"
