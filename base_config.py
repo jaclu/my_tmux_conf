@@ -295,7 +295,7 @@ class BaseConfig(TmuxConfig):
         #  Display what class this override comes from
         self.write("# BaseConfig.local_overides")
 
-        if not mtc_utils.IS_ISH or mtc_utils.IS_DARWIN or os.environ.get("SSH_CLIENT"):
+        if not mtc_utils.IS_ISH or mtc_utils.IS_DARWIN:  # or os.environ.get("SSH_CLIENT"):
             # this check isn't perfect for remote sessions, but at least it won't
             # assume Darwin on local sessions on other platforms
             self.euro_fix("\\033\\100")  # typical Darwin kbd key-sequence
