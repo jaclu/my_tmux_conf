@@ -48,7 +48,7 @@ import __main__
 from tmux_conf import TmuxConfig
 
 import mtc_utils
-from tablet_bt_kbd import consider_defining_special_console
+from tablet_bt_kbd import special_consoles_config
 
 # ruff checks might be relevant F403,F401
 
@@ -323,7 +323,7 @@ class BaseConfig(TmuxConfig):
         available via prefix, in order to still be accessible on dumb
         terminals.
         """
-        self.tablet_keyb = consider_defining_special_console(self)
+        self.tablet_keyb = special_consoles_config(self)
         self.remove_unwanted_default_bindings()
         self.connecting_terminal()
         self.general_environment()

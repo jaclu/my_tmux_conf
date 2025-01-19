@@ -63,49 +63,6 @@ class BtKbdSpecialHandling:
             raise ImportWarning("No LC_KEYBOARD defined!")
         self.tc = tmux_conf_instance
 
-    def detect_console_keyb(self) -> bool:
-        #
-        #  Only use this if the following conditions are met:
-        #     1) tmux >= 2.6
-        #     2) LC_KEYBOARD is set
-        #
-        if not self.tc.vers_ok(2.6):
-            msg = """WARNING: tmux < 2.6 does not support user-keys, thus handling
-            keyboard adaptions not supported on this version"""
-            print(msg)
-            self.tc.write(msg)
-            return False
-
-        print(f"This originated on a console - using keyboard: {mtc_utils.LC_KEYBOARD}")
-        self.tc.write(
-            f"""
-            #======================================================
-            #
-            #  Remap keys for limited console
-            #  using keyboard: {mtc_utils.LC_KEYBOARD}
-            #
-            #======================================================
-            """
-        )
-        if mtc_utils.LC_KEYBOARD in (KBD_OMNITYPE, KBD_BLUETOOTH):
-            # already handles esc
-            self.keyb_type_1()
-        elif mtc_utils.LC_KEYBOARD in (
-            KBD_BRYDGE_10_2_MAX,
-            KBD_YOOZON3,
-        ):
-            self.keyb_type_2()
-        elif mtc_utils.LC_KEYBOARD == KBD_LOGITECH_COMBO_TOUCH:
-            self.keyb_type_combo_touch()
-        # else:
-        #     msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
-        #     self.tc.write(msg)
-        #     print(msg)
-        #     return False
-
-        self.tc.euro_fix("\\342\\202\\254")
-        return True
-
     #
     #  Specific Keyboards
     #
@@ -148,6 +105,49 @@ class BtKbdSpecialHandling:
             """
         )
 
+    def config_console_keyb(self) -> bool:
+        #
+        #  Only use this if the following conditions are met:
+        #     1) tmux >= 2.6
+        #     2) LC_KEYBOARD is set
+        #
+        if not self.tc.vers_ok(2.6):
+            msg = """WARNING: tmux < 2.6 does not support user-keys, thus handling
+            keyboard adaptions not supported on this version"""
+            print(msg)
+            self.tc.write(msg)
+            return False
+
+        print(f"This originated on a console - using keyboard: {mtc_utils.LC_KEYBOARD}")
+        self.tc.write(
+            f"""
+            #======================================================
+            #
+            #  Remap keys for limited console
+            #  using keyboard: {mtc_utils.LC_KEYBOARD}
+            #
+            #======================================================
+            """
+        )
+        if mtc_utils.LC_KEYBOARD in (KBD_OMNITYPE, KBD_BLUETOOTH):
+            # already handles esc
+            self.keyb_type_1()
+        elif mtc_utils.LC_KEYBOARD in (
+            KBD_BRYDGE_10_2_MAX,
+            KBD_YOOZON3,
+        ):
+            self.keyb_type_2()
+        elif mtc_utils.LC_KEYBOARD == KBD_LOGITECH_COMBO_TOUCH:
+            self.keyb_type_combo_touch()
+        # else:
+        #     msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
+        #     self.tc.write(msg)
+        #     print(msg)
+        #     return False
+
+        self.tc.euro_fix("\\342\\202\\254")
+        return True
+
     def virtual_escape_key(self, sequence: str) -> None:
         if sequence[:1] != "\\":
             err_msg = (
@@ -177,9 +177,9 @@ class TermuxConsole(BtKbdSpecialHandling):
         super().__init__(tmux_conf_instance)
         self.tc.write("# ><> Using TermuxConsole() class")
 
-    def keyb_type_combo_touch(self):
+    def keyb_type_1(self):
         self.virtual_escape_key("\\140")
-        super().keyb_type_combo_touch()
+        super().keyb_type_1()
 
 
 class IshConsole(BtKbdSpecialHandling):
@@ -193,8 +193,8 @@ class IshConsole(BtKbdSpecialHandling):
         super().__init__(tmux_conf_instance)
         self.tc.write("# ><> Using IshConsole() class")
 
-    def detect_console_keyb(self):
-        if not super().detect_console_keyb():
+    def config_console_keyb(self):
+        if not super().config_console_keyb():
             return False
 
         #
@@ -229,10 +229,6 @@ class IshConsole(BtKbdSpecialHandling):
 
         self.tc.write("# ><> Using: IshConsole")
         return True
-
-    #
-    #  Specific Keyboards
-    #
 
     def fn_keys(self):
         #
@@ -445,17 +441,17 @@ class IshConsole(BtKbdSpecialHandling):
         #
 
 
-def consider_defining_special_console(tmux_conf_instance):
-    if not mtc_utils.LC_KEYBOARD:
-        # If there is no indication what keyboard is used, no adaptions
-        # can be applied, so might as well return
-        tmux_conf_instance.write("# ><> no LC_KEYBOARD detected")
-        return None
+def special_consoles_config(tmux_conf_instance):
     if not mtc_utils.LC_CONSOLE:
         # If there is no indication what keyboard is used, no adaptions
         # can be applied, so might as well return
         tmux_conf_instance.write("# ><> no LC_CONSOLE detected")
-        return None
+        return False
+    if not mtc_utils.LC_KEYBOARD:
+        # If there is no indication what keyboard is used, no adaptions
+        # can be applied, so might as well return
+        tmux_conf_instance.write("# ><> no LC_KEYBOARD detected")
+        return False
     if mtc_utils.LC_CONSOLE == "iSH":  # and not mtc_utils.IS_REMOTE:
         kbd = IshConsole(tmux_conf_instance)
     elif mtc_utils.LC_CONSOLE == "Termux":
@@ -463,6 +459,6 @@ def consider_defining_special_console(tmux_conf_instance):
     else:
         sys.exit(f"ERROR: Unrecognized LC_CONSOLE:  [{mtc_utils.LC_CONSOLE}]")
 
-    if kbd.detect_console_keyb():
-        return kbd
-    return None
+    if kbd.config_console_keyb():
+        return True
+    return False
