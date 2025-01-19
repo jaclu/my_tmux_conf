@@ -87,7 +87,60 @@ class BtKbdSpecialHandling:
             #======================================================
             """
         )
+        if mtc_utils.LC_KEYBOARD in (mtc_utils.KBD_OMNITYPE, mtc_utils.KBD_BLUETOOTH):
+            # already handles esc
+            self.keyb_type_1()
+        elif mtc_utils.LC_KEYBOARD in (
+            mtc_utils.KBD_BRYDGE_10_2_MAX,
+            mtc_utils.KBD_YOOZON3,
+        ):
+            self.keyb_type_2()
+        elif mtc_utils.LC_KEYBOARD == mtc_utils.KBD_LOGITECH_COMBO_TOUCH:
+            self.keyb_type_combo_touch()
+        else:
+            msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
+            self.tc.write(msg)
+            print(msg)
+            return False
+
+        self.tc.euro_fix("\\342\\202\\254")
         return True
+
+    #
+    #  Specific Keyboards
+    #
+    def keyb_type_1(self):
+        #
+        #  This keyb type already generates Esc on the key above tab
+        #
+        pass
+
+    def keyb_type_2(self):
+        #
+        #  General settings seems to work for several keyboards
+        #
+        self.virtual_escape_key("\\302\\247")
+
+    def keyb_type_combo_touch(self):
+        #
+        #  Logitech Combo Touch
+        #
+        #
+        self.keyb_type_2()  # Same esc handling
+        self.tc.write(
+            f"""#
+            #  On this keyb, backtick (next to z) sends Escape
+            #  this changes it back to send backtick, Esc is available via §
+            #
+            {self.tc.opt_server} user-keys[221]  "\\033"
+            # map backtick back from Escape
+            bind -N "Send backtick"  -n User221  send "\\`"
+
+            # Tthis keyb sends £ when it should send #
+            {self.tc.opt_server} user-keys[222] "\\302\\243"
+            bind -N "Send #" -n User222 send '#'
+            """
+        )
 
     def virtual_escape_key(self, sequence: str) -> None:
         if sequence[:1] != "\\":
@@ -106,26 +159,31 @@ class BtKbdSpecialHandling:
         )
 
 
-class TermuxConsole(BtKbdSpecialHandling):
+class TermuxNode(BtKbdSpecialHandling):
     """Used to adopt the Termux console"""
 
     def __init__(self, tmux_conf_instance):
         if not mtc_utils.IS_TERMUX:
             raise ImportWarning("This is not running on a Termux node!")
         super().__init__(tmux_conf_instance)
-        self.tc.write("# ><> Using TermuxConsole() class")
+        self.tc.write("# ><> Using TermuxNode() class")
 
-    def detect_console_keyb(self):
-        if not super().detect_console_keyb():
-            return False
-        if mtc_utils.LC_KEYBOARD in (mtc_utils.KBD_OMNITYPE, mtc_utils.KBD_BLUETOOTH):
-            self.virtual_escape_key("\\140")
-            self.tc.write("# ><> Using: TermuxConsole")
-            return True
-        return False
+    def keyb_type_1(self):
+        #
+        #  This keyb type already generates Esc on the key above tab
+        #
+        self.virtual_escape_key("\\140")
+        self.tc.write(
+            f"""#
+            #  § via Ctrl
+            #
+            {self.tc.opt_server} user-keys[210]  "\\060"
+            bind -N "Send §" -n User210  send §
+            """
+        )
 
 
-class IshConsole(BtKbdSpecialHandling):
+class IshNode(BtKbdSpecialHandling):
     """Used to adopt the iSH console
     This redefines the rather limited keyboard in order to make it more useful.
     """
@@ -134,25 +192,10 @@ class IshConsole(BtKbdSpecialHandling):
         if not mtc_utils.IS_ISH:
             raise ImportWarning("This is not running on a Termux node!")
         super().__init__(tmux_conf_instance)
-        self.tc.write("# ><> Using IshConsole() class")
+        self.tc.write("# ><> Using IshNode() class")
 
     def detect_console_keyb(self):
         if not super().detect_console_keyb():
-            return False
-        if mtc_utils.LC_KEYBOARD in (mtc_utils.KBD_OMNITYPE, mtc_utils.KBD_BLUETOOTH):
-            # already handles esc
-            self.keyb_type_1()
-        elif mtc_utils.LC_KEYBOARD in (
-            mtc_utils.KBD_BRYDGE_10_2_MAX,
-            mtc_utils.KBD_YOOZON3,
-        ):
-            self.keyb_type_2()
-        elif mtc_utils.LC_KEYBOARD == mtc_utils.KBD_LOGITECH_COMBO_TOUCH:
-            self.keyb_type_combo_touch()
-        else:
-            msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
-            self.tc.write(msg)
-            print(msg)
             return False
 
         #
@@ -172,10 +215,7 @@ class IshConsole(BtKbdSpecialHandling):
         ms_fn_keys_mapped = False
 
         fn_keys_handling = 0
-        if fn_keys_handling == 0:
-            # no function keys mapping
-            pass
-        elif fn_keys_handling == 1:
+        if fn_keys_handling == 1:
             self.fn_keys()
         elif fn_keys_handling == 2:
             self.m_fn_keys()
@@ -187,45 +227,12 @@ class IshConsole(BtKbdSpecialHandling):
         # use <prefix> arrows as PageUp/Dn Home/End
         self.tc.use_prefix_arrow_nav_keys = True
 
-        self.tc.write("# ><> Using: IshConsole")
+        self.tc.write("# ><> Using: IshNode")
         return True
 
     #
     #  Specific Keyboards
     #
-    def keyb_type_1(self):
-        #
-        #  This keyb type already generates Esc on the key above tab
-        #
-        self.tc.euro_fix("\\342\\202\\254")
-
-    def keyb_type_2(self):
-        #
-        #  General settings seems to work for several keyboards
-        #
-        self.virtual_escape_key("\\302\\247")
-
-    def keyb_type_combo_touch(self):
-        #
-        #  Logitech Combo Touch
-        #
-        #
-        self.keyb_type_2()  # Same esc handling
-        self.tc.euro_fix("\\342\\202\\254")
-        self.tc.write(
-            f"""#
-            #  On this keyb, backtick (next to z) sends Escape
-            #  this changes it back to send backtick, Esc is available via §
-            #
-            {self.tc.opt_server} user-keys[221]  "\\033"
-            # map backtick back from Escape
-            bind -N "Send backtick"  -n User221  send "\\`"
-
-            # Tthis keyb sends £ when it should send #
-            {self.tc.opt_server} user-keys[222] "\\302\\243"
-            bind -N "Send #" -n User222 send '#'
-            """
-        )
 
     def fn_keys(self):
         #
