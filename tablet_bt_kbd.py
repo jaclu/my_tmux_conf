@@ -66,7 +66,7 @@ class TabletBtKbd:
         self.tc = tmux_conf_instance
         print("Using TabletBtKbd() class")
 
-        self.tc.muc_defaults = {
+        self.muc_keys = {
             "muc_plus": "User61",
             "muc_par_open": "User89",
             "muc_par_close": "User80",
@@ -152,16 +152,16 @@ class TabletBtKbd:
         self.ic_keyb_type_2()  # Same esc handling
         self.tc.euro_fix("\\342\\202\\254")
         self.tc.write(
-            """#
+            f"""#
             #  On this keyb, backtick (next to z) sends Escape
             #  this changes it back to send backtick, Esc is available via §
             #
-            set -s user-keys[221]  "\\033"
+            {self.tc.opt_server} user-keys[221]  "\\033"
             # map backtick back from Escape
             bind -N "Send backtick"  -n User221  send "\\`"
 
             # Tthis keyb sends £ when it should send #
-            set -s user-keys[222] "\\302\\243"
+            {self.tc.opt_server} user-keys[222] "\\302\\243"
             bind -N "Send #" -n User222 send '#'
             """
         )
@@ -171,7 +171,7 @@ class TabletBtKbd:
             f"""#
             #  Virtual Escape key
             #
-            set -s user-keys[200]  "{esc_key}"
+            {self.tc.opt_server} user-keys[200]  "{esc_key}"
             bind -N "Send Escape" -n User200  send Escape
             """
         )
@@ -220,20 +220,20 @@ class TabletBtKbd:
     def ic_m_fn_keys(self) -> None:
         w = self.tc.write
         w(
-            """
+            f"""
         #
         #  This will map M-number to F1 - F10
         #
-        set -s user-keys[101] "\\033\\061"  #  M-1
-        set -s user-keys[102] "\\033\\062"  #  M-2
-        set -s user-keys[103] "\\033\\063"  #  M-3
-        set -s user-keys[104] "\\033\\064"  #  M-4
-        set -s user-keys[105] "\\033\\065"  #  M-5
-        set -s user-keys[106] "\\033\\066"  #  M-6
-        set -s user-keys[107] "\\033\\067"  #  M-7
-        set -s user-keys[108] "\\033\\070"  #  M-8
-        set -s user-keys[109] "\\033\\071"  #  M-9
-        set -s user-keys[110] "\\033\\060"  #  M-0
+        {self.tc.opt_server} user-keys[101] "\\033\\061"  #  M-1
+        {self.tc.opt_server} user-keys[102] "\\033\\062"  #  M-2
+        {self.tc.opt_server} user-keys[103] "\\033\\063"  #  M-3
+        {self.tc.opt_server} user-keys[104] "\\033\\064"  #  M-4
+        {self.tc.opt_server} user-keys[105] "\\033\\065"  #  M-5
+        {self.tc.opt_server} user-keys[106] "\\033\\066"  #  M-6
+        {self.tc.opt_server} user-keys[107] "\\033\\067"  #  M-7
+        {self.tc.opt_server} user-keys[108] "\\033\\070"  #  M-8
+        {self.tc.opt_server} user-keys[109] "\\033\\071"  #  M-9
+        {self.tc.opt_server} user-keys[110] "\\033\\060"  #  M-0
         """
         )
         for i in range(1, 10):
@@ -243,20 +243,20 @@ class TabletBtKbd:
     def ic_ms_fn_keys(self) -> None:
         w = self.tc.write
         w(
-            """
+            f"""
         #
         #  This will map M-S-number to F1 - F10
         #
-        set -s user-keys[101] "\\342\\201\\204"  #  M-S-1
-        set -s user-keys[102] "\\342\\202\\254"  #  M-S-2
-        set -s user-keys[103] "\\342\\200\\271"  #  M-S-3
-        set -s user-keys[104] "\\342\\200\\272"  #  M-S-4
-        set -s user-keys[105] "\\357\\254\\201"  #  M-S-5
-        set -s user-keys[106] "\\357\\254\\202"  #  M-S-6
-        set -s user-keys[107] "\\342\\200\\241"  #  M-S-7
-        set -s user-keys[108] "\\302\\260"       #  M-S-8
-        set -s user-keys[109] "\\302\\267"       #  M-S-9
-        set -s user-keys[110] "\\342\\200\\232"  #  M-S-0
+        {self.tc.opt_server} user-keys[101] "\\342\\201\\204"  #  M-S-1
+        {self.tc.opt_server} user-keys[102] "\\342\\202\\254"  #  M-S-2
+        {self.tc.opt_server} user-keys[103] "\\342\\200\\271"  #  M-S-3
+        {self.tc.opt_server} user-keys[104] "\\342\\200\\272"  #  M-S-4
+        {self.tc.opt_server} user-keys[105] "\\357\\254\\201"  #  M-S-5
+        {self.tc.opt_server} user-keys[106] "\\357\\254\\202"  #  M-S-6
+        {self.tc.opt_server} user-keys[107] "\\342\\200\\241"  #  M-S-7
+        {self.tc.opt_server} user-keys[108] "\\302\\260"       #  M-S-8
+        {self.tc.opt_server} user-keys[109] "\\302\\267"       #  M-S-9
+        {self.tc.opt_server} user-keys[110] "\\342\\200\\232"  #  M-S-0
         """
         )
         for i in range(1, 10):
@@ -266,53 +266,53 @@ class TabletBtKbd:
     def ic_alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
         w = self.tc.write
         w(
-            """
+            f"""
         #
         #  iSH console doesn't generate the right keys for
         #  Alt upper case chars, so here they are defined
         #
-        set -s user-keys[1]   "\\303\\205"       #  M-A
-        set -s user-keys[2]   "\\304\\261"       #  M-B
-        set -s user-keys[3]   "\\303\\207"       #  M-C
-        set -s user-keys[4]   "\\303\\216"       #  M-D
-        set -s user-keys[5]   "\\302\\264"       #  M-E
-        set -s user-keys[6]   "\\303\\217"       #  M-F
-        set -s user-keys[7]   "\\313\\235"       #  M-G
-        set -s user-keys[8]   "\\303\\223"       #  M-H
-        set -s user-keys[9]   "\\313\\206"       #  M-I
-        set -s user-keys[10]  "\\303\\224"       #  M-J
-        set -s user-keys[11]  "\\357\\243\\277"  #  M-K
-        set -s user-keys[12]  "\\303\\222"       #  M-L
-        set -s user-keys[13]  "\\303\\202"       #  M-M
-        set -s user-keys[14]  "\\313\\234"       #  M-N
-        set -s user-keys[15]  "\\303\\230"       #  M-O
-        set -s user-keys[16]  "\\342\\210\\217"  #  M-P
-        set -s user-keys[17]  "\\305\\222"       #  M-Q
-        set -s user-keys[18]  "\\341\\200\\260"  #  M-R
-        set -s user-keys[19]  "\\303\\215"       #  M-S
-        set -s user-keys[20]  "\\313\\207"       #  M-T
-        set -s user-keys[21]  "\\302\\250"       #  M-U
-        set -s user-keys[22]  "\\342\\227\\212"  #  M-V
-        set -s user-keys[23]  "\\342\\200\\236"  #  M-W
-        set -s user-keys[24]  "\\313\\233"       #  M-X
-        set -s user-keys[25]  "\\303\\201"       #  M-Y
-        set -s user-keys[26]  "\\302\\270"       #  M-Z
+        {self.tc.opt_server} user-keys[1]   "\\303\\205"       #  M-A
+        {self.tc.opt_server} user-keys[2]   "\\304\\261"       #  M-B
+        {self.tc.opt_server} user-keys[3]   "\\303\\207"       #  M-C
+        {self.tc.opt_server} user-keys[4]   "\\303\\216"       #  M-D
+        {self.tc.opt_server} user-keys[5]   "\\302\\264"       #  M-E
+        {self.tc.opt_server} user-keys[6]   "\\303\\217"       #  M-F
+        {self.tc.opt_server} user-keys[7]   "\\313\\235"       #  M-G
+        {self.tc.opt_server} user-keys[8]   "\\303\\223"       #  M-H
+        {self.tc.opt_server} user-keys[9]   "\\313\\206"       #  M-I
+        {self.tc.opt_server} user-keys[10]  "\\303\\224"       #  M-J
+        {self.tc.opt_server} user-keys[11]  "\\357\\243\\277"  #  M-K
+        {self.tc.opt_server} user-keys[12]  "\\303\\222"       #  M-L
+        {self.tc.opt_server} user-keys[13]  "\\303\\202"       #  M-M
+        {self.tc.opt_server} user-keys[14]  "\\313\\234"       #  M-N
+        {self.tc.opt_server} user-keys[15]  "\\303\\230"       #  M-O
+        {self.tc.opt_server} user-keys[16]  "\\342\\210\\217"  #  M-P
+        {self.tc.opt_server} user-keys[17]  "\\305\\222"       #  M-Q
+        {self.tc.opt_server} user-keys[18]  "\\341\\200\\260"  #  M-R
+        {self.tc.opt_server} user-keys[19]  "\\303\\215"       #  M-S
+        {self.tc.opt_server} user-keys[20]  "\\313\\207"       #  M-T
+        {self.tc.opt_server} user-keys[21]  "\\302\\250"       #  M-U
+        {self.tc.opt_server} user-keys[22]  "\\342\\227\\212"  #  M-V
+        {self.tc.opt_server} user-keys[23]  "\\342\\200\\236"  #  M-W
+        {self.tc.opt_server} user-keys[24]  "\\313\\233"       #  M-X
+        {self.tc.opt_server} user-keys[25]  "\\303\\201"       #  M-Y
+        {self.tc.opt_server} user-keys[26]  "\\302\\270"       #  M-Z
 
-        set -s user-keys[60]  "\\342\\200\\224"  # M-_
+        {self.tc.opt_server} user-keys[60]  "\\342\\200\\224"  # M-_
 
         # On some keybs with a § there is a glitch in that
         # both S-§ and M-+ generate ±. Since M-+ is used, and S-§ not,
         # just ignore that S-§ also triggers this feature
-        set -s user-keys[61] "\\302\\261"       # M-+
+        {self.tc.opt_server} user-keys[61] "\\302\\261"       # M-+
 
-        set -s user-keys[62]  "\\342\\200\\235" # M-{
-        set -s user-keys[63]  "\\342\\200\\231" # M-}
-        set -s user-keys[64]  "\\302\\273"      # M-|
-        set -s user-keys[65]  "\\303\\232"      # M-:
-        set -s user-keys[66]  "\\303\\206"      # M-\"
-        set -s user-keys[67]  "\\302\\257"      # M-<
-        set -s user-keys[68]  "\\313\\230"      # M->
-        set -s user-keys[69]  "\\302\\277"      # M-?
+        {self.tc.opt_server} user-keys[62]  "\\342\\200\\235" # M-{
+        {self.tc.opt_server} user-keys[63]  "\\342\\200\\231" # M-}
+        {self.tc.opt_server} user-keys[64]  "\\302\\273"      # M-|
+        {self.tc.opt_server} user-keys[65]  "\\303\\232"      # M-:
+        {self.tc.opt_server} user-keys[66]  "\\303\\206"      # M-\"
+        {self.tc.opt_server} user-keys[67]  "\\302\\257"      # M-<
+        {self.tc.opt_server} user-keys[68]  "\\313\\230"      # M->
+        {self.tc.opt_server} user-keys[69]  "\\302\\277"      # M-?
         """
         )
 
@@ -365,17 +365,17 @@ class TabletBtKbd:
         if not ms_fn_keys_mapped:
             #  Collides with F1 - F10 remapping
             w(
-                """
-            set -s user-keys[80]  "\\342\\200\\232"  # M-)
-            set -s user-keys[81]  "\\342\\201\\204"  # M-!
-            set -s user-keys[82]  "\\342\\202\\254"  # M-@
-            set -s user-keys[83]  "\\342\\200\\271"  # M-#
-            set -s user-keys[84]  "\\342\\200\\272"  # M-$
-            set -s user-keys[85]  "\\357\\254\\201"  # M-%
-            set -s user-keys[86]  "\\357\\254\\202"  # M-^
-            set -s user-keys[87]  "\\342\\200\\241"  # M-&
-            set -s user-keys[88]  "\\302\\260"       # M-*
-            set -s user-keys[89]  "\\302\\267"       # M-(
+                f"""
+            {self.tc.opt_server} user-keys[80]  "\\342\\200\\232"  # M-)
+            {self.tc.opt_server} user-keys[81]  "\\342\\201\\204"  # M-!
+            {self.tc.opt_server} user-keys[82]  "\\342\\202\\254"  # M-@
+            {self.tc.opt_server} user-keys[83]  "\\342\\200\\271"  # M-#
+            {self.tc.opt_server} user-keys[84]  "\\342\\200\\272"  # M-$
+            {self.tc.opt_server} user-keys[85]  "\\357\\254\\201"  # M-%
+            {self.tc.opt_server} user-keys[86]  "\\357\\254\\202"  # M-^
+            {self.tc.opt_server} user-keys[87]  "\\342\\200\\241"  # M-&
+            {self.tc.opt_server} user-keys[88]  "\\302\\260"       # M-*
+            {self.tc.opt_server} user-keys[89]  "\\302\\267"       # M-(
             """
             )
             for i, c in (

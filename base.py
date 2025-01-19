@@ -41,12 +41,11 @@ import os
 import re
 import sys
 
-import __main__
-
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
+import __main__
 import mtc_utils
 from tablet_bt_kbd import TabletBtKbd
 
@@ -174,6 +173,8 @@ class BaseConfig(TmuxConfig):
 
         self.tablet_keyb = None
         self.muc_keys = {
+            # Kbd binds that might need to be replased by user-keys on nonstandard
+            # kbds
             "muc_plus": "M-+",
             "muc_par_open": "M-(",
             "muc_par_close": "M-)",
@@ -185,11 +186,12 @@ class BaseConfig(TmuxConfig):
             "muc_k": "M-K",
             "muc_l": "M-L",
         }
+        self.define_opt_params()
         if mtc_utils.LC_KEYBOARD:
             kbd = TabletBtKbd(self)
             if kbd.ic_detect_console_keyb():
                 self.tablet_keyb = kbd
-        self.define_opt_params()
+                self.muc_keys = self.tablet_keyb.muc_keys
 
         if self.vers_ok(1.8):
             self.shell_bg = "run-shell -b"
@@ -891,6 +893,7 @@ class BaseConfig(TmuxConfig):
             w(f"{self.opt_pane} allow-rename off")
 
         if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
+            msg = "terminal clipboard is set"
             if self.vers_ok(3.2):
                 delay = "-d 400"
             else:
@@ -898,19 +901,18 @@ class BaseConfig(TmuxConfig):
             w(
                 f"""
             # Displays that tmux picked up clipboard and (hopefully) sent it
-                # to the terminal
-            set-hook -g pane-set-clipboard "display-message {delay} \
-            'terminal clipboard is set'"
+            # to the terminal
+            set-hook -g pane-set-clipboard "display-message {delay} '{msg}'"
             """
             )
 
         if self.vers_ok(3.5):
             w(f"{self.opt_pane} allow-set-title off")
 
-        w(f"bind -N 'Toggle synchronize'      *   {self.opt_pane} synchronize-panes")
+        w(f"bind -N 'Toggle synchronize'  *  {self.opt_pane} synchronize-panes")
 
         if self.vers_ok(0.9):
-            s = 'bind -N "Kill pane in focus"       x  confirm-before'
+            s = 'bind -N "Kill pane in focus"  x  confirm-before'
             if self.vers_ok(1.5):
                 s += ' -p "kill-pane #T (#P)? (y/n)"'
             w(f"{s} kill-pane")
@@ -1456,6 +1458,7 @@ class BaseConfig(TmuxConfig):
 
     def auc_meta_ses_handling(self):
         # Defaults might be overridden by TabletBtKbd()
+        self.write("# auc_meta_ses_handling()")
 
         if self.muc_keys["muc_plus"] in (None, ""):
             sys.exit("ERROR: auc_meta_ses_handling() muc_plus undefined!")
@@ -1493,6 +1496,7 @@ class BaseConfig(TmuxConfig):
         the "normal" case, when used for iSH console, the
         user keys will be given
         """
+        self.write("# auc_display_plugins_used()")
         if not self.vers_ok(1.8):
             # There is no plugin support...
             return
@@ -1525,6 +1529,7 @@ class BaseConfig(TmuxConfig):
         the "normal" case, when used for iSH console, the
         user keys will be given
         """
+        self.write("# auc_kill_tmux_server()")
         if self.muc_keys["muc_x"] != "M-X":
             note_prefix = "M-X - "
         else:
@@ -1547,6 +1552,7 @@ class BaseConfig(TmuxConfig):
         the "normal" case, when used for iSH console, the
         user keys will be given
         """
+        self.write("# auc_split_entire_window()")
         if self.is_tmate() or not self.vers_ok(2.3):
             #
             #  tmate does not support split-window -f  despite they claim
@@ -1601,6 +1607,11 @@ class BaseConfig(TmuxConfig):
     #  Utility methods
     #
     def define_opt_params(self):
+        #
+        # Define params to use to set various types of options
+        # in general they are global, except for opt_win_loc that needs to modify
+        # settings on a specific window
+        #
         self.opt_server = "set -g"
         self.opt_ses = "set -g"
         if self.vers_ok(1.8):
