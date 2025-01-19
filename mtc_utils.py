@@ -110,3 +110,15 @@ IS_ISH = os.path.isdir("/proc/ish")
 IS_TERMUX = os.environ.get("TERMUX_VERSION") is not None
 
 LC_KEYBOARD = os.getenv("LC_KEYBOARD") or ""
+
+#
+#  To make it easier to identify what keyboard to config
+#  the names here match what you see in Bluetooth settings when listed
+#  otherwise just the deviced product name.
+#  They are defined in the env based on hostname in ~/.common_rc
+#
+KBD_LOGITECH_COMBO_TOUCH = "Logitech Combo Touch"
+KBD_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
+KBD_YOOZON3 = "Yoozon 3"  # same as brydge
+KBD_OMNITYPE = "Omnitype Keyboard"
+KBD_BLUETOOTH = "Bluetooth Keyboard"  # sadly generic name

@@ -35,13 +35,11 @@ import mtc_utils
 #  otherwise just the deviced product name.
 #  They are defined in the env based on hostname in ~/.common_rc
 #
-
-# in use
-KBD_LOGITECH_COMBO_TOUCH = "Logitech Combo Touch"
-KBD_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
-KBD_YOOZON3 = "Yoozon 3"  # same as brydge
-KBD_OMNITYPE = "Omnitype Keyboard"
-KBD_BLUETOOTH = "Bluetooth Keyboard"  # sadly generic name
+# KBD_LOGITECH_COMBO_TOUCH = "Logitech Combo Touch"
+# KBD_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
+# KBD_YOOZON3 = "Yoozon 3"  # same as brydge
+# KBD_OMNITYPE = "Omnitype Keyboard"
+# KBD_BLUETOOTH = "Bluetooth Keyboard"  # sadly generic name
 
 
 class BtKbdSpecialHandling:
@@ -72,11 +70,13 @@ class BtKbdSpecialHandling:
         #     2) LC_KEYBOARD is set
         #
         if not self.tc.vers_ok(2.6):
-            print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
-            print("         keyboard adaptions not supported on this version")
+            msg = """WARNING: tmux < 2.6 does not support user-keys, thus handling
+            keyboard adaptions not supported on this version"""
+            print(msg)
+            self.tc.write(msg)
             return False
 
-        print(f"This originated on an iSH console - keyboard: {mtc_utils.LC_KEYBOARD}")
+        print(f"This originated on a console - using keyboard: {mtc_utils.LC_KEYBOARD}")
         self.tc.write(
             f"""
             #======================================================
@@ -118,7 +118,7 @@ class TermuxConsole(BtKbdSpecialHandling):
     def detect_console_keyb(self):
         if not super().detect_console_keyb():
             return False
-        if mtc_utils.LC_KEYBOARD in (KBD_OMNITYPE, KBD_BLUETOOTH):
+        if mtc_utils.LC_KEYBOARD in (mtc_utils.KBD_OMNITYPE, mtc_utils.KBD_BLUETOOTH):
             self.virtual_escape_key("\\140")
             self.tc.write("# ><> Using: TermuxConsole")
             return True
@@ -139,12 +139,15 @@ class IshConsole(BtKbdSpecialHandling):
     def detect_console_keyb(self):
         if not super().detect_console_keyb():
             return False
-        if mtc_utils.LC_KEYBOARD in (KBD_OMNITYPE, KBD_BLUETOOTH):
+        if mtc_utils.LC_KEYBOARD in (mtc_utils.KBD_OMNITYPE, mtc_utils.KBD_BLUETOOTH):
             # already handles esc
             self.keyb_type_1()
-        elif mtc_utils.LC_KEYBOARD in (KBD_BRYDGE_10_2_MAX, KBD_YOOZON3):
+        elif mtc_utils.LC_KEYBOARD in (
+            mtc_utils.KBD_BRYDGE_10_2_MAX,
+            mtc_utils.KBD_YOOZON3,
+        ):
             self.keyb_type_2()
-        elif mtc_utils.LC_KEYBOARD == KBD_LOGITECH_COMBO_TOUCH:
+        elif mtc_utils.LC_KEYBOARD == mtc_utils.KBD_LOGITECH_COMBO_TOUCH:
             self.keyb_type_combo_touch()
         else:
             msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
