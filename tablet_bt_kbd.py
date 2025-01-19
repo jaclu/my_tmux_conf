@@ -134,10 +134,9 @@ class IshConsole(BtKbdSpecialHandling):
         if not mtc_utils.IS_ISH:
             raise ImportWarning("This is not running on a Termux node!")
         super().__init__(tmux_conf_instance)
-
-    def detect_console_keyb(self):
         self.tc.write("# Loading: IshConsole")
 
+    def detect_console_keyb(self):
         if not super().detect_console_keyb():
             return False
         if mtc_utils.LC_KEYBOARD in (KBD_OMNITYPE, KBD_BLUETOOTH):
