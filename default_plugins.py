@@ -28,7 +28,7 @@ import os
 
 #
 #  Since I often run this on iSH, this class will bind missing keys in the
-#  case this is run directly on the IshNode, in all other cases it will
+#  case this is run directly on the IshConsole, in all other cases it will
 #  do nothing
 #
 import mtc_utils

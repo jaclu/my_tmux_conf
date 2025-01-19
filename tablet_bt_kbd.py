@@ -168,30 +168,30 @@ class BtKbdSpecialHandling:
         self.esc_has_been_handled = True
 
 
-class TermuxNode(BtKbdSpecialHandling):
+class TermuxConsole(BtKbdSpecialHandling):
     """Used to adopt the Termux console"""
 
     def __init__(self, tmux_conf_instance):
-        if not mtc_utils.IS_TERMUX:
-            raise ImportWarning("This is not running on a Termux node!")
+        # if not mtc_utils.IS_TERMUX:
+        #     raise ImportWarning("This is not running on a Termux node!")``
         super().__init__(tmux_conf_instance)
-        self.tc.write("# ><> Using TermuxNode() class")
+        self.tc.write("# ><> Using TermuxConsole() class")
 
     def keyb_type_combo_touch(self):
         self.virtual_escape_key("\\140")
         super().keyb_type_combo_touch()
 
 
-class IshNode(BtKbdSpecialHandling):
+class IshConsole(BtKbdSpecialHandling):
     """Used to adopt the iSH console
     This redefines the rather limited keyboard in order to make it more useful.
     """
 
     def __init__(self, tmux_conf_instance):
-        if not mtc_utils.IS_ISH:
-            raise ImportWarning("This is not running on a Termux node!")
+        # if not mtc_utils.IS_ISH:
+        #     raise ImportWarning("This is not running on a Termux node!")
         super().__init__(tmux_conf_instance)
-        self.tc.write("# ><> Using IshNode() class")
+        self.tc.write("# ><> Using IshConsole() class")
 
     def detect_console_keyb(self):
         if not super().detect_console_keyb():
@@ -227,7 +227,7 @@ class IshNode(BtKbdSpecialHandling):
         # use <prefix> arrows as PageUp/Dn Home/End
         self.tc.use_prefix_arrow_nav_keys = True
 
-        self.tc.write("# ><> Using: IshNode")
+        self.tc.write("# ><> Using: IshConsole")
         return True
 
     #

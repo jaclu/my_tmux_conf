@@ -48,7 +48,7 @@ import __main__
 from tmux_conf import TmuxConfig
 
 import mtc_utils
-from tablet_bt_kbd import IshNode, TermuxNode
+from tablet_bt_kbd import IshConsole, TermuxConsole
 
 # ruff checks might be relevant F403,F401
 
@@ -1609,9 +1609,9 @@ class BaseConfig(TmuxConfig):
             # can be applied, so might as well return
             return
         if mtc_utils.LC_CONSOLE == "iSH":  # and not mtc_utils.IS_REMOTE:
-            kbd = IshNode(self)
+            kbd = IshConsole(self)
         elif mtc_utils.LC_CONSOLE == "Termux":
-            kbd = TermuxNode(self)
+            kbd = TermuxConsole(self)
         else:
             self.write("# no special Console detected")
             return
