@@ -14,6 +14,7 @@
 #   get_currency()  - Get local currency as a str, based on public IP#
 #  Provides constants:
 #   HOSTNAME        hostname -s
+#   IS_REMOTE       (bool) if true this is a remote session via mosh/ssh etc
 #   IS_INNER_TMUX   (bool) this runs inside another tmux session
 #   IS_DARWIN       (bool) this system is Darwin (MacOS)
 #   IS_ISH          (bool) this system is the iOS iSH App
@@ -101,6 +102,7 @@ if HOSTNAME:
 else:
     HOSTNAME = _get_short_hostname()
 
+IS_REMOTE = bool(os.getenv("SSH_CLIENT"))
 IS_INNER_TMUX = bool(os.getenv("TMUX_OUTER"))
 
 IS_DARWIN = platform.system() == "Darwin"

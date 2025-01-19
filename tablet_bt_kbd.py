@@ -44,11 +44,8 @@ KBD_OMNITYPE = "Omnitype Keyboard"
 KBD_BLUETOOTH = "Bluetooth Keyboard"  # sadly generic name
 
 
-class TabletBtKbd:
-    """When running tmux from an iSH console this redefines the rather
-    limited keyboard in order to make it more useful.
-
-    Groupings of user-keys
+class BtKbdSpecialHandling:
+    """Groupings of user-keys
 
       1-60  Alt Upper case
     100-129 Function keys
@@ -59,47 +56,25 @@ class TabletBtKbd:
     220-    Specific Keyboard bindings
     """
 
-    ic_keyboard = None
+    # keyboard = None
 
     # pylint: disable=too-many-positional-arguments,too-many-arguments
     def __init__(self, tmux_conf_instance):
+        print("><> Using TabletBtKbd() class")
+        if not mtc_utils.LC_KEYBOARD:
+            raise ImportWarning("No LC_KEYBOARD defined!")
         self.tc = tmux_conf_instance
-        print("Using TabletBtKbd() class")
 
-        self.muc_keys = {
-            "muc_plus": "User61",
-            "muc_par_open": "User89",
-            "muc_par_close": "User80",
-            "muc_underscore": "User60",
-            "muc_s_p": "User16",
-            "muc_x": "User24",
-            "muc_h": "User8",
-            "muc_j": "User10",
-            "muc_k": "User11",
-            "muc_l": "User12",
-        }
-
-    # def content(self):
-    #     # Map special keys before generating rest of conf
-    #     self.ic_detect_console_keyb()
-
-    def ic_detect_console_keyb(self) -> bool:
+    def detect_console_keyb(self) -> bool:
         #
         #  Only use this if the following conditions are met:
         #     1) tmux >= 2.6
         #     2) LC_KEYBOARD is set
         #
-        if not mtc_utils.LC_KEYBOARD:
-            print("WARNING: TabletBtKbd() was used without LC_KEYBOARD being set")
-            return False
-
         if not self.tc.vers_ok(2.6):
             print("WARNING: tmux < 2.6 does not support user-keys, thus handling")
             print("         keyboard adaptions not supported on this version")
             return False
-
-        # use <prefix> arrows as PageUp/Dn Home/End
-        self.tc.use_ish_prefix_arrow_nav_keys = True
 
         print(f"This originated on an iSH console - keyboard: {mtc_utils.LC_KEYBOARD}")
         self.tc.write(
@@ -112,71 +87,72 @@ class TabletBtKbd:
             #======================================================
             """
         )
-
-        if mtc_utils.LC_KEYBOARD in (KBD_OMNITYPE, KBD_BLUETOOTH):
-            # already handles esc
-            self.ic_keyb_type_1()
-        elif mtc_utils.LC_KEYBOARD in (KBD_BRYDGE_10_2_MAX, KBD_YOOZON3):
-            self.ic_keyb_type_2()
-        elif mtc_utils.LC_KEYBOARD == KBD_LOGITECH_COMBO_TOUCH:
-            self.ic_keyb_type_combo_touch()
-        else:
-            msg = f"Unrecognized LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
-            self.tc.write(msg)
-            print(msg)
-            sys.exit(1)  # f"ERROR: Unknown LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}")
-
-        self.ic_common_setup()
         return True
 
-    #
-    #  Specific Keyboards
-    #
-    def ic_keyb_type_1(self):
-        #
-        #  This keyb type already generates Esc on the key above tab
-        #
-        self.tc.euro_fix("\\342\\202\\254")
-
-    def ic_keyb_type_2(self):
-        #
-        #  General settings seems to work for several keyboards
-        #
-        self.ic_virtual_escape_key("\\302\\247")
-
-    def ic_keyb_type_combo_touch(self):
-        #
-        #  Logitech Combo Touch
-        #
-        #
-        self.ic_keyb_type_2()  # Same esc handling
-        self.tc.euro_fix("\\342\\202\\254")
-        self.tc.write(
-            f"""#
-            #  On this keyb, backtick (next to z) sends Escape
-            #  this changes it back to send backtick, Esc is available via §
-            #
-            {self.tc.opt_server} user-keys[221]  "\\033"
-            # map backtick back from Escape
-            bind -N "Send backtick"  -n User221  send "\\`"
-
-            # Tthis keyb sends £ when it should send #
-            {self.tc.opt_server} user-keys[222] "\\302\\243"
-            bind -N "Send #" -n User222 send '#'
-            """
-        )
-
-    def ic_virtual_escape_key(self, esc_key: str) -> None:
+    def virtual_escape_key(self, sequence: str) -> None:
+        if sequence[:1] != "\\":
+            err_msg = (
+                f"ERROR: TabletBtKbd:virtual_escape_key({sequence}) "
+                "must be given in octal notation"
+            )
+            sys.exit(err_msg)
         self.tc.write(
             f"""#
             #  Virtual Escape key
             #
-            {self.tc.opt_server} user-keys[200]  "{esc_key}"
+            {self.tc.opt_server} user-keys[200]  "{sequence}"
             bind -N "Send Escape" -n User200  send Escape
             """
         )
 
-    def ic_common_setup(self) -> None:
+
+class TermuxConsole(BtKbdSpecialHandling):
+    """Used to adopt the Termux console"""
+
+    def __init__(self, tmux_conf_instance):
+        if not mtc_utils.IS_TERMUX:
+            raise ImportWarning("This is not running on a Termux node!")
+        super().__init__(tmux_conf_instance)
+
+    def detect_console_keyb(self):
+        self.tc.write("# Loading: TermuxConsole")
+        if not super().detect_console_keyb():
+            return False
+        if mtc_utils.LC_KEYBOARD in (KBD_OMNITYPE, KBD_BLUETOOTH):
+            self.virtual_escape_key("\\140")
+            self.tc.write("# Using: TermuxConsole")
+            return True
+        return False
+
+
+class IshConsole(BtKbdSpecialHandling):
+    """Used to adopt the iSH console
+    This redefines the rather limited keyboard in order to make it more useful.
+    """
+
+    def __init__(self, tmux_conf_instance):
+        if not mtc_utils.IS_ISH:
+            raise ImportWarning("This is not running on a Termux node!")
+        super().__init__(tmux_conf_instance)
+
+    def detect_console_keyb(self):
+        self.tc.write("# Loading: IshConsole")
+
+        if not super().detect_console_keyb():
+            return False
+        if mtc_utils.LC_KEYBOARD in (KBD_OMNITYPE, KBD_BLUETOOTH):
+            # already handles esc
+            self.keyb_type_1()
+        elif mtc_utils.LC_KEYBOARD in (KBD_BRYDGE_10_2_MAX, KBD_YOOZON3):
+            self.keyb_type_2()
+        elif mtc_utils.LC_KEYBOARD == KBD_LOGITECH_COMBO_TOUCH:
+            self.keyb_type_combo_touch()
+        else:
+            msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
+            self.tc.write(msg)
+            print(msg)
+            return False
+
         #
         #  This does general iSH mapping, not focusing on keyboard specific
         #  customization needs
@@ -198,16 +174,58 @@ class TabletBtKbd:
             # no function keys mapping
             pass
         elif fn_keys_handling == 1:
-            self.ic_fn_keys()
+            self.fn_keys()
         elif fn_keys_handling == 2:
-            self.ic_m_fn_keys()
+            self.m_fn_keys()
         elif fn_keys_handling == 3:
             ms_fn_keys_mapped = True
-            self.ic_ms_fn_keys()
+            self.ms_fn_keys()
+        self.alt_upper_case(ms_fn_keys_mapped)
 
-        self.ic_alt_upper_case(ms_fn_keys_mapped)
+        # use <prefix> arrows as PageUp/Dn Home/End
+        self.tc.use_prefix_arrow_nav_keys = True
 
-    def ic_fn_keys(self):
+        self.tc.write("# Using: IshConsole")
+        return True
+
+    #
+    #  Specific Keyboards
+    #
+    def keyb_type_1(self):
+        #
+        #  This keyb type already generates Esc on the key above tab
+        #
+        self.tc.euro_fix("\\342\\202\\254")
+
+    def keyb_type_2(self):
+        #
+        #  General settings seems to work for several keyboards
+        #
+        self.virtual_escape_key("\\302\\247")
+
+    def keyb_type_combo_touch(self):
+        #
+        #  Logitech Combo Touch
+        #
+        #
+        self.keyb_type_2()  # Same esc handling
+        self.tc.euro_fix("\\342\\202\\254")
+        self.tc.write(
+            f"""#
+            #  On this keyb, backtick (next to z) sends Escape
+            #  this changes it back to send backtick, Esc is available via §
+            #
+            {self.tc.opt_server} user-keys[221]  "\\033"
+            # map backtick back from Escape
+            bind -N "Send backtick"  -n User221  send "\\`"
+
+            # Tthis keyb sends £ when it should send #
+            {self.tc.opt_server} user-keys[222] "\\302\\243"
+            bind -N "Send #" -n User222 send '#'
+            """
+        )
+
+    def fn_keys(self):
         #
         #  For keybs that already handles M-#
         #  this just binds them to send F#
@@ -217,7 +235,7 @@ class TabletBtKbd:
             w(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
         w('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
 
-    def ic_m_fn_keys(self) -> None:
+    def m_fn_keys(self) -> None:
         w = self.tc.write
         w(
             f"""
@@ -240,7 +258,7 @@ class TabletBtKbd:
             w(f'bind -N "M-{i} -> F{i}"  -n  User10{i}  send-keys F{i}')
         w('bind -N "M-0 -> F10" -n  User110  send-keys  F10')
 
-    def ic_ms_fn_keys(self) -> None:
+    def ms_fn_keys(self) -> None:
         w = self.tc.write
         w(
             f"""
@@ -263,7 +281,20 @@ class TabletBtKbd:
             w(f'bind -N "M-S-{i} -> F{i}"  -n  User10{i}  send-keys F{i}')
         w('bind -N "M-S-0 -> F10" -n  User110  send-keys F10')
 
-    def ic_alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
+    def alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
+        self.tc.muc_keys = {
+            "muc_plus": "User61",
+            "muc_par_open": "User89",
+            "muc_par_close": "User80",
+            "muc_underscore": "User60",
+            "muc_s_p": "User16",
+            "muc_x": "User24",
+            "muc_h": "User8",
+            "muc_j": "User10",
+            "muc_k": "User11",
+            "muc_l": "User12",
+        }
+
         w = self.tc.write
         # argh inside f-strings {/} needs to be contained in variables...
         curly_open = "{"

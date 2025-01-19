@@ -48,7 +48,7 @@ import __main__
 from tmux_conf import TmuxConfig
 
 import mtc_utils
-from tablet_bt_kbd import TabletBtKbd
+from tablet_bt_kbd import IshConsole, TermuxConsole
 
 # ruff checks might be relevant F403,F401
 
@@ -129,7 +129,9 @@ class BaseConfig(TmuxConfig):
     #  when running from the console on such devices, either locally or remotely.
     #  If logged in remotely into such a device, it will not be needed
     #
-    #  This feature only activates when the terminal is detected as iSH.
+    #  This feature only activates when the terminal is detected as a limited
+    #  device console.
+    #
     #  In all other terminals,  the arrow keys and pane navigation remain
     #  unchanged.
     #
@@ -138,10 +140,7 @@ class BaseConfig(TmuxConfig):
     #  which may require adjustment if you're used to using the arrow keys
     #  for pane navigation.
     #
-    #  If you set this to False in your hostname-specific configuration class,
-    #  this feature will not be enabled on iSH consoles.
-    #
-    use_ish_prefix_arrow_nav_keys = False
+    use_prefix_arrow_nav_keys = False
 
     # pylint: disable=too-many-positional-arguments,too-many-arguments
     def __init__(
@@ -174,8 +173,8 @@ class BaseConfig(TmuxConfig):
 
         self.tablet_keyb = None
         self.muc_keys = {
-            # Kbd binds that might need to be replased by user-keys on nonstandard
-            # kbds
+            # Kbd binds that might need to be replaced by user-keys on nonstandard
+            # consoles
             "muc_plus": "M-+",
             "muc_par_open": "M-(",
             "muc_par_close": "M-)",
@@ -188,11 +187,7 @@ class BaseConfig(TmuxConfig):
             "muc_l": "M-L",
         }
         self.define_opt_params()
-        if mtc_utils.LC_KEYBOARD:
-            kbd = TabletBtKbd(self)
-            if kbd.ic_detect_console_keyb():
-                self.tablet_keyb = kbd
-                self.muc_keys = self.tablet_keyb.muc_keys
+        self.consider_defining_special_console()
 
         if self.vers_ok(1.8):
             self.shell_bg = "run-shell -b"
@@ -330,8 +325,6 @@ class BaseConfig(TmuxConfig):
         available via prefix, in order to still be accessible on dumb
         terminals.
         """
-        if self.tablet_keyb:
-            self.tablet_keyb.ic_detect_console_keyb()
         self.remove_unwanted_default_bindings()
         self.connecting_terminal()
         self.general_environment()
@@ -593,7 +586,7 @@ class BaseConfig(TmuxConfig):
 
         self.auc_display_plugins_used()
         self.auc_kill_tmux_server()
-        if self.use_ish_prefix_arrow_nav_keys:
+        if self.use_prefix_arrow_nav_keys:
             w(
                 """
             #
@@ -798,7 +791,7 @@ class BaseConfig(TmuxConfig):
         #
         #  Same using arrow keys with <prefix> M-S modifier
         #
-        if self.vers_ok(2.3) and not self.is_tmate():
+        if self.vers_ok(2.3) and not (mtc_utils.IS_TERMUX or self.is_tmate()):
             #
             #  tmate does not support split-window -f  despite they claim
             #  to be 2.4 compatible and this is a 2.3 feature...
@@ -1091,7 +1084,7 @@ class BaseConfig(TmuxConfig):
 
         # indicate the right alternate keys
         if self.vers_ok(1.0):
-            if self.use_ish_prefix_arrow_nav_keys:
+            if self.use_prefix_arrow_nav_keys:
                 w(
                     f"""bind -N "Select pane left  - P h"  -n  M-Left   {pane_left}
                     bind -N "Select pane right  - P l" -n  M-Right  {pane_right}
@@ -1117,7 +1110,7 @@ class BaseConfig(TmuxConfig):
             w(f'bind -N "Select pane up"   -T "copy-mode"  M-Up   {pane_up}')
             w(f'bind -N "Select pane down" -T "copy-mode"  M-Down {pane_down}')
 
-        if self.use_ish_prefix_arrow_nav_keys:
+        if self.use_prefix_arrow_nav_keys:
             # no point in mentioning M-arrows as alt keys, since
             # on the iSH console they can't be generated
             w(
@@ -1157,25 +1150,29 @@ class BaseConfig(TmuxConfig):
             w('bind -N "Split pane below"   C-j  split-window -p 50')
             return
 
-        if self.vers_ok(1.2):
-            # Older versions can't bind C-M keys
-            w(
-                'bind -N "Split pane to the right  - P C-l" -n  '
-                f"C-M-Right  split-window -h {self.cwd_directive}"
-            )
-            w(
-                'bind -N "Split pane below  - P C-j"    -n  '
-                f"C-M-Down   split-window -v {self.cwd_directive}"
-            )
-        if self.vers_ok(2.0):
-            w(
-                'bind -N "Split pane to the left  - P C-h"  '
-                f"-n  C-M-Left   split-window -hb {self.cwd_directive}"
-            )
-            w(
-                'bind -N "Split pane above  - P C-k"      '
-                f"-n  C-M-Up     split-window -vb {self.cwd_directive}"
-            )
+        if not mtc_utils.IS_TERMUX:
+            # In Termux C-M-arrows are not sent into the console
+            # C-M-Left toggles new session
+            if self.vers_ok(1.2):
+                # Older versions can't bind C-M keys
+                w(
+                    'bind -N "Split pane to the right  - P C-l" -n  '
+                    f"C-M-Right  split-window -h {self.cwd_directive}"
+                )
+                w(
+                    'bind -N "Split pane below  - P C-j"    -n  '
+                    f"C-M-Down   split-window -v {self.cwd_directive}"
+                )
+            if self.vers_ok(2.0):
+                #
+                w(
+                    'bind -N "Split pane to the left  - P C-h"  '
+                    f"-n  C-M-Left   split-window -hb {self.cwd_directive}"
+                )
+                w(
+                    'bind -N "Split pane above  - P C-k"      '
+                    f"-n  C-M-Up     split-window -vb {self.cwd_directive}"
+                )
         w()
         w(f'bind -N "Split pane to the right"  C-l  split-window -h {self.cwd_directive}')
         w(f'bind -N "Split pane below"     C-j  split-window -v {self.cwd_directive}')
@@ -1607,6 +1604,17 @@ class BaseConfig(TmuxConfig):
     #
     #  Utility methods
     #
+    def consider_defining_special_console(self):
+        if mtc_utils.LC_KEYBOARD:  # and not mtc_utils.IS_REMOTE:
+            if mtc_utils.IS_ISH:
+                kbd = IshConsole(self)
+            elif mtc_utils.IS_TERMUX:
+                kbd = TermuxConsole(self)
+            else:
+                return
+            if kbd.detect_console_keyb():
+                self.tablet_keyb = kbd
+
     def define_opt_params(self):
         #
         # Define params to use to set various types of options
