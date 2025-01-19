@@ -265,6 +265,9 @@ class TabletBtKbd:
 
     def ic_alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
         w = self.tc.write
+        # argh inside f-strings {/} needs to be contained in variables...
+        curly_open = "{"
+        curly_close = "}"
         w(
             f"""
         #
@@ -305,8 +308,8 @@ class TabletBtKbd:
         # just ignore that S-§ also triggers this feature
         {self.tc.opt_server} user-keys[61] "\\302\\261"       # M-+
 
-        {self.tc.opt_server} user-keys[62]  "\\342\\200\\235" # M-{
-        {self.tc.opt_server} user-keys[63]  "\\342\\200\\231" # M-}
+        {self.tc.opt_server} user-keys[62]  "\\342\\200\\235" # M-{curly_open}
+        {self.tc.opt_server} user-keys[63]  "\\342\\200\\231" # M-{curly_close}
         {self.tc.opt_server} user-keys[64]  "\\302\\273"      # M-|
         {self.tc.opt_server} user-keys[65]  "\\303\\232"      # M-:
         {self.tc.opt_server} user-keys[66]  "\\303\\206"      # M-\"
