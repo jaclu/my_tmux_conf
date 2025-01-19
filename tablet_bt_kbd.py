@@ -154,7 +154,7 @@ class BtKbdSpecialHandling:
             return
         self.tc.write(
             f"""#
-            #  Virtual Escape key
+            #  Replacement Escape key
             #
             {self.tc.opt_server} user-keys[200]  "{sequence}"
             bind -N "Send Escape" -n User200  send Escape
@@ -170,7 +170,9 @@ class BtKbdSpecialHandling:
             )
             sys.exit(err_msg)
         self.tc.write(
-            f"""            #  § via Ctrl
+            f"""#
+            #  Replacement § key
+            #
             {self.tc.opt_server} user-keys[223]  "{sequence}"
             bind -N "M-§ Send §" -n User223  send §
             """
@@ -188,9 +190,12 @@ class TermuxConsole(BtKbdSpecialHandling):
         self.tc.write("# ><> Using TermuxConsole() class")
 
     def keyb_type_1(self):
+        self.tc.write("# ><> TermuxConsole.keyb_type_1()")
         self.replace_escape_key("\\140")
         self.replace_paragraph_key("\\033\\140")
+        self.tc.write("# ><> super().keyb_type_1()")
         super().keyb_type_1()
+        self.tc.write("# ><> done - TermuxConsole.keyb_type_1()")
 
 
 class IshConsole(BtKbdSpecialHandling):

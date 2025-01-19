@@ -324,6 +324,7 @@ class BaseConfig(TmuxConfig):
         terminals.
         """
         self.tablet_keyb = special_consoles_config(self)
+        self.write(f"# ><> self.tablet_keyb: {self.tablet_keyb}")
         self.remove_unwanted_default_bindings()
         self.connecting_terminal()
         self.general_environment()
