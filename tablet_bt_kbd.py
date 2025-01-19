@@ -60,7 +60,7 @@ class BtKbdSpecialHandling:
 
     # pylint: disable=too-many-positional-arguments,too-many-arguments
     def __init__(self, tmux_conf_instance):
-        print("><> Using TabletBtKbd() class")
+        tmux_conf_instance.write("# ><> Using BtKbdSpecialHandling() class")
         if not mtc_utils.LC_KEYBOARD:
             raise ImportWarning("No LC_KEYBOARD defined!")
         self.tc = tmux_conf_instance
@@ -113,14 +113,14 @@ class TermuxConsole(BtKbdSpecialHandling):
         if not mtc_utils.IS_TERMUX:
             raise ImportWarning("This is not running on a Termux node!")
         super().__init__(tmux_conf_instance)
-        self.tc.write("# Loading: TermuxConsole")
+        self.tc.write("# ><> Using TermuxConsole() class")
 
     def detect_console_keyb(self):
         if not super().detect_console_keyb():
             return False
         if mtc_utils.LC_KEYBOARD in (KBD_OMNITYPE, KBD_BLUETOOTH):
             self.virtual_escape_key("\\140")
-            self.tc.write("# Using: TermuxConsole")
+            self.tc.write("# ><> Using: TermuxConsole")
             return True
         return False
 
@@ -134,7 +134,7 @@ class IshConsole(BtKbdSpecialHandling):
         if not mtc_utils.IS_ISH:
             raise ImportWarning("This is not running on a Termux node!")
         super().__init__(tmux_conf_instance)
-        self.tc.write("# Loading: IshConsole")
+        self.tc.write("# ><> Using IshConsole() class")
 
     def detect_console_keyb(self):
         if not super().detect_console_keyb():
@@ -184,7 +184,7 @@ class IshConsole(BtKbdSpecialHandling):
         # use <prefix> arrows as PageUp/Dn Home/End
         self.tc.use_prefix_arrow_nav_keys = True
 
-        self.tc.write("# Using: IshConsole")
+        self.tc.write("# ><> Using: IshConsole")
         return True
 
     #
