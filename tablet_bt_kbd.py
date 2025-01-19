@@ -172,23 +172,6 @@ class BtKbdSpecialHandling:
         )
         self.esc_has_been_handled = True
 
-    def replace_paragraph_key(self, sequence: str) -> None:
-        if sequence[:1] != "\\":
-            err_msg = (
-                f"ERROR: TabletBtKbd:replace_paragraph_key({sequence}) "
-                "must be given in octal notation"
-            )
-            sys.exit(err_msg)
-        self.tc.write(
-            f"""#
-            #  Replacement § key
-            #
-            {self.tc.opt_server} user-keys[223]  "{sequence}"
-            bind -N "M-§ Send §" -n User223  send §
-            """
-        )
-        self.esc_has_been_handled = True
-
 
 class TermuxConsole(BtKbdSpecialHandling):
     """Used to adopt the Termux console"""
@@ -202,7 +185,6 @@ class TermuxConsole(BtKbdSpecialHandling):
     def keyb_type_1(self):
         self.tc.write("# ><> TermuxConsole.keyb_type_1()")
         self.replace_escape_key("\\140")
-        self.replace_paragraph_key("\\033\\140")
         self.euro_fix("\\033\\100")  # same as on Darwin
         self.tc.write("# ><> super().keyb_type_1()")
         super().keyb_type_1()
