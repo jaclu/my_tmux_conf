@@ -120,6 +120,7 @@ class BtKbdSpecialHandling:
             #======================================================
             #
             #  Remap keys for limited console
+            #  Console type: {self.__class__.__name__}
             #  using keyboard: {mtc_utils.LC_KEYBOARD}
             #
             #======================================================
