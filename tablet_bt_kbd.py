@@ -113,9 +113,9 @@ class TermuxConsole(BtKbdSpecialHandling):
         if not mtc_utils.IS_TERMUX:
             raise ImportWarning("This is not running on a Termux node!")
         super().__init__(tmux_conf_instance)
+        self.tc.write("# Loading: TermuxConsole")
 
     def detect_console_keyb(self):
-        self.tc.write("# Loading: TermuxConsole")
         if not super().detect_console_keyb():
             return False
         if mtc_utils.LC_KEYBOARD in (KBD_OMNITYPE, KBD_BLUETOOTH):
