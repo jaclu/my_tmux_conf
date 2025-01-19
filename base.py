@@ -1604,16 +1604,19 @@ class BaseConfig(TmuxConfig):
     #  Utility methods
     #
     def consider_defining_special_console(self):
-        if mtc_utils.LC_KEYBOARD:  # and not mtc_utils.IS_REMOTE:
-            if mtc_utils.IS_ISH:
-                kbd = IshNode(self)
-            elif mtc_utils.IS_TERMUX:
-                kbd = TermuxNode(self)
-            else:
-                self.write("# no special Console detected")
-                return
-            if kbd.detect_console_keyb():
-                self.tablet_keyb = kbd
+        if not mtc_utils.LC_KEYBOARD:
+            # If there is no indication what keyboard is used, no adaptions
+            # can be applied, so might as well return
+            return
+        if mtc_utils.LC_CONSOLE == "iSH":  # and not mtc_utils.IS_REMOTE:
+            kbd = IshNode(self)
+        elif mtc_utils.LC_CONSOLE == "Termux":
+            kbd = TermuxNode(self)
+        else:
+            self.write("# no special Console detected")
+            return
+        if kbd.detect_console_keyb():
+            self.tablet_keyb = kbd
 
     def define_opt_params(self):
         #

@@ -97,11 +97,11 @@ class BtKbdSpecialHandling:
             self.keyb_type_2()
         elif mtc_utils.LC_KEYBOARD == mtc_utils.KBD_LOGITECH_COMBO_TOUCH:
             self.keyb_type_combo_touch()
-        else:
-            msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
-            self.tc.write(msg)
-            print(msg)
-            return False
+        # else:
+        #     msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
+        #     self.tc.write(msg)
+        #     print(msg)
+        #     return False
 
         self.tc.euro_fix("\\342\\202\\254")
         return True

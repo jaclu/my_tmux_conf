@@ -112,6 +112,11 @@ IS_TERMUX = os.environ.get("TERMUX_VERSION") is not None
 LC_KEYBOARD = os.getenv("LC_KEYBOARD") or ""
 
 #
+#  If the session originated on a "primitive keyboard" console, such as
+#  iSH or Termux, it is indicated in LC_CONSOLE
+#
+LC_CONSOLE = os.getenv("LC_CONSOLE") or ""
+#
 #  To make it easier to identify what keyboard to config
 #  the names here match what you see in Bluetooth settings when listed
 #  otherwise just the deviced product name.
