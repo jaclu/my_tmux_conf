@@ -63,7 +63,6 @@ class BtKbdSpecialHandling:
     delete_has_been_handled = False
 
     def __init__(self, tmux_conf_instance):
-        tmux_conf_instance.write("# ><> Using BtKbdSpecialHandling() class")
         if not mtc_utils.LC_KEYBOARD:
             raise ImportWarning("No LC_KEYBOARD defined!")
         self.tc = tmux_conf_instance
@@ -217,36 +216,20 @@ class BtKbdSpecialHandling:
 
 
 class TermuxConsole(BtKbdSpecialHandling):
-    """Used to adopt the Termux console
-
-    \\033\\177
-    """
-
-    def __init__(self, tmux_conf_instance):
-        # if not mtc_utils.IS_TERMUX:
-        #     raise ImportWarning("This is not running on a Termux node!")``
-        super().__init__(tmux_conf_instance)
-        self.tc.write("# ><> Using TermuxConsole() class")
+    """Used to adopt the Termux console"""
 
     def keyb_type_1(self):
-        self.tc.write("# ><> TermuxConsole.keyb_type_1()")
         self.alternate_escape_key("\\140")
         self.alternate_backtick_key("\\033\\140", "M-")
         self.alternate_delete("\\033\\177")
         self.euro_fix("\\033\\100")  # same as on Darwin
-        self.tc.write("# ><> super().keyb_type_1()")
         super().keyb_type_1()
-        self.tc.write("# ><> done - TermuxConsole.keyb_type_1()")
 
 
 class IshConsole(BtKbdSpecialHandling):
     """Used to adopt the iSH console
     This redefines the rather limited keyboard in order to make it more useful.
     """
-
-    def __init__(self, tmux_conf_instance):
-        super().__init__(tmux_conf_instance)
-        self.tc.write("# ><> Using IshConsole() class")
 
     def keyb_type_combo_touch(self):
         self.euro_fix("\\342\\202\\254")
@@ -285,8 +268,6 @@ class IshConsole(BtKbdSpecialHandling):
 
         # use <prefix> arrows as PageUp/Dn Home/End
         self.tc.use_prefix_arrow_nav_keys = True
-
-        self.tc.write("# ><> Using: IshConsole")
         return True
 
     def fn_keys(self):
@@ -504,12 +485,12 @@ def special_consoles_config(tmux_conf_instance):
     if not mtc_utils.LC_CONSOLE:
         # If there is no indication what keyboard is used, no adaptions
         # can be applied, so might as well return
-        tmux_conf_instance.write("# ><> no LC_CONSOLE detected")
+        # tmux_conf_instance.write("# ><> no LC_CONSOLE detected")
         return False
     if not mtc_utils.LC_KEYBOARD:
         # If there is no indication what keyboard is used, no adaptions
         # can be applied, so might as well return
-        tmux_conf_instance.write("# ><> no LC_KEYBOARD detected")
+        # tmux_conf_instance.write("# ><> no LC_KEYBOARD detected")
         return False
     if mtc_utils.LC_CONSOLE == "iSH":  # and not mtc_utils.IS_REMOTE:
         kbd = IshConsole(tmux_conf_instance)

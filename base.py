@@ -41,12 +41,11 @@ import os
 import re
 import sys
 
-import __main__
-
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
+import __main__
 import mtc_utils
 from tablet_bt_kbd import special_consoles_config
 
@@ -299,15 +298,6 @@ class BaseConfig(TmuxConfig):
         #  Display what class this override comes from
         self.write("# BaseConfig.local_overides")
 
-        self.write(
-            f"""
-        # Some debug info, as correct self.euro_fix() handling is figured out
-        # is Darwin: {mtc_utils.IS_DARWIN}
-        # is iSH:    {mtc_utils.IS_ISH}
-        # is Termux: {mtc_utils.IS_TERMUX}
-        # BT keyb:   {mtc_utils.LC_KEYBOARD}
-        """
-        )
         if not self.tablet_keyb:
             self.euro_fix("\\033\\100")  # typical Darwin kbd key-sequence
 
@@ -324,7 +314,6 @@ class BaseConfig(TmuxConfig):
         terminals.
         """
         self.tablet_keyb = special_consoles_config(self)
-        self.write(f"# ><> self.tablet_keyb: {self.tablet_keyb}")
         self.remove_unwanted_default_bindings()
         self.connecting_terminal()
         self.general_environment()
@@ -1905,9 +1894,13 @@ timer_end() {{
             """
             )
         elif currency:
-            w("# this node doesn't seem to use EUR")
+            w(
+                f"""
+              # When checking EUR was not reported as local currency where this node is
+              # located. This node reports: {currency}."""
+            )
         else:
-            w("# Failed to retrieve currency")
+            w("# No default currency could be retrieved for this node")
 
 
 if __name__ == "__main__":
