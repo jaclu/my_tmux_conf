@@ -77,7 +77,7 @@ class BtKbdSpecialHandling:
         #  General settings seems to work for several keyboards
         #
         if not self.esc_has_been_handled:
-            self.virtual_escape_key("\\302\\247")
+            self.replace_escape_key("\\302\\247")
 
     def keyb_type_combo_touch(self):
         #
@@ -97,11 +97,6 @@ class BtKbdSpecialHandling:
             # This keyb sends £ when it should send #
             {self.tc.opt_server} user-keys[222] "\\302\\243"
             bind -N "Send #" -n User222 send '#'
-
-            #  § via Ctrl
-            {self.tc.opt_server} user-keys[223]  "\\060"
-            bind -N "C-§ Send §" -n User223  send §
-
             """
         )
 
@@ -148,10 +143,10 @@ class BtKbdSpecialHandling:
         self.tc.euro_fix("\\342\\202\\254")
         return True
 
-    def virtual_escape_key(self, sequence: str) -> None:
+    def replace_escape_key(self, sequence: str) -> None:
         if sequence[:1] != "\\":
             err_msg = (
-                f"ERROR: TabletBtKbd:virtual_escape_key({sequence}) "
+                f"ERROR: TabletBtKbd:replace_escape_key({sequence}) "
                 "must be given in octal notation"
             )
             sys.exit(err_msg)
@@ -167,6 +162,21 @@ class BtKbdSpecialHandling:
         )
         self.esc_has_been_handled = True
 
+    def replace_paragraph_key(self, sequence: str) -> None:
+        if sequence[:1] != "\\":
+            err_msg = (
+                f"ERROR: TabletBtKbd:replace_paragraph_key({sequence}) "
+                "must be given in octal notation"
+            )
+            sys.exit(err_msg)
+        self.tc.write(
+            f"""            #  § via Ctrl
+            {self.tc.opt_server} user-keys[223]  "{sequence}"
+            bind -N "M-§ Send §" -n User223  send §
+            """
+        )
+        self.esc_has_been_handled = True
+
 
 class TermuxConsole(BtKbdSpecialHandling):
     """Used to adopt the Termux console"""
@@ -178,7 +188,8 @@ class TermuxConsole(BtKbdSpecialHandling):
         self.tc.write("# ><> Using TermuxConsole() class")
 
     def keyb_type_1(self):
-        self.virtual_escape_key("\\140")
+        self.replace_escape_key("\\140")
+        self.replace_paragraph_key("\\033\\140")
         super().keyb_type_1()
 
 
