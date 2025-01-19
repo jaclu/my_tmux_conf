@@ -308,7 +308,6 @@ class BaseConfig(TmuxConfig):
         # BT keyb:   {mtc_utils.LC_KEYBOARD}
         """
         )
-        #  and mtc_utils.LC_KEYBOARD == "Omnitype Keyboard")
         if not self.tablet_keyb:
             self.euro_fix("\\033\\100")  # typical Darwin kbd key-sequence
 
