@@ -48,6 +48,7 @@ class BtKbdSpecialHandling:
       1-60  Alt Upper case
     100-129 Function keys
     180-190 Handled by base.py
+    180     €
     200     Escape
     201     Navkey - no longer used
     210-219 General keyboard bindings
