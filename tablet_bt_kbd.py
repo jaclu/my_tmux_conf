@@ -60,6 +60,7 @@ class BtKbdSpecialHandling:
     esc_has_been_handled = False
     euro_has_been_handled = False
     backtick_has_been_handled = False
+    delete_has_been_handled = False
 
     def __init__(self, tmux_conf_instance):
         tmux_conf_instance.write("# ><> Using BtKbdSpecialHandling() class")
@@ -195,9 +196,31 @@ class BtKbdSpecialHandling:
         )
         self.backtick_has_been_handled = True
 
+    def alternate_delete(self, sequence: str) -> None:
+        if sequence[:1] != "\\":
+            err_msg = (
+                f"ERROR: TabletBtKbd:alternate_delete({sequence}) "
+                "must be given in octal notation"
+            )
+            sys.exit(err_msg)
+        if self.delete_has_been_handled:
+            return
+        self.tc.write(
+            f"""#
+            #  Replacement Delete (DC) key
+            #
+            {self.tc.opt_server} user-keys[211]  "{sequence}"
+            bind -N "Send Delete (DC)" -n User211  send DC
+            """
+        )
+        self.delete_has_been_handled = True
+
 
 class TermuxConsole(BtKbdSpecialHandling):
-    """Used to adopt the Termux console"""
+    """Used to adopt the Termux console
+
+    \\033\\177
+    """
 
     def __init__(self, tmux_conf_instance):
         # if not mtc_utils.IS_TERMUX:
@@ -209,6 +232,7 @@ class TermuxConsole(BtKbdSpecialHandling):
         self.tc.write("# ><> TermuxConsole.keyb_type_1()")
         self.alternate_escape_key("\\140")
         self.alternate_backtick_key("\\033\\140", "M-")
+        self.alternate_delete("\\033\\177")
         self.euro_fix("\\033\\100")  # same as on Darwin
         self.tc.write("# ><> super().keyb_type_1()")
         super().keyb_type_1()
