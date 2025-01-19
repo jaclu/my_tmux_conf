@@ -35,11 +35,11 @@ import mtc_utils
 #  otherwise just the deviced product name.
 #  They are defined in the env based on hostname in ~/.common_rc
 #
-# KBD_LOGITECH_COMBO_TOUCH = "Logitech Combo Touch"
-# KBD_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
-# KBD_YOOZON3 = "Yoozon 3"  # same as brydge
-# KBD_OMNITYPE = "Omnitype Keyboard"
-# KBD_BLUETOOTH = "Bluetooth Keyboard"  # sadly generic name
+KBD_LOGITECH_COMBO_TOUCH = "Logitech Combo Touch"
+KBD_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
+KBD_YOOZON3 = "Yoozon 3"  # same as brydge
+KBD_OMNITYPE = "Omnitype Keyboard"
+KBD_BLUETOOTH = "Bluetooth Keyboard"  # sadly generic name
 
 
 class BtKbdSpecialHandling:
@@ -87,15 +87,15 @@ class BtKbdSpecialHandling:
             #======================================================
             """
         )
-        if mtc_utils.LC_KEYBOARD in (mtc_utils.KBD_OMNITYPE, mtc_utils.KBD_BLUETOOTH):
+        if mtc_utils.LC_KEYBOARD in (KBD_OMNITYPE, KBD_BLUETOOTH):
             # already handles esc
             self.keyb_type_1()
         elif mtc_utils.LC_KEYBOARD in (
-            mtc_utils.KBD_BRYDGE_10_2_MAX,
-            mtc_utils.KBD_YOOZON3,
+            KBD_BRYDGE_10_2_MAX,
+            KBD_YOOZON3,
         ):
             self.keyb_type_2()
-        elif mtc_utils.LC_KEYBOARD == mtc_utils.KBD_LOGITECH_COMBO_TOUCH:
+        elif mtc_utils.LC_KEYBOARD == KBD_LOGITECH_COMBO_TOUCH:
             self.keyb_type_combo_touch()
         # else:
         #     msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
@@ -443,3 +443,26 @@ class IshConsole(BtKbdSpecialHandling):
         #  we need to override and bind the user-key to this action.
         #  this is handled by the auc_ methods
         #
+
+
+def consider_defining_special_console(tmux_conf_instance):
+    if not mtc_utils.LC_KEYBOARD:
+        # If there is no indication what keyboard is used, no adaptions
+        # can be applied, so might as well return
+        tmux_conf_instance.write("# ><> no LC_KEYBOARD detected")
+        return None
+    if not mtc_utils.LC_CONSOLE:
+        # If there is no indication what keyboard is used, no adaptions
+        # can be applied, so might as well return
+        tmux_conf_instance.write("# ><> no LC_CONSOLE detected")
+        return None
+    if mtc_utils.LC_CONSOLE == "iSH":  # and not mtc_utils.IS_REMOTE:
+        kbd = IshConsole(tmux_conf_instance)
+    elif mtc_utils.LC_CONSOLE == "Termux":
+        kbd = TermuxConsole(tmux_conf_instance)
+    else:
+        sys.exit(f"ERROR: Unrecognized LC_CONSOLE:  [{mtc_utils.LC_CONSOLE}]")
+
+    if kbd.detect_console_keyb():
+        return kbd
+    return None

@@ -48,7 +48,7 @@ import __main__
 from tmux_conf import TmuxConfig
 
 import mtc_utils
-from tablet_bt_kbd import IshConsole, TermuxConsole
+from tablet_bt_kbd import consider_defining_special_console
 
 # ruff checks might be relevant F403,F401
 
@@ -323,7 +323,7 @@ class BaseConfig(TmuxConfig):
         available via prefix, in order to still be accessible on dumb
         terminals.
         """
-        self.consider_defining_special_console()
+        self.tablet_keyb = consider_defining_special_console(self)
         self.remove_unwanted_default_bindings()
         self.connecting_terminal()
         self.general_environment()
@@ -1603,21 +1603,6 @@ class BaseConfig(TmuxConfig):
     #
     #  Utility methods
     #
-    def consider_defining_special_console(self):
-        if not mtc_utils.LC_KEYBOARD:
-            # If there is no indication what keyboard is used, no adaptions
-            # can be applied, so might as well return
-            return
-        if mtc_utils.LC_CONSOLE == "iSH":  # and not mtc_utils.IS_REMOTE:
-            kbd = IshConsole(self)
-        elif mtc_utils.LC_CONSOLE == "Termux":
-            kbd = TermuxConsole(self)
-        else:
-            self.write("# no special Console detected")
-            return
-        if kbd.detect_console_keyb():
-            self.tablet_keyb = kbd
-
     def define_opt_params(self):
         #
         # Define params to use to set various types of options
