@@ -200,6 +200,10 @@ class IshConsole(BtKbdSpecialHandling):
         super().__init__(tmux_conf_instance)
         self.tc.write("# ><> Using IshConsole() class")
 
+    def keyb_type_combo_touch(self):
+        self.euro_fix("\\342\\202\\254")
+        super().keyb_type_combo_touch()
+
     def config_console_keyb(self):
         if not super().config_console_keyb():
             return False
