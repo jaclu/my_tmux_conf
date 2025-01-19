@@ -54,7 +54,7 @@ class BtKbdSpecialHandling:
     220-    Specific Keyboard bindings
     """
 
-    # keyboard = None
+    esc_has_been_handled = False  # ensures Esc is not overridden
 
     # pylint: disable=too-many-positional-arguments,too-many-arguments
     def __init__(self, tmux_conf_instance):
@@ -119,7 +119,8 @@ class BtKbdSpecialHandling:
         #
         #  General settings seems to work for several keyboards
         #
-        self.virtual_escape_key("\\302\\247")
+        if not self.esc_has_been_handled:
+            self.virtual_escape_key("\\302\\247")
 
     def keyb_type_combo_touch(self):
         #
@@ -136,9 +137,14 @@ class BtKbdSpecialHandling:
             # map backtick back from Escape
             bind -N "Send backtick"  -n User221  send "\\`"
 
-            # Tthis keyb sends £ when it should send #
+            # This keyb sends £ when it should send #
             {self.tc.opt_server} user-keys[222] "\\302\\243"
             bind -N "Send #" -n User222 send '#'
+
+            #  § via Ctrl
+            {self.tc.opt_server} user-keys[223]  "\\060"
+            bind -N "C-§ Send §" -n User223  send §
+
             """
         )
 
@@ -149,6 +155,8 @@ class BtKbdSpecialHandling:
                 "must be given in octal notation"
             )
             sys.exit(err_msg)
+        if self.esc_has_been_handled:
+            return
         self.tc.write(
             f"""#
             #  Virtual Escape key
@@ -157,6 +165,7 @@ class BtKbdSpecialHandling:
             bind -N "Send Escape" -n User200  send Escape
             """
         )
+        self.esc_has_been_handled = True
 
 
 class TermuxNode(BtKbdSpecialHandling):
@@ -168,19 +177,9 @@ class TermuxNode(BtKbdSpecialHandling):
         super().__init__(tmux_conf_instance)
         self.tc.write("# ><> Using TermuxNode() class")
 
-    def keyb_type_1(self):
-        #
-        #  This keyb type already generates Esc on the key above tab
-        #
+    def keyb_type_combo_touch(self):
         self.virtual_escape_key("\\140")
-        self.tc.write(
-            f"""#
-            #  § via Ctrl
-            #
-            {self.tc.opt_server} user-keys[210]  "\\060"
-            bind -N "Send §" -n User210  send §
-            """
-        )
+        super().keyb_type_combo_touch()
 
 
 class IshNode(BtKbdSpecialHandling):
@@ -214,6 +213,8 @@ class IshNode(BtKbdSpecialHandling):
 
         ms_fn_keys_mapped = False
 
+        self.alt_upper_case(ms_fn_keys_mapped)
+
         fn_keys_handling = 0
         if fn_keys_handling == 1:
             self.fn_keys()
@@ -222,7 +223,6 @@ class IshNode(BtKbdSpecialHandling):
         elif fn_keys_handling == 3:
             ms_fn_keys_mapped = True
             self.ms_fn_keys()
-        self.alt_upper_case(ms_fn_keys_mapped)
 
         # use <prefix> arrows as PageUp/Dn Home/End
         self.tc.use_prefix_arrow_nav_keys = True
