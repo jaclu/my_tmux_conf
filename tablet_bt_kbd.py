@@ -54,9 +54,10 @@ class BtKbdSpecialHandling:
     220-    Specific Keyboard bindings
     """
 
-    esc_has_been_handled = False  # ensures Esc is not overridden
+    # ensures that some settings ate not overridden via inheritance
+    esc_has_been_handled = False
+    euro_has_been_handled = False
 
-    # pylint: disable=too-many-positional-arguments,too-many-arguments
     def __init__(self, tmux_conf_instance):
         tmux_conf_instance.write("# ><> Using BtKbdSpecialHandling() class")
         if not mtc_utils.LC_KEYBOARD:
@@ -139,9 +140,18 @@ class BtKbdSpecialHandling:
         #     self.tc.write(msg)
         #     print(msg)
         #     return False
-
-        self.tc.euro_fix("\\342\\202\\254")
         return True
+
+    def euro_fix(self, sequence):
+        if sequence[:1] != "\\":
+            err_msg = (
+                f"ERROR: TabletBtKbd:euro_fix({sequence}) must be given in octal notation"
+            )
+            sys.exit(err_msg)
+        if self.euro_has_been_handled:
+            return
+        self.tc.euro_fix(sequence)
+        self.euro_has_been_handled = True
 
     def replace_escape_key(self, sequence: str) -> None:
         if sequence[:1] != "\\":
@@ -193,6 +203,7 @@ class TermuxConsole(BtKbdSpecialHandling):
         self.tc.write("# ><> TermuxConsole.keyb_type_1()")
         self.replace_escape_key("\\140")
         self.replace_paragraph_key("\\033\\140")
+        self.euro_fix("\\033\\100")  # same as on Darwin
         self.tc.write("# ><> super().keyb_type_1()")
         super().keyb_type_1()
         self.tc.write("# ><> done - TermuxConsole.keyb_type_1()")
@@ -204,8 +215,6 @@ class IshConsole(BtKbdSpecialHandling):
     """
 
     def __init__(self, tmux_conf_instance):
-        # if not mtc_utils.IS_ISH:
-        #     raise ImportWarning("This is not running on a Termux node!")
         super().__init__(tmux_conf_instance)
         self.tc.write("# ><> Using IshConsole() class")
 
