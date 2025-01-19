@@ -187,7 +187,6 @@ class BaseConfig(TmuxConfig):
             "muc_l": "M-L",
         }
         self.define_opt_params()
-        self.consider_defining_special_console()
 
         if self.vers_ok(1.8):
             self.shell_bg = "run-shell -b"
@@ -325,6 +324,7 @@ class BaseConfig(TmuxConfig):
         available via prefix, in order to still be accessible on dumb
         terminals.
         """
+        self.consider_defining_special_console()
         self.remove_unwanted_default_bindings()
         self.connecting_terminal()
         self.general_environment()
@@ -1611,6 +1611,7 @@ class BaseConfig(TmuxConfig):
             elif mtc_utils.IS_TERMUX:
                 kbd = TermuxConsole(self)
             else:
+                self.write("# no special Console detected")
                 return
             if kbd.detect_console_keyb():
                 self.tablet_keyb = kbd
