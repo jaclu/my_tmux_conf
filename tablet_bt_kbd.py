@@ -51,12 +51,14 @@ class BtKbdSpecialHandling:
     200     Escape
     201     Navkey - no longer used
     210-219 General keyboard bindings
+    210     Back tic
     220-    Specific Keyboard bindings
     """
 
     # ensures that some settings ate not overridden via inheritance
     esc_has_been_handled = False
     euro_has_been_handled = False
+    backtick_has_been_handled = False
 
     def __init__(self, tmux_conf_instance):
         tmux_conf_instance.write("# ><> Using BtKbdSpecialHandling() class")
@@ -78,7 +80,7 @@ class BtKbdSpecialHandling:
         #  General settings seems to work for several keyboards
         #
         if not self.esc_has_been_handled:
-            self.replace_escape_key("\\302\\247")
+            self.alternate_escape_key("\\302\\247")
 
     def keyb_type_combo_touch(self):
         #
@@ -154,10 +156,10 @@ class BtKbdSpecialHandling:
         self.tc.euro_fix(sequence)
         self.euro_has_been_handled = True
 
-    def replace_escape_key(self, sequence: str) -> None:
+    def alternate_escape_key(self, sequence: str) -> None:
         if sequence[:1] != "\\":
             err_msg = (
-                f"ERROR: TabletBtKbd:replace_escape_key({sequence}) "
+                f"ERROR: TabletBtKbd:alternate_escape_key({sequence}) "
                 "must be given in octal notation"
             )
             sys.exit(err_msg)
@@ -173,6 +175,25 @@ class BtKbdSpecialHandling:
         )
         self.esc_has_been_handled = True
 
+    def alternate_backtick_key(self, sequence: str, modifier="") -> None:
+        if sequence[:1] != "\\":
+            err_msg = (
+                f"ERROR: TabletBtKbd:alternate_backtick_key({sequence}) "
+                "must be given in octal notation"
+            )
+            sys.exit(err_msg)
+        if self.backtick_has_been_handled:
+            return
+        self.tc.write(
+            f"""#
+            #  Replacement Backtick key
+            #
+            {self.tc.opt_server} user-keys[210]  "{sequence}"
+            bind -N "{modifier} - Send backtick" -n User210  send "\\`"
+            """
+        )
+        self.backtick_has_been_handled = True
+
 
 class TermuxConsole(BtKbdSpecialHandling):
     """Used to adopt the Termux console"""
@@ -185,7 +206,8 @@ class TermuxConsole(BtKbdSpecialHandling):
 
     def keyb_type_1(self):
         self.tc.write("# ><> TermuxConsole.keyb_type_1()")
-        self.replace_escape_key("\\140")
+        self.alternate_escape_key("\\140")
+        self.alternate_backtick_key("\\033\\140", "M-")
         self.euro_fix("\\033\\100")  # same as on Darwin
         self.tc.write("# ><> super().keyb_type_1()")
         super().keyb_type_1()
