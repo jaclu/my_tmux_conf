@@ -1235,20 +1235,20 @@ class BaseConfig(TmuxConfig):
             w("bind -N 'Resize pane 5 down'  -n  M-S-Down   resize-pane -D 5")
             w("bind -N 'Resize pane 5 left'  -n  M-S-Left   resize-pane -L 5")
             w("bind -N 'Resize pane 5 right' -n  M-S-Right  resize-pane -R 5")
-        if self.vers_ok(1.8):
-            height_notice = "Pane height"
-            if not self.vers_ok(3.3):
-                height_notice += " (add 1 for panes next to status bar)"
-            w(
-                'bind -N "set pane size (w x h)"  s  command-prompt -p '
-                f'"Pane width","{height_notice}" '
-                '"resize-pane -x %1 -y %2"'
-            )
-        elif self.vers_ok(1.0):
-            w(
-                'bind -N "Navigate not available warning"  s  '
-                'display "set pane size needs 1.8"'
-            )
+        # if self.vers_ok(1.8):
+        #     height_notice = "Pane height"
+        #     if not self.vers_ok(3.3):
+        #         height_notice += " (add 1 for panes next to status bar)"
+        #     w(
+        #         'bind -N "set pane size (w x h)"  s  command-prompt -p '
+        #         f'"Pane width","{height_notice}" '
+        #         '"resize-pane -x %1 -y %2"'
+        #     )
+        # elif self.vers_ok(1.0):
+        #     w(
+        #         'bind -N "Navigate not available warning"  s  '
+        #         'display "set pane size needs 1.8"'
+        #     )
         w()  # spacer
 
     def mouse_handling(self):
