@@ -42,7 +42,7 @@ Key | Description
 
 Key | Description
 ------ | ------
-`<p>` t | Toggle display of status bar
+`<p>` T | Toggle display of status bar
 
 ### Session handling (sometimes referred to as clients by tmux man)
 

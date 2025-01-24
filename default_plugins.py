@@ -368,6 +368,7 @@ class DefaultPlugins(BaseConfig):
         return ["jaclu/tmux-resurrect", min_vers, conf]
 
     def plugin_session_wizard(self) -> list:  # 3.2
+        # default trigger: T
         if self.skip_plugin_session_wizard:
             vers_min = -1.0  # Dont use
         else:
@@ -376,7 +377,7 @@ class DefaultPlugins(BaseConfig):
             "27medkamal/tmux-session-wizard",
             vers_min,
             """
-            # set -g @session-wizard "T"  # trigger
+            set -g @session-wizard "t"  # trigger
             """,
         ]
 

@@ -503,6 +503,8 @@ class BaseConfig(TmuxConfig):
         )
         # escape-time < 3.5 = 500 3.5 = 10
 
+        w("bind -T copy-mode -N 'Page Up' -n  b  send-keys -X page-up")
+
         if self.vers_ok(1.1):
             self.mkscript_shlvl_offset()
             w(
@@ -594,6 +596,11 @@ class BaseConfig(TmuxConfig):
             )
         w()  # spacer between sections
 
+    def remove_prefix(self, s):
+        if s.lower().startswith("c-"):
+            return s[2:]  # Remove the first 2 characters
+        return s
+
     def session_handling(self):
         w = self.write
         w(
@@ -609,13 +616,20 @@ class BaseConfig(TmuxConfig):
             w(
                 f"""# Remove the default prefix, do it before assigning
                 # the selected one, in case it was some variant of C-b
-                unbind  C-b
+                # keep it for now, doesn't hurt and might help pairprogrammers
+                # unbind  C-b
                 {self.opt_ses} prefix {self.prefix_key}"""
             )
             w(
                 f'bind -N "Repeats sends {self.prefix_key} through"  '
                 f"{self.prefix_key}  send-prefix"
             )
+            if self.prefix_key.lower() not in ("c-w",):
+                w(
+                    "bind -N 'prefix then same char sends prefix into pane'  "
+                    f"{self.remove_prefix(self.prefix_key)}  send-keys {self.prefix_key}"
+                )
+
             # in tmux-sensible it was recommended to bind prefix + same char without ctrl
             # to last-window, not sure, but perhaps a good idea?
             w()  # spacer
@@ -1423,7 +1437,7 @@ class BaseConfig(TmuxConfig):
         {self.opt_ses} status-left "{self.sb_left}"
         {self.opt_ses} status-right "{self.sb_right}"
 
-        bind -N "Toggle status bar"  t  {self.opt_ses} status
+        bind -N "Toggle status bar"  T  {self.opt_ses} status
 
         """
         )
