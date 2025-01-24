@@ -55,7 +55,8 @@ class T2(SB):  # type: ignore
     # use_plugin_battery = True
     # use_plugin_keyboard_type = True
     # use_plugin_mullvad = True
-    # use_plugin_packet_loss = True
+    if mtc_utils.HOSTNAME == "hetz1":
+        use_plugin_packet_loss = True
     # use_plugin_spotify_info = True
     # use_plugin_which_key = True
     # use_plugin_plugin_yank = True
