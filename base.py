@@ -620,13 +620,15 @@ class BaseConfig(TmuxConfig):
                 # unbind  C-b
                 {self.opt_ses} prefix {self.prefix_key}"""
             )
-            w(
+            w(  # double prefix always works
                 f'bind -N "Repeats sends {self.prefix_key} through"  '
                 f"{self.prefix_key}  send-prefix"
             )
             if self.prefix_key.lower() not in ("c-w",):
+                # this is recommended in tmux-sensible
+                # I added filtering chars colliding with other binds
                 w(
-                    "bind -N 'prefix then same char sends prefix into pane'  "
+                    f'bind -N "prefix then same char sends {self.prefix_key} through"  '
                     f"{self.remove_prefix(self.prefix_key)}  send-keys {self.prefix_key}"
                 )
 
