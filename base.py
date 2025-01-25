@@ -202,9 +202,9 @@ class BaseConfig(TmuxConfig):
             )
         if self.vers_ok(1.9):
             # the syntax can be used in 1.8, but if used path is always set to /
-            self.cwd_directive = " -c '#{pane_current_path}'"
+            self.current_path_directive = " -c '#{pane_current_path}'"
         else:
-            self.cwd_directive = ""
+            self.current_path_directive = ""
 
         #
         #  If tpm is used, this is set once tpm has completed
@@ -733,7 +733,6 @@ class BaseConfig(TmuxConfig):
         {self.opt_win} automatic-rename off
         {self.opt_win} aggressive-resize on"""
         )
-
         if self.monitor_activity:
             w(
                 f"""#  bell + # on window that had activity,
@@ -769,7 +768,7 @@ class BaseConfig(TmuxConfig):
         cmd_new_win_named = (
             f'command-prompt {s} -p "Name of new window: "'
             ' "'  # wrap cmd in "
-            f"new-window -n '%%' {self.cwd_directive}"
+            f"new-window -n '%%' {self.current_path_directive}"
             '"'  # wrap cmd in "
         )
 
@@ -806,7 +805,7 @@ class BaseConfig(TmuxConfig):
         #
         #  Same using arrow keys with <prefix> M-S modifier
         #
-        if self.vers_ok(2.3) and not (mtc_utils.IS_TERMUX or self.is_tmate()):
+        if self.vers_ok(2.3) and not self.is_tmate():
             #
             #  tmate does not support split-window -f  despite they claim
             #  to be 2.4 compatible and this is a 2.3 feature...
@@ -815,10 +814,10 @@ class BaseConfig(TmuxConfig):
             sw2 = " split-window -f"  # to make sure
             w(
                 f"""# window splitting
-            {sw1} horizontally left"    C-M-Left   {sw2}hb {self.cwd_directive}
-            {sw1} vertically down"      C-M-Down   {sw2}v  {self.cwd_directive}
-            {sw1} vertically up"        C-M-Up     {sw2}vb {self.cwd_directive}
-            {sw1} horizontally right"   C-M-Right  {sw2}h  {self.cwd_directive}
+            {sw1} horizontally left"    C-M-Left   {sw2}hb {self.current_path_directive}
+            {sw1} vertically down"      C-M-Down   {sw2}v  {self.current_path_directive}
+            {sw1} vertically up"        C-M-Up     {sw2}vb {self.current_path_directive}
+            {sw1} horizontally right"   C-M-Right  {sw2}h  {self.current_path_directive}
             """
             )
 
@@ -1165,40 +1164,43 @@ class BaseConfig(TmuxConfig):
             w('bind -N "Split pane below"   C-j  split-window -p 50')
             return
 
-        if not mtc_utils.IS_TERMUX:
-            # In Termux C-M-arrows are not sent into the console
-            # C-M-Left toggles new session
-            if self.vers_ok(1.2):
-                # Older versions can't bind C-M keys
-                w(
-                    'bind -N "Split pane to the right  - P C-l" -n  '
-                    f"C-M-Right  split-window -h {self.cwd_directive}"
-                )
-                w(
-                    'bind -N "Split pane below  - P C-j"    -n  '
-                    f"C-M-Down   split-window -v {self.cwd_directive}"
-                )
-            if self.vers_ok(2.0):
-                #
-                w(
-                    'bind -N "Split pane to the left  - P C-h"  '
-                    f"-n  C-M-Left   split-window -hb {self.cwd_directive}"
-                )
-                w(
-                    'bind -N "Split pane above  - P C-k"      '
-                    f"-n  C-M-Up     split-window -vb {self.cwd_directive}"
-                )
+        if self.vers_ok(1.2):
+            # Older versions can't bind C-M keys
+            w(
+                'bind -N "Split pane to the right  - P C-l" -n  '
+                f"C-M-Right  split-window -h {self.current_path_directive}"
+            )
+        w(
+            'bind -N "Split pane below  - P C-j"    -n  '
+            f"C-M-Down   split-window -v {self.current_path_directive}"
+        )
+        if self.vers_ok(2.0):
+            #
+            w(
+                'bind -N "Split pane to the left  - P C-h"  '
+                f"-n  C-M-Left   split-window -hb {self.current_path_directive}"
+            )
+            w(
+                'bind -N "Split pane above  - P C-k"      '
+                f"-n  C-M-Up     split-window -vb {self.current_path_directive}"
+            )
         w()
-        w(f'bind -N "Split pane to the right"  C-l  split-window -h {self.cwd_directive}')
-        w(f'bind -N "Split pane below"     C-j  split-window -v {self.cwd_directive}')
+        w(
+            'bind -N "Split pane to the right"  C-l  split-window -h '
+            f"{self.current_path_directive}"
+        )
+        w(
+            'bind -N "Split pane below"     C-j  split-window -v '
+            f"{self.current_path_directive}"
+        )
         if self.vers_ok(2.0):
             w(
                 'bind -N "Split pane to the left"   C-h  '
-                f"split-window -hb {self.cwd_directive}"
+                f"split-window -hb {self.current_path_directive}"
             )
             w(
                 'bind -N "Split pane above"       C-k  '
-                f"split-window -vb {self.cwd_directive}"
+                f"split-window -vb {self.current_path_directive}"
             )
 
         w()  # spacer between sections
@@ -1586,7 +1588,7 @@ class BaseConfig(TmuxConfig):
             pref = ""
         w(
             f'{b}{pref}{n_base}horizontally left" {self.muc_keys["muc_h"]}  '
-            f"{sw}hb {self.cwd_directive}"
+            f"{sw}hb {self.current_path_directive}"
         )
 
         if self.muc_keys["muc_j"] != "M-J":
@@ -1595,7 +1597,7 @@ class BaseConfig(TmuxConfig):
             pref = ""
         w(
             f'{b}{pref}{n_base}vertically down" {self.muc_keys["muc_j"]}  '
-            f"{sw}v  {self.cwd_directive}"
+            f"{sw}v  {self.current_path_directive}"
         )
 
         if self.muc_keys["muc_k"] != "M-K":
@@ -1604,7 +1606,7 @@ class BaseConfig(TmuxConfig):
             pref = ""
         w(
             f'{b}{pref}{n_base}vertically up" {self.muc_keys["muc_k"]}  '
-            f"{sw}vb {self.cwd_directive}"
+            f"{sw}vb {self.current_path_directive}"
         )
 
         if self.muc_keys["muc_l"] != "M-L":
@@ -1613,7 +1615,7 @@ class BaseConfig(TmuxConfig):
             pref = ""
         w(
             f'{b}{pref}{n_base}horizontally right" {self.muc_keys["muc_l"]}  '
-            f"{sw}h  {self.cwd_directive}"
+            f"{sw}h  {self.current_path_directive}"
         )
 
     #
