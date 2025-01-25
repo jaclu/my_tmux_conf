@@ -733,6 +733,7 @@ class BaseConfig(TmuxConfig):
         {self.opt_win} automatic-rename off
         {self.opt_win} aggressive-resize on"""
         )
+
         if self.monitor_activity:
             w(
                 f"""#  bell + # on window that had activity,
