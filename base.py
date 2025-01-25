@@ -748,6 +748,14 @@ class BaseConfig(TmuxConfig):
             if self.vers_ok(2.6):
                 w(f"{self.opt_win} monitor-bell off")
 
+        if self.vers_ok(2.7):
+            w(
+                """
+            # the default key is still available: <prefix> E
+            # this is quicker to type on a touch screen
+            bind -N "Spread panes out evenly."  e  select-layout -E
+            """
+            )
         if self.vers_ok(3.3):
             w(f"{self.opt_win} popup-border-lines rounded")
 
