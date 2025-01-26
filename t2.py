@@ -55,10 +55,7 @@ class T2(SB):  # type: ignore
     # use_plugin_battery = True
     # use_plugin_keyboard_type = True
     # use_plugin_mullvad = True
-    if mtc_utils.HOSTNAME.lower() in (
-        # "jacmac",
-        "hetz1"
-    ):
+    if mtc_utils.HOSTNAME.lower() in ("hetz",):
         use_plugin_packet_loss = True
     # use_plugin_spotify_info = True
     # use_plugin_which_key = True
