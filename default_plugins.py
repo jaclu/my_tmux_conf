@@ -280,8 +280,9 @@ class DefaultPlugins(BaseConfig):
             # set -g @menus_location_y C
 
             # set -g @menus_use_cache no
-            set -g @menus_use_hint_overlays No
-            set -g @menus_show_key_hints No
+
+            # set -g @menus_use_hint_overlays No
+            # set -g @menus_show_key_hints Yes
 
             set -g @menus_log_file ~/tmp/tmux-menus.log
 
