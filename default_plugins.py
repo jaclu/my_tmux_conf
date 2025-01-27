@@ -345,10 +345,13 @@ class DefaultPlugins(BaseConfig):
         # go up one and put it beside plugins_dir
         resurect_dir = f"{os.path.dirname(plugins_dir)}/resurrect"
 
-        procs = "zsh bash ash ssh sudo top htop watch psql mysql sqlite sqlite3 "
-        procs += "glow bat batcat 'tail *' announce_disconnect "
-        procs += "'check-connectivity.sh *' uptime-tracker"
-
+        # man needs to be mentioned twice, since on some systems I use a
+        # custom man to view asdf versions of tmux
+        procs = "ash bash zsh sudo bat glow htop man ssh sqlite3 tail watch "
+        # scripts and things run using a path needs to be prefixed with ~
+        procs += "~announce_disconnect ~check-connectivity.sh ~man ~myt "
+        procs += "~uptime-tracker"
+        # 'check-connectivity.sh *' 'tail *'
         conf = f"""
         #
         #  Default keys:  save: <prefix> C-s restore: <prefix> C-r
