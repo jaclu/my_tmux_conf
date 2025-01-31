@@ -85,6 +85,9 @@ class T2(SB):  # type: ignore
                 set -g @packet-loss-ping_host 8.8.8.8
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
 
+                # xset -g @menus_use_hint_overlays No
+                # set -g @menus_show_key_hints Yes
+
                 # set -g @menus_trigger \\
                 #  Separate style from main environment
                 set -g @menus_format_title "'#[align=centre] #{@menu_name} '"
