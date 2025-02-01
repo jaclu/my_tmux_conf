@@ -51,12 +51,14 @@ class T2(SB):  # type: ignore
     #
     #  Optional plugins, need to be enabled
     #
+    # Template of only one host should have a custom setting
+    # if mtc_utils.HOSTNAME.lower() in ("hetz",):
+
     # use_plugin_1password = True
     # use_plugin_battery = True
     # use_plugin_keyboard_type = True
     # use_plugin_mullvad = True
-    if mtc_utils.HOSTNAME.lower() in ("hetz",):
-        use_plugin_packet_loss = True
+    # use_plugin_packet_loss = True
     # use_plugin_spotify_info = True
     # use_plugin_which_key = True
     # use_plugin_plugin_yank = True
@@ -82,8 +84,9 @@ class T2(SB):  # type: ignore
                 set -g @menus_log_file ~/tmp/tmux-menus-t2.log
 
                 # Use a different host vs the outer tmux
-                set -g @packet-loss-ping_host 8.8.8.8
+                set -g @packet-loss-ping_host 8.8.4.4
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
+                set -g @packet-loss-run_disconnected No
 
                 # xset -g @menus_use_hint_overlays No
                 # set -g @menus_show_key_hints Yes
