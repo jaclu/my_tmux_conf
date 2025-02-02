@@ -44,10 +44,6 @@ class T2(SB):  # type: ignore
     # use_embedded_scripts = False
     # is_limited_host = True
 
-    if mtc_utils.IS_TERMUX:
-        skip_plugin_continuum = True
-        skip_plugin_resurrect = True
-
     #
     #  Optional plugins, need to be enabled
     #
