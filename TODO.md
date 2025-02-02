@@ -1,5 +1,11 @@
 # TODO
 
+## Full access to your own plugins
+
+Come up with a simple way to indicate using this notation where it is allowed
+
+`set -g @plugin 'git@github.com/user/plugin'`
+
 ## plugins to check
 
 inner tmux plugin filyrting
