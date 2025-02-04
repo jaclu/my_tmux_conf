@@ -353,7 +353,7 @@ class DefaultPlugins(BaseConfig):
         # custom man to view asdf versions of tmux
         procs = "ash bash zsh sudo bat glow htop man ssh sqlite3 tail watch "
         # scripts and things run using a path needs to be prefixed with ~
-        procs += "~announce_disconnect ~check-connectivity.sh ~man ~myt "
+        procs += "~adssh ~check-connectivity.sh ~man ~myt "
         procs += "~uptime-tracker"
         # 'check-connectivity.sh *' 'tail *'
         conf = f"""
