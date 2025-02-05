@@ -349,13 +349,19 @@ class DefaultPlugins(BaseConfig):
         # go up one and put it beside plugins_dir
         resurect_dir = f"{os.path.dirname(plugins_dir)}/resurrect"
 
+        #
+        #  Here is a list of all procs that should be restarted during a resume
+        #  For scripts and other stuff running using a path, prefixing with ~
+        #  will accept that cmd regardless of what path was used to run it.
+        #
+        procs = "ash bash zsh sudo bat glow htop man ssh sqlite3 tail watch"
+        #
         # man needs to be mentioned twice, since on some systems I use a
-        # custom man to view asdf versions of tmux
-        procs = "ash bash zsh sudo bat glow htop man ssh sqlite3 tail watch "
-        # scripts and things run using a path needs to be prefixed with ~
-        procs += "~adssh ~check-connectivity.sh ~man ~myt "
-        procs += "~uptime-tracker"
-        # 'check-connectivity.sh *' 'tail *'
+        # custom man to view asdf versions of tmux, and this is a script thus
+        # using path notation when run.
+        #
+        procs += " '~adssh->adssh *' '~check-connectivity.sh->check-connectivity.sh *'"
+        procs += " '~man->man *' '~uptime-tracker->uptime-tracker *'"
         conf = f"""
         #
         #  Default keys:  save: <prefix> C-s restore: <prefix> C-r
