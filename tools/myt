@@ -161,6 +161,7 @@ select_tmux_bin() {
     if $tmate_mode; then
         if command -v tmate >/dev/null; then
             TMUX_BIN="tmate"
+            # log_it "><> tmate mode - TMUX_BIN=tmate"
             return
         else
             error_msg "tmate not found"
@@ -173,15 +174,23 @@ select_tmux_bin() {
         unset tmux_bin
         return
     fi
-    if [ -n "$ASDF_DIR" ] && [ -e "$HOME/.asdf/shims/tmux" ]; then
-        TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
-        # log_it "><> asdf defined tmux: $TMUX_BIN"
-        return
-    fi
+    [ -e "$HOME/.asdf/shims/tmux" ] && asdf_scan && return
     TMUX_BIN="$(command -v tmux)"
     if [ -n "$TMUX_BIN" ]; then
         # log_it "><> tmux found in PATH: $TMUX_BIN"
         return
+    fi
+    [ -z "$TMUX_BIN" ] && error_msg "no tmux in PATH!"
+}
+
+asdf_scan() {
+    if [ -n "$ASDF_DIR" ]; then
+        TMUX_BIN="$(asdf which tmux 2>/dev/null)"
+        [ -n "$TMUX_BIN" ] && {
+            log_it "><> asdf defined tmux: $TMUX_BIN"
+            return 0
+        }
+        error_msg "asdf with tmux defined, but 'asdf which tmux' failed to report path"
     fi
 
     if [ -d "$HOME"/.asdf ]; then
@@ -196,18 +205,23 @@ select_tmux_bin() {
             msg="tmux not initially found - ~/.asdf hinted at asdf being used,"
             msg="$msg but this failed to initialize it"
             error_msg "$msg"
+            return 1
         fi
         log_it "Found an uninitialized asdf env, activated it."
         log_it "Checking if it contains a tmux..."
         # hopefully now it is found!
-        TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux)"
-        # log_it "><> un-iniziated asdf activated - now found tmux: $TMUX_BIN"
+        TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux 2>/dev/null)"
+        [ -n "$TMUX_BIN" ] && {
+            log_it "><> un-iniziated asdf activated - now found tmux: $TMUX_BIN"
+            return 0
+        }
     fi
-    [ -z "$TMUX_BIN" ] && error_msg "no tmux in PATH!"
+    return 1
 }
 
 define_tmux_env() {
     select_tmux_bin
+    echo "><> TMUX_BIN=[$TMUX_BIN]"
     #
     #  To not collide when checking for colliding versions
     #  add a prefix for chrooted envs, in order for socket
