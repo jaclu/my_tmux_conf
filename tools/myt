@@ -187,7 +187,7 @@ asdf_scan() {
     if [ -n "$ASDF_DIR" ]; then
         TMUX_BIN="$(asdf which tmux 2>/dev/null)"
         [ -n "$TMUX_BIN" ] && {
-            log_it "><> asdf defined tmux: $TMUX_BIN"
+            # log_it "><> asdf defined tmux: $TMUX_BIN"
             return 0
         }
         error_msg "asdf with tmux defined, but 'asdf which tmux' failed to report path"
@@ -212,7 +212,7 @@ asdf_scan() {
         # hopefully now it is found!
         TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux 2>/dev/null)"
         [ -n "$TMUX_BIN" ] && {
-            log_it "><> un-iniziated asdf activated - now found tmux: $TMUX_BIN"
+            # log_it "><> un-iniziated asdf activated - now found tmux: $TMUX_BIN"
             return 0
         }
     fi
@@ -221,7 +221,7 @@ asdf_scan() {
 
 define_tmux_env() {
     select_tmux_bin
-    echo "><> TMUX_BIN=[$TMUX_BIN]"
+    # echo "><> TMUX_BIN=[$TMUX_BIN]"
     #
     #  To not collide when checking for colliding versions
     #  add a prefix for chrooted envs, in order for socket
@@ -398,7 +398,7 @@ start_tmux() {
     }
 
     if $quick_mode; then
-        echo "><> quick mode ensure config file is there"
+        # echo "><> quick mode ensure config file is there"
         ensure_cfg_file_present
     else
         create_tmux_conf
