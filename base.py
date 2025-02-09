@@ -52,7 +52,7 @@ from tablet_bt_kbd import special_consoles_config
 
 # ruff checks might be relevant F403,F401
 
-TMUX_CONF_NEEDED = "0.18.0"
+TMUX_CONF_NEEDED = "0.19.0"
 
 
 # https://youtu.be/yFLY0SVutgM?si=VoKETDw39BAUHfST&t=420

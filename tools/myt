@@ -154,6 +154,7 @@ py_venv_deactivate() {
 #---------------------------------------------------------------
 
 select_tmux_bin() {
+    # log_it "><> select_tmux_bin()"
     #
     #  Selects what tmux bin to use
     #
@@ -174,7 +175,7 @@ select_tmux_bin() {
         unset tmux_bin
         return
     fi
-    [ -e "$HOME/.asdf/shims/tmux" ] && asdf_scan && return
+    asdf_scan && return
     TMUX_BIN="$(command -v tmux)"
     if [ -n "$TMUX_BIN" ]; then
         # log_it "><> tmux found in PATH: $TMUX_BIN"
@@ -184,42 +185,21 @@ select_tmux_bin() {
 }
 
 asdf_scan() {
-    if [ -n "$ASDF_DIR" ]; then
-        TMUX_BIN="$(asdf which tmux 2>/dev/null)"
-        [ -n "$TMUX_BIN" ] && {
-            # log_it "><> asdf defined tmux: $TMUX_BIN"
-            return 0
-        }
-        error_msg "asdf with tmux defined, but 'asdf which tmux' failed to report path"
-    fi
-
-    if [ -d "$HOME"/.asdf ]; then
-        #
-        # Consider if asdf is used but has not been initialized
-        # here are some common locations, worthwhile to examine
-        #
-        if ! source_asdf_if_found "$HOME"/.asdf/asdf.sh \
-            /usr/local/opt/asdf/libexec/asdf.sh \
-            /home/linuxbrew/.linuxbrew/opt/asdf/libexec/asdf.sh; then
-
-            msg="tmux not initially found - ~/.asdf hinted at asdf being used,"
-            msg="$msg but this failed to initialize it"
-            error_msg "$msg"
-            return 1
-        fi
-        log_it "Found an uninitialized asdf env, activated it."
-        log_it "Checking if it contains a tmux..."
-        # hopefully now it is found!
-        TMUX_BIN="$("$ASDF_DIR"/bin/asdf which tmux 2>/dev/null)"
-        [ -n "$TMUX_BIN" ] && {
-            # log_it "><> un-iniziated asdf activated - now found tmux: $TMUX_BIN"
-            return 0
-        }
-    fi
-    return 1
+    # if asdf is used expand the shim into the actual tmux  bin
+    [ ! -x "${ASDF_DATA_DIR:-$HOME/.asdf}/shims/tmux" ] && {
+	# asdf tmux not installed
+	return 1
+    }
+    TMUX_BIN="$(asdf which tmux 2>/dev/null)"
+    [ -n "$TMUX_BIN" ] && {
+        # log_it "><> asdf defined tmux: $TMUX_BIN"
+        return 0
+    }
+    error_msg "asdf with tmux defined, but 'asdf which tmux' failed to report path"
 }
 
 define_tmux_env() {
+    # log_it "><> define_tmux_env()"
     select_tmux_bin
     # echo "><> TMUX_BIN=[$TMUX_BIN]"
     #
@@ -229,6 +209,8 @@ define_tmux_env() {
     #  on the host
     #
     tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
+    # echo "><> tmux_vers[$tmux_vers]"
+
     socket="$(id -u)"
     $tmate_mode && socket="$socket-tmate"
     is_fs_chrooted && socket="${socket}-chr"
@@ -264,6 +246,7 @@ define_tmux_env() {
 }
 
 chk_incompatible_socket() {
+    # log_it "><> chk_incompatible_socket()"
     #
     #  Ensure tmux socket is not used by another running version of tmux
     #
@@ -298,11 +281,11 @@ This tmux will start in five seconds - Press Ctrl-C to abort"
     unset other_versions_running
 }
 
-source_asdf_if_found() {
+not_source_asdf_if_found() {
     # try each param, and source the first found in the FS
     while [ -n "$1" ]; do
         if [ -f "$1" ]; then
-            ASDF_DIR="$(dirname "$(realpath "$1")")"
+            # ASDF_DIR="$(dirname "$(realpath "$1")")"
             #  shellcheck source=/dev/null
             . "$1"
             return 0 # true
@@ -313,6 +296,7 @@ source_asdf_if_found() {
 }
 
 indicate_tmux_connection_type() {
+    # log_it "><> indicate_tmux_connection_type()"
     connect_type="$1"
     [ -z "$connect_type" ] && {
         error_msg "indicate_tmux_connection_type() - no param1"
@@ -323,7 +307,7 @@ indicate_tmux_connection_type() {
 }
 
 is_tmux_ses_running() {
-    # log_it "><> doing list-sessions"
+    # log_it "><> is_tmux_ses_running()"
     if $TMUX_BIN -L "$socket" list-sessions >/dev/null 2>&1; then
         # log_it "><> found sessions"
         return 0
@@ -364,6 +348,7 @@ drop_other_clients() {
 }
 
 ensure_cfg_file_present() {
+    # log_it "><> ensure_cfg_file_present()"
     if [ -f "$conf_file" ]; then
         log_it "Using existing config file"
     else
@@ -375,6 +360,7 @@ ensure_cfg_file_present() {
 }
 
 start_tmux() {
+    # log_it "><> start_tmux()"
     if [ -z "$profile" ] && ! find_host_profile; then
         log_it "*** Warning: no profile found"
         echo "***            using default profile after 3 seconds"
@@ -430,6 +416,7 @@ start_tmux() {
 #---------------------------------------------------------------
 
 get_my_tmux_conf_location() {
+    # log_it "><> get_my_tmux_conf_location()"
     #  where  my_tmux_conf is located
     f_destination="$HOME"/.config/my_tmux_conf_location
     [ ! -f "$f_destination" ] && {
@@ -447,13 +434,14 @@ get_my_tmux_conf_location() {
 }
 
 create_tmux_conf() {
+    # log_it "><> create_tmux_conf()"
     #
     #  Generate a new tmux conf file
     #
     cd "$my_tmux_conf_location" || error_msg "Failed to cd into: $my_tmux_conf_location"
 
     echo
-    log_it "===  Building new tmux conf"
+    log_it "===  Building new tmux conf using: $TMUX_BIN"
     $use_python_venv && {
         py_venv_activate || error_msg "Failed to activate venv - run: myt --venv"
     }
@@ -465,13 +453,13 @@ create_tmux_conf() {
         _s="$(T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file")" || {
             ex_code="$?"
             log_it "$_s" # failed build
-            error_msg "Failed to build tmux.conf [$ex_code]"
+            error_msg "Failed to build $conf_file with:$TMUX_BIN [$ex_code]"
         }
     else
         _s="$("$profile" -r -t "$TMUX_BIN" "$conf_file")" || {
             ex_code="$?"
             log_it "$_s" # failed build
-            error_msg "Failed to build tmux.conf [$ex_code]"
+            error_msg "Failed to build $conf_file with:$TMUX_BIN [$ex_code]"
         }
     fi
     log_it "$_s" # successful build
@@ -489,6 +477,7 @@ create_tmux_conf() {
 }
 
 find_host_profile() {
+    # log_it "><> find_host_profile()"
     $tmate_mode && {
         profile="${my_tmux_conf_location}/tmate.py"
         return 0
@@ -521,6 +510,7 @@ find_host_profile() {
 }
 
 tmux_2() {
+    # log_it "><> tmux_2()"
     #
     #  Inner tmux server, uses a separate config and prefix
     #
