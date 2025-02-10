@@ -1168,10 +1168,10 @@ class BaseConfig(TmuxConfig):
                 'bind -N "Split pane to the right  - P C-l" -n  '
                 f"C-M-Right  split-window -h {self.current_path_directive}"
             )
-        w(
-            'bind -N "Split pane below  - P C-j"    -n  '
-            f"C-M-Down   split-window -v {self.current_path_directive}"
-        )
+            w(
+                'bind -N "Split pane below  - P C-j"    -n  '
+                f"C-M-Down   split-window -v {self.current_path_directive}"
+            )
         if self.vers_ok(2.0):
             #
             w(
