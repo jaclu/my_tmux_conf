@@ -503,8 +503,6 @@ class BaseConfig(TmuxConfig):
         )
         # escape-time < 3.5 = 500 3.5 = 10
 
-        w("bind -T copy-mode -N 'Page Up' -n  b  send-keys -X page-up")
-
         if self.vers_ok(1.1):
             self.mkscript_shlvl_offset()
             w(
@@ -1910,6 +1908,9 @@ timer_end() {{
         Only do this if local currency is EUR
         sample sequence that might be generated: \342\204\242
         when used as a python parameter it needs to be escaped into "\\342\\204\\242" """
+        if not self.vers_ok(2.6):
+            return  # user keys not yet available
+
         w = self.write
         if sequence[:1] != "\\":
             sys.exit(f"ERROR: euro_fix({sequence}) must be given in octal notation")
