@@ -41,12 +41,11 @@ import os
 import re
 import sys
 
-import __main__
-
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
+import __main__
 import mtc_utils
 from tablet_bt_kbd import special_consoles_config
 
@@ -67,8 +66,10 @@ class BaseConfig(TmuxConfig):
 
     Groupings of user-keys
 
-    180-190 Space used by this class
+    <200 used here
     180 Used for generating Euro sign
+
+    200-499 tablet_bt_kbd.py
     """
 
     prefix_key: str = "C-a"
@@ -179,12 +180,12 @@ class BaseConfig(TmuxConfig):
             "muc_par_open": "M-(",
             "muc_par_close": "M-)",
             "muc_underscore": "M-_",
-            "muc_s_p": "M-P",
-            "muc_x": "M-X",
-            "muc_h": "M-H",
-            "muc_j": "M-J",
-            "muc_k": "M-K",
-            "muc_l": "M-L",
+            "muc_P": "M-P",
+            "muc_X": "M-X",
+            "muc_H": "M-H",
+            "muc_J": "M-J",
+            "muc_K": "M-K",
+            "muc_L": "M-L",
         }
         self.define_opt_params()
 
@@ -300,7 +301,9 @@ class BaseConfig(TmuxConfig):
         self.write("# BaseConfig.local_overides")
 
         if not self.tablet_keyb:
-            self.euro_fix("\\033\\100")  # typical Darwin kbd key-sequence
+            # Tablet keyb configs handle their own euro rempaping
+            eur_sequence = "\\033\\100"  # Dawin keyboards, is pc different?
+            self.euro_fix(eur_sequence)
 
     def content(self) -> None:
         """This generates the majority of the tmux.conf.
@@ -1514,7 +1517,7 @@ class BaseConfig(TmuxConfig):
             # There is no plugin support...
             return
 
-        if self.muc_keys["muc_s_p"] != "M-P":
+        if self.muc_keys["muc_P"] != "M-P":
             note_prefix = "M-P - "
         else:
             note_prefix = ""
@@ -1525,7 +1528,7 @@ class BaseConfig(TmuxConfig):
         #
         repo_dir = os.path.dirname(__file__)
         self.write(
-            f'bind -N "{note_prefix}List all plugins defined"  {self.muc_keys["muc_s_p"]}  '
+            f'bind -N "{note_prefix}List all plugins defined"  {self.muc_keys["muc_P"]}  '
             'run-shell "'
             '$TMUX_BIN display-message \\"Generating plugin list\\" \\; '
             # 1st load venv if used
@@ -1541,21 +1544,25 @@ class BaseConfig(TmuxConfig):
         the same and keeping them in sync, the default parameters are
         the "normal" case, when used for iSH console, the
         user keys will be given
+
+        Can not be used before tmux 0.9!
         """
+        if not self.vers_ok(0.9):
+            return
+
         self.write("# auc_kill_tmux_server()")
-        if self.muc_keys["muc_x"] != "M-X":
+        if self.muc_keys["muc_X"] != "M-X":
             note_prefix = "M-X - "
         else:
             note_prefix = ""
 
-        if self.vers_ok(0.9):
-            s = (
-                f'bind -N "{note_prefix}Kill tmux server"  '
-                f"{self.muc_keys['muc_x']}  confirm-before"
-            )
-            if self.vers_ok(1.5):
-                s += f' -p "kill tmux server {self.conf_file}? (y/n)"'
-            self.write(f"{s} kill-server")
+        s = (
+            f'bind -N "{note_prefix}Kill tmux server"  '
+            f"{self.muc_keys['muc_X']}  confirm-before"
+        )
+        if self.vers_ok(1.5):
+            s += f' -p "kill tmux server {self.conf_file}? (y/n)"'
+        self.write(f"{s} kill-server")
 
     def auc_split_entire_window(self):
         """iSH console doesn't generate correct ALT - Upper Case sequences,
@@ -1580,39 +1587,39 @@ class BaseConfig(TmuxConfig):
         n_base = "Split window "
         sw = "split-window -f"
 
-        if self.muc_keys["muc_h"] != "M-H":
+        if self.muc_keys["muc_H"] != "M-H":
             pref = "M-H - "
         else:
             pref = ""
         w(
-            f'{b}{pref}{n_base}horizontally left" {self.muc_keys["muc_h"]}  '
+            f'{b}{pref}{n_base}horizontally left" {self.muc_keys["muc_H"]}  '
             f"{sw}hb {self.current_path_directive}"
         )
 
-        if self.muc_keys["muc_j"] != "M-J":
+        if self.muc_keys["muc_J"] != "M-J":
             pref = "M-J - "
         else:
             pref = ""
         w(
-            f'{b}{pref}{n_base}vertically down" {self.muc_keys["muc_j"]}  '
+            f'{b}{pref}{n_base}vertically down" {self.muc_keys["muc_J"]}  '
             f"{sw}v  {self.current_path_directive}"
         )
 
-        if self.muc_keys["muc_k"] != "M-K":
+        if self.muc_keys["muc_K"] != "M-K":
             pref = "M-K - "
         else:
             pref = ""
         w(
-            f'{b}{pref}{n_base}vertically up" {self.muc_keys["muc_k"]}  '
+            f'{b}{pref}{n_base}vertically up" {self.muc_keys["muc_K"]}  '
             f"{sw}vb {self.current_path_directive}"
         )
 
-        if self.muc_keys["muc_l"] != "M-L":
+        if self.muc_keys["muc_L"] != "M-L":
             pref = "M-L - "
         else:
             pref = ""
         w(
-            f'{b}{pref}{n_base}horizontally right" {self.muc_keys["muc_l"]}  '
+            f'{b}{pref}{n_base}horizontally right" {self.muc_keys["muc_L"]}  '
             f"{sw}h  {self.current_path_directive}"
         )
 
@@ -1905,9 +1912,7 @@ timer_end() {{
 
     def euro_fix(self, sequence: str):
         """Some keybs fail to render the Euro sign for M-S-2
-        Only do this if local currency is EUR
-        sample sequence that might be generated: \342\204\242
-        when used as a python parameter it needs to be escaped into "\\342\\204\\242" """
+        Only do this if local currency is EUR"""
         if not self.vers_ok(2.6):
             return  # user keys not yet available
 
@@ -1926,7 +1931,7 @@ timer_end() {{
             w(
                 f"""
               # When checking EUR was not reported as local currency where this node is
-              # located. This node reports: {currency}."""
+              # located, so no EUR fix applied. This node reports: {currency}."""
             )
         else:
             w("# No default currency could be retrieved for this node")
