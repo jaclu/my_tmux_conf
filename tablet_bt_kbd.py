@@ -373,7 +373,7 @@ class IshConsole(BtKbdSpecialHandling):
             "M-X": 324,
             "M-Y": 325,
             "M-Z": 326,
-            "M-_": 327,  #  - used in  auc_meta_ses_handling
+            "M-_": 327,  # - used in  auc_meta_ses_handling
             "M-+": 328,  # - used in  auc_meta_ses_handling()
             "M-{": 329,
             "M-}": 330,
@@ -508,7 +508,7 @@ class IshConsole(BtKbdSpecialHandling):
             )
             for sequence, key in uk_ms_numb.items():
                 if sequence in ("M-(", "M-)"):
-                    continue  #  - used in  auc_meta_ses_handling()
+                    continue  # - used in  auc_meta_ses_handling()
                 w(f'bind -N "Enables {sequence}" -n  User{key}  send "{sequence}"')
 
         w()
