@@ -8,7 +8,7 @@
 #  Template giving the status bar the colors I use for a test system
 #
 
-""" Style t2 env"""
+"""Style t2 env"""
 
 import os
 import sys

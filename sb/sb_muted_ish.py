@@ -9,7 +9,7 @@
 #  follow the style used in  https://waylonwalker.com/tmux-status-bar/
 #
 
-""" Style muted """
+"""Style muted"""
 
 import os
 import sys
@@ -32,7 +32,7 @@ class SB(DefaultPlugins):
     """Style muted"""
 
     username_template = f"#[fg={THEME_TEXT}] #(whoami)#[default]@"
-    sb_left = f"#[fg={THEME_TEXT}]" "#{session_name}" f"#[fg={MUTED_TEXT}]: "
+    sb_left = f"#[fg={THEME_TEXT}]#{{session_name}}#[fg={MUTED_TEXT}]: "
 
     def status_bar_customization(self, print_header=True):
         """override statusbar config"""

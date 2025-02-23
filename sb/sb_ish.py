@@ -8,7 +8,7 @@
 #  Template giving the status bar the colors I use for a system running iSH
 #
 
-""" Style ish """
+"""Style ish"""
 
 import os
 import sys

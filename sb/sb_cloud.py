@@ -8,7 +8,7 @@
 #  Template giving the status bar the colors I use for a cloud host
 #
 
-""" Style cloud node """
+"""Style cloud node"""
 
 import os
 import sys

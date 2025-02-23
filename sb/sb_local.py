@@ -8,7 +8,7 @@
 #  Template giving the status bar the colors I use for a local system
 #
 
-""" Style local """
+"""Style local"""
 
 import os
 import sys

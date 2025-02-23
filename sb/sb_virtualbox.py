@@ -8,7 +8,7 @@
 #  Template giving the status bar the colors I use for a (local) virtual box
 #
 
-""" Style virtualbox node """
+"""Style virtualbox node"""
 
 import os
 import sys

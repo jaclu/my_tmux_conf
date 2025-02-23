@@ -8,7 +8,7 @@
 #  Template giving the status bar the colors I use for an acceptance system
 #
 
-""" Style acceptance node """
+"""Style acceptance node"""
 
 import os
 import sys

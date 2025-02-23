@@ -8,7 +8,7 @@
 #  Template giving the status bar the colors I use for a test system
 #
 
-""" Style test node """
+"""Style test node"""
 
 import os
 import sys
