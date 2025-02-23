@@ -22,14 +22,12 @@ ignore_missing_imports = true
 profile = "black"
 line_length = 92
 # known_first_party = ["mtc_utils"]
-# known_third_party = ["__m ain__"]
 combine_as_imports = true
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
 [tool.pylint]
 line_length = 92
 # init-hook = 'import sys; sys.path.append(".")'
-# known-third-party = ["__m ain__"]
 
 [tool.ruff]
 line-length = 92
