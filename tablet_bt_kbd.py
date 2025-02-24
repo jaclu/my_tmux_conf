@@ -73,7 +73,7 @@ class BtKbdSpecialHandling:
         #
         #  This keyb type already generates Esc on the key above tab
         #
-        pass
+        self.euro_fix("\\342\\202\\254")
 
     def keyb_type_2(self):
         #
@@ -81,6 +81,7 @@ class BtKbdSpecialHandling:
         #
         if not self.esc_has_been_handled:
             self.alternate_escape_key("\\302\\247")
+        self.euro_fix("\\342\\202\\254")
 
     def keyb_type_combo_touch(self):
         #
@@ -227,10 +228,6 @@ class IshConsole(BtKbdSpecialHandling):
     """Used to adopt the iSH console
     This redefines the rather limited keyboard in order to make it more useful.
     """
-
-    def keyb_type_combo_touch(self):
-        self.euro_fix("\\342\\202\\254")
-        super().keyb_type_combo_touch()
 
     def config_console_keyb(self):
         if not super().config_console_keyb():
