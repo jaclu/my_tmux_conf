@@ -490,10 +490,17 @@ class IshConsole(BtKbdSpecialHandling):
         if not ms_fn_keys_mapped:
             # use meta shift numbers as normal m- chars
             w(
-                f"""
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-!"]}]  "\\342\\201\\204"  # M-!
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-@"]}]  "\\342\\202\\254"  # M-@
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-#"]}]  "\\342\\200\\271"  # M-#
+                f'{self.tc.opt_server} user-keys[{uk_ms_numb["M-!"]}]'
+                '  "\\342\\201\\204"  # M-!'
+            )
+            if not self.euro_has_been_handled:
+                w(
+                    f'{self.tc.opt_server} user-keys[{uk_ms_numb["M-@"]}]'
+                    '  "\\342\\202\\254"  # M-@'
+                )
+            w(
+                f"""{self.tc.opt_server} user-keys[{uk_ms_numb["M-#"]}]'
+                '  "\\342\\200\\271"  # M-#
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-$"]}]  "\\342\\200\\272"  # M-$
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-%"]}]  "\\357\\254\\201"  # M-%
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-^"]}]  "\\357\\254\\202"  # M-^
@@ -506,6 +513,8 @@ class IshConsole(BtKbdSpecialHandling):
             for sequence, key in uk_ms_numb.items():
                 if sequence in ("M-(", "M-)"):
                     continue  # - used in  auc_meta_ses_handling()
+                if sequence == "M-@" and self.euro_has_been_handled:
+                    continue
                 w(f'bind -N "Enables {sequence}" -n  User{key}  send "{sequence}"')
 
         w()
@@ -521,9 +530,7 @@ class IshConsole(BtKbdSpecialHandling):
 
 def special_consoles_config(tmux_conf_instance):
     if not mtc_utils.LC_CONSOLE:
-        # If there is no indication what keyboard is used, no adaptions
-        # can be applied, so might as well return
-        # tmux_conf_instance.write("# ><> no LC_CONSOLE detected")
+        # If this is not a special console, take no action
         return False
     if not mtc_utils.LC_KEYBOARD:
         # If there is no indication what keyboard is used, no adaptions
