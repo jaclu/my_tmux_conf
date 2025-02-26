@@ -513,7 +513,7 @@ class IshConsole(BtKbdSpecialHandling):
                 if sequence in ("M-(", "M-)"):
                     continue  # - used in  auc_meta_ses_handling()
                 if sequence == "M-@" and self.euro_has_been_handled:
-                    continue
+                    continue  # was used for euro symbol
                 w(f'bind -N "Enables {sequence}" -n  User{key}  send "{sequence}"')
 
         w()
