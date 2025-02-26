@@ -1925,7 +1925,7 @@ timer_end() {{
             sys.exit(f"ERROR: euro_fix({sequence}) must be given in octal notation")
         currency = mtc_utils.get_currency()
         if currency == "EUR":
-            print("><> Wiill write euro workarround")
+            print("><> Wiill write euro workaround")
             w(
                 f"""# M-S-2 should be €
                 set -s user-keys[180] "{sequence}"
