@@ -493,7 +493,9 @@ class IshConsole(BtKbdSpecialHandling):
                 f'{self.tc.opt_server} user-keys[{uk_ms_numb["M-!"]}]'
                 '  "\\342\\201\\204"  # M-!'
             )
-            if not self.euro_has_been_handled:
+            if self.euro_has_been_handled:
+                w("# M-@ used for euro symbol")
+            else:
                 w(
                     f'{self.tc.opt_server} user-keys[{uk_ms_numb["M-@"]}]'
                     '  "\\342\\202\\254"  # M-@'
