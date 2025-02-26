@@ -52,7 +52,7 @@ from tablet_bt_kbd import special_consoles_config
 
 # ruff checks might be relevant F403,F401
 
-TMUX_CONF_NEEDED = "0.19.0"
+TMUX_CONF_NEEDED = "0.20.0"
 
 
 # https://youtu.be/yFLY0SVutgM?si=VoKETDw39BAUHfST&t=420
@@ -143,6 +143,8 @@ class BaseConfig(TmuxConfig):
     #  for pane navigation.
     #
     use_prefix_arrow_nav_keys = False
+
+    # use_debug_log = True  # if True, debug log will be printed
 
     # pylint: disable=too-many-positional-arguments,too-many-arguments
     def __init__(
@@ -1914,6 +1916,7 @@ timer_end() {{
     def euro_fix(self, sequence: str):
         """Some keybs fail to render the Euro sign for M-S-2
         Only do this if local currency is EUR"""
+        print(f"><> euro_fix({sequence})")
         if not self.vers_ok(2.6):
             return  # user keys not yet available
 
@@ -1922,6 +1925,7 @@ timer_end() {{
             sys.exit(f"ERROR: euro_fix({sequence}) must be given in octal notation")
         currency = mtc_utils.get_currency()
         if currency == "EUR":
+            print("><> Wiill write euro workarround")
             w(
                 f"""# M-S-2 should be €
                 set -s user-keys[180] "{sequence}"
