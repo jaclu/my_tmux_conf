@@ -77,17 +77,8 @@ class T2(SB):  # type: ignore
             # @variables can't be used earlier
             self.write(
                 """
-                set -g @menus_log_file ~/tmp/tmux-menus-t2.log
-
-                # Use a different host vs the outer tmux
-                set -g @packet-loss-ping_host 8.8.4.4
-                set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
-                set -g @packet-loss-run_disconnected No
-
-                # xset -g @menus_use_hint_overlays No
-                # set -g @menus_show_key_hints Yes
-
                 # set -g @menus_trigger \\
+                set -g @menus_log_file ~/tmp/tmux-menus-t2.log
                 #  Separate style from main environment
                 set -g @menus_format_title "'#[align=centre] #{@menu_name} '"
                 set -g @menus_simple_style_selected "default"
@@ -96,6 +87,13 @@ class T2(SB):  # type: ignore
                 set -g @menus_nav_next "#[fg=colour220]-->"
                 set -g @menus_nav_prev "#[fg=colour71]<--"
                 set -g @menus_nav_home "#[fg=colour84]<=="
+                # xset -g @menus_use_hint_overlays No
+                # set -g @menus_show_key_hints Yes
+
+                # Use a different host vs the outer tmux
+                set -g @packet-loss-ping_host 8.8.4.4
+                set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
+                set -g @packet-loss-run_disconnected No
             """
             )
 
@@ -105,8 +103,7 @@ class T2(SB):  # type: ignore
             #  this makes it easier to see if a pane is part of a t2 env
             #
             self.write(
-                """
-                # t2 border style
+                """# t2 border style
                 set -g pane-active-border-style fg=yellow
                 set -g pane-border-style        fg=colour105
                 """
