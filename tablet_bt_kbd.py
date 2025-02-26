@@ -508,6 +508,7 @@ class IshConsole(BtKbdSpecialHandling):
                     f'{self.tc.opt_server} user-keys[{uk_ms_numb["M-@"]}]'
                     '  "\\342\\202\\254"  # M-@'
                 )
+            w()  # spacer
             for sequence, key in uk_ms_numb.items():
                 if sequence in ("M-(", "M-)"):
                     continue  # - used in  auc_meta_ses_handling()
