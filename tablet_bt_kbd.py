@@ -490,8 +490,16 @@ class IshConsole(BtKbdSpecialHandling):
         if not ms_fn_keys_mapped:
             # use meta shift numbers as normal m- chars
             w(
-                f'{self.tc.opt_server} user-keys[{uk_ms_numb["M-!"]}]'
-                '  "\\342\\201\\204"  # M-!'
+                f"""
+            {self.tc.opt_server} user-keys[{uk_ms_numb["M-!"]}]  "\\342\\201\\204"  # M-!
+            {self.tc.opt_server} user-keys[{uk_ms_numb["M-#"]}]  "\\342\\200\\271"  # M-#
+            {self.tc.opt_server} user-keys[{uk_ms_numb["M-$"]}]  "\\342\\200\\272"  # M-$
+            {self.tc.opt_server} user-keys[{uk_ms_numb["M-%"]}]  "\\357\\254\\201"  # M-%
+            {self.tc.opt_server} user-keys[{uk_ms_numb["M-^"]}]  "\\357\\254\\202"  # M-^
+            {self.tc.opt_server} user-keys[{uk_ms_numb["M-&"]}]  "\\342\\200\\241"  # M-&
+            {self.tc.opt_server} user-keys[{uk_ms_numb["M-*"]}]  "\\302\\260"      # M-*
+            {self.tc.opt_server} user-keys[{uk_ms_numb["M-("]}]  "\\302\\267"      # M-(
+            {self.tc.opt_server} user-keys[{uk_ms_numb["M-)"]}]  "\\342\\200\\232"  # M-)"""
             )
             if self.euro_has_been_handled:
                 w("# M-@ used for euro symbol")
@@ -500,18 +508,6 @@ class IshConsole(BtKbdSpecialHandling):
                     f'{self.tc.opt_server} user-keys[{uk_ms_numb["M-@"]}]'
                     '  "\\342\\202\\254"  # M-@'
                 )
-            w(
-                f"""
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-#"]}]  "\\342\\200\\271"  # M-#
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-$"]}]  "\\342\\200\\272"  # M-$
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-%"]}]  "\\357\\254\\201"  # M-%
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-^"]}]  "\\357\\254\\202"  # M-^
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-&"]}]  "\\342\\200\\241"  # M-&
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-*"]}]  "\\302\\260"      # M-*
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-("]}]  "\\302\\267"      # M-(
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-)"]}]  "\\342\\200\\232"  # M-)
-            """
-            )
             for sequence, key in uk_ms_numb.items():
                 if sequence in ("M-(", "M-)"):
                     continue  # - used in  auc_meta_ses_handling()
