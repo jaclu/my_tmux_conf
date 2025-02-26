@@ -499,8 +499,8 @@ class IshConsole(BtKbdSpecialHandling):
                     '  "\\342\\202\\254"  # M-@'
                 )
             w(
-                f"""{self.tc.opt_server} user-keys[{uk_ms_numb["M-#"]}]'
-                '  "\\342\\200\\271"  # M-#
+                f"""
+            {self.tc.opt_server} user-keys[{uk_ms_numb["M-#"]}]  "\\342\\200\\271"  # M-#
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-$"]}]  "\\342\\200\\272"  # M-$
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-%"]}]  "\\357\\254\\201"  # M-%
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-^"]}]  "\\357\\254\\202"  # M-^
