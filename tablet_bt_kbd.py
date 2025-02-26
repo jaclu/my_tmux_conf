@@ -249,7 +249,7 @@ class IshConsole(BtKbdSpecialHandling):
 
         ms_fn_keys_mapped = False
 
-        fn_keys_handling = 2
+        fn_keys_handling = 3
         if fn_keys_handling == 1:
             self.fn_keys()
         elif fn_keys_handling == 2:
@@ -309,7 +309,6 @@ class IshConsole(BtKbdSpecialHandling):
         #  This will map M-S-number to F1 - F10
         #
         {self.tc.opt_server} user-keys[{uk_func[1]}] "\\342\\201\\204"  #  M-S-1
-        {self.tc.opt_server} user-keys[{uk_func[2]}] "\\342\\202\\254"  #  M-S-2
         {self.tc.opt_server} user-keys[{uk_func[3]}] "\\342\\200\\271"  #  M-S-3
         {self.tc.opt_server} user-keys[{uk_func[4]}] "\\342\\200\\272"  #  M-S-4
         {self.tc.opt_server} user-keys[{uk_func[5]}] "\\357\\254\\201"  #  M-S-5
@@ -317,12 +316,18 @@ class IshConsole(BtKbdSpecialHandling):
         {self.tc.opt_server} user-keys[{uk_func[7]}] "\\342\\200\\241"  #  M-S-7
         {self.tc.opt_server} user-keys[{uk_func[8]}] "\\302\\260"       #  M-S-8
         {self.tc.opt_server} user-keys[{uk_func[9]}] "\\302\\267"       #  M-S-9
-        {self.tc.opt_server} user-keys[{uk_func[0]}] "\\342\\200\\232"  #  M-S-0
-        """
+        {self.tc.opt_server} user-keys[{uk_func[0]}] "\\342\\200\\232"  #  M-S-0"""
         )
+        if self.euro_has_been_handled:
+            w("# M-S-2 used for euro symbol")
+        else:
+            w(f'{self.tc.opt_server} user-keys[{uk_func[2]}] "\\342\\202\\254"  #  M-S-2')
+
         for i, key in uk_func.items():
             if i == 0:
                 w(f'bind -N "M-S-{i} -> F10"  -n  User{key}  send-keys F10')
+            elif i == 2 and self.euro_has_been_handled:
+                continue
             else:
                 w(f'bind -N "M-S-{i} -> F{i}"  -n  User{key}  send-keys F{i}')
 
