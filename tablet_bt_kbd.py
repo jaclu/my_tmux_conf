@@ -90,12 +90,10 @@ class BtKbdSpecialHandling:
         #
         self.keyb_type_2()  # Same esc handling
         self.alternate_backtick_key("\\033", "backtick")
-        self.tc.write(
-            f"""#
-            #  On this keyb, backtick (next to z) sends Escape
-            #  this changes it back to send backtick, Esc is available via §
-            #
 
+    def pound_sterling_fix(self):
+        self.tc.write(
+            f"""
             # This keyb sends £ when it should send #
             {self.tc.opt_server} user-keys[210] "\\302\\243"
             bind -N "Send #" -n User210 send '#'
