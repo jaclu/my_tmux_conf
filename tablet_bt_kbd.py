@@ -249,7 +249,7 @@ class IshConsole(BtKbdSpecialHandling):
 
         ms_fn_keys_mapped = False
 
-        fn_keys_handling = 3
+        fn_keys_handling = 2
         if fn_keys_handling == 1:
             self.fn_keys()
         elif fn_keys_handling == 2:
@@ -513,7 +513,6 @@ class IshConsole(BtKbdSpecialHandling):
                     f'{self.tc.opt_server} user-keys[{uk_ms_numb["M-@"]}]'
                     '  "\\342\\202\\254"  # M-@'
                 )
-            w()  # spacer
             for sequence, key in uk_ms_numb.items():
                 if sequence in ("M-(", "M-)"):
                     continue  # - used in  auc_meta_ses_handling()
