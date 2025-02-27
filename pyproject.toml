@@ -12,6 +12,7 @@ line-length = 92
 # '''
 
 [tool.pymarkdown]
+plugins.line-length.line_length = 92
 plugins.md033.allowed_elements = "nbsp,prefix"
 
 [tool.mypy]
