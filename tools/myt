@@ -18,15 +18,6 @@
 #  do: touch $HOME/.myt_skip_venv
 #
 
-if [ -f "$HOME"/.myt_skip_venv ]; then
-    use_python_venv=false
-else
-    use_python_venv=true
-fi
-
-#  Logs how the latest tmux env was setup
-myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log
-
 #---------------------------------------------------------------
 #
 #   notifications
@@ -60,7 +51,7 @@ EOF
 log_it() {
     echo "$1"
     [ -n "$myt_log" ] && {
-        echo "[$(date '+%F %T')] $1"  >>"$myt_log" || {
+        echo "[$(date '+%F %T')] $1" >>"$myt_log" || {
             echo "ERROR: Failed to log output to: $myt_log" >/dev/stderr
             exit 3
         }
@@ -113,9 +104,9 @@ py_venv_create() {
     echo "in a separate terminal to see progress"
     echo
     python3 -m venv "$d_venv"
-    log_it " --  Using py venv: $d_venv"
     #  shellcheck source=/dev/null
     . "$d_venv"/bin/activate || error_msg "Failure to activate new venv"
+    log_it " --  Using py venv: $d_venv"
     log_it " --  pip install -U pip"
     pip install -U pip
 
@@ -138,7 +129,7 @@ py_venv_activate() {
         log_it "---  Not found: $scr_venv_activate - (re-)creating venv..."
         py_venv_create
     fi
-    log_it "Using Python: $(command -v python3)"
+    log_it " Using Python: $(command -v python3)"
 }
 
 py_venv_deactivate() {
@@ -430,22 +421,19 @@ get_my_tmux_conf_location() {
 }
 
 create_tmux_conf() {
-    # log_it "><> create_tmux_conf()"
+    log_it "create_tmux_conf()"
     #
     #  Generate a new tmux conf file
     #
     cd "$my_tmux_conf_location" || error_msg "Failed to cd into: $my_tmux_conf_location"
 
-    log_it "using: $TMUX_BIN"
+    log_it " Using tmux: $TMUX_BIN [$tmux_vers]"
     if $use_python_venv; then
         py_venv_activate || error_msg "Failed to activate venv - run: myt --venv"
     else
-        log_it "Using Python: $(command -v python3)"
+        log_it " Using Python: $(command -v python3)"
     fi
-    # f_py_output=$(mktemp)
 
-    log_it "Building tmux conf using: $profile"
-    log_it "  saving it in: $conf_file"
     cmd="$profile -r -t $TMUX_BIN $conf_file"
     if $t2_env; then
         cmd="T2_ENV=1 $cmd"
@@ -465,8 +453,9 @@ create_tmux_conf() {
         run_cmd "$cmd"
     }
     [ "$ex_code" != 0 ] && {
-        error_msg "Failed to build $conf_file with:$TMUX_BIN [$ex_code]"
+        error_msg "Failed to build $conf_file - $profile gave error: $ex_code"
     }
+    log_it "New tmux conf generated!"
 
     $use_python_venv && py_venv_deactivate
     if grep -q "Dependency tmux_conf not installed!" "$myt_log"; then
@@ -474,7 +463,6 @@ create_tmux_conf() {
     elif ! grep -q "Writing tmux" "$myt_log"; then
         error_msg "Python build failed to complete, check: $myt_log"
     fi
-    log_it "---  new tmux conf generated!"
 }
 
 find_host_profile() {
@@ -551,6 +539,15 @@ t2_env=false
 tmate_mode=false
 profile=""
 d_initial="$PWD" #  original pwd, will switch back to it before starting tmux
+
+if [ -f "$HOME"/.myt_skip_venv ]; then
+    use_python_venv=false
+else
+    use_python_venv=true
+fi
+
+#  Logs how the latest tmux env was setup
+myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log
 
 get_my_tmux_conf_location
 
