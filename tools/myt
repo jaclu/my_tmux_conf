@@ -1,27 +1,20 @@
 #!/bin/sh
 #
-#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2025: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
 #
-#  Auto-generates new tmux conf and starts tmux
+#  Auto-generates new tmux conf and starts/attaches tmux
+#  Unless it is already running with a different version of tmux.
+#  In such cases a warning is displayed and a pause of 5 seconds is done,
+#  after which attach is attempted without replacing the tmux conf.
 #
-#  -q  reuses current config
-#  -s  share session - connects without detaching other connections
-#  -2  generates a secondary env, I use this for testing changes and
-#      plugins, using asdf to potentially run this with a different
-#      tmux version
-#
-#  I have not yet tested with tmux 1.2 & 1.3, all checks for 1.2 is essentially
-#  it works in 1.4 but not in 1.1
-#
-
 #
 #  This needs the python module tmux_conf, and by default it will create
-#  its own venv installing this.
+#  its own venv installing this if not found, or of an incompatible version.
 #
-#  If you dont need to use a venv for the python that compiles your tmux conf,
+#  If you don't need to use a venv for the python that compiles your tmux conf,
 #  do: touch $HOME/.myt_skip_venv
 #
 
@@ -43,7 +36,7 @@ myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log
 display_help() {
     #region help text
     cat <<EOF
-Usage: myt [-q] [-2] [profile]
+Usage: myt [-c tmux] [-m] [-q] [-s] [-2] [profile]
 
 Generates config and starts tmux
 Default profile is hostname.py
@@ -67,8 +60,8 @@ EOF
 log_it() {
     echo "$1"
     [ -n "$myt_log" ] && {
-        echo "[$(date)] $1" >>"$myt_log" || {
-            echo "ERROR: Failed to log python output to: $myt_log" >/dev/stderr
+        echo "$1" >>"$myt_log" || {
+            echo "ERROR: Failed to log output to: $myt_log" >/dev/stderr
             exit 3
         }
     }
@@ -79,6 +72,16 @@ error_msg() {
     log_it "ERROR: $1"
     ex_code="${2:-1}"
     [ "$ex_code" -ge 0 ] && exit "$ex_code"
+}
+
+run_cmd() {
+    # Used to run a command, log output and report exit code of operation
+    _c="$(eval "$1")"
+    ex_code="$?"
+    echo
+    log_it "$_c"
+    echo
+    return "$ex_code"
 }
 
 is_fs_chrooted() {
@@ -100,50 +103,49 @@ is_fs_chrooted() {
 #---------------------------------------------------------------
 
 py_venv_create() {
-    venv_location="$my_tmux_conf_location"/.venv
-    [ -d "$venv_location" ] && {
-        log_it "---  Removing previous venv: $venv_location"
-        rm -rf "$venv_location"
+    [ -d "$d_venv" ] && {
+        log_it "---  Removing previous venv: $d_venv"
+        rm -rf "$d_venv"
     }
-    log_it "---  Creating py venv: $venv_location"
+    log_it "---  Creating py venv: $d_venv"
     echo
     echo "If this seems to take forever, run: $my_tmux_conf_location/tools/progress-venv-build.sh"
     echo "in a separate terminal to see progress"
     echo
-    python3 -m venv "$venv_location"
-    log_it " --  Using py venv: $venv_location"
+    python3 -m venv "$d_venv"
+    log_it " --  Using py venv: $d_venv"
     #  shellcheck source=/dev/null
-    . "$venv_location"/bin/activate || error_msg "Failure to activate new venv"
+    . "$d_venv"/bin/activate || error_msg "Failure to activate new venv"
     log_it " --  pip install -U pip"
     pip install -U pip
 
     #  Python dependency
     log_it " --  pip install tmux_conf"
     pip install tmux_conf || error_msg "Failure in: pip install tmux_conf"
-    log_it "---  Created venv: $venv_location"
-    echo
+    log_it "---  Created venv: $d_venv"
+    echo # on screen spacer
 }
 
 py_venv_activate() {
     #
     #  Activate Python venv, will only be called if use_python_venv ia true
     #
-    scr_activate="$my_tmux_conf_location"/.venv/bin/activate
-    if [ -f "$scr_activate" ]; then
-        log_it " --  Using py venv: $my_tmux_conf_location/.venv"
+    if [ -f "$scr_venv_activate" ]; then
+        log_it " --  Using py venv: $d_venv"
         #  shellcheck source=/dev/null
-        . "$scr_activate"
+        . "$scr_venv_activate"
     else
-        log_it "---  Not found: $scr_activate - (re-)creating venv..."
+        log_it "---  Not found: $scr_venv_activate - (re-)creating venv..."
         py_venv_create
     fi
+    log_it "Using Python: $(command -v python3)"
 }
 
 py_venv_deactivate() {
     #
     #  Deactivate Python venv, will only be called if use_python_venv ia true
     #
-    log_it " --  Exiting py venv: $my_tmux_conf_location/.venv"
+    log_it " --  Exiting py venv: $d_venv"
     deactivate
 }
 
@@ -187,8 +189,8 @@ select_tmux_bin() {
 asdf_scan() {
     # if asdf is used expand the shim into the actual tmux  bin
     [ ! -x "${ASDF_DATA_DIR:-$HOME/.asdf}/shims/tmux" ] && {
-	# asdf tmux not installed
-	return 1
+        # asdf tmux not installed
+        return 1
     }
     TMUX_BIN="$(asdf which tmux 2>/dev/null)"
     [ -n "$TMUX_BIN" ] && {
@@ -201,7 +203,6 @@ asdf_scan() {
 define_tmux_env() {
     # log_it "><> define_tmux_env()"
     select_tmux_bin
-    # echo "><> TMUX_BIN=[$TMUX_BIN]"
     #
     #  To not collide when checking for colliding versions
     #  add a prefix for chrooted envs, in order for socket
@@ -209,7 +210,6 @@ define_tmux_env() {
     #  on the host
     #
     tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
-    # echo "><> tmux_vers[$tmux_vers]"
 
     socket="$(id -u)"
     $tmate_mode && socket="$socket-tmate"
@@ -242,6 +242,7 @@ define_tmux_env() {
             conf_file="$HOME/.tmux.conf"
         fi
     fi
+    # log_it "><>   tmux_vers [$tmux_vers]"
     chk_incompatible_socket
 }
 
@@ -260,7 +261,7 @@ chk_incompatible_socket() {
     #
     #  shellcheck disable=SC2009
     #ps ax | grep "$socket_identifier" | grep -i asdf | grep -v -e "$tmux_vers" -e grep && {
-    other_versions_running="$(ps ax | grep "$socket_identifier" | grep -v -e "$TMUX_BIN" -e grep -e real/tmux)"
+    other_versions_running="$(ps ax | grep "$socket_identifier" | grep -v -e " $TMUX_BIN" -e grep -e real/tmux)"
     if [ -n "$other_versions_running" ]; then
         #  shellcheck disable=SC2009
         log_it "
@@ -301,9 +302,8 @@ indicate_tmux_connection_type() {
     [ -z "$connect_type" ] && {
         error_msg "indicate_tmux_connection_type() - no param1"
     }
-    log_it "$connect_type $TMUX_BIN [$tmux_vers]"
+    log_it "$connect_type using: $TMUX_BIN [$tmux_vers]"
     log_it "    socket: $socket - config: $conf_file"
-    echo
 }
 
 is_tmux_ses_running() {
@@ -340,7 +340,6 @@ drop_other_clients() {
         log_it "Detaching other clients currently using:"
         log_it "    $TMUX_BIN [$tmux_vers]"
         log_it "    socket: $socket"
-        echo
         $TMUX_BIN -L "$socket" list-clients | cut -d: -f 1 |
             xargs -I{} "$TMUX_BIN" -L "$socket" detach-client -t {}
     }
@@ -356,15 +355,12 @@ ensure_cfg_file_present() {
         log_it "Creating empty one to prevent 'No such file or directory' error"
         touch "$conf_file"
     fi
-    echo
 }
 
 start_tmux() {
     # log_it "><> start_tmux()"
     if [ -z "$profile" ] && ! find_host_profile; then
         log_it "*** Warning: no profile found"
-        echo "***            using default profile after 3 seconds"
-        echo
         sleep 3
         profile="$my_tmux_conf_location/default_plugins.py"
     fi
@@ -384,7 +380,7 @@ start_tmux() {
     }
 
     if $quick_mode; then
-        # echo "><> quick mode ensure config file is there"
+        # log_it "><> quick mode ensure config file is there"
         ensure_cfg_file_present
     else
         create_tmux_conf
@@ -397,12 +393,10 @@ start_tmux() {
     unset TMUX
 
     if is_tmux_ses_running; then
-        # log_it "><> attaching to running tmux"
         $single_session && drop_other_clients
         indicate_tmux_connection_type "Attaching to"
-        eval "$TMUX_BIN" -L "$socket" -f "$conf_file" attach-session -t main
+        $TMUX_BIN -L "$socket" -f "$conf_file" attach-session -t main
     else
-        # log_it "><> starting tmux server"
         indicate_tmux_connection_type "Starting"
         $TMUX_BIN -L "$socket" -f "$conf_file" new-session -s main
     fi
@@ -420,17 +414,19 @@ get_my_tmux_conf_location() {
     #  where  my_tmux_conf is located
     f_destination="$HOME"/.config/my_tmux_conf_location
     [ ! -f "$f_destination" ] && {
-        echo "Location of my_tmux_conf repo not stored, go to repo folder"
-        echo "and run ./deploy to solve his"
+        log_it "Location of my_tmux_conf repo not stored, go to repo folder"
+        log_it "and run ./deploy to solve his"
         exit 1
     }
 
     my_tmux_conf_location="$(cat "$f_destination")"
     [ ! -d "$my_tmux_conf_location" ] && {
-        echo "Location of my_tmux_conf repo incorrect, go to repo folder"
-        echo "and run ./deploy to solve his"
+        log_it "Location of my_tmux_conf repo incorrect, go to repo folder"
+        log_it "and run ./deploy to solve his"
         exit 1
     }
+    d_venv="$my_tmux_conf_location"/.venv
+    scr_venv_activate="$d_venv"/bin/activate
 }
 
 create_tmux_conf() {
@@ -440,31 +436,37 @@ create_tmux_conf() {
     #
     cd "$my_tmux_conf_location" || error_msg "Failed to cd into: $my_tmux_conf_location"
 
-    echo
-    log_it "===  Building new tmux conf using: $TMUX_BIN"
-    $use_python_venv && {
+    log_it "using: $TMUX_BIN"
+    if $use_python_venv; then
         py_venv_activate || error_msg "Failed to activate venv - run: myt --venv"
-    }
+    else
+        log_it "Using Python: $(command -v python3)"
+    fi
     # f_py_output=$(mktemp)
 
-    log_it # spacer line
-    # echo "Building tmux env using: $profile - saving it in: $conf_file"
+    log_it "Building tmux conf using: $profile"
+    log_it "  saving it in: $conf_file"
+    cmd="$profile -r -t $TMUX_BIN $conf_file"
     if $t2_env; then
-        _s="$(T2_ENV=1 "$profile" -r -t "$TMUX_BIN" "$conf_file")" || {
-            ex_code="$?"
-            log_it "$_s" # failed build
-            error_msg "Failed to build $conf_file with:$TMUX_BIN [$ex_code]"
-        }
-    else
-        _s="$("$profile" -r -t "$TMUX_BIN" "$conf_file")" || {
-            ex_code="$?"
-            log_it "$_s" # failed build
-            error_msg "Failed to build $conf_file with:$TMUX_BIN [$ex_code]"
-        }
+        cmd="T2_ENV=1 $cmd"
     fi
-    log_it "$_s" # successful build
 
-    log_it # spacer line
+    run_cmd "$cmd"
+    $use_python_venv && [ "$ex_code" = 23 ] && {
+        # incorrect version of tmux-conf pip found, try only once to recreate the venv
+        # to avoid a potential infinite loop
+        log_it "=====   trying to recreate venv   ====="
+
+        py_venv_deactivate
+        rm -f "$scr_venv_activate"
+        py_venv_activate || {
+            error_msg "Failed to recreate & activate venv - run: myt --venv"
+        }
+        run_cmd "$cmd"
+    }
+    [ "$ex_code" != 0 ] && {
+        error_msg "Failed to build $conf_file with:$TMUX_BIN [$ex_code]"
+    }
 
     $use_python_venv && py_venv_deactivate
     if grep -q "Dependency tmux_conf not installed!" "$myt_log"; then
@@ -473,7 +475,6 @@ create_tmux_conf() {
         error_msg "Python build failed to complete, check: $myt_log"
     fi
     log_it "---  new tmux conf generated!"
-    echo
 }
 
 find_host_profile() {
@@ -553,23 +554,22 @@ d_initial="$PWD" #  original pwd, will switch back to it before starting tmux
 
 get_my_tmux_conf_location
 
+log_it "=====   starting   ====="
 if [ -n "$myt_log" ]; then
     echo "Will log progress to: $myt_log"
-    echo
     [ -f "$myt_log" ] && rm "$myt_log" # clear log on each run
 
 fi
-log_it ""
-log_it "=====   starting   ====="
 
-#echo "><> cmd_line: $*"
-#sleep 3
 while [ -n "$1" ]; do
     # log_it "><> processing option: [$1]"
     case "$1" in
     "-h" | "--help") display_help ;;
     "-c")
         shift
+        [ -n "$1" ] || {
+            error_msg "option -c needs a tmux bin as param"
+        }
         tmux_bin="$1"
         ;;
     "-m") tmate_mode=true ;;
@@ -607,4 +607,5 @@ else
         profile="$(realpath "$profile")"
     }
 fi
+
 start_tmux
