@@ -60,7 +60,7 @@ EOF
 log_it() {
     echo "$1"
     [ -n "$myt_log" ] && {
-        echo "$1" >>"$myt_log" || {
+        echo "[$(date '+%F %T')] $1"  >>"$myt_log" || {
             echo "ERROR: Failed to log output to: $myt_log" >/dev/stderr
             exit 3
         }
