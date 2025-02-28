@@ -1,19 +1,15 @@
+# Editor backup files
 *~
 *#
+
+# MacOS cache
 .DS_Store
-.coverage
+
+# Python cache
 __pycache__/
-.tool-versions
-dist/
-src/tmux_conf.egg-info/
-local_tmux_conf/
+
+# Python venv (if used)
 .venv/
-
-# Userdefined host configs
-hostnames/
-
-# vscode
-*.code-workspace
 
 ### VisualStudioCode ###
 .vscode/* # Maybe .vscode/**/* instead - see comments
@@ -26,10 +22,17 @@ hostnames/
 # Ignore all local history of files
 **/.history
 
+### linting
+# mypy
 .mypy_cache/
-
-#  olint linter
+# olint
 .cache.olint
 
-#  deploy location hint
+# Used by tool-versioning stuff like asdf
+.tool-versions
+
+# Deploy location hint
 .destination
+
+# Userdefined host configs
+hostnames/
