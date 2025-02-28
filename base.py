@@ -2,7 +2,7 @@
 #
 #  -*- mode: python; mode: fold -*-
 #
-#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2025: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
@@ -31,6 +31,10 @@
 #
 #  The alternate session has its own plugin directory if jaclu/tpm is used
 #
+#  Normally exit 1 is used for errors, with the exception:
+#   incorrect tmux_conf python lib installed - triggers exit ERROR_INCOMPATIBLE_TMUX_CONF
+#   In order to hint to myt to potentially try to recreate the venv
+#
 
 # pylint: disable=C0116,C0302
 
@@ -54,6 +58,7 @@ from tablet_bt_kbd import special_consoles_config
 
 TMUX_CONF_NEEDED = "0.20.0"
 
+ERROR_INCOMPATIBLE_TMUX_CONF = 23
 
 # https://youtu.be/yFLY0SVutgM?si=VoKETDw39BAUHfST&t=420
 # class Environment(StrEnum):
@@ -1911,7 +1916,7 @@ timer_end() {{
             print(details)
         print()
         print(f"vers found: {lib_vers_found}   needs: {TMUX_CONF_NEEDED}")
-        sys.exit(1)
+        sys.exit(ERROR_INCOMPATIBLE_TMUX_CONF)
 
     def euro_fix(self, sequence: str):
         """Some keybs fail to render the Euro sign for M-S-2
