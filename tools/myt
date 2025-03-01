@@ -402,14 +402,14 @@ start_tmux() {
 kill_tmux() {
     define_tmux_env
     run_cmd "$TMUX_BIN -L $socket kill-server"
-    [ "$ex_code" = 0 ] && {
-	echo "Killed tmux using socket: $socket"
-	exit 0
-    }
-    grep -qv "lost server" "$f_myt_log" && {
-	# no process found tmux has already reported error
-	exit 1
-    }
+#    [ "$ex_code" = 0 ] && {
+#	echo "Killed tmux using socket: $socket"
+#	exit 0
+#    }
+#    grep -qv "lost server" "$f_myt_log" && {
+#	# no process found tmux has already reported error
+#	exit 1
+#    }
 
     # Normally this should be enough, sometimes when there are conflicting
     # tmux versions present, it can fail reporting lost server,
@@ -428,6 +428,8 @@ kill_tmux() {
 	}
 	pgrep -f "$cmd" >/dev/null  && error_msg "Process remains: $pids"
 	echo "Killed: $pids"
+    elif [ "$ex_code" = 0 ]; then
+	echo "killed tmux using socket: $socket"
     fi
     exit 0
 }
