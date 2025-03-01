@@ -71,9 +71,7 @@ run_cmd() {
     # Used to run a command, log output and report exit code of operation
     _c="$(eval "$1" 2>&1)"
     ex_code="$?"
-    echo
     log_it "$_c"
-    echo
     return "$ex_code"
 }
 
@@ -403,10 +401,19 @@ start_tmux() {
 
 kill_tmux() {
     define_tmux_env
-    $TMUX_BIN -L "$socket" kill-server || exit 1 # no server running
+    run_cmd "$TMUX_BIN -L $socket kill-server"
+    [ "$ex_code" = 0 ] && {
+	echo "Killed tmux using socket: $socket"
+	exit 0
+    }
+    grep -qv "lost server" "$f_myt_log" && {
+	# no process found tmux has already reported error
+	exit 1
+    }
 
     # Normally this should be enough, sometimes when there are conflicting
-    # tmux versions present, it can fail, then use more primitive methods
+    # tmux versions present, it can fail reporting lost server,
+    # then use more primitive methods
     cmd=" -L $socket"
     pids="$(pgrep -f "$cmd")"
     if  [ -n "$pids" ]; then
@@ -421,8 +428,6 @@ kill_tmux() {
 	}
 	pgrep -f "$cmd" >/dev/null  && error_msg "Process remains: $pids"
 	echo "Killed: $pids"
-    else
-	echo "Killed tmux using socket: $socket"
     fi
     exit 0
 }
