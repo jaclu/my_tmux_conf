@@ -10,7 +10,15 @@
 
 """Placeholder for dead code, maybe will be used again"""
 
-from base import BaseConfig  # BaseConfig
+import os
+import sys
+
+# Put the "project path first to support relative imports"
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, root_dir)
+
+# pylint: disable=wrong-import-position,import-error
+from base import BaseConfig  # noqa: E402
 
 
 class NotUsedtPlugins(BaseConfig):
