@@ -417,6 +417,7 @@ kill_tmux() {
     cmd=" -L $socket"
     pids="$(pgrep -f "$cmd")"
     if  [ -n "$pids" ]; then
+	log_it "tmux kill-server failed, trying to kill by pid"
 	pgrep -f "$cmd" | xargs kill || {
 	    error_msg "Failed to kill tmux using socket: $socket"
 	}
