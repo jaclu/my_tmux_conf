@@ -154,6 +154,12 @@ select_tmux_bin() {
     #  Selects what tmux bin to use
     #
     TMUX_BIN=""
+    if [ -n "$tmux_bin" ]; then
+        # User defined tmux
+        TMUX_BIN="$tmux_bin"
+        # log_it "><> user defined tmux: $TMUX_BIN"
+        return
+    fi
     if $tmate_mode; then
         if command -v tmate >/dev/null; then
             TMUX_BIN="tmate"
@@ -162,13 +168,6 @@ select_tmux_bin() {
         else
             error_msg "tmate not found"
         fi
-    fi
-    if [ -n "$tmux_bin" ]; then
-        # User defined tmux
-        TMUX_BIN="$tmux_bin"
-        # log_it "><> user defined tmux: $TMUX_BIN"
-        unset tmux_bin
-        return
     fi
     asdf_scan && return
     TMUX_BIN="$(command -v tmux)"
@@ -403,6 +402,14 @@ start_tmux() {
 }
 
 kill_tmux() {
+    define_tmux_env
+    $TMUX_BIN -L "$socket" kill-server && {
+	log_it "killed tmux server using socket: $socket"
+    }
+    exit 0
+}
+
+old_kill_tmux() {
     define_tmux_env
     cmd=" -L $socket"
     pids="$(pgrep -f "$cmd")"
