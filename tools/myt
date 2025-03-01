@@ -39,6 +39,7 @@ Available options:
 -c       Use this tmux binary (default tmux)
 -m       Use tmate
 -q       Dont generate config, start tmux directly
+-r       Attempt to recreate venv
 -s       Share session
 --venv   (Re-) Create venv for building tmux.conf
 -2       Run in T2_ENV (inner tmux, other prefix)
@@ -50,9 +51,9 @@ EOF
 
 log_it() {
     echo "$1"
-    [ -n "$myt_log" ] && {
-        echo "[$(date '+%F %T')] $1" >>"$myt_log" || {
-            echo "ERROR: Failed to log output to: $myt_log" >/dev/stderr
+    [ -n "$f_myt_log" ] && {
+        echo "[$(date '+%F %T')] $1" >>"$f_myt_log" || {
+            echo "ERROR: Failed to log output to: $f_myt_log" >/dev/stderr
             exit 3
         }
     }
@@ -67,7 +68,7 @@ error_msg() {
 
 run_cmd() {
     # Used to run a command, log output and report exit code of operation
-    _c="$(eval "$1")"
+    _c="$(eval "$1" 2>&1)"
     ex_code="$?"
     echo
     log_it "$_c"
@@ -103,16 +104,16 @@ py_venv_create() {
     echo "If this seems to take forever, run: $my_tmux_conf_location/tools/progress-venv-build.sh"
     echo "in a separate terminal to see progress"
     echo
-    python3 -m venv "$d_venv"
+    python3 -m venv "$d_venv" || error_msg "Failed to create venv"
     #  shellcheck source=/dev/null
     . "$d_venv"/bin/activate || error_msg "Failure to activate new venv"
     log_it " --  Using py venv: $d_venv"
     log_it " --  pip install -U pip"
-    pip install -U pip
+    pip install -U pip || errror_msg "pip install failed"
 
     #  Python dependency
     log_it " --  pip install tmux_conf"
-    pip install tmux_conf || error_msg "Failure in: pip install tmux_conf"
+    pip install tmux_conf || errror_msg "pip install failed"
     log_it "---  Created venv: $d_venv"
     echo # on screen spacer
 }
@@ -439,19 +440,30 @@ create_tmux_conf() {
     if $t2_env; then
         cmd="T2_ENV=1 $cmd"
     fi
-
     run_cmd "$cmd"
-    $use_python_venv && [ "$ex_code" = 23 ] && {
-        # incorrect version of tmux-conf pip found, try only once to recreate the venv
-        # to avoid a potential infinite loop
-        log_it "=====   trying to recreate venv   ====="
+    [ "$ex_code" != 0 ] && {
+        if $attempt_venv_rebuild; then
+            # Creating conf file failed, try once to ensure (the right)
+            # tmux_conf library is available
+            if [ "$ex_code" = 23 ]; then
+                # incorrect version of tmux-conf pip found
+                log_it "=====   trying to recreate venv   ====="
 
-        py_venv_deactivate
-        rm -f "$scr_venv_activate"
-        py_venv_activate || {
-            error_msg "Failed to recreate & activate venv - run: myt --venv"
-        }
-        run_cmd "$cmd"
+                py_venv_deactivate
+                rm -f "$scr_venv_activate"
+                py_venv_activate || {
+                    error_msg "Failed to recreate & activate venv - run: myt --venv"
+                }
+                run_cmd "$cmd"
+            elif grep -q "No module named 'tmux_conf'" "$f_myt_log"; then
+                # tmux-conf missing
+                log_it "=====   trying to install tmux_conf   ====="
+                pip install tmux_conf || error_msg "pip install tmux_conf failed"
+                run_cmd "$cmd"
+            fi
+        else
+            error_msg "Try running with -r to install tmux_conf"
+        fi
     }
     [ "$ex_code" != 0 ] && {
         error_msg "Failed to build $conf_file - $profile gave error: $ex_code"
@@ -459,10 +471,10 @@ create_tmux_conf() {
     log_it "New tmux conf generated!"
 
     $use_python_venv && py_venv_deactivate
-    if grep -q "Dependency tmux_conf not installed!" "$myt_log"; then
+    if grep -q "Dependency tmux_conf not installed!" "$f_myt_log"; then
         error_msg "venv seems broken - run: myt --venv"
-    elif ! grep -q "Writing tmux" "$myt_log"; then
-        error_msg "Python build failed to complete, check: $myt_log"
+    elif ! grep -q "Writing tmux" "$f_myt_log"; then
+        error_msg "Python build failed to complete, check: $f_myt_log"
     fi
 }
 
@@ -539,23 +551,25 @@ quick_mode=false
 t2_env=false
 tmate_mode=false
 profile=""
+attempt_venv_rebuild=false
 d_initial="$PWD" #  original pwd, will switch back to it before starting tmux
+f_skip_venv="$HOME"/.myt_skip_venv
 
-if [ -f "$HOME"/.myt_skip_venv ]; then
+if [ -f "$f_skip_venv" ]; then
     use_python_venv=false
 else
     use_python_venv=true
 fi
 
 #  Logs how the latest tmux env was setup
-myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log
+f_myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log
 
 get_my_tmux_conf_location
 
 log_it "=====   starting   ====="
-if [ -n "$myt_log" ]; then
-    echo "Will log progress to: $myt_log"
-    [ -f "$myt_log" ] && rm "$myt_log" # clear log on each run
+if [ -n "$f_myt_log" ]; then
+    echo "Will log progress to: $f_myt_log"
+    [ -f "$f_myt_log" ] && rm "$f_myt_log" # clear log on each run
 
 fi
 
@@ -573,6 +587,12 @@ while [ -n "$1" ]; do
     "-m") tmate_mode=true ;;
     "-q")
         quick_mode=true
+        ;;
+    "-r")
+        $use_python_venv || {
+            error_msg "-r can't be used when $f_skip_venv is present"
+        }
+        attempt_venv_rebuild=true
         ;;
     "-s") single_session=false ;;
     "--venv")
