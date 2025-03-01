@@ -410,6 +410,13 @@ kill_tmux() {
 	pgrep -f "$cmd" | xargs kill || {
 	    error_msg "Failed to kill tmux using socket: $socket"
 	}
+	pgrep -f "$cmd" && {
+	    echo "Failed when using normal kill, attempting kill -9"
+	    pgrep -f "$cmd" | xargs kill -9 || {
+		error_msg "Failed to kill tmux using socket: $socket"
+	    }
+	}
+	pgrep -f "$cmd" && error_msg "Process remains: $pids"
 	echo "Killed: $pids"
     else
 	error_msg "no tmux found using socket: $socket"
