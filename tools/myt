@@ -27,21 +27,22 @@
 display_help() {
     #region help text
     cat <<EOF
-Usage: myt [-c tmux] [-m] [-q] [-s] [-2] [profile]
+Usage: myt [--venv] or [-c tmux] [-k] [-m] [-q] [-r] [-s] [-2] [profile]
 
-Generates config and starts tmux
+Generates tmux config and starts tmux
 Default profile is hostname.py
 Options can be given in any order.
 
 Available options:
 
--h       Print this help and exit.
+-h       Print this help and exit
+--venv   Force (Re-) create of venv for building tmux.conf then terminate
 -c       Use this tmux binary (default tmux)
+-k       Kill running tmux, can be combined with -2
 -m       Use tmate
 -q       Dont generate config, start tmux directly
--r       Attempt to recreate venv
+-r       Attempt to repair venv if not usable
 -s       Share session
---venv   (Re-) Create venv for building tmux.conf
 -2       Run in T2_ENV (inner tmux, other prefix)
 profile  Run using specific profile
 EOF
@@ -175,7 +176,7 @@ select_tmux_bin() {
         # log_it "><> tmux found in PATH: $TMUX_BIN"
         return
     fi
-    [ -z "$TMUX_BIN" ] && error_msg "no tmux in PATH!"
+    [ -z "$TMUX_BIN" ] && error_msg "Failed to define TMUX_BIN"
 }
 
 asdf_scan() {
@@ -235,8 +236,21 @@ define_tmux_env() {
         fi
     fi
     # log_it "><>   tmux_vers [$tmux_vers]"
-    chk_incompatible_socket
+
+#    chk_incompatible_socket
+#}
+
+#chk_recursive_tmux() {
+
+    # shellcheck disable=SC2154
+    if echo "$TMUX" | grep -q "$socket" ||
+	    echo "$TMUX_OUTER" | grep -q "$socket"; then
+
+	# ensure socket is not used inside itself
+        error_msg "Attempt to use '$TMUX_BIN $conf_file' from within itself"
+    fi
 }
+
 
 chk_incompatible_socket() {
     # log_it "><> chk_incompatible_socket()"
@@ -358,16 +372,8 @@ start_tmux() {
     fi
 
     define_tmux_env
-
-    # ensure socket is not used inside itself
-    # shellcheck disable=SC2154
     [ -n "$TMUX" ] && {
-        # shellcheck disable=SC2154
-        if echo "$TMUX" | grep -q "$socket" ||
-            echo "$TMUX_OUTER" | grep -q "$socket"; then
-
-            error_msg "Attempt to start 'tmux $conf_file' from within itself"
-        fi
+	# keep track of this tmux to prevent recursive runs
         export TMUX_OUTER="$TMUX"
     }
 
@@ -396,14 +402,29 @@ start_tmux() {
     [ "$ex_code" != 0 ] && error_msg "tmux exit code: $ex_code"
 }
 
+kill_tmux() {
+    define_tmux_env
+    cmd=" -L $socket"
+    pids="$(pgrep -f "$cmd")"
+    if  [ -n "$pids" ]; then
+	pgrep -f "$cmd" | xargs kill >/dev/null || {
+	    error_msg "Failed to kill tmux using socket: $socket"
+	}
+	echo "Killed: $pids"
+    else
+	error_msg "no tmux found using socket: $socket"
+    fi
+    exit 0
+}
+
 #---------------------------------------------------------------
 #
 #   Setup tmux env
 #
 #---------------------------------------------------------------
 
-get_my_tmux_conf_location() {
-    # log_it "><> get_my_tmux_conf_location()"
+get_location_my_tmux_conf() {
+    # log_it "><> get_location_my_tmux_conf()"
     #  where  my_tmux_conf is located
     f_destination="$HOME"/.config/my_tmux_conf_location
     [ ! -f "$f_destination" ] && {
@@ -472,7 +493,7 @@ create_tmux_conf() {
 
     $use_python_venv && py_venv_deactivate
     if grep -q "Dependency tmux_conf not installed!" "$f_myt_log"; then
-        error_msg "venv seems broken - run: myt --venv"
+        error_msg "venv seems broken - use option: -r or --venv"
     elif ! grep -q "Writing tmux" "$f_myt_log"; then
         error_msg "Python build failed to complete, check: $f_myt_log"
     fi
@@ -546,14 +567,23 @@ tmux_2() {
 #
 #===============================================================
 
-single_session=true
-quick_mode=false
-t2_env=false
-tmate_mode=false
-profile=""
-attempt_venv_rebuild=false
 d_initial="$PWD" #  original pwd, will switch back to it before starting tmux
+f_myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log #  Logs how the latest tmux env was setup
 f_skip_venv="$HOME"/.myt_skip_venv
+tmux_bin=""
+kill_tmux=false
+tmate_mode=false
+quick_mode=false
+attempt_venv_rebuild=false
+single_session=true
+t2_env=false
+create_venv=false
+profile=""
+
+[ -n "$f_myt_log" ] && {
+    rm -f "$f_myt_log" # clear log on each run
+    echo "Will log progress to: $f_myt_log"
+}
 
 if [ -f "$f_skip_venv" ]; then
     use_python_venv=false
@@ -561,20 +591,10 @@ else
     use_python_venv=true
 fi
 
-#  Logs how the latest tmux env was setup
-f_myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log
-
-get_my_tmux_conf_location
-
-log_it "=====   starting   ====="
-if [ -n "$f_myt_log" ]; then
-    echo "Will log progress to: $f_myt_log"
-    [ -f "$f_myt_log" ] && rm "$f_myt_log" # clear log on each run
-
-fi
+# Find all the tools and host profiles needed to generate a tmux conf
+get_location_my_tmux_conf
 
 while [ -n "$1" ]; do
-    # log_it "><> processing option: [$1]"
     case "$1" in
     "-h" | "--help") display_help ;;
     "-c")
@@ -584,6 +604,7 @@ while [ -n "$1" ]; do
         }
         tmux_bin="$1"
         ;;
+    "-k") kill_tmux=true ;;
     "-m") tmate_mode=true ;;
     "-q")
         quick_mode=true
@@ -595,26 +616,32 @@ while [ -n "$1" ]; do
         attempt_venv_rebuild=true
         ;;
     "-s") single_session=false ;;
-    "--venv")
-        log_it "===  Prepare the Python venv for my_tmux_conf"
-        py_venv_create
-        deactivate
-        exit 0
-        ;;
     "-2") t2_env=true ;;
-    *) profile="$1" ;;
+    "--venv")
+        $use_python_venv || {
+            error_msg "--venv can't be used when $f_skip_venv is present"
+        }
+	create_venv=true ;;
+    *)
+	[ -n "$profile" ] && errror_msg "profile can only be defined once"
+	profile="$1"
+	;;
     esac
 
     shift
 done
 
+# must happen after all params are parsed to know if this should kill
+# main tmux or t2_env
+$kill_tmux && kill_tmux
+
+$create_venv && {
+    log_it "===  Prepare the Python venv for my_tmux_conf"
+    py_venv_create
+    exit 0
+}
+
 $quick_mode && [ -n "$profile" ] && error_msg "Can not be combined: -q and $profile"
-
-# [ "$TERM" = "xterm-kitty" ] && {
-#     # tmux can't handle this terminal type
-#     export TERM="screen-256color"
-# }
-
 if $t2_env; then
     tmux_2
 else
