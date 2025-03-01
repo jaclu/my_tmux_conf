@@ -403,9 +403,27 @@ start_tmux() {
 
 kill_tmux() {
     define_tmux_env
-    $TMUX_BIN -L "$socket" kill-server && {
-	log_it "killed tmux server using socket: $socket"
-    }
+    $TMUX_BIN -L "$socket" kill-server || exit 1 # no server running
+
+    # Normally this should be enough, sometimes when there are conflicting
+    # tmux versions present, it can fail, then use more primitive methods
+    cmd=" -L $socket"
+    pids="$(pgrep -f "$cmd")"
+    if  [ -n "$pids" ]; then
+	pgrep -f "$cmd" | xargs kill || {
+	    error_msg "Failed to kill tmux using socket: $socket"
+	}
+	pgrep -f "$cmd" >/dev/null && {
+	    echo "Failed when using normal kill, attempting kill -9"
+	    pgrep -f "$cmd" | xargs kill -9 || {
+		error_msg "Failed to kill tmux using socket: $socket"
+	    }
+	}
+	pgrep -f "$cmd" >/dev/null  && error_msg "Process remains: $pids"
+	echo "Killed: $pids"
+    else
+	echo "Killed tmux using socket: $socket"
+    fi
     exit 0
 }
 
