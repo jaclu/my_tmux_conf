@@ -386,12 +386,13 @@ start_tmux() {
     if is_tmux_ses_running; then
         $single_session && drop_other_clients
         indicate_tmux_connection_type "Attaching to"
-        $TMUX_BIN -L "$socket" -f "$conf_file" attach-session -t main
+        tmux_params="attach-session -t main"
     else
         indicate_tmux_connection_type "Starting"
-        $TMUX_BIN -L "$socket" -f "$conf_file" new-session -s main
+        tmux_params="new-session -s main"
     fi
-    log_it "[$(date)] [$?] exited tmux"
+    run_cmd "$TMUX_BIN -L $socket -f $conf_file $tmux_params"
+    [ "$ex_code" != 0 ] && error_msg "tmux exit code: $ex_code"
 }
 
 #---------------------------------------------------------------
