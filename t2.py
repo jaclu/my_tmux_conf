@@ -77,22 +77,24 @@ class T2(SB):  # type: ignore
         if self.vers_ok(1.8):
             # @variables can't be used earlier
             w(
-                """set -g @menus_trigger \\\\
-                set -g @menus_use_cache No
-                set -g @menus_log_file ~/tmp/tmux-menus-t2.log
+                """
+                # set -g @menus_trigger \\\\
+                # set -g @menus_use_cache No
+                set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
                 #  Separate style from main environment
                 set -g @menus_format_title "'#[align=centre] #{@menu_name} '"
-                set -g @menus_simple_style_selected "default"
-                set -g @menus_simple_style "default"
-                set -g @menus_simple_style_border "default"
+                set -g @menus_simple_style_selected default
+                set -g @menus_simple_style default
+                set -g @menus_simple_style_border default
                 set -g @menus_nav_next "#[fg=colour220]-->"
                 set -g @menus_nav_prev "#[fg=colour71]<--"
-                set -g @menus_nav_home "#[fg=colour84]<=="
+                # set -g @menus_nav_home "#[fg=colour84]<=="
+                set -g @menus_nav_home ""
                 # xset -g @menus_use_hint_overlays No
                 # set -g @menus_show_key_hints Yes
 
                 # Use a different host vs the outer tmux
-                set -g @packet-loss-ping_host 8.8.4.4
+                set -g @packet-loss-ping_host "8.8.4.4"
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
                 set -g @packet-loss-run_disconnected No
             """
@@ -105,8 +107,8 @@ class T2(SB):  # type: ignore
             #
             w(
                 """# t2 border style
-                set -g pane-active-border-style fg=yellow
-                set -g pane-border-style        fg=colour105
+                set -g pane-active-border-style "fg=yellow"
+                set -g pane-border-style        "fg=colour105"
                 """
             )
 

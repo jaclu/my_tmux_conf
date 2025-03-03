@@ -273,7 +273,7 @@ class DefaultPlugins(BaseConfig):
             1.8,
             """
 
-            # set -g @menus_trigger \\\\
+            # set -g @menus_trigger "\\\\"
             # set -g @menus_without_prefix No
 
             # set -g @menus_location_x C
@@ -284,7 +284,7 @@ class DefaultPlugins(BaseConfig):
             # set -g @menus_use_hint_overlays No
             # set -g @menus_show_key_hints Yes
 
-            set -g @menus_log_file ~/tmp/tmux-menus.log
+            set -g @menus_log_file "$HOME/tmp/tmux-menus.log"
 
             #
             #  Slightly catppuccin frappe inspired
@@ -403,7 +403,7 @@ class DefaultPlugins(BaseConfig):
             "jaclu/tmux-suspend",
             2.4,
             """
-            set -g @suspend_key  M-Z
+            set -g @suspend_key  "M-Z"
             set -g @suspend_suspended_options \\
                 "@mode_indicator_custom_prompt::#[bg=yellow]💤#[default], "
             """,
@@ -473,7 +473,7 @@ class DefaultPlugins(BaseConfig):
             "jaclu/tmux-battery",
             min_vers,
             """
-            set -g @batt_remain_short 'true'
+            set -g @batt_remain_short true
             """,
         ]
 
@@ -606,7 +606,7 @@ class DefaultPlugins(BaseConfig):
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            set -g @packet-loss-ping_host 1.1.1.1
+            set -g @packet-loss-ping_host "1.1.1.1"
             set -g @packet-loss-ping_count     6
             set -g @packet-loss-history_size   6
             set -g @packet-loss-level_alert 18 # 4-26 6-18 7-15
@@ -623,7 +623,7 @@ class DefaultPlugins(BaseConfig):
             set -g @packet-loss-color_alert  colour21
             set -g @packet-loss-color_bg     colour226
 
-            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss.log
+            set -g @packet-loss-log_file  "$HOME/tmp/tmux-packet-loss.log"
 
             """,
         ]
