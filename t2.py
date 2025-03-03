@@ -70,14 +70,15 @@ class T2(SB):  # type: ignore
         defined by parent classes before applying additional customizations.
         """
         super().local_overrides()
+        w = self.write
         #  Display what class this override comes from
-        self.write("# T2.local_overides")
+        w("# --- T2.local_overides()")
 
         if self.vers_ok(1.8):
             # @variables can't be used earlier
-            self.write(
-                """
-                # set -g @menus_trigger \\
+            w(
+                """set -g @menus_trigger \\\\
+                set -g @menus_use_cache No
                 set -g @menus_log_file ~/tmp/tmux-menus-t2.log
                 #  Separate style from main environment
                 set -g @menus_format_title "'#[align=centre] #{@menu_name} '"
@@ -102,7 +103,7 @@ class T2(SB):  # type: ignore
             #  Works both on bright and dark backgrounds
             #  this makes it easier to see if a pane is part of a t2 env
             #
-            self.write(
+            w(
                 """# t2 border style
                 set -g pane-active-border-style fg=yellow
                 set -g pane-border-style        fg=colour105

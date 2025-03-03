@@ -305,13 +305,15 @@ class BaseConfig(TmuxConfig):
         defined by parent classes before applying additional customizations.
         """
         super().local_overrides()
+        w = self.write
         #  Display what class this override comes from
-        self.write("# BaseConfig.local_overides")
+        w("# ---  BaseConfig.local_overides()")
 
         if not self.tablet_keyb:
             # Tablet keyb configs handle their own euro rempaping
             eur_sequence = "\\033\\100"  # Dawin keyboards, is pc different?
             self.euro_fix(eur_sequence)
+        w()  # Spacer after this local override section
 
     def content(self) -> None:
         """This generates the majority of the tmux.conf.
@@ -1934,14 +1936,13 @@ timer_end() {{
             w(
                 f"""# M-S-2 should be €
                 set -s user-keys[180] "{sequence}"
-                bind -N "Send €" -n User180 send "€"
-            """
+                bind -N "Send €" -n User180 send "€" """
             )
         elif currency:
             w(
                 f"""
-              # When checking EUR was not reported as local currency where this node is
-              # located, so no EUR fix applied. This node reports: {currency}."""
+                # When checking EUR was not reported as local currency where this node is
+                # located, so no EUR fix applied. This node reports: {currency}."""
             )
         else:
             w("# No default currency could be retrieved for this node")
