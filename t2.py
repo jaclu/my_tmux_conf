@@ -82,15 +82,14 @@ class T2(SB):  # type: ignore
                 # set -g @menus_use_cache No
                 set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
                 #  Separate style from main environment
-                set -g @menus_format_title "'#[align=centre] #{@menu_name} '"
-                set -g @menus_simple_style_selected default
-                set -g @menus_simple_style default
-                set -g @menus_simple_style_border default
-                set -g @menus_nav_next "#[fg=colour220]-->"
-                set -g @menus_nav_prev "#[fg=colour71]<--"
-                # set -g @menus_nav_home "#[fg=colour84]<=="
-                set -g @menus_nav_home ""
-                # xset -g @menus_use_hint_overlays No
+                set -gu @menus_format_title
+                set -gu @menus_simple_style_selected
+                set -gu @menus_simple_style
+                set -gu @menus_simple_style_border
+                # set -gu @menus_nav_next
+                # set -gu @menus_nav_prev
+                # set -gu @menus_nav_home
+                # set -g @menus_use_hint_overlays No
                 # set -g @menus_show_key_hints Yes
 
                 # Use a different host vs the outer tmux
