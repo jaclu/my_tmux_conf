@@ -66,7 +66,7 @@ class T2(SB):  # type: ignore
         configuration (see `status_bar_customization()` for that).
 
         When overriding this method in a subclass, ensure that
-        `super().local_overrides()` is called first, to retain any overrides
+        super().local_overrides() is called first, to retain any overrides
         defined by parent classes before applying additional customizations.
         """
         super().local_overrides()
@@ -78,8 +78,8 @@ class T2(SB):  # type: ignore
             # @variables can't be used earlier
             w(
                 """
-                # set -g @menus_trigger \\\\
-                # set -g @menus_use_cache No
+                # set -g @menus_trigger "\\\\"
+                set -g @menus_use_cache No
                 set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
                 #  Separate style from main environment
                 set -gu @menus_format_title
