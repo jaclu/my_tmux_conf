@@ -81,10 +81,10 @@ class T2(SB):  # type: ignore
                 # set -g @menus_without_prefix Yes
 
                 set -gu @menus_trigger
-                # set -gu @menus_log_file
+                set -gu @menus_log_file
 
                 # set -g @menus_use_cache No
-                # set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
+                set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
 
                 #  Separate style from main environment
                 set -gu @menus_format_title
