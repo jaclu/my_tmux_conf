@@ -35,7 +35,7 @@ if [[ -n "$(command -v ruff)" ]]; then
 else
     # plugin_cmd="flake8 --color=always"
     # If used on the whole project
-    proj_plugin_cmd="flake8 --color=always"
+    proj_plugin_cmd="flake8 --color=always --exclude '.git,.venv,__pycache__'"
 fi
 
 plugin_priority=60
