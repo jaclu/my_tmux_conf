@@ -326,7 +326,8 @@ class DefaultPlugins(BaseConfig):
             vers_min,
             """
             set -g @power_zoom_trigger  Z
-            set -g @power_zoom_mouse_action "S-DoubleClick3Pane"
+            # it seems mouse events can't use any combination of S-
+            set -g @power_zoom_mouse_action "C-DoubleClick3Pane"
             """,
         ]
 
