@@ -1,0 +1,24 @@
+#!/bin/bash
+# This is sourced. Fake bang-path to help editors and linters
+# shellcheck disable=SC2034  # don't warn about unused variables
+
+# This linter ignores Ctrl-C and I haven't figured out how to solve this...
+
+# Installation methods;
+#   brew install jsonlint
+#   pip3 install jsonlint (installs but doesn't seem to provide any binary) 
+#   (Ubuntu)
+#      sudo apt install nodejs npm
+#      sudo npm install -g jsonlint
+
+plugin_cmd="jsonlint -p"
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .json
+)
+
+# file-types this plugin handles
+plugin_file_types=(
+    "JSON data"
+)

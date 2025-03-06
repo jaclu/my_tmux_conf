@@ -1,0 +1,36 @@
+#!/bin/bash
+#  This is sourced. Fake bang-path to help editors and linters
+#  shellcheck disable=SC2034  # don't warn about unused variables
+
+# Installation methods;
+#  pip install ansible-lint  # fails on ish & termux
+#  brew install ansible-lint
+#  (Ubuntu) sudo apt install ansible-lint
+#  (Alpine) sudo apk add ansible-lint  # usable on iSH
+
+# project config files: .ansible-lint.yml
+#  ---
+#  rules:
+#    skip:
+#      - ANSIBLE0012
+
+plugin_cmd=ansible-lint
+
+# This is a slow one, so make it run towards
+# the end of any chain
+plugin_priority=30
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .yml
+    .yaml
+)
+
+# file-types this plugin handles
+#plugin_file_types=(
+#)
+
+# Files this plugin should not handle
+#plugin_excludes=(
+#    ./tmp/foo.sh
+#)

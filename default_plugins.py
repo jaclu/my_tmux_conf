@@ -383,7 +383,7 @@ class DefaultPlugins(BaseConfig):
     def plugin_session_wizard(self) -> list:  # 3.2
         # default trigger: T
         if self.skip_plugin_session_wizard:
-            vers_min = -1.0  # Dont use
+            vers_min = -1.0  # Don't use
         else:
             vers_min = 3.2
         return [
@@ -427,7 +427,7 @@ class DefaultPlugins(BaseConfig):
             not self.force_plugin_continuum
             and (self.is_limited_host or self.t2_env or self.is_tmate())
         ):
-            vers_min = -1.0  # Dont use
+            vers_min = -1.0  # Don't use
         else:
             vers_min = 1.9
 
@@ -467,7 +467,7 @@ class DefaultPlugins(BaseConfig):
             #  1.8 accd to orig devel, but i get issues below 2.2
             min_vers = 2.2
         else:
-            min_vers = -1.0  # dont use this one
+            min_vers = -1.0  # don't use this one
 
         return [
             "jaclu/tmux-battery",
@@ -484,7 +484,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_mullvad:
             min_vers = 2.2
         else:
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
 
         return [
             "jaclu/tmux-mullvad",
@@ -533,7 +533,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_spotify_info:
             min_vers = 1.9
         else:
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
         if self.vers_ok(2.9):
             conf = """
             #  Version dependent settings for jaclu/tmux-spotify-info
@@ -557,7 +557,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_1password:
             min_vers = 1.9  # Unknown min version 1.9 seems ok
         else:
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
 
         return [
             "yardnsm/tmux-1password",
@@ -581,7 +581,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_keyboard_type:
             min_vers = 1.9
         else:
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
 
         return [
             "jaclu/tmux-keyboard-type",
@@ -600,7 +600,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_packet_loss:
             min_vers = 1.9
         else:
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
 
         return [
             "jaclu/tmux-packet-loss",
@@ -636,7 +636,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_which_key:
             min_vers = 3.0
         else:
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
 
         return ["alexwforsythe/tmux-which-key", min_vers, ""]
 
@@ -645,7 +645,7 @@ class DefaultPlugins(BaseConfig):
         if self.use_plugin_yank:
             min_vers = 1.8
         else:
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
 
         return [
             "jaclu/tmux-yank",

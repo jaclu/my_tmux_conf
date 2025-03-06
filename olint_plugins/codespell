@@ -1,0 +1,20 @@
+#!/bin/bash
+#  This is sourced. Fake bang-path to help editors and linters
+#  shellcheck disable=SC2034  # don't warn about unused variables
+
+# Installation methods;
+#  pip install codespell  # usable on iSH
+#  brew install codespell
+#  (Ubuntu) sudo apt install codespell
+#  (Alpine) sudo apk add py3-codespell
+
+proj_plugin_cmd="codespell -H -S './.git,./.venv,./.mypy_cache'"
+
+# Custom overrides,  add this in the global or project config
+# to see all codespell options, run: codespell -h
+#
+# if there are terms that should be accepted
+# override_linter_cmd["codespell"]="codespell -L THIS"
+#
+# If there are files that should not be linted by codespell, add this
+# override_linter_cmd["codespell"]="codespell -S file1,file2"

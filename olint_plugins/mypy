@@ -1,0 +1,49 @@
+#!/bin/bash
+# This is sourced. Fake bang-path to help editors and linters
+# shellcheck disable=SC2034  # don't warn about unused variables
+
+# Purpose:
+#  Static type checker.
+# Strengths:
+#  Ensures type correctness when using type hints.
+#  Helps catch errors early in larger projects with complex type relationships.
+# Use case:
+#  Recommended for projects that use type annotations to improve code
+#  robustness.
+
+# Installation methods;
+#  pip install mypy  # usable on iSH
+#  brew install mypy
+#  (Ubuntu) sudo apt install mypy
+#  (Alpine) sudo apk add py3-mypy
+
+# inline-excludes:  # type: ignore
+# project config files: mypy.ini, setup.cfg, or pyproject.toml
+# generic rule
+#  [mypy]
+#  ignore_missing_imports = True
+# more specific rule
+#  [mypy-.brabantse_gebouwen.settings]
+#  ignore_missing_imports = True
+
+plugin_cmd="mypy"
+
+# do this plugin late, since if other plugins find issues
+# on next run the mypy cache might cause issues
+plugin_priority=40
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .py
+    .py3
+)
+
+# file-types this plugin handles
+plugin_file_types=(
+    "Python script*"
+)
+
+# Handle entire project
+
+# conf file pyproject.toml
+# mypy .

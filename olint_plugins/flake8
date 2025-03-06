@@ -1,0 +1,52 @@
+#!/bin/bash
+# This is sourced. Fake bang-path to help editors and linters
+# shellcheck disable=SC2034  # don't warn about unused variables
+#
+# Flake8 also provides: pyflakes, pycodestyle, McCabe
+# so it would be redundant to also run them if you use Flake8
+#
+
+# Purpose:
+#  Lightweight tool for enforcing PEP 8 style guide compliance.
+# Strengths:
+#  Supports plugins for extended functionality
+#  (e.g., flake8-bugbear for additional checks). Less verbose than Pylint.
+# Use case:
+#  Ideal for enforcing style and detecting common coding issues.
+
+# Installation methods;
+#  pip install flake8  # usable on iSH
+#  brew install flake8
+#  (Ubuntu) sudo apt install flake8
+#  (Alpine) sudo apk add py3-flake8
+
+# inline-excludes:  # noqa: F841
+# project config files: setup.cfg
+#  [flake8]
+#  max-line-length = 92
+
+if [[ -n "$(command -v ruff)" ]]; then
+    #
+    # Redundant if ruff is found
+    # set to /dev/null instead of "" to avoid warning
+    #   missing: plugin_cmd
+    #
+    plugin_cmd="/dev/null"
+else
+    # plugin_cmd="flake8 --color=always"
+    # If used on the whole project
+    proj_plugin_cmd="flake8 --color=always"
+fi
+
+plugin_priority=60
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .py
+    .py3
+)
+
+# file-types this plugin handles
+plugin_file_types=(
+    "Python script*"
+)

@@ -1,0 +1,47 @@
+#!/bin/bash
+# This is sourced. Fake bang-path to help editors and linters
+# shellcheck disable=SC2034  # don't warn about unused variables
+
+# Purpose:
+#  General-purpose linter for Python code quality and style.
+# Strengths:
+#  Provides detailed and strict checks.
+#  Customizable via a .pylintrc configuration file.
+# Use case:
+#  Detects potential bugs, enforces coding standards, and warns about unused
+#  imports or variables.
+
+# Installation methods;
+#  pip install pylint  # usable on iSH
+#  brew install pylint
+#  (Ubuntu) sudo apt install pylint
+#  (Alpine) sudo apk add py3-pylint
+
+# line above: # pylint: disable=C0321
+# line above: # pylint: disable=missing-docstring
+# project config files: .pylintrc
+#  [MASTER]
+#  disable=C0103,C0114,C0115,C0116,R0902,R0913,R0914
+#
+#  [FORMAT]
+#  max-line-length=92
+#
+#  [base.py]
+#  disable=R0904
+
+
+plugin_cmd="pylint"
+# proj_plugin_cmd="pylint ."
+
+plugin_priority=30
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .py
+    .py3
+)
+
+# file-types this plugin handles
+plugin_file_types=(
+    "Python script*"
+)

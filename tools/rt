@@ -253,7 +253,7 @@ def parse_cmd_line():
         "-q",
         "--quick",
         action="store_true",
-        help="quik connect, dont re-generate tmux.conf\n",
+        help="quik connect, don't re-generate tmux.conf\n",
     )
     parser.add_argument(
         "-v", "--version", action="version", version=f"%(prog)s {APP_VERSION}"

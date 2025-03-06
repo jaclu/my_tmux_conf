@@ -1467,9 +1467,9 @@ class BaseConfig(TmuxConfig):
         )
 
     def filter_me_from_sb_right(self):
-        """Dont display my primary username."""
+        """Don't display my primary username."""
 
-        #  If its my default accounts dont show username
+        #  If its my default accounts don't show username
         if os.getenv("USER") in ("jaclu", "u0_a194"):
             self.username_template = ""
 

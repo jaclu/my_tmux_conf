@@ -1,0 +1,37 @@
+#!/bin/bash
+# This is sourced. Fake bang-path to help editors and linters
+# shellcheck disable=SC2034  # don't warn about unused variables
+
+# Purpose:
+#  Extremely fast Python linter, written in Rust
+# Strengths:
+#  Ruff can be used to replace Flake8 (plus dozens of plugins), Black, isort,
+#  pydocstyle, pyupgrade, autoflake, and more, all while executing tens or
+#  hundreds of times faster than any individual tool.
+# Use case:
+#  Rapid linting
+
+# Installation methods;
+#  pip install ruff  # dependency: rust  iSH can install but fails to run this
+#  brew install ruff
+#  (Alpine) sudo apk add ruff
+
+
+# inline-excludes:  # noqa: F403,F401
+
+# plugin_cmd="ruff check"
+proj_plugin_cmd="ruff check ."
+
+# really fast so run early
+plugin_priority=90
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .py
+    .py3
+)
+
+# file-types this plugin handles
+plugin_file_types=(
+    "Python script*"
+)

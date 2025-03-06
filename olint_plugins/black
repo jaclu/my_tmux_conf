@@ -1,0 +1,55 @@
+#!/bin/bash
+# This is sourced. Fake bang-path to help editors and linters
+# shellcheck disable=SC2034  # don't warn about unused variables
+
+# Purpose:
+#  Code formatter.
+# Strengths:
+#  Enforces consistent formatting across your codebase.
+# Use case:
+#  Works well alongside linters like Flake8 and Pylint for a unified style.
+
+# Installation methods;
+#  pip install black  # usable on iSH
+#  brew install black
+#  (Ubuntu) sudo apt install black
+#  (Alpine) sudo apk add black
+
+# inline-excludes:  # fmt: skip
+# line above a block: # fmt: off
+# line after a blick: # fmt: on
+# project config files: pyproject.toml $XDG_CONFIG_HOME/black (~/.config/ if not set)
+#  [tool.black]
+
+if [[ -n "$(command -v ruff)" ]]; then
+    #
+    # Redundant if ruff is found
+    # set to /dev/null instead of "" to avoid warning
+    #   missing: plugin_cmd
+    #
+    plugin_cmd="/dev/null"
+else
+    # plugin_cmd="black"
+    # If used on the whole project
+    proj_plugin_cmd="black ."
+fi
+
+plugin_priority=85
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .py
+    .py3
+)
+
+# file-types this plugin handles
+plugin_file_types=(
+    "Python script*"
+)
+
+# Handle entire project
+
+# conf file .bandit
+# bandit -r .
+# conf file pyproject.toml
+# bandit -c pyproject.toml -r .

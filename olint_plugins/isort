@@ -1,0 +1,43 @@
+#!/bin/bash
+# This is sourced. Fake bang-path to help editors and linters
+# shellcheck disable=SC2034  # don't warn about unused variables
+
+# Purpose:
+#  Checks and formats import statements.
+# Strengths:
+#  Ensures imports are grouped and ordered correctly according to PEP 8.
+# Use case:
+#  Keeps imports organized and clean.
+
+# Installation methods;
+#  pip install isort  # usable on iSH
+#  brew install isort
+#  (Ubuntu) sudo apt install isort
+#  (Alpine) sudo apk add py3-isort
+
+if [[ -n "$(command -v ruff)" ]]; then
+    #
+    # Redundant if ruff is found
+    # set to /dev/null instead of "" to avoid warning
+    #   missing: plugin_cmd
+    #
+    plugin_cmd="/dev/null"
+else
+    # plugin_cmd="isort"
+    # If used on the whole project
+    proj_plugin_cmd="isort --gitignore ."
+fi
+
+plugin_priority=65
+
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .py
+    .py3
+)
+
+# file-types this plugin handles
+plugin_file_types=(
+    "Python script*"
+)

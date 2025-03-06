@@ -1,0 +1,22 @@
+#!/bin/bash
+# shellcheck disable=SC2034
+
+# This linter ignores Ctrl-C and I haven't figured out how to solve this...
+
+# Installing methods;
+#  brew install rslint
+#  Manual
+#    install rust: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+#    cargo install rslint
+
+plugin_cmd="rslint"
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .js
+    .ts
+)
+
+# file-types this plugin handles
+plugin_file_types=(
+)

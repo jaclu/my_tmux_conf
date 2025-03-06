@@ -1,0 +1,46 @@
+#!/bin/bash
+# This is sourced. Fake bang-path to help editors and linters
+# shellcheck disable=SC2034  # don't warn about unused variables
+
+# Installation methods;
+#  pip install shellcheck-py  # fails to install on iSH
+#  brew install shellcheck
+#  (Ubuntu) sudo apt install shellcheck
+#  (Alpine edge) sudo apk add shellcheck
+
+# line above:  # shellcheck disable=SC2059
+# line above:  # shellcheck source=/dev/null
+# project config files: .shellcheckrc
+# -o all -e SC2250,SC2312
+# is the same as creating a .shellcheckrc in a project dir with:
+#  enable=all
+#  disable=SC2250,SC2312
+
+
+# SC2250 Prefer putting braces around variable references even when
+#        not strictly required.
+# SC2312 Consider invoking this command separately to avoid masking
+#        its return value (or use '|| true' to ignore).
+plugin_cmd="shellcheck -a -x --color=always -o all -e SC2250,SC2312"
+
+if [[ -f /etc/debian_version ]] && grep -q 10 /etc/debian_version; then
+    # Debian 10 comes with shellcheck 0.5. lacking the -o option
+    plugin_cmd="shellcheck -a -x --color=always -e SC1117,SC2250,SC2312"
+fi
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .sh
+    .bash
+)
+
+# file-types this plugin handles
+plugin_file_types=(
+    "POSIX shell script*"
+    "Bourne-Again shell script*"
+)
+
+# Files this plugin should not handle
+#plugin_excludes=(
+#    ./tmp/foo.sh
+#)

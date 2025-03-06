@@ -1,0 +1,42 @@
+#!/bin/bash
+# This is sourced. Fake bang-path to help editors and linters
+# shellcheck disable=SC2034  # don't warn about unused variables
+
+# Installation methods;
+#  brew install cppcheck
+#  (Ubuntu) sudo apt install cppcheck
+#  (Alpine) sudo apk add cppcheck
+
+plugin_cmd="cppcheck"
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .c # C Source File
+
+    .cpp # C++ Source File
+    .cxx # C++ Source File
+    .cc  # C++ Source File
+    .c++ # C++ Source File
+    .C   # C++ Source File
+
+    .h   # Header File
+    .hpp # Header File
+    .hxx # Header File
+    .hh  # Header File
+    .h++ # Header File
+
+    .tpp # C++ Template File
+    .ipp # C++ Template File
+
+    .inl # Inlined C/C++ Header File
+
+    .cu  # CUDA Files (for NVIDIA CUDA C/C++)
+    .cuh # CUDA Files (for NVIDIA CUDA C/C++)
+)
+
+# file-types this plugin handles
+plugin_file_types=(
+    text/x-c      # C Source Files
+    text/x-c++src # C++ Source Files
+    text/x-c++hdr # C/C++ Header Files
+)

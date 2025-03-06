@@ -1,0 +1,35 @@
+#!/bin/bash
+# This is sourced. Fake bang-path to help editors and linters
+# shellcheck disable=SC2034  # don't warn about unused variables
+
+# Purpose:
+#  Security-focused linter.
+# Strengths:
+#  Identifies security vulnerabilities (e.g., usage of insecure functions
+#  or libraries).
+# Use case:
+#  Essential for projects where security is a concern.
+
+# Installation methods;
+#  pip install bandit  # usable on iSH
+#  brew install bandit
+#  (Ubuntu) sudo apt install bandit
+
+# inline-excludes:  # nosec
+
+# plugin_cmd="bandit"
+# If used on the whole project
+proj_plugin_cmd="bandit --exclude './.venv' -r ."
+
+plugin_priority=55
+
+# file extensions this plugin handles
+plugin_extensions=(
+    .py
+    .py3
+)
+
+# file-types this plugin handles
+plugin_file_types=(
+    "Python script*"
+)
