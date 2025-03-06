@@ -1,13 +1,12 @@
 [tool.bandit]
 line-length = 92
-exclude_dirs = [".venv", "local_tmux_conf"]
+exclude_dirs = [".venv",]
 
 [tool.black]
 line-length = 92
 # exclude = '''
 # /(
 #     \.venv    # Match .venv directory
-#   | local_tmux_conf # Match local_tmux_conf directory
 # )/
 # '''
 
@@ -16,7 +15,7 @@ plugins.line-length.line_length = 92
 plugins.md033.allowed_elements = "nbsp,prefix"
 
 [tool.mypy]
-exclude = [".venv", "local_tmux_conf"]
+exclude = [".venv",]
 ignore_missing_imports = true
 
 [tool.isort]
