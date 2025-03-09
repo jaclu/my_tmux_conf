@@ -928,7 +928,7 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(3.5):
             w(f"{self.opt_pane} allow-set-title off")
 
-        w(f"bind -N 'Toggle synchronize'  *  {self.opt_pane} synchronize-panes")
+        w(f"bind -N 'Toggle synchronize'  *  {self.opt_win_loc} synchronize-panes")
 
         if self.vers_ok(0.9):
             s = 'bind -N "Kill pane in focus"  x  confirm-before'
