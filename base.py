@@ -717,8 +717,8 @@ class BaseConfig(TmuxConfig):
             sc_n = "switch-client -n"
             p_open = f"{self.muc_keys["muc_par_open"]} C-M-Up"
             p_close = f"{self.muc_keys['muc_par_close']} C-M-Down"
-            cm_up = f"P-( {self.muc_keys["muc_par_open"]}"
-            cm_down = f"P-)  {self.muc_keys['muc_par_close']}"
+            cm_up = f"P_( {self.muc_keys["muc_par_open"]}"
+            cm_down = f"P_)  {self.muc_keys['muc_par_close']}"
             w(
                 f"""# session navigation
                 bind -N "Select previous session  - {p_open}"  -r  (  {sc_p}
@@ -793,24 +793,24 @@ class BaseConfig(TmuxConfig):
             else:
                 w(f'bind -N "New window"  {key} new-window')
         if self.vers_ok(1.0):
-            w(f'bind -N "New window  - P =" -n  M-=  {cmd_new_win_named}')
+            w(f'bind -N "New window  - P_=" -n  M-=  {cmd_new_win_named}')
 
         pref = 'bind -N "Select the '
         w(
             f"""
         # window navigation
-        {pref}previous window  - P-p M-9 C-M-Left" -r   9  previous-window
-        {pref}next window  - P-n M-0 C-M-Right"    -r   0  next-window
+        {pref}previous window  - P_p M-9 C-M-Left" -r   9  previous-window
+        {pref}next window  - P_n M-0 C-M-Right"    -r   0  next-window
         {pref}previously current window  - M--"         -  last-window
         # override default to add my note
-        {pref}previous window  - P-9 M-9 C-M-Left"  -r  p   previous-window
-        {pref}next window      - P-0 M-0 C-M-Right" -r  n   next-window"""
+        {pref}previous window  - P_9 M-9 C-M-Left"  -r  p   previous-window
+        {pref}next window      - P_0 M-0 C-M-Right" -r  n   next-window"""
         )
         if self.vers_ok(1.2):
             w(
                 f"""
-        {pref}previous window  - P-p P-9 M-9"  -n  C-M-Left   previous-window
-        {pref}next window      - P-n P-0 M-0"  -n  C-M-Right  next-window"""
+        {pref}previous window  - P_p P_9 M-9"  -n  C-M-Left   previous-window
+        {pref}next window      - P_n P_0 M-0"  -n  C-M-Right  next-window"""
             )
 
         #
@@ -825,14 +825,26 @@ class BaseConfig(TmuxConfig):
             #  tmate does not support split-window -f  despite they claim
             #  to be 2.4 compatible and this is a 2.3 feature...
             #
-            sw1 = 'bind -N "Split entire window'  # hackish strings
+            # Pane splitting
+            # P_C-h  P_M-H  P_C-M-S-Left
+            # P_C-j  P_M-J  P_C-M-S-Down
+            # P_C-k  P_M-H  P_C-M-S-Up
+            # P_C-l  P_M-L  P_C-M-S-Right
+            
+            # Window spliting
+            # P_M-H  P_C-M-S-Left
+            # P_M-J  P_C-M-S-Down
+            # P_M-H  P_C-M-S-Up
+            # P_M-L  P_C-M-S-Right
+
+            
+            sw1 = 'bind -N "Split window'  # hackish strings
             sw2 = "split-window -f"  # to make sure
             w(
-                f"""# window splitting Meta keys
-            {sw1} horizontally left"    C-M-S-Left   {sw2}hb  {self.current_path_directive}
-            {sw1} vertically down"      C-M-S-Down   {sw2}v   {self.current_path_directive}
-            {sw1} vertically up"        C-M-S-Up     {sw2}vb  {self.current_path_directive}
-            {sw1} horizontally right"   C-M-S-Right  {sw2}h   {self.current_path_directive}
+                f"""{sw1} left - P_M-H"   C-M-S-Left   {sw2}hb  {self.current_path_directive}
+            {sw1} down - P_M-J"   C-M-S-Down   {sw2}v   {self.current_path_directive}
+            {sw1} up - P_M-K"     C-M-S-Up     {sw2}vb  {self.current_path_directive}
+            {sw1} right - P_M-L"  C-M-S-Right  {sw2}h   {self.current_path_directive}
             """
             )
 
@@ -847,21 +859,21 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.0) and not self.tablet_keyb:
             w(
                 'bind -N "Select the previous window '
-                '- P-p P-9 C-M-Left" -n  M-9  previous-window'
+                '- P_p P_9 C-M-Left" -n  M-9  previous-window'
             )
         if self.vers_ok(1.0):
             s = 'bind -N "Select the'
             w(
-                f"""{s} next window - P-n P-0 C-M-Right"    -n  M-0  next-window
-                {s} previously current window - P -"    -n  M--  last-window"""
+                f"""{s} next window - P_n P_0 C-M-Right"    -n  M-0  next-window
+                {s} previously current window - P_-"    -n  M--  last-window"""
             )
         if self.vers_ok(2.1):
             w2 = "window"  # hackish strings to make sure
             cm = "-T copy-mode -n M-"  # line is not to long
             w(
                 f"""# Override odd behaviour in copy-mode
-                bind -N "Previous {w2}  - P 9" {cm}9  previous-{w2}
-                bind -N "Next {w2} - P 0"      {cm}0  next-{w2}
+                bind -N "Previous {w2}  - P_9" {cm}9  previous-{w2}
+                bind -N "Next {w2} - P_0"      {cm}0  next-{w2}
                 """
             )
         #
@@ -1114,18 +1126,18 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.0):
             if self.use_prefix_arrow_nav_keys:
                 w(
-                    f"""bind -N "Select pane left  - P h"  -n  M-Left   {pane_left}
-                    bind -N "Select pane right  - P l" -n  M-Right  {pane_right}
-                    bind -N "Select pane up  - P k"    -n  M-Up     {pane_up}
-                    bind -N "Select pane down  - P j"  -n  M-Down   {pane_down}
+                    f"""bind -N "Select pane left  - P_h"  -n  M-Left   {pane_left}
+                    bind -N "Select pane right  - P_l" -n  M-Right  {pane_right}
+                    bind -N "Select pane up  - P_k"    -n  M-Up     {pane_up}
+                    bind -N "Select pane down  - P_j"  -n  M-Down   {pane_down}
                     """
                 )
             else:
                 w(
-                    f"""bind -N "Select pane left  - P Left"   -n  M-Left   {pane_left}
-                bind -N "Select pane right  - P Right" -n  M-Right  {pane_right}
-                bind -N "Select pane up  - P Up"       -n  M-Up     {pane_up}
-                bind -N "Select pane down  - P Down"   -n  M-Down   {pane_down}
+                    f"""bind -N "Select pane left  - P_Left"   -n  M-Left   {pane_left}
+                bind -N "Select pane right  - P_Right" -n  M-Right  {pane_right}
+                bind -N "Select pane up  - P_Up"       -n  M-Up     {pane_up}
+                bind -N "Select pane down  - P_Down"   -n  M-Down   {pane_down}
                 """
                 )
 
@@ -1175,45 +1187,45 @@ class BaseConfig(TmuxConfig):
         #  also to allow left/up splits.
         #
         if not self.vers_ok(1.0):
-            w('bind -N "Split pane below"   C-j  split-window -p 50')
+            w('bind -N "Split pane below - C-M-S-Down"  C-j  split-window -p 50')
             return
 
         if self.vers_ok(1.2):
             # Older versions can't bind C-M keys
             w(
-                'bind -N "Split pane to the right  - P C-l" -n  '
+                'bind -N "Split pane to the right  - P_C-l" -n  '
                 f"C-M-S-Right  split-window -h {self.current_path_directive}"
             )
             w(
-                'bind -N "Split pane below  - P C-j"    -n  '
+                'bind -N "Split pane below  - P_C-j"        -n  '
                 f"C-M-S-Down   split-window -v {self.current_path_directive}"
             )
         if self.vers_ok(2.0):
             #
             w(
-                'bind -N "Split pane to the left  - P C-h"  '
-                f"-n  C-M-S-Left   split-window -hb {self.current_path_directive}"
+                'bind -N "Split pane to the left  - P_C-h"  -n  '
+                f"C-M-S-Left   split-window -hb {self.current_path_directive}"
             )
             w(
-                'bind -N "Split pane above  - P C-k"      '
-                f"-n  C-M-S-Up     split-window -vb {self.current_path_directive}"
+                'bind -N "Split pane above  - P_C-k"        -n  '
+                f"C-M-S-Up     split-window -vb {self.current_path_directive}"
             )
         w()
         w(
-            'bind -N "Split pane to the right"  C-l  split-window -h '
+            'bind -N "Split pane to the right - C-M-S-Right"  C-l  split-window -h '
             f"{self.current_path_directive}"
         )
         w(
-            'bind -N "Split pane below"     C-j  split-window -v '
+            'bind -N "Split pane below - C-M-S-Down"          C-j  split-window -v '
             f"{self.current_path_directive}"
         )
         if self.vers_ok(2.0):
             w(
-                'bind -N "Split pane to the left"   C-h  '
+                'bind -N "Split pane to the left - C-M-S-Left"    C-h  '
                 f"split-window -hb {self.current_path_directive}"
             )
             w(
-                'bind -N "Split pane above"       C-k  '
+                'bind -N "Split pane above - C-M-S-Up"            C-k  '
                 f"split-window -vb {self.current_path_directive}"
             )
 
@@ -1251,10 +1263,10 @@ class BaseConfig(TmuxConfig):
             )
         if self.vers_ok(1.2):
             # keys without prefix never needs repeat set
-            w("bind -N 'Resize pane 1 up    - P K'   -n  C-S-Up     resize-pane -U")
-            w("bind -N 'Resize pane 1 down  - P J'   -n  C-S-Down   resize-pane -D")
-            w("bind -N 'Resize pane 1 left  - P H'   -n  C-S-Left   resize-pane -L")
-            w("bind -N 'Resize pane 1 right - P L'   -n  C-S-Right  resize-pane -R")
+            w("bind -N 'Resize pane 1 up    - P_K'   -n  C-S-Up     resize-pane -U")
+            w("bind -N 'Resize pane 1 down  - P_J'   -n  C-S-Down   resize-pane -D")
+            w("bind -N 'Resize pane 1 left  - P_H'   -n  C-S-Left   resize-pane -L")
+            w("bind -N 'Resize pane 1 right - P_L'   -n  C-S-Right  resize-pane -R")
 
             w("bind -N 'Resize pane 5 up'    -n  M-S-Up     resize-pane -U 5")
             w("bind -N 'Resize pane 5 down'  -n  M-S-Down   resize-pane -D 5")
@@ -1495,7 +1507,7 @@ class BaseConfig(TmuxConfig):
         w = self.write
         if self.vers_ok(1.0):
             s = (
-                'bind -N "Create new session  - P +"  '
+                'bind -N "Create new session  - P_+"  '
                 f"-n {self.muc_keys['muc_plus']}  command-prompt "
             )
             if self.vers_ok(1.5):
@@ -1504,17 +1516,17 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.2):
             w(
-                "bind -N 'Switch to last session  - P _'  "
+                "bind -N 'Switch to last session  - P__'  "
                 f"-n  {self.muc_keys['muc_underscore']}  switch-client -l"
             )
             w(
-                "bind -N 'Select previous session  - P-( C-M-Up'"
+                "bind -N 'Select previous session  - P_( C-M-Up'"
                 f" -n  {self.muc_keys['muc_par_open']}  switch-client -p"
             )
 
-            # P-)  {self.muc_keys['muc_par_close']} C-M-Down
+            # P_)  {self.muc_keys['muc_par_close']} C-M-Down
             w(
-                "bind -N 'Select next session  - P-) C-M-Down' "
+                "bind -N 'Select next session  - P_) C-M-Down' "
                 f"-n  {self.muc_keys['muc_par_close']}  switch-client -n"
             )
 
@@ -1602,10 +1614,10 @@ class BaseConfig(TmuxConfig):
         cp = self.current_path_directive
         w(
             f"""
-            {pref}horizontally left - C-M-S-Left"    {self.muc_keys["muc_H"]}  {sw}hb {cp}
-            {pref}vertically down - C-M-S-Down"      {self.muc_keys["muc_J"]}  {sw}v  {cp}
-            {pref}vertically up - C-M-S-Up"          {self.muc_keys["muc_K"]}  {sw}vb {cp}
-            {pref}horizontally right - C-M-S-Right"  {self.muc_keys["muc_L"]}  {sw}h  {cp}
+            {pref}left - C-M-S-Left"    {self.muc_keys["muc_H"]}  {sw}hb {cp}
+            {pref}down - C-M-S-Down"    {self.muc_keys["muc_J"]}  {sw}v  {cp}
+            {pref}up - C-M-S-Up"        {self.muc_keys["muc_K"]}  {sw}vb {cp}
+            {pref}right - C-M-S-Right"  {self.muc_keys["muc_L"]}  {sw}h  {cp}
             """
         )
 
