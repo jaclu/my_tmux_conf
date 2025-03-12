@@ -211,7 +211,7 @@ class BaseConfig(TmuxConfig):
             )
         if self.vers_ok(1.9):
             # the syntax can be used in 1.8, but if used path is always set to /
-            self.current_path_directive = " -c '#{pane_current_path}'"
+            self.current_path_directive = "-c '#{pane_current_path}'"
         else:
             self.current_path_directive = ""
 
@@ -825,26 +825,14 @@ class BaseConfig(TmuxConfig):
             #  tmate does not support split-window -f  despite they claim
             #  to be 2.4 compatible and this is a 2.3 feature...
             #
-            # Pane splitting
-            # P_C-h  P_M-H  P_C-M-S-Left
-            # P_C-j  P_M-J  P_C-M-S-Down
-            # P_C-k  P_M-H  P_C-M-S-Up
-            # P_C-l  P_M-L  P_C-M-S-Right
-            
-            # Window spliting
-            # P_M-H  P_C-M-S-Left
-            # P_M-J  P_C-M-S-Down
-            # P_M-H  P_C-M-S-Up
-            # P_M-L  P_C-M-S-Right
-
-            
             sw1 = 'bind -N "Split window'  # hackish strings
             sw2 = "split-window -f"  # to make sure
+            suffix = self.current_path_directive
             w(
-                f"""{sw1} left - P_M-H"   C-M-S-Left   {sw2}hb  {self.current_path_directive}
-            {sw1} down - P_M-J"   C-M-S-Down   {sw2}v   {self.current_path_directive}
-            {sw1} up - P_M-K"     C-M-S-Up     {sw2}vb  {self.current_path_directive}
-            {sw1} right - P_M-L"  C-M-S-Right  {sw2}h   {self.current_path_directive}
+                f"""{sw1} left - P_M-H"   C-M-S-Left   {sw2}hb {suffix}
+            {sw1} down - P_M-J"   C-M-S-Down   {sw2}v  {suffix}
+            {sw1} up - P_M-K"     C-M-S-Up     {sw2}vb {suffix}
+            {sw1} right - P_M-L"  C-M-S-Right  {sw2}h  {suffix}
             """
             )
 
