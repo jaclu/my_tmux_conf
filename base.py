@@ -713,15 +713,19 @@ class BaseConfig(TmuxConfig):
             # before 1.2 there was no relative switch-client
 
             # fix a couple of too long lines
-            s1 = "switch-client -p"
-            s2 = "switch-client -n"
+            sc_p = "switch-client -p"
+            sc_n = "switch-client -n"
+            p_open = f"{self.muc_keys["muc_par_open"]} C-M-Up"
+            p_close = f"{self.muc_keys['muc_par_close']} C-M-Down"
+            cm_up = f"P-( {self.muc_keys["muc_par_open"]}"
+            cm_down = f"P-)  {self.muc_keys['muc_par_close']}"
             w(
                 f"""# session navigation
-                bind -N "Select previous session  - M-(  or  C-M-S-Up"  -r  (  {s1}
-                bind -N "Select next session  - M-)  or  C-M-S-Down"    -r  )  {s2}
+                bind -N "Select previous session  - {p_open}"  -r  (  {sc_p}
+                bind -N "Select next session  - {p_close}"    -r  )  {sc_n}
                 bind -N "Switch to last session"      _  switch-client -l
-                bind -N "Select previous session  - P (" -n C-M-S-Up switch-client -p
-                bind -N "Select next session  - P )" -n C-M-S-Down switch-client -n"""
+                bind -N "Select previous session  - {cm_up}" -n  C-M-Up  {sc_p}
+                bind -N "Select next session  - {cm_down}" -n C-M-Down {sc_n}"""
             )
 
         s = 'bind -N "Rename Session"  S  command-prompt'
@@ -795,18 +799,18 @@ class BaseConfig(TmuxConfig):
         w(
             f"""
         # window navigation
-        {pref}previous window  - M-9  or  C-M-S-Left"  -r  9   previous-window
-        {pref}next window  - M-0  or C-M-S-Right"      -r  0   next-window
-        {pref}previously current window  - M--"            -  last-window
+        {pref}previous window  - P-p M-9 C-M-Left" -r   9  previous-window
+        {pref}next window  - P-n M-0 C-M-Right"    -r   0  next-window
+        {pref}previously current window  - M--"         -  last-window
         # override default to add my note
-        {pref}previous window  - C-M-S-Left"  -r  p   previous-window
-        {pref}next window      - C-M-S-Right"  -r  n   next-window"""
+        {pref}previous window  - P-9 M-9 C-M-Left"  -r  p   previous-window
+        {pref}next window      - P-0 M-0 C-M-Right" -r  n   next-window"""
         )
         if self.vers_ok(1.2):
             w(
                 f"""
-        {pref}previous window  - P p"  -n C-M-S-Left   previous-window
-        {pref}next window      - P n"  -n C-M-S-Right  next-window"""
+        {pref}previous window  - P-p P-9 M-9"  -n  C-M-Left   previous-window
+        {pref}next window      - P-n P-0 M-0"  -n  C-M-Right  next-window"""
             )
 
         #
@@ -822,13 +826,13 @@ class BaseConfig(TmuxConfig):
             #  to be 2.4 compatible and this is a 2.3 feature...
             #
             sw1 = 'bind -N "Split entire window'  # hackish strings
-            sw2 = " split-window -f"  # to make sure
+            sw2 = "split-window -f"  # to make sure
             w(
-                f"""# window splitting
-            {sw1} horizontally left"    C-M-Left   {sw2}hb {self.current_path_directive}
-            {sw1} vertically down"      C-M-Down   {sw2}v  {self.current_path_directive}
-            {sw1} vertically up"        C-M-Up     {sw2}vb {self.current_path_directive}
-            {sw1} horizontally right"   C-M-Right  {sw2}h  {self.current_path_directive}
+                f"""# window splitting Meta keys
+            {sw1} horizontally left"    C-M-S-Left   {sw2}hb  {self.current_path_directive}
+            {sw1} vertically down"      C-M-S-Down   {sw2}v   {self.current_path_directive}
+            {sw1} vertically up"        C-M-S-Up     {sw2}vb  {self.current_path_directive}
+            {sw1} horizontally right"   C-M-S-Right  {sw2}h   {self.current_path_directive}
             """
             )
 
@@ -843,14 +847,13 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.0) and not self.tablet_keyb:
             w(
                 'bind -N "Select the previous window '
-                '- P-p  or  P 9"  -n  M-9  previous-window'
+                '- P-p P-9 C-M-Left" -n  M-9  previous-window'
             )
         if self.vers_ok(1.0):
             s = 'bind -N "Select the'
             w(
-                f"""
-            {s} next window      - P-n  or  P 0"  -n  M-0  next-window
-                {s} previously current window - P -"  -n  M--  last-window"""
+                f"""{s} next window - P-n P-0 C-M-Right"    -n  M-0  next-window
+                {s} previously current window - P -"    -n  M--  last-window"""
             )
         if self.vers_ok(2.1):
             w2 = "window"  # hackish strings to make sure
@@ -1179,21 +1182,21 @@ class BaseConfig(TmuxConfig):
             # Older versions can't bind C-M keys
             w(
                 'bind -N "Split pane to the right  - P C-l" -n  '
-                f"C-M-Right  split-window -h {self.current_path_directive}"
+                f"C-M-S-Right  split-window -h {self.current_path_directive}"
             )
             w(
                 'bind -N "Split pane below  - P C-j"    -n  '
-                f"C-M-Down   split-window -v {self.current_path_directive}"
+                f"C-M-S-Down   split-window -v {self.current_path_directive}"
             )
         if self.vers_ok(2.0):
             #
             w(
                 'bind -N "Split pane to the left  - P C-h"  '
-                f"-n  C-M-Left   split-window -hb {self.current_path_directive}"
+                f"-n  C-M-S-Left   split-window -hb {self.current_path_directive}"
             )
             w(
                 'bind -N "Split pane above  - P C-k"      '
-                f"-n  C-M-Up     split-window -vb {self.current_path_directive}"
+                f"-n  C-M-S-Up     split-window -vb {self.current_path_directive}"
             )
         w()
         w(
@@ -1505,12 +1508,13 @@ class BaseConfig(TmuxConfig):
                 f"-n  {self.muc_keys['muc_underscore']}  switch-client -l"
             )
             w(
-                "bind -N 'Select previous session  - P "
-                f"(' -n  {self.muc_keys['muc_par_open']}  switch-client -p"
+                "bind -N 'Select previous session  - P-( C-M-Up'"
+                f" -n  {self.muc_keys['muc_par_open']}  switch-client -p"
             )
 
+            # P-)  {self.muc_keys['muc_par_close']} C-M-Down
             w(
-                "bind -N 'Select next session  - P )'     "
+                "bind -N 'Select next session  - P-) C-M-Down' "
                 f"-n  {self.muc_keys['muc_par_close']}  switch-client -n"
             )
 
@@ -1593,44 +1597,16 @@ class BaseConfig(TmuxConfig):
         w = self.write
 
         #  Some shortcuts to avoid re-typing
-        b = 'bind -N "'
-        n_base = "Split window "
+        pref = 'bind -N "Split window '
         sw = "split-window -f"
-
-        if self.muc_keys["muc_H"] != "M-H":
-            pref = "M-H - "
-        else:
-            pref = ""
+        cp = self.current_path_directive
         w(
-            f'{b}{pref}{n_base}horizontally left" {self.muc_keys["muc_H"]}  '
-            f"{sw}hb {self.current_path_directive}"
-        )
-
-        if self.muc_keys["muc_J"] != "M-J":
-            pref = "M-J - "
-        else:
-            pref = ""
-        w(
-            f'{b}{pref}{n_base}vertically down" {self.muc_keys["muc_J"]}  '
-            f"{sw}v  {self.current_path_directive}"
-        )
-
-        if self.muc_keys["muc_K"] != "M-K":
-            pref = "M-K - "
-        else:
-            pref = ""
-        w(
-            f'{b}{pref}{n_base}vertically up" {self.muc_keys["muc_K"]}  '
-            f"{sw}vb {self.current_path_directive}"
-        )
-
-        if self.muc_keys["muc_L"] != "M-L":
-            pref = "M-L - "
-        else:
-            pref = ""
-        w(
-            f'{b}{pref}{n_base}horizontally right" {self.muc_keys["muc_L"]}  '
-            f"{sw}h  {self.current_path_directive}"
+            f"""
+            {pref}horizontally left - C-M-S-Left"    {self.muc_keys["muc_H"]}  {sw}hb {cp}
+            {pref}vertically down - C-M-S-Down"      {self.muc_keys["muc_J"]}  {sw}v  {cp}
+            {pref}vertically up - C-M-S-Up"          {self.muc_keys["muc_K"]}  {sw}vb {cp}
+            {pref}horizontally right - C-M-S-Right"  {self.muc_keys["muc_L"]}  {sw}h  {cp}
+            """
         )
 
     #
