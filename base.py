@@ -696,12 +696,12 @@ class BaseConfig(TmuxConfig):
         )
 
         if self.vers_ok(0.9):
-            s = 'bind -N "Kill session in focus"  M-x  confirm-before'
+            s = 'bind -N "Kill session in focus"      M-x  confirm-before'
             if self.vers_ok(1.5):
                 s += ' -p "Kill session: #{session_name}? (y/n)"'
             w(f"{s} kill-session")
 
-        s = 'bind -N "Create new session  - M-+"  +  command-prompt'
+        s = 'bind -N "Create new session  - M-+"  +    command-prompt'
         if self.vers_ok(1.5):
             s += ' -I "?"'
         if self.vers_ok(1.0):
@@ -724,8 +724,8 @@ class BaseConfig(TmuxConfig):
                 bind -N "Select previous session  - {p_open}"  -r  (  {sc_p}
                 bind -N "Select next session  - {p_close}"    -r  )  {sc_n}
                 bind -N "Switch to last session"      _  switch-client -l
-                bind -N "Select previous session  - {cm_up}" -n  C-M-Up  {sc_p}
-                bind -N "Select next session  - {cm_down}" -n C-M-Down {sc_n}"""
+                bind -N "Select previous session  - {cm_up}" -n  C-M-Up    {sc_p}
+                bind -N "Select next session  - {cm_down}"    -n  C-M-Down  {sc_n}"""
             )
 
         s = 'bind -N "Rename Session"  S  command-prompt'
@@ -1495,8 +1495,8 @@ class BaseConfig(TmuxConfig):
         w = self.write
         if self.vers_ok(1.0):
             s = (
-                'bind -N "Create new session  - P_+"  '
-                f"-n {self.muc_keys['muc_plus']}  command-prompt "
+                'bind -N "Create new session  - P_+"      '
+                f"-n  {self.muc_keys['muc_plus']}  command-prompt "
             )
             if self.vers_ok(1.5):
                 s += ' -I "?"'
@@ -1514,7 +1514,7 @@ class BaseConfig(TmuxConfig):
 
             # P_)  {self.muc_keys['muc_par_close']} C-M-Down
             w(
-                "bind -N 'Select next session  - P_) C-M-Down' "
+                "bind -N 'Select next session  - P_) C-M-Down'   "
                 f"-n  {self.muc_keys['muc_par_close']}  switch-client -n"
             )
 
