@@ -420,7 +420,7 @@ class IshConsole(BtKbdSpecialHandling):
             f"""
         #
         #  iSH console doesn't generate the right keys for
-        #  Alt upper case chars, so here they are defined
+        #  Alt upper case chars, so here they are interpreted for tmux
         #
         {self.tc.opt_server} user-keys[{uk_ms_char["M-A"]}]  "\\303\\205"  # M-A
         {self.tc.opt_server} user-keys[{uk_ms_char["M-B"]}]  "\\304\\261"  # M-B
@@ -470,17 +470,20 @@ class IshConsole(BtKbdSpecialHandling):
         )
 
         for sequence, key in uk_ms_char.items():
-            if sequence in (
-                "M-H",  # used in  auc_split_entire_window()
-                "M-J",  # used in  auc_split_entire_window()
-                "M-K",  # used in  auc_split_entire_window()
-                "M-L",  # used in  auc_split_entire_window()
-                "M-P",  # used in  auc_display_plugins_used()
-                "M-X",  # used in  auc_kill_tmux_server()
-                "M-_",  # used in  auc_meta_ses_handling()
-                "M-+",  # used in  auc_meta_ses_handling()
-            ):
-                continue
+            # if sequence in (
+            #     "M-H",  # used in  auc_split_entire_window()
+            #     "M-J",  # used in  auc_split_entire_window()
+            #     "M-K",  # used in  auc_split_entire_window()
+            #     "M-L",  # used in  auc_split_entire_window()
+            #     "M-P",  # used in  auc_display_plugins_used()
+            #     "M-X",  # used in  auc_kill_tmux_server()
+            #     "M-_",  # used in  auc_meta_ses_handling()
+            #     "M-+",  # used in  auc_meta_ses_handling()
+            # ):
+            #     continue
+            if sequence in self.tc.muc_keys.keys():
+                continue  # automate above task, to reduce human-error
+
             if sequence == "M-N":
                 #    Special case to avoid cutof at second -N
                 #    on tmux < 3.1
@@ -508,11 +511,11 @@ class IshConsole(BtKbdSpecialHandling):
                 w("# M-@ used for euro symbol")
             else:
                 w(
-                    f'{self.tc.opt_server} user-keys[{uk_ms_numb["M-@"]}]'
+                    f"{self.tc.opt_server} user-keys[{uk_ms_numb['M-@']}]"
                     '  "\\342\\202\\254"  # M-@'
                 )
             for sequence, key in uk_ms_numb.items():
-                if sequence in ("M-(", "M-)"):
+                if sequence in self.tc.muc_keys.keys():
                     continue  # - used in  auc_meta_ses_handling()
                 if sequence == "M-@" and self.euro_has_been_handled:
                     continue  # was used for euro symbol

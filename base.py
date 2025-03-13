@@ -1547,7 +1547,7 @@ class BaseConfig(TmuxConfig):
 
         self.write("# auc_kill_tmux_server()")
         if self.muc_keys["muc_X"] != "M-X":
-            note_prefix = "M-X - "
+            note_prefix = "Press: M-X - "
         else:
             note_prefix = ""
 
