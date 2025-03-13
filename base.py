@@ -715,10 +715,10 @@ class BaseConfig(TmuxConfig):
             # fix a couple of too long lines
             sc_p = "switch-client -p"
             sc_n = "switch-client -n"
-            p_open = f"{self.muc_keys["muc_par_open"]} C-M-Up"
+            p_open = f"{self.muc_keys['muc_par_open']} C-M-Up"
             p_close = f"{self.muc_keys['muc_par_close']} C-M-Down"
-            cm_up = f"P_( {self.muc_keys["muc_par_open"]}"
-            cm_down = f"P_)  {self.muc_keys['muc_par_close']}"
+            cm_up = f"P+( {self.muc_keys['muc_par_open']}"
+            cm_down = f"P+)  {self.muc_keys['muc_par_close']}"
             w(
                 f"""# session navigation
                 bind -N "Select previous session  - {p_open}"  -r  (  {sc_p}
@@ -793,24 +793,24 @@ class BaseConfig(TmuxConfig):
             else:
                 w(f'bind -N "New window"  {key} new-window')
         if self.vers_ok(1.0):
-            w(f'bind -N "New window  - P_=" -n  M-=  {cmd_new_win_named}')
+            w(f'bind -N "New window  - P+=" -n  M-=  {cmd_new_win_named}')
 
         pref = 'bind -N "Select the '
         w(
             f"""
         # window navigation
-        {pref}previous window  - P_p M-9 C-M-Left" -r   9  previous-window
-        {pref}next window  - P_n M-0 C-M-Right"    -r   0  next-window
+        {pref}previous window  - P+p M-9 C-M-Left" -r   9  previous-window
+        {pref}next window  - P+n M-0 C-M-Right"    -r   0  next-window
         {pref}previously current window  - M--"         -  last-window
         # override default to add my note
-        {pref}previous window  - P_9 M-9 C-M-Left"  -r  p   previous-window
-        {pref}next window      - P_0 M-0 C-M-Right" -r  n   next-window"""
+        {pref}previous window  - P+9 M-9 C-M-Left"  -r  p   previous-window
+        {pref}next window      - P+0 M-0 C-M-Right" -r  n   next-window"""
         )
         if self.vers_ok(1.2):
             w(
                 f"""
-        {pref}previous window  - P_p P_9 M-9"  -n  C-M-Left   previous-window
-        {pref}next window      - P_n P_0 M-0"  -n  C-M-Right  next-window"""
+        {pref}previous window  - P+p P+9 M-9"  -n  C-M-Left   previous-window
+        {pref}next window      - P+n P+0 M-0"  -n  C-M-Right  next-window"""
             )
 
         #
@@ -829,10 +829,10 @@ class BaseConfig(TmuxConfig):
             sw2 = "split-window -f"  # to make sure
             suffix = self.current_path_directive
             w(
-                f"""{sw1} left - P_M-H"   C-M-S-Left   {sw2}hb {suffix}
-            {sw1} down - P_M-J"   C-M-S-Down   {sw2}v  {suffix}
-            {sw1} up - P_M-K"     C-M-S-Up     {sw2}vb {suffix}
-            {sw1} right - P_M-L"  C-M-S-Right  {sw2}h  {suffix}
+                f"""{sw1} left - P+M-H"   C-M-S-Left   {sw2}hb {suffix}
+            {sw1} down - P+M-J"   C-M-S-Down   {sw2}v  {suffix}
+            {sw1} up - P+M-K"     C-M-S-Up     {sw2}vb {suffix}
+            {sw1} right - P+M-L"  C-M-S-Right  {sw2}h  {suffix}
             """
             )
 
@@ -847,21 +847,21 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.0) and not self.tablet_keyb:
             w(
                 'bind -N "Select the previous window '
-                '- P_p P_9 C-M-Left" -n  M-9  previous-window'
+                '- P+p P+9 C-M-Left" -n  M-9  previous-window'
             )
         if self.vers_ok(1.0):
             s = 'bind -N "Select the'
             w(
-                f"""{s} next window - P_n P_0 C-M-Right"    -n  M-0  next-window
-                {s} previously current window - P_-"    -n  M--  last-window"""
+                f"""{s} next window - P+n P+0 C-M-Right"    -n  M-0  next-window
+                {s} previously current window - P+-"    -n  M--  last-window"""
             )
         if self.vers_ok(2.1):
             w2 = "window"  # hackish strings to make sure
             cm = "-T copy-mode -n M-"  # line is not to long
             w(
                 f"""# Override odd behaviour in copy-mode
-                bind -N "Previous {w2}  - P_9" {cm}9  previous-{w2}
-                bind -N "Next {w2} - P_0"      {cm}0  next-{w2}
+                bind -N "Previous {w2}  - P+9" {cm}9  previous-{w2}
+                bind -N "Next {w2} - P+0"      {cm}0  next-{w2}
                 """
             )
         #
@@ -1112,22 +1112,24 @@ class BaseConfig(TmuxConfig):
 
         # indicate the right alternate keys
         if self.vers_ok(1.0):
-            if self.use_prefix_arrow_nav_keys:
-                w(
-                    f"""bind -N "Select pane left  - P_h"  -n  M-Left   {pane_left}
-                    bind -N "Select pane right  - P_l" -n  M-Right  {pane_right}
-                    bind -N "Select pane up  - P_k"    -n  M-Up     {pane_up}
-                    bind -N "Select pane down  - P_j"  -n  M-Down   {pane_down}
-                    """
-                )
-            else:
-                w(
-                    f"""bind -N "Select pane left  - P_Left"   -n  M-Left   {pane_left}
-                bind -N "Select pane right  - P_Right" -n  M-Right  {pane_right}
-                bind -N "Select pane up  - P_Up"       -n  M-Up     {pane_up}
-                bind -N "Select pane down  - P_Down"   -n  M-Down   {pane_down}
+            w(
+                f"""
+                bind -N "Select pane left - P+Left M-Left"    -r  h  {pane_left}
+                bind -N "Select pane down - P+Down M-Down"    -r  j  {pane_down}
+                bind -N "Select pane up - P+Up M-Up"          -r  k  {pane_up}
+                bind -N "Select pane right - P+Right M-Right" -r  l  {pane_right}
+
+                bind -N "Select pane left - P+h M-Left"   -r  Left   {pane_left}
+                bind -N "Select pane down - P+j M-Down"   -r  Down   {pane_down}
+                bind -N "Select pane up - P+k M-Up"       -r  Up     {pane_up}
+                bind -N "Select pane right - P+l M-Right" -r  Right  {pane_right}
+
+                bind -N "Select pane left - P+h P+Left"   -n  M-Left   {pane_left}
+                bind -N "Select pane down - P+j P+Down"   -n  M-Down   {pane_down}
+                bind -N "Select pane up - P+k P+Up"       -n  M-Up     {pane_up}
+                bind -N "Select pane right - P+l P+Right" -n  M-Right  {pane_right}
                 """
-                )
+            )
 
         if self.vers_ok(2.4):
             #
@@ -1137,28 +1139,6 @@ class BaseConfig(TmuxConfig):
             #
             w(f'bind -N "Select pane up"   -T "copy-mode"  M-Up   {pane_up}')
             w(f'bind -N "Select pane down" -T "copy-mode"  M-Down {pane_down}')
-
-        if self.use_prefix_arrow_nav_keys:
-            # no point in mentioning M-arrows as alt keys, since
-            # on the iSH console they can't be generated
-            w(
-                f"""
-                # <prefix> arrows are used for document navigation...
-                bind -N "Select pane left"  h  {pane_left}
-                bind -N "Select pane right" l  {pane_right}
-                bind -N "Select pane up"    k  {pane_up}
-                bind -N "Select pane down"  j  {pane_down}
-                """
-            )
-        else:
-            w(
-                f"""
-                bind -N "Select pane left - M-Left"    Left   {pane_left}
-                bind -N "Select pane right - M-Right"  Right  {pane_right}
-                bind -N "Select pane up - M-Up"        Up     {pane_up}
-                bind -N "Select pane down - M-Down"    Down   {pane_down}
-                """
-            )
 
     def pane_splitting(self):
         w = self.write
@@ -1178,25 +1158,27 @@ class BaseConfig(TmuxConfig):
             w('bind -N "Split pane below - C-M-S-Down"  C-j  split-window -p 50')
             return
 
-        if self.vers_ok(1.2):
-            # Older versions can't bind C-M keys
-            w(
-                'bind -N "Split pane to the right  - P_C-l" -n  '
-                f"C-M-S-Right  split-window -h {self.current_path_directive}"
-            )
-            w(
-                'bind -N "Split pane below  - P_C-j"        -n  '
-                f"C-M-S-Down   split-window -v {self.current_path_directive}"
-            )
         if self.vers_ok(2.0):
             #
             w(
                 'bind -N "Split pane to the left  - P_C-h"  -n  '
                 f"C-M-S-Left   split-window -hb {self.current_path_directive}"
             )
+        if self.vers_ok(1.2):
+            w(
+                'bind -N "Split pane below  - P_C-j"        -n  '
+                f"C-M-S-Down   split-window -v {self.current_path_directive}"
+            )
+        if self.vers_ok(2.0):
             w(
                 'bind -N "Split pane above  - P_C-k"        -n  '
                 f"C-M-S-Up     split-window -vb {self.current_path_directive}"
+            )
+        if self.vers_ok(1.2):
+            # Older versions can't bind C-M keys
+            w(
+                'bind -N "Split pane to the right  - P_C-l" -n  '
+                f"C-M-S-Right  split-window -h {self.current_path_directive}"
             )
         w()
         w(
@@ -1216,6 +1198,7 @@ class BaseConfig(TmuxConfig):
                 'bind -N "Split pane above - C-M-S-Up"            C-k  '
                 f"split-window -vb {self.current_path_directive}"
             )
+        w()
 
         w()  # spacer between sections
 
@@ -1231,35 +1214,30 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(0.9):
             w(
                 """
-            bind -N "Resize pane 1 up"            -r  K          resize-pane -U
-            bind -N "Resize pane 1 down"          -r  J          resize-pane -D
-            """
+            bind -N "Resize pane 1 up"          -r  K          resize-pane -U
+            bind -N "Resize pane 1 down"        -r  J          resize-pane -D"""
             )
         else:
             w(
-                """
-            bind -N "Resize pane 1 up"            -r  K          resize-pane-up
-            bind -N "Resize pane 1 down"          -r  J          resize-pane-down
-            """
+                """bind -N "Resize pane 1 up"          -r  K          resize-pane-up
+            bind -N "Resize pane 1 down"        -r  J          resize-pane-down"""
             )
         if self.vers_ok(1.0):
             w(
-                """
-            bind -N "Resize pane 1 left"          -r  H          resize-pane -L
-            bind -N "Resize pane 1 right"         -r  L          resize-pane -R
-            """
+                """bind -N "Resize pane 1 left"        -r  H          resize-pane -L
+            bind -N "Resize pane 1 right"       -r  L          resize-pane -R"""
             )
         if self.vers_ok(1.2):
             # keys without prefix never needs repeat set
-            w("bind -N 'Resize pane 1 up    - P_K'   -n  C-S-Up     resize-pane -U")
-            w("bind -N 'Resize pane 1 down  - P_J'   -n  C-S-Down   resize-pane -D")
-            w("bind -N 'Resize pane 1 left  - P_H'   -n  C-S-Left   resize-pane -L")
-            w("bind -N 'Resize pane 1 right - P_L'   -n  C-S-Right  resize-pane -R")
+            w("bind -N 'Resize pane 1 up    - P+K' -n  C-S-Up     resize-pane -U")
+            w("bind -N 'Resize pane 1 down  - P+J' -n  C-S-Down   resize-pane -D")
+            w("bind -N 'Resize pane 1 left  - P+H' -n  C-S-Left   resize-pane -L")
+            w("bind -N 'Resize pane 1 right - P+L' -n  C-S-Right  resize-pane -R")
 
-            w("bind -N 'Resize pane 5 up'    -n  M-S-Up     resize-pane -U 5")
-            w("bind -N 'Resize pane 5 down'  -n  M-S-Down   resize-pane -D 5")
-            w("bind -N 'Resize pane 5 left'  -n  M-S-Left   resize-pane -L 5")
-            w("bind -N 'Resize pane 5 right' -n  M-S-Right  resize-pane -R 5")
+            w("bind -N 'Resize pane 5 up'          -n  M-S-Up     resize-pane -U 5")
+            w("bind -N 'Resize pane 5 down'        -n  M-S-Down   resize-pane -D 5")
+            w("bind -N 'Resize pane 5 left'        -n  M-S-Left   resize-pane -L 5")
+            w("bind -N 'Resize pane 5 right'       -n  M-S-Right  resize-pane -R 5")
         # if self.vers_ok(1.8):
         #     height_notice = "Pane height"
         #     if not self.vers_ok(3.3):
@@ -1495,7 +1473,7 @@ class BaseConfig(TmuxConfig):
         w = self.write
         if self.vers_ok(1.0):
             s = (
-                'bind -N "Create new session  - P_+"      '
+                'bind -N "Create new session  - P++"      '
                 f"-n  {self.muc_keys['muc_plus']}  command-prompt "
             )
             if self.vers_ok(1.5):
@@ -1504,17 +1482,17 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.2):
             w(
-                "bind -N 'Switch to last session  - P__'  "
+                "bind -N 'Switch to last session  - P+_'  "
                 f"-n  {self.muc_keys['muc_underscore']}  switch-client -l"
             )
             w(
-                "bind -N 'Select previous session  - P_( C-M-Up'"
+                "bind -N 'Select previous session  - P+( C-M-Up'"
                 f" -n  {self.muc_keys['muc_par_open']}  switch-client -p"
             )
 
-            # P_)  {self.muc_keys['muc_par_close']} C-M-Down
+            # P+)  {self.muc_keys['muc_par_close']} C-M-Down
             w(
-                "bind -N 'Select next session  - P_) C-M-Down'   "
+                "bind -N 'Select next session  - P+) C-M-Down'   "
                 f"-n  {self.muc_keys['muc_par_close']}  switch-client -n"
             )
 
