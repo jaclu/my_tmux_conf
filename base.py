@@ -715,17 +715,13 @@ class BaseConfig(TmuxConfig):
             # fix a couple of too long lines
             sc_p = "switch-client -p"
             sc_n = "switch-client -n"
-            p_open = f"{self.muc_keys['muc_par_open']} C-M-Up"
-            p_close = f"{self.muc_keys['muc_par_close']} C-M-Down"
-            cm_up = f"P+( {self.muc_keys['muc_par_open']}"
-            cm_down = f"P+)  {self.muc_keys['muc_par_close']}"
             w(
                 f"""# session navigation
-                bind -N "Select previous session  - {p_open}"  -r  (  {sc_p}
-                bind -N "Select next session  - {p_close}"    -r  )  {sc_n}
+                bind -N "Select previous session  - M-("  -r  (  {sc_p}
+                bind -N "Select next session  - M-)"    -r  )  {sc_n}
                 bind -N "Switch to last session"      _  switch-client -l
-                bind -N "Select previous session  - {cm_up}" -n  C-M-Up    {sc_p}
-                bind -N "Select next session  - {cm_down}"    -n  C-M-Down  {sc_n}"""
+                bind -N "Select previous session  - P+( M-(" -n  C-M-Up    {sc_p}
+                bind -N "Select next session  - P+) M-)"    -n  C-M-Down  {sc_n}"""
             )
 
         s = 'bind -N "Rename Session"  S  command-prompt'
@@ -1515,7 +1511,9 @@ class BaseConfig(TmuxConfig):
             return
 
         if self.muc_keys["muc_P"] != "M-P":
-            note_prefix = "M-P - "
+            # If a custom defined key is used the hint won't be helpful about
+            # that the key combo for this is...
+            note_prefix = "Press: P+M-P - "
         else:
             note_prefix = ""
         #
