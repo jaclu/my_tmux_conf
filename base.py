@@ -804,11 +804,13 @@ class BaseConfig(TmuxConfig):
         {pref}next window      - P+0 M-0 C-M-Right" -r  n  next-window
         {pref}previous window  - P+p M-9 C-M-Left" -r   9  previous-window
         {pref}next window  - P+n M-0 C-M-Right"    -r   0  next-window
-
-        {pref}previous window  - P+p P+9 M-9"  -n  C-M-Left   previous-window
-        {pref}next window      - P+n P+0 M-0"  -n  C-M-Right  next-window
         """
         )
+        if self.vers_ok(1.2):
+            w(
+                f"""{pref}previous window  - P+p P+9 M-9"  -n  C-M-Left   previous-window
+            {pref}next window      - P+n P+0 M-0"  -n  C-M-Right  next-window"""
+            )
 
         #
         #  Splitting the entire window
@@ -1153,13 +1155,13 @@ class BaseConfig(TmuxConfig):
         """
         )
         if not self.vers_ok(1.0):
-            w('bind -N "Split pane below - P+M-Down"  C-j     split-window -p 50')
-            w("bind -N 'Split pane down - P+C-j'      M-Down  split-window -p 50")
+            w("bind  C-j     split-window -p 50")
+            w("bind  M-Down  split-window -p 50")
             return
 
-        if self.vers_ok(1.2):
+        if self.vers_ok(1.0):
             w(
-                "bind -N 'Split pane down- P+M-Down'    -r  C-j  "
+                "bind -N 'Split pane down - P+M-Down'    -r  C-j  "
                 f"split-window -v  {cur_path}"
             )
             w(
@@ -1176,7 +1178,7 @@ class BaseConfig(TmuxConfig):
                 f"split-window -vb {cur_path}"
             )
         w()  # spacer
-        if self.vers_ok(1.2):
+        if self.vers_ok(1.0):
             w(
                 "bind -N 'Split pane down - P+C-j'  -r  M-Down   "
                 f"split-window -v  {cur_path}"
@@ -1198,6 +1200,16 @@ class BaseConfig(TmuxConfig):
 
     def pane_resizing(self):
         w = self.write
+        if self.vers_ok(1.2):
+            alt_left = " - C-S-Left"
+            alt_downn = " - C-S-Down"
+            alt_up = " - C-S-Up"
+            alt_right = "  - C-S-Right"
+        else:
+            alt_left = ""
+            alt_downn = ""
+            alt_up = ""
+            alt_right = ""
         w(
             """
         #
@@ -1205,19 +1217,26 @@ class BaseConfig(TmuxConfig):
         #
         """
         )
+
+        # Defaults 1.0 2.8
+        # bind-key -r -T prefix       M-Up              resize-pane -U 5
+        # bind-key -r -T prefix       M-Down            resize-pane -D 5
+        # bind-key -r -T prefix       M-Left            resize-pane -L 5
+        # bind-key -r -T prefix       M-Right           resize-pane -R 5
+
         if self.vers_ok(1.0):
-            w("bind -N 'Resize pane 1 left - C-S-Left'   -r  H  resize-pane -L")
+            w(f"bind -N 'Resize pane 1 left{alt_left}'   -r  H  resize-pane -L")
         if self.vers_ok(0.9):
-            w("bind -N 'Resize pane 1 down - C-S-Down'   -r  J  resize-pane -D")
+            w(f"bind -N 'Resize pane 1 down{alt_downn}'   -r  J  resize-pane -D")
         else:
-            w("bind -N 'Resize pane 1 down ' -r  J          resize-pane-down")
+            w("bind -r  J  resize-pane-down")
 
         if self.vers_ok(0.9):
-            w("bind -N 'Resize pane 1 up - C-S-Up'       -r  K  resize-pane -U")
+            w(f"bind -N 'Resize pane 1 up{alt_up}'       -r  K  resize-pane -U")
         else:
-            w("bind -N 'Resize pane 1 up'    -r  K          resize-pane-up")
+            w("bind -r  K  resize-pane-up")
         if self.vers_ok(1.0):
-            w("bind -N 'Resize pane 1 right - C-S-Right' -r  L  resize-pane -R")
+            w(f"bind -N 'Resize pane 1 right{alt_right}' -r  L  resize-pane -R")
         w()
         if self.vers_ok(1.2):
             # keys without prefix never needs repeat set
