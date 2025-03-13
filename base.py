@@ -1200,16 +1200,6 @@ class BaseConfig(TmuxConfig):
 
     def pane_resizing(self):
         w = self.write
-        if self.vers_ok(1.2):
-            alt_left = " - C-S-Left"
-            alt_downn = " - C-S-Down"
-            alt_up = " - C-S-Up"
-            alt_right = "  - C-S-Right"
-        else:
-            alt_left = ""
-            alt_downn = ""
-            alt_up = ""
-            alt_right = ""
         w(
             """
         #
@@ -1225,18 +1215,18 @@ class BaseConfig(TmuxConfig):
         # bind-key -r -T prefix       M-Right           resize-pane -R 5
 
         if self.vers_ok(1.0):
-            w(f"bind -N 'Resize pane 1 left{alt_left}'   -r  H  resize-pane -L")
+            w("bind -N 'Resize pane 1 left - C-S-Left'   -r  H  resize-pane -L")
         if self.vers_ok(0.9):
-            w(f"bind -N 'Resize pane 1 down{alt_downn}'   -r  J  resize-pane -D")
+            w("bind -N 'Resize pane 1 down - C-S-Down'   -r  J  resize-pane -D")
         else:
             w("bind -r  J  resize-pane-down")
 
         if self.vers_ok(0.9):
-            w(f"bind -N 'Resize pane 1 up{alt_up}'       -r  K  resize-pane -U")
+            w("bind -N 'Resize pane 1 up - C-S-Up'       -r  K  resize-pane -U")
         else:
             w("bind -r  K  resize-pane-up")
         if self.vers_ok(1.0):
-            w(f"bind -N 'Resize pane 1 right{alt_right}' -r  L  resize-pane -R")
+            w("bind -N 'Resize pane 1 right - C-S-Right' -r  L  resize-pane -R")
         w()
         if self.vers_ok(1.2):
             # keys without prefix never needs repeat set
@@ -1245,10 +1235,14 @@ class BaseConfig(TmuxConfig):
             w("bind -N 'Resize pane 1 up    - P+K' -n  C-S-Up     resize-pane -U")
             w("bind -N 'Resize pane 1 right - P+L' -n  C-S-Right  resize-pane -R")
             w()
-            w("bind -N 'Resize pane 5 left'        -n  M-S-Left   resize-pane -L 5")
-            w("bind -N 'Resize pane 5 down'        -n  M-S-Down   resize-pane -D 5")
-            w("bind -N 'Resize pane 5 up'          -n  M-S-Up     resize-pane -U 5")
-            w("bind -N 'Resize pane 5 right'       -n  M-S-Right  resize-pane -R 5")
+            w(
+                """# For larger changes M-S Arrows scale by 5
+            bind -N 'Resize pane 5 left'        -n  M-S-Left   resize-pane -L 5
+            bind -N 'Resize pane 5 down'        -n  M-S-Down   resize-pane -D 5
+            bind -N 'Resize pane 5 up'          -n  M-S-Up     resize-pane -U 5
+            bind -N 'Resize pane 5 right'       -n  M-S-Right  resize-pane -R 5
+            """
+            )
         # if self.vers_ok(1.8):
         #     height_notice = "Pane height"
         #     if not self.vers_ok(3.3):

@@ -106,7 +106,7 @@ dependent actions.
 | `<p> K`             | `C-S-Up`    | `<p> C-Up`    | Resize the pane up by 1             |
 | `<p> L`             | `C-S-Right` | `<p> C-Right` | Resize the pane right by 1          |
 |                     |             |               |                                     |
-|                     | `M-S-Left`  | `<p> M-Left`  | Resize the pane left by 5           |
-|                     | `M-S-Down`  | `<p> M-Down`  | Resize the pane down by 5           |
-|                     | `M-S-Up`    | `<p> M-Up`    | Resize the pane up by 5             |
-|                     | `M-S-Right` | `<p> M-Right` | Resize the pane right by 5          |
+|                     | `M-S-Left`  |               | Resize the pane left by 5           |
+|                     | `M-S-Down`  |               | Resize the pane down by 5           |
+|                     | `M-S-Up`    |               | Resize the pane up by 5             |
+|                     | `M-S-Right` |               | Resize the pane right by 5          |

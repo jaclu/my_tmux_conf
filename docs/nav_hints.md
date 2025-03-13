@@ -26,10 +26,10 @@ For actions not available without the M-key, use tmux-menus
 
 ## Adv keys for nav, can be disabled to force basic keys to be remembered
 
-- pane navigate - M Arrows
-- pane split - Prefix M Arrows
+- pane navigate - M-Arrows
+- pane split - Prefix M-Arrows
+- entire window split - Prefix M-HJKL / Prefix C-M-Arrows
 - pane resize - C-S-Arrows (by 1) / M-S-Arrows (by 5)
-- window split - Prefix C-M Arrows
 
 - next-prew win - M 9/0 | C-M Left/Right
 - last window - M -
