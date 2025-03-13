@@ -1159,47 +1159,46 @@ class BaseConfig(TmuxConfig):
             return
 
         if self.vers_ok(2.0):
-            #
             w(
-                'bind -N "Split pane to the left  - P_C-h"  -n  '
-                f"C-M-S-Left   split-window -hb {self.current_path_directive}"
+                'bind -N "Split pane to the left - C-M-S-Left"    C-h  '
+                f"split-window -hb {self.current_path_directive}"
             )
-        if self.vers_ok(1.2):
-            w(
-                'bind -N "Split pane below  - P_C-j"        -n  '
-                f"C-M-S-Down   split-window -v {self.current_path_directive}"
-            )
-        if self.vers_ok(2.0):
-            w(
-                'bind -N "Split pane above  - P_C-k"        -n  '
-                f"C-M-S-Up     split-window -vb {self.current_path_directive}"
-            )
-        if self.vers_ok(1.2):
-            # Older versions can't bind C-M keys
-            w(
-                'bind -N "Split pane to the right  - P_C-l" -n  '
-                f"C-M-S-Right  split-window -h {self.current_path_directive}"
-            )
-        w()
-        w(
-            'bind -N "Split pane to the right - C-M-S-Right"  C-l  split-window -h '
-            f"{self.current_path_directive}"
-        )
         w(
             'bind -N "Split pane below - C-M-S-Down"          C-j  split-window -v '
             f"{self.current_path_directive}"
         )
         if self.vers_ok(2.0):
             w(
-                'bind -N "Split pane to the left - C-M-S-Left"    C-h  '
-                f"split-window -hb {self.current_path_directive}"
-            )
-            w(
                 'bind -N "Split pane above - C-M-S-Up"            C-k  '
                 f"split-window -vb {self.current_path_directive}"
             )
+        w(
+            'bind -N "Split pane to the right - C-M-S-Right"  C-l  split-window -h '
+            f"{self.current_path_directive}"
+        )
         w()
-
+        if self.vers_ok(2.0):
+            #
+            w(
+                'bind -N "Split pane to the left  - P+C-h"  -n  '
+                f"C-M-S-Left   split-window -hb {self.current_path_directive}"
+            )
+        if self.vers_ok(1.2):
+            w(
+                'bind -N "Split pane below  - P+C-j"        -n  '
+                f"C-M-S-Down   split-window -v {self.current_path_directive}"
+            )
+        if self.vers_ok(2.0):
+            w(
+                'bind -N "Split pane above  - P+C-k"        -n  '
+                f"C-M-S-Up     split-window -vb {self.current_path_directive}"
+            )
+        if self.vers_ok(1.2):
+            # Older versions can't bind C-M keys
+            w(
+                'bind -N "Split pane to the right  - P+C-l" -n  '
+                f"C-M-S-Right  split-window -h {self.current_path_directive}"
+            )
         w()  # spacer between sections
 
     def pane_resizing(self):
