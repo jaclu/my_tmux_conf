@@ -6,9 +6,9 @@
 
 For actions not available without the M-key, use tmux-menus
 
-- pane navigate - Prefix hjkl (r) / Prefix Arrows (r) # M-Arrows
-- pane split - Prefix C-hjkl # C-M-S-Arrows
-- pane resize - Prefix HJKL (r) / Prefix C-Arrows / C-S-Arrows
+- pane navigate - Prefix hjkl (r) / Prefix Arrows (r)
+- pane split - Prefix C-hjkl
+- pane resize - Prefix HJKL (r) / C-S-Arrows
 - pane swap - Prefix {}
 
 - next-prew win - Prefix 90 / Prefix 90 Prefix np (r)
@@ -24,24 +24,19 @@ For actions not available without the M-key, use tmux-menus
 - pOpup session - Prefix O
 - Ses wizard - Prefix T
 
-## Defaults
-
-- Prefix S-Arrows pan window
-
 ## Adv keys for nav, can be disabled to force basic keys to be remembered
 
 - pane navigate - M Arrows
-- pane split - M-S Arrows
-- pane resize - C-M Arrows
-- window split - C-M-S Arrows
+- pane split - C-M-S Arrows
+- window split - P-C-M-S Arrows
 
-- next-prew win - M 90
+- next-prew win - M 9/0 | C-M Left/Right
 - last window - M -
 - swap window - M < >
 - new window - M =
 
-- next-prev ses - M ()
-- last session - M \_
+- next-prev ses - M () | C-M Up/Down
+- last session - `M _`
 - new session - M +
 
 - kill session - M x
