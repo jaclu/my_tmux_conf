@@ -799,19 +799,16 @@ class BaseConfig(TmuxConfig):
         w(
             f"""
         # window navigation
+        {pref}previously current window  - M--"         -  last-window
+        {pref}previous window  - P+9 M-9 C-M-Left"  -r  p  previous-window
+        {pref}next window      - P+0 M-0 C-M-Right" -r  n  next-window
         {pref}previous window  - P+p M-9 C-M-Left" -r   9  previous-window
         {pref}next window  - P+n M-0 C-M-Right"    -r   0  next-window
-        {pref}previously current window  - M--"         -  last-window
-        # override default to add my note
-        {pref}previous window  - P+9 M-9 C-M-Left"  -r  p   previous-window
-        {pref}next window      - P+0 M-0 C-M-Right" -r  n   next-window"""
-        )
-        if self.vers_ok(1.2):
-            w(
-                f"""
+
         {pref}previous window  - P+p P+9 M-9"  -n  C-M-Left   previous-window
-        {pref}next window      - P+n P+0 M-0"  -n  C-M-Right  next-window"""
-            )
+        {pref}next window      - P+n P+0 M-0"  -n  C-M-Right  next-window
+        """
+        )
 
         #
         #  Splitting the entire window
@@ -829,10 +826,10 @@ class BaseConfig(TmuxConfig):
             sw2 = "split-window -f"  # to make sure
             suffix = self.current_path_directive
             w(
-                f"""{sw1} left - P+M-H"   C-M-S-Left   {sw2}hb {suffix}
-            {sw1} down - P+M-J"   C-M-S-Down   {sw2}v  {suffix}
-            {sw1} up - P+M-K"     C-M-S-Up     {sw2}vb {suffix}
-            {sw1} right - P+M-L"  C-M-S-Right  {sw2}h  {suffix}
+                f"""{sw1} left - P+M-H"   C-M-Left   {sw2}hb {suffix}
+            {sw1} down - P+M-J"   C-M-Down   {sw2}v  {suffix}
+            {sw1} up - P+M-K"     C-M-Up     {sw2}vb {suffix}
+            {sw1} right - P+M-L"  C-M-Right  {sw2}h  {suffix}
             """
             )
 
@@ -1113,8 +1110,7 @@ class BaseConfig(TmuxConfig):
         # indicate the right alternate keys
         if self.vers_ok(1.0):
             w(
-                f"""
-                bind -N "Select pane left - P+Left M-Left"    -r  h  {pane_left}
+                f"""bind -N "Select pane left - P+Left M-Left"    -r  h  {pane_left}
                 bind -N "Select pane down - P+Down M-Down"    -r  j  {pane_down}
                 bind -N "Select pane up - P+Up M-Up"          -r  k  {pane_up}
                 bind -N "Select pane right - P+Right M-Right" -r  l  {pane_right}
@@ -1141,7 +1137,14 @@ class BaseConfig(TmuxConfig):
             w(f'bind -N "Select pane down" -T "copy-mode"  M-Down {pane_down}')
 
     def pane_splitting(self):
+        #
+        #  The defaults just covers splitting the pane right and down.
+        #  I am using P+A-Arrows & P+C-hjkl to get a more logical input, and
+        #  also to allow left/up splits.
+        #
         w = self.write
+        cur_path = self.current_path_directive
+
         w(
             """
         #
@@ -1149,55 +1152,47 @@ class BaseConfig(TmuxConfig):
         #
         """
         )
-        #
-        #  The defaults just covers splitting the pane right and down.
-        #  I am using PgUp/PgDn & Home/End to get a more logical input, and
-        #  also to allow left/up splits.
-        #
         if not self.vers_ok(1.0):
-            w('bind -N "Split pane below - C-M-S-Down"  C-j  split-window -p 50')
+            w('bind -N "Split pane below - P+M-Down"  C-j     split-window -p 50')
+            w("bind -N 'Split pane down - P+C-j'      M-Down  split-window -p 50")
             return
 
-        if self.vers_ok(2.0):
-            w(
-                'bind -N "Split pane to the left - C-M-S-Left"    C-h  '
-                f"split-window -hb {self.current_path_directive}"
-            )
-        w(
-            'bind -N "Split pane below - C-M-S-Down"          C-j  split-window -v '
-            f"{self.current_path_directive}"
-        )
-        if self.vers_ok(2.0):
-            w(
-                'bind -N "Split pane above - C-M-S-Up"            C-k  '
-                f"split-window -vb {self.current_path_directive}"
-            )
-        w(
-            'bind -N "Split pane to the right - C-M-S-Right"  C-l  split-window -h '
-            f"{self.current_path_directive}"
-        )
-        w()
-        if self.vers_ok(2.0):
-            #
-            w(
-                'bind -N "Split pane to the left  - P+C-h"  -n  '
-                f"C-M-S-Left   split-window -hb {self.current_path_directive}"
-            )
         if self.vers_ok(1.2):
             w(
-                'bind -N "Split pane below  - P+C-j"        -n  '
-                f"C-M-S-Down   split-window -v {self.current_path_directive}"
+                "bind -N 'Split pane down- P+M-Down'    -r  C-j  "
+                f"split-window -v  {cur_path}"
+            )
+            w(
+                "bind -N 'Split pane right - P+M-Right' -r  C-l  "
+                f"split-window -h  {cur_path}"
             )
         if self.vers_ok(2.0):
             w(
-                'bind -N "Split pane above  - P+C-k"        -n  '
-                f"C-M-S-Up     split-window -vb {self.current_path_directive}"
+                "bind -N 'Split pane left - P+M-Left'   -r  C-h  "
+                f"split-window -hb {cur_path}"
             )
-        if self.vers_ok(1.2):
-            # Older versions can't bind C-M keys
             w(
-                'bind -N "Split pane to the right  - P+C-l" -n  '
-                f"C-M-S-Right  split-window -h {self.current_path_directive}"
+                "bind -N 'Split pane up - P+M-Up'       -r  C-k  "
+                f"split-window -vb {cur_path}"
+            )
+        w()  # spacer
+        if self.vers_ok(1.2):
+            w(
+                "bind -N 'Split pane down - P+C-j'  -r  M-Down   "
+                f"split-window -v  {cur_path}"
+            )
+            w(
+                "bind -N 'Split pane right - P+C-l' -r  M-Right  "
+                f"split-window -h  {cur_path}"
+            )
+        if self.vers_ok(2.0):
+            w(
+                "bind -N 'Split pane left - P+C-h'  -r  M-Left   "
+                f"split-window -hb {cur_path}"
+            )
+            w(
+                "bind -N 'Split pane up - P+C-k'    -r  M-Up     "
+                f"split-window -vb {cur_path}"
             )
         w()  # spacer between sections
 
@@ -1561,7 +1556,11 @@ class BaseConfig(TmuxConfig):
         the "normal" case, when used for iSH console, the
         user keys will be given
         """
-        self.write("# auc_split_entire_window()")
+        w = self.write
+        pref = 'bind -N "Split window '
+        sw = "split-window -f"
+        cp = self.current_path_directive
+
         if self.is_tmate() or not self.vers_ok(2.3):
             #
             #  tmate does not support split-window -f  despite they claim
@@ -1569,18 +1568,12 @@ class BaseConfig(TmuxConfig):
             #
             return
 
-        w = self.write
-
-        #  Some shortcuts to avoid re-typing
-        pref = 'bind -N "Split window '
-        sw = "split-window -f"
-        cp = self.current_path_directive
         w(
-            f"""
-            {pref}left - C-M-S-Left"    {self.muc_keys["muc_H"]}  {sw}hb {cp}
-            {pref}down - C-M-S-Down"    {self.muc_keys["muc_J"]}  {sw}v  {cp}
-            {pref}up - C-M-S-Up"        {self.muc_keys["muc_K"]}  {sw}vb {cp}
-            {pref}right - C-M-S-Right"  {self.muc_keys["muc_L"]}  {sw}h  {cp}
+            f"""# auc_split_entire_window()
+            {pref}left - P+C-M-Left"    {self.muc_keys["muc_H"]}  {sw}hb {cp}
+            {pref}down - P+C-M-Down"    {self.muc_keys["muc_J"]}  {sw}v  {cp}
+            {pref}up - P+C-M-Up"        {self.muc_keys["muc_K"]}  {sw}vb {cp}
+            {pref}right - P+C-M-Right"  {self.muc_keys["muc_L"]}  {sw}h  {cp}
             """
         )
 

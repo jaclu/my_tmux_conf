@@ -8,7 +8,7 @@ For actions not available without the M-key, use tmux-menus
 
 - pane navigate - Prefix hjkl (r) / Prefix Arrows (r)
 - pane split - Prefix C-hjkl
-- pane resize - Prefix HJKL (r) / C-S-Arrows
+- pane resize - Prefix HJKL (r)
 - pane swap - Prefix {}
 
 - next-prew win - Prefix 90 / Prefix 90 Prefix np (r)
@@ -27,8 +27,9 @@ For actions not available without the M-key, use tmux-menus
 ## Adv keys for nav, can be disabled to force basic keys to be remembered
 
 - pane navigate - M Arrows
-- pane split - C-M-S Arrows
-- window split - P-C-M-S Arrows
+- pane split - Prefix M Arrows
+- pane resize - C-S-Arrows (by 1) / M-S-Arrows (by 5)
+- window split - Prefix C-M Arrows
 
 - next-prew win - M 9/0 | C-M Left/Right
 - last window - M -

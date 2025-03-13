@@ -57,56 +57,56 @@ dependent actions.
 
 ### Window handling
 
-| Key                         | No Prefix         | Default | Description               |
-| --------------------------- | ----------------- | ------- | ------------------------- |
-| `<p> -`                     | `M--`             | `<p>` l | Previously current window |
-| `<p> 9`                     | `M-0` `C-M-Left`  | `<p>` p | Previow window            |
-| `<p> 0`                     | `M-9` `C-M-Right` | `<p>` n | Next window               |
-| `<p> =`                     | `M-=`             | `<p>` c | New window                |
-| `<p> <`                     | `M-<`             |         | Swap window left          |
-| `<p> >`                     | `M->`             |         | Swap window right         |
-|                             |                   |         |                           |
-| `<p> W`                     |                   | `<p> ,` | Rename window             |
-| `<p> X`                     |                   | `<p> &` | Kill window \*\*          |
-| `<p> *`                     |                   |         | Toggle synchronized tabs  |
-| `<p> e`                     |                   | `<p> E` | Spread panes out evenly.  |
-|                             |                   |         |                           |
-| `<p> M-H` `<p> C-M-S-Left`  |                   |         | Split window left         |
-| `<p> M-J` `<p> C-M-S-Down`  |                   |         | Split window down         |
-| `<p> M-K` `<p> C-M-S-Up`    |                   |         | Split window up           |
-| `<p> M-L` `<p> C-M-S-Right` |                   |         | Split window right        |
+| Key                       | No Prefix         | Default | Description               |
+| ------------------------- | ----------------- | ------- | ------------------------- |
+| `<p> -`                   | `M--`             | `<p>` l | Previously current window |
+| `<p> 9`                   | `M-0` `C-M-Left`  | `<p>` p | Previow window            |
+| `<p> 0`                   | `M-9` `C-M-Right` | `<p>` n | Next window               |
+| `<p> =`                   | `M-=`             | `<p>` c | New window                |
+| `<p> <`                   | `M-<`             |         | Swap window left          |
+| `<p> >`                   | `M->`             |         | Swap window right         |
+|                           |                   |         |                           |
+| `<p> W`                   |                   | `<p> ,` | Rename window             |
+| `<p> X`                   |                   | `<p> &` | Kill window \*\*          |
+| `<p> *`                   |                   |         | Toggle synchronized tabs  |
+| `<p> e`                   |                   | `<p> E` | Spread panes out evenly.  |
+|                           |                   |         |                           |
+| `<p> M-H` `<p> C-M-Left`  |                   |         | Split window left         |
+| `<p> M-J` `<p> C-M-Down`  |                   |         | Split window down         |
+| `<p> M-K` `<p> C-M-Up`    |                   |         | Split window up           |
+| `<p> M-L` `<p> C-M-Right` |                   |         | Split window right        |
 
 ### Pane handling
 
-| Key       | No Prefix     | Default       | Description                         |
-| --------- | ------------- | ------------- | ----------------------------------- |
-|           |               | `<p> ;`       | Previously active pane              |
-| `<p> h`   | `M-Left`      | `<p> Left`    | Select pane to the left             |
-| `<p> j`   | `M-Down`      | `<p> Down`    | Select pane below                   |
-| `<p> k`   | `M-Up`        | `<p> Up`      | Select pane above                   |
-| `<p> l`   | `M-Right`     | `<p> Right`   | Select pane to the right            |
-|           |               | `<p> {`       | Swap pane backwards                 |
-|           |               | `<p> }`       | Swap pane forwards                  |
-|           |               |               |                                     |
-| `<p> P`   |               |               | Set pane title                      |
-|           |               | `<p> x`       | Kill pane \*\*                      |
-| `<p> B`   |               |               | Choose paste buffer(-s)             |
-|           | `M-l`         |               | Clear history & screen              |
-| `<p> M-e` |               |               | Save history to file (with escapes) |
-| `<p> M-h` |               |               | Save history to file (no escapes)   |
-| `<p> s`   |               |               | Set pane size (w x h)               |
-|           |               |               |                                     |
-| `<p> C-h` | `C-M-S-Left`  |               | Split pane to the left              |
-| `<p> C-j` | `C-M-S-Down`  | `<p> %`       | Split pane below                    |
-| `<p> C-k` | `C-M-S-Up`    |               | Split pane above                    |
-| `<p> C-l` | `C-M-S-Right` | `<p> "`       | Split pane to the right             |
-|           |               |               |                                     |
-| `<p> H`   | `C-S-Left`    | `<p> C-Left`  | Resize the pane left by 1           |
-| `<p> J`   | `C-S-Down`    | `<p> C-Down`  | Resize the pane down by 1           |
-| `<p> K`   | `C-S-Up`      | `<p> C-Up`    | Resize the pane up by 1             |
-| `<p> L`   | `C-S-Right`   | `<p> C-Right` | Resize the pane right by 1          |
-|           |               |               |                                     |
-|           | `M-S-Left`    | `<p> M-Left`  | Resize the pane left by 5           |
-|           | `M-S-Down`    | `<p> M-Down`  | Resize the pane down by 5           |
-|           | `M-S-Up`      | `<p> M-Up`    | Resize the pane up by 5             |
-|           | `M-S-Right`   | `<p> M-Right` | Resize the pane right by 5          |
+| Key                 | No Prefix   | Default       | Description                         |
+| ------------------- | ----------- | ------------- | ----------------------------------- |
+|                     |             | `<p> ;`       | Previously active pane              |
+| `<p> h`             | `M-Left`    | `<p> Left`    | Select pane to the left             |
+| `<p> j`             | `M-Down`    | `<p> Down`    | Select pane below                   |
+| `<p> k`             | `M-Up`      | `<p> Up`      | Select pane above                   |
+| `<p> l`             | `M-Right`   | `<p> Right`   | Select pane to the right            |
+|                     |             | `<p> {`       | Swap pane backwards                 |
+|                     |             | `<p> }`       | Swap pane forwards                  |
+|                     |             |               |                                     |
+| `<p> P`             |             |               | Set pane title                      |
+|                     |             | `<p> x`       | Kill pane \*\*                      |
+| `<p> B`             |             |               | Choose paste buffer(-s)             |
+|                     | `M-l`       |               | Clear history & screen              |
+| `<p> M-e`           |             |               | Save history to file (with escapes) |
+| `<p> M-h`           |             |               | Save history to file (no escapes)   |
+| `<p> s`             |             |               | Set pane size (w x h)               |
+|                     |             |               |                                     |
+| `<p> C-h` `M-Left`  |             |               | Split pane to the left              |
+| `<p> C-j` `M-Down`  |             | `<p> %`       | Split pane below                    |
+| `<p> C-k` `M-Up`    |             |               | Split pane above                    |
+| `<p> C-l` `M-Right` |             | `<p> "`       | Split pane to the right             |
+|                     |             |               |                                     |
+| `<p> H`             | `C-S-Left`  | `<p> C-Left`  | Resize the pane left by 1           |
+| `<p> J`             | `C-S-Down`  | `<p> C-Down`  | Resize the pane down by 1           |
+| `<p> K`             | `C-S-Up`    | `<p> C-Up`    | Resize the pane up by 1             |
+| `<p> L`             | `C-S-Right` | `<p> C-Right` | Resize the pane right by 1          |
+|                     |             |               |                                     |
+|                     | `M-S-Left`  | `<p> M-Left`  | Resize the pane left by 5           |
+|                     | `M-S-Down`  | `<p> M-Down`  | Resize the pane down by 5           |
+|                     | `M-S-Up`    | `<p> M-Up`    | Resize the pane up by 5             |
+|                     | `M-S-Right` | `<p> M-Right` | Resize the pane right by 5          |
