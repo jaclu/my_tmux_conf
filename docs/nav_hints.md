@@ -6,13 +6,13 @@
 
 For actions not available without the M-key, use tmux-menus
 
-- pane navigate - Prefix hjkl (r) / Prefix Arrows
-- pane split - Prefix C-hjkl
-- pane resize - Prefix HJKL (r)
+- pane navigate - Prefix hjkl (r) / Prefix Arrows (r) # M-Arrows
+- pane split - Prefix C-hjkl # C-M-S-Arrows
+- pane resize - Prefix HJKL (r) / Prefix C-Arrows / C-S-Arrows
 - pane swap - Prefix {}
 
-- next-prew win - Prefix 90 (r)
-- last window - Prefix -
+- next-prew win - Prefix 90 / Prefix 90 Prefix np (r)
+- last window - Prefix - / Prefix l
 - swap window Prefix < >
 - new window - Prefix c / =
 
