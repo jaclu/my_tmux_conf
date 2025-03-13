@@ -40,7 +40,7 @@ class JacDroid(SB):
     """Definitions for host jacdroid"""
 
     # defaults skipped
-    skip_plugin_mouse_swipe = True
+    use_plugin_mouse_swipe = False
 
     # optionals selected
     use_plugin_packet_loss = True

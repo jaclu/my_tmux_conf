@@ -44,21 +44,6 @@ class T2(SB):  # type: ignore
     # use_embedded_scripts = False
     # is_limited_host = True
 
-    #
-    #  Optional plugins, need to be enabled
-    #
-    # Template of only one host should have a custom setting
-    # if mtc_utils.HOSTNAME.lower() in ("hetz",):
-
-    # use_plugin_1password = True
-    # use_plugin_battery = True
-    # use_plugin_keyboard_type = True
-    # use_plugin_mullvad = True
-    # use_plugin_packet_loss = True
-    # use_plugin_spotify_info = True
-    # use_plugin_which_key = True
-    # use_plugin_plugin_yank = True
-
     def local_overrides(self) -> None:
         """
         Applies local configuration overrides, executed after all other

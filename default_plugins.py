@@ -63,20 +63,29 @@ class DefaultPlugins(BaseConfig):
     #  and ensure plugin is used or not
     #
     force_plugin_continuum = False
-    skip_plugin_continuum = False
 
     #
     #  Default plugins that can be disabled
     #
-    skip_plugin_extrakto = False
-    skip_plugin_jump = False
-    skip_plugin_mouse_swipe = False
-    skip_plugin_resurrect = False
-    skip_plugin_session_wizard = False
+    use_plugin_better_mouse_mode = True
+    use_plugin_continuum = True
+    use_plugin_extrakto = True
+    use_plugin_jump = True
+    use_plugin_menus = True
+    use_plugin_mouse_swipe = True
+    use_plugin_power_zoom = True
+    use_plugin_resurrect = True
+    use_plugin_session_wizard = True
+    use_plugin_suspend = True
+
+    #
+    # Replaced by corresponding use_plugin variables
+    #
+
     if mtc_utils.IS_INNER_TMUX:
         #  Doesn't make much sense in an inner tmux
-        skip_plugin_mouse_swipe = True
-        # skip_plugin_session_wizard = True
+        use_plugin_mouse_swipe = False
+        # use_plugin_session_wizard = False
 
     #
     #  Optional plugins, need to be enabled. Be aware since they are
@@ -181,7 +190,7 @@ class DefaultPlugins(BaseConfig):
         Can scroll in non-active 'mouse over-ed' panes.
         Can adjust scroll-sensitivity."""
 
-        if self.is_tmate():
+        if not self.use_plugin_better_mouse_mode or self.is_tmate():
             # Is needed also in an inner tmux!
             vers_min = -1.0  # Dont use
         else:
@@ -212,7 +221,7 @@ class DefaultPlugins(BaseConfig):
         enter to copy instakills asdf local tmux
         Default trigger: <prefix> Tab
         """
-        if self.skip_plugin_extrakto or mtc_utils.IS_ISH:
+        if not self.use_plugin_extrakto or mtc_utils.IS_ISH:
             # the popup gets stuck on iSH
             vers_min = -1.0
         else:
@@ -246,7 +255,7 @@ class DefaultPlugins(BaseConfig):
         without having to use the mouse.
         Default trigger: <prefix> j
         """
-        if self.skip_plugin_jump or mtc_utils.IS_ISH or mtc_utils.IS_TERMUX:
+        if not self.use_plugin_jump or mtc_utils.IS_ISH or mtc_utils.IS_TERMUX:
             # it seems Termux fails to handle ttys
             # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Dont use
@@ -268,9 +277,15 @@ class DefaultPlugins(BaseConfig):
 
     def plugin_menus(self) -> list:  # 1.8
         #  Tested down to vers 1.8
+        if not self.use_plugin_menus:
+            # it works on iSH, but soo slow it is of no practical usage
+            min_vers = -1.0  # Dont use
+        else:
+            min_vers = 1.8
+
         return [
             "jaclu/tmux-menus",
-            1.8,
+            min_vers,
             """
 
             # set -g @menus_trigger "\\\\"
@@ -301,7 +316,7 @@ class DefaultPlugins(BaseConfig):
 
     def plugin_mouse_swipe(self) -> list:  # 3.0
         """right-click & swipe switches Windows / Sessions"""
-        if self.skip_plugin_mouse_swipe or self.is_limited_host:
+        if not self.use_plugin_mouse_swipe or self.is_limited_host:
             min_vers = -1.0  # Dont use
         else:
             min_vers = 3.0
@@ -316,7 +331,7 @@ class DefaultPlugins(BaseConfig):
 
     def plugin_power_zoom(self) -> list:  # 2.0
         """Zooms to separate Window, to allow for adding support panes"""
-        if self.is_tmate():
+        if not self.use_plugin_power_zoom or self.is_tmate():
             vers_min = -1.0  # Dont use
         else:
             vers_min = 2.0
@@ -341,7 +356,7 @@ class DefaultPlugins(BaseConfig):
         This plugins fails to restore sessions in iSH, at least on my
         devices. so no point enabling tmux-resurrect & tmux-continuum
         on iSH"""
-        if self.skip_plugin_resurrect or mtc_utils.IS_ISH or self.is_tmate():
+        if not self.use_plugin_resurrect or mtc_utils.IS_ISH or self.is_tmate():
             min_vers = -1.0  # Dont use
         else:
             min_vers = 1.9
@@ -383,7 +398,10 @@ class DefaultPlugins(BaseConfig):
 
     def plugin_session_wizard(self) -> list:  # 3.2
         # default trigger: T
-        if self.skip_plugin_session_wizard:
+        #
+        #  Long startup time on limited hosts...
+
+        if not self.use_plugin_session_wizard:
             vers_min = -1.0  # Don't use
         else:
             vers_min = 3.2
@@ -399,10 +417,16 @@ class DefaultPlugins(BaseConfig):
         """Suspend tmux from receiving any keyboard commands
         This plugin inserts its display on status-right, so no need to
         manually add a placeholder"""
+        if not self.use_plugin_suspend:
+            # it works on iSH, but soo slow it is of no practical usage
+            min_vers = -1.0  # Dont use
+        else:
+            min_vers = 2.4
+
         #  {@mode_indicator_custom_prompt}
         return [
             "jaclu/tmux-suspend",
-            2.4,
+            min_vers,
             """
             set -g @suspend_key  "M-Z"
             set -g @suspend_suspended_options \\
@@ -424,7 +448,8 @@ class DefaultPlugins(BaseConfig):
         overwrites the status-right variable, the autosave feature stops
         working. To fix this issue, place the plugin last in the TPM plugins list.
         """
-        if self.skip_plugin_continuum or (
+
+        if not self.use_plugin_continuum or (
             not self.force_plugin_continuum
             and (self.is_limited_host or self.t2_env or self.is_tmate())
         ):
@@ -631,6 +656,15 @@ class DefaultPlugins(BaseConfig):
 
     def plugin_which_key(self) -> list:
         """Somewhat similar to tmux-menus, but more limited.
+
+        Doesnt support going back through the menus yet, but with this
+        addition to submenus, it can go back, note that the next menu to be
+        opened must be named!
+
+            - name: Back
+                key: BSpace
+                command: 'show-wk-menu #{@wk_menu_panes}'
+
         Not sure this would work in an inner tmux, outer is capturing key
         in both states. If this is really needed in the inner tmux
         a separate capture key for t2 could be defined"""

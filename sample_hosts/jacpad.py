@@ -40,13 +40,12 @@ class JacPad(IshHostWithStyle):
     """Definitions for host jacpad"""
 
     # defaults skipped
-    skip_plugin_mouse_swipe = True
+    use_plugin_mouse_swipe = False
 
     # takes for ever to start, and this host doesn  run long enough
     # to have a multitude of sessions to kee track of
-    skip_plugin_session_wizard = True
+    use_plugin_session_wizard = False
 
-    # optionals selected
     # I often work remotely on this one, so link quality monitoring
     # is worth the resources it uses
     use_plugin_packet_loss = True
