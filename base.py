@@ -803,11 +803,16 @@ class BaseConfig(TmuxConfig):
         """
         )
         if self.vers_ok(91.2):
-            # temp disabled until I stop using this for split pane
             w(
                 f"""{pref}previous window  - P+p P+9 M-9"  -n  C-M-Left   previous-window
             {pref}next window      - P+n P+0 M-0"  -n  C-M-Right  next-window"""
             )
+        else:
+            w("""
+            # temp disabled until I stop using this for split pane
+            bind -n C-M-Left display "Soon win navigation - use: <P> M-Left"
+            bind -n C-M-Right display "Soon win navigation - use: <P> M-Right"
+            """)
 
         #
         #  Splitting the entire window
