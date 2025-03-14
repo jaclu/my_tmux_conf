@@ -657,7 +657,7 @@ class DefaultPlugins(BaseConfig):
     def plugin_which_key(self) -> list:
         """Somewhat similar to tmux-menus, but more limited.
 
-        Doesnt support going back through the menus yet, but with this
+        Doesn't support going back through the menus yet, but with this
         addition to submenus, it can go back, note that the next menu to be
         opened must be named!
 
