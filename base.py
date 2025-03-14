@@ -802,7 +802,8 @@ class BaseConfig(TmuxConfig):
         {pref}next window  - P+n M-0 C-M-Right"    -r   0  next-window
         """
         )
-        if self.vers_ok(1.2):
+        if self.vers_ok(91.2):
+            # temp disabled until I stop using this for split pane
             w(
                 f"""{pref}previous window  - P+p P+9 M-9"  -n  C-M-Left   previous-window
             {pref}next window      - P+n P+0 M-0"  -n  C-M-Right  next-window"""

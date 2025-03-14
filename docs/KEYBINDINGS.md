@@ -60,8 +60,8 @@ dependent actions.
 | Key                       | No Prefix         | Default | Description               |
 | ------------------------- | ----------------- | ------- | ------------------------- |
 | `<p> -`                   | `M--`             | `<p>` l | Previously current window |
-| `<p> 9`                   | `M-0` `C-M-Left`  | `<p>` p | Previow window            |
-| `<p> 0`                   | `M-9` `C-M-Right` | `<p>` n | Next window               |
+| `<p> 9`                   | `M-0` (`C-M-Left`)  | `<p>` p | Previow window            |
+| `<p> 0`                   | `M-9` (`C-M-Right`) | `<p>` n | Next window               |
 | `<p> =`                   | `M-=`             | `<p>` c | New window                |
 | `<p> <`                   | `M-<`             |         | Swap window left          |
 | `<p> >`                   | `M->`             |         | Swap window right         |
