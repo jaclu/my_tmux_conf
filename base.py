@@ -808,11 +808,13 @@ class BaseConfig(TmuxConfig):
             {pref}next window      - P+n P+0 M-0"  -n  C-M-Right  next-window"""
             )
         else:
-            w("""
+            w(
+                """
             # temp disabled until I stop using this for split pane
             bind -n C-M-Left display "Soon win navigation - use: <P> M-Left"
             bind -n C-M-Right display "Soon win navigation - use: <P> M-Right"
-            """)
+            """
+            )
 
         #
         #  Splitting the entire window
