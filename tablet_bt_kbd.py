@@ -488,6 +488,7 @@ class IshConsole(BtKbdSpecialHandling):
             # use meta shift numbers as normal m- chars
             w(
                 f"""
+            # Meta Shift numbers
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-!"]}]  "\\342\\201\\204"  # M-!
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-#"]}]  "\\342\\200\\271"  # M-#
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-$"]}]  "\\342\\200\\272"  # M-$
@@ -496,7 +497,8 @@ class IshConsole(BtKbdSpecialHandling):
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-&"]}]  "\\342\\200\\241"  # M-&
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-*"]}]  "\\302\\260"      # M-*
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-("]}]  "\\302\\267"      # M-(
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-)"]}]  "\\342\\200\\232"  # M-)"""
+            {self.tc.opt_server} user-keys[{uk_ms_numb["M-)"]}]  "\\342\\200\\232"  # M-)
+            """
             )
 
             # when euro is used this seems unneeded, check with it disabled...
