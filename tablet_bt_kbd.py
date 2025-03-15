@@ -530,7 +530,7 @@ class IshConsole(BtKbdSpecialHandling):
             #     # print(f"Key: {k}, Value: {v}")
 
             for key, value in uk_ms_numb.items():
-                if f"User{value}" in muc_values:
+                if f"User{key}" in muc_values:
                     # print(f"{k} is used in: self.tc.muc_keys")
                     continue  # - used in  auc_meta_ses_handling()
                 if key == "M-@" and self.euro_has_been_handled:
