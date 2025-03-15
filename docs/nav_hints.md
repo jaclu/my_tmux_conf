@@ -7,6 +7,7 @@
 For actions not available without the M-key, use tmux-menus
 
 ### Pane
+
 - pane navigate : Prefix hjkl (r) / Prefix Arrows (r)
 - pane split :    Prefix C-hjkl
 - pane resize :   Prefix HJKL (r)
@@ -31,9 +32,10 @@ For actions not available without the M-key, use tmux-menus
 - session new :   Prefix +
 
 ### General environment
+
 - Navigate ses/win/pan : Prefix N
 - session pOpup :        Prefix O
-- List all plugins :     Pefix M-P
+- List all plugins :     Prefix M-P
 - Kill server :          Prefix M-X
 - session wizard :       Prefix T
 

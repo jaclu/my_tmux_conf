@@ -110,4 +110,3 @@ dependent actions.
 | Key     | Description                  |
 | ------- | ---------------------------- |
 | `<p>` T | Toggle display of status bar |
-

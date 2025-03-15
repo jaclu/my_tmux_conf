@@ -483,7 +483,7 @@ class IshConsole(BtKbdSpecialHandling):
             #     "M-+",  # used in  auc_meta_ses_handling()
             # ):
             #     continue
-            if sequence in self.tc.muc_keys.keys():
+            if sequence in self.tc.muc_keys.values():
                 continue  # automate above task, to reduce human-error
 
             if sequence == "M-N":
@@ -517,7 +517,7 @@ class IshConsole(BtKbdSpecialHandling):
                     '  "\\342\\202\\254"  # M-@'
                 )
             for sequence, key in uk_ms_numb.items():
-                if sequence in self.tc.muc_keys.keys():
+                if sequence in self.tc.muc_keys.values():
                     continue  # - used in  auc_meta_ses_handling()
                 if sequence == "M-@" and self.euro_has_been_handled:
                     continue  # was used for euro symbol
