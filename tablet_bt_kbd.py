@@ -516,11 +516,15 @@ class IshConsole(BtKbdSpecialHandling):
                     f"{self.tc.opt_server} user-keys[{uk_ms_numb['M-@']}]"
                     '  "\\342\\202\\254"  # M-@'
                 )
-            print("uk_ms_numb")
-            for k, v in uk_ms_numb.items():
-                print(f"Key: {k}, Value: {v}")
             print("muc_keys")
             for k, v in self.tc.muc_keys.items():
+                print(f"Key: {k}, Value: {v}")
+            muc_values = set(self.tc.muc_keys.values())
+            print("uk_ms_numb")
+            for k, v in uk_ms_numb.items():
+                if f"User{v}" in muc_values:
+                    print(f"{k} is used in: self.tc.muc_keys")
+                    continue
                 print(f"Key: {k}, Value: {v}")
             sys.exit(1)
 
