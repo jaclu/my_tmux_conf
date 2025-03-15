@@ -73,7 +73,8 @@ class BtKbdSpecialHandling:
         #
         #  This keyb type already generates Esc on the key above tab
         #
-        self.euro_fix("\\342\\202\\254")
+        # # self.euro_fix("\\342\\202\\254")
+        pass
 
     def keyb_type_2(self):
         #
@@ -81,7 +82,7 @@ class BtKbdSpecialHandling:
         #
         if not self.esc_has_been_handled:
             self.alternate_escape_key("\\302\\247")
-        self.euro_fix("\\342\\202\\254")
+        # self.euro_fix("\\342\\202\\254")
 
     def keyb_type_combo_touch(self):
         #
@@ -502,13 +503,16 @@ class IshConsole(BtKbdSpecialHandling):
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-("]}]  "\\302\\267"      # M-(
             {self.tc.opt_server} user-keys[{uk_ms_numb["M-)"]}]  "\\342\\200\\232"  # M-)"""
             )
-            if self.euro_has_been_handled:
-                w("# M-@ used for euro symbol")
-            else:
-                w(
-                    f"{self.tc.opt_server} user-keys[{uk_ms_numb['M-@']}]"
-                    '  "\\342\\202\\254"  # M-@'
-                )
+
+            # when euro is used this seems unneeded, check with it disabled...
+            # if self.euro_has_been_handled:
+            #     w("# M-@ used for euro symbol")
+            # else:
+            #     w(
+            #         f"{self.tc.opt_server} user-keys[{uk_ms_numb['M-@']}]"
+            #         '  "\\342\\202\\254"  # M-@'
+            #     )
+
             for key, value in uk_ms_numb.items():
                 if f"User{key}" in muc_values:
                     w(f"#  {key} (User{value}) used by: self.tc.muc_keys")
