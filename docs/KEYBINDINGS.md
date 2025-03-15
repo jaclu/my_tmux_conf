@@ -57,24 +57,24 @@ dependent actions.
 
 ### Window handling
 
-| Key                       | No Prefix         | Default | Description               |
-| ------------------------- | ----------------- | ------- | ------------------------- |
-| `<p> -`                   | `M--`             | `<p>` l | Previously current window |
-| `<p> 9`                   | `M-0` (`C-M-Left`)  | `<p>` p | Previow window            |
-| `<p> 0`                   | `M-9` (`C-M-Right`) | `<p>` n | Next window               |
-| `<p> =`                   | `M-=`             | `<p>` c | New window                |
-| `<p> <`                   | `M-<`             |         | Swap window left          |
-| `<p> >`                   | `M->`             |         | Swap window right         |
-|                           |                   |         |                           |
-| `<p> W`                   |                   | `<p> ,` | Rename window             |
-| `<p> X`                   |                   | `<p> &` | Kill window \*\*          |
-| `<p> *`                   |                   |         | Toggle synchronized tabs  |
-| `<p> e`                   |                   | `<p> E` | Spread panes out evenly.  |
-|                           |                   |         |                           |
-| `<p> M-H` `<p> C-M-Left`  |                   |         | Split window left         |
-| `<p> M-J` `<p> C-M-Down`  |                   |         | Split window down         |
-| `<p> M-K` `<p> C-M-Up`    |                   |         | Split window up           |
-| `<p> M-L` `<p> C-M-Right` |                   |         | Split window right        |
+| Key                         | No Prefix           | Default | Description               |
+| --------------------------- | ------------------- | ------- | ------------------------- |
+| `<p> -`                     | `M--`               | `<p>` l | Previously current window |
+| `<p> 9`                     | `M-0` (`C-M-Left`)  | `<p>` p | Previow window            |
+| `<p> 0`                     | `M-9` (`C-M-Right`) | `<p>` n | Next window               |
+| `<p> =`                     | `M-=`               | `<p>` c | New window                |
+| `<p> <`                     | `M-<`               |         | Swap window left          |
+| `<p> >`                     | `M->`               |         | Swap window right         |
+|                             |                     |         |                           |
+| `<p> W`                     |                     | `<p> ,` | Rename window             |
+| `<p> X`                     |                     | `<p> &` | Kill window \*\*          |
+| `<p> *`                     |                     |         | Toggle synchronized tabs  |
+| `<p> e`                     |                     | `<p> E` | Spread panes out evenly.  |
+|                             |                     |         |                           |
+| `<p> C-M-h` `<p> C-M-Left`  |                     |         | Split window left         |
+| `<p> C-M-j` `<p> C-M-Down`  |                     |         | Split window down         |
+| `<p> C-M-k` `<p> C-M-Up`    |                     |         | Split window up           |
+| `<p> C-M-l` `<p> C-M-Right` |                     |         | Split window right        |
 
 ### Pane handling
 

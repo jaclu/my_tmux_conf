@@ -190,10 +190,10 @@ class BaseConfig(TmuxConfig):
             "muc_underscore": "M-_",
             "muc_P": "M-P",
             "muc_X": "M-X",
-            "muc_H": "M-H",
-            "muc_J": "M-J",
-            "muc_K": "M-K",
-            "muc_L": "M-L",
+            "muc_H": "C-M-h",
+            "muc_J": "C-M-j",
+            "muc_K": "C-M-k",
+            "muc_L": "C-M-l",
         }
         self.define_opt_params()
 
@@ -832,10 +832,10 @@ class BaseConfig(TmuxConfig):
             sw2 = "split-window -f"  # to make sure
             suffix = self.current_path_directive
             w(
-                f"""{sw1} left - P+M-H"   C-M-Left   {sw2}hb {suffix}
-            {sw1} down - P+M-J"   C-M-Down   {sw2}v  {suffix}
-            {sw1} up - P+M-K"     C-M-Up     {sw2}vb {suffix}
-            {sw1} right - P+M-L"  C-M-Right  {sw2}h  {suffix}
+                f"""{sw1} left - P+C-M-h"   C-M-Left   {sw2}hb {suffix}
+            {sw1} down - P+C-M-j"   C-M-Down   {sw2}v  {suffix}
+            {sw1} up - P+C-M-k"     C-M-Up     {sw2}vb {suffix}
+            {sw1} right - P+C-M-l"  C-M-Right  {sw2}h  {suffix}
             """
             )
 

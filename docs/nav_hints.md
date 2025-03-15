@@ -10,9 +10,12 @@ For actions not available without the M-key, use tmux-menus
 - pane split - Prefix C-hjkl
 - pane resize - Prefix HJKL (r)
 - pane swap - Prefix {}
+- save history with escapes - Prefix M-e
+- save history no escapes - Prefix M-h
 
 - next-prew win - Prefix 90 / Prefix 90 Prefix np (r)
 - last window - Prefix - / Prefix l
+- entire window split - Prefix C-M-hjkl
 - swap window Prefix < >
 - new window - Prefix c / =
 
@@ -28,7 +31,7 @@ For actions not available without the M-key, use tmux-menus
 
 - pane navigate - M-Arrows
 - pane split - Prefix M-Arrows
-- entire window split - Prefix M-HJKL / Prefix C-M-Arrows
+- entire window split - Prefix C-M-HJKL Prefix C-M-Arrows
 - pane resize - C-S-Arrows (by 1) / M-S-Arrows (by 5)
 
 - next-prew win - M 9/0 | C-M Left/Right
