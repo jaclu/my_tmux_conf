@@ -184,16 +184,16 @@ class BaseConfig(TmuxConfig):
         self.muc_keys = {
             # Kbd binds that might need to be replaced by user-keys on nonstandard
             # consoles
-            "muc_plus": "M-+",
-            "muc_par_open": "M-(",
-            "muc_par_close": "M-)",
-            "muc_underscore": "M-_",
-            "muc_P": "M-P",
-            "muc_X": "M-X",
-            "muc_H": "C-M-h",
-            "muc_J": "C-M-j",
-            "muc_K": "C-M-k",
-            "muc_L": "C-M-l",
+            "M_plus": "M-+",
+            "M_par_open": "M-(",
+            "M_par_close": "M-)",
+            "M_underscore": "M-_",
+            "M_P": "M-P",
+            "M_X": "M-X",
+            "C_M_h": "C-M-h",
+            "C_M_j": "C-M-j",
+            "C_M_k": "C-M-k",
+            "C_M_l": "C-M-l",
         }
         self.define_opt_params()
 
@@ -1476,14 +1476,14 @@ class BaseConfig(TmuxConfig):
         # Defaults might be overridden by TabletBtKbd()
         self.write("# auc_meta_ses_handling()")
 
-        if self.muc_keys["muc_plus"] in (None, ""):
+        if self.muc_keys["M_plus"] in (None, ""):
             sys.exit("ERROR: auc_meta_ses_handling() muc_plus undefined!")
 
         w = self.write
         if self.vers_ok(1.0):
             s = (
                 'bind -N "Create new session  - P++"      '
-                f"-n  {self.muc_keys['muc_plus']}  command-prompt "
+                f"-n  {self.muc_keys['M_plus']}  command-prompt "
             )
             if self.vers_ok(1.5):
                 s += ' -I "?"'
@@ -1492,17 +1492,17 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.2):
             w(
                 "bind -N 'Switch to last session  - P+_'  "
-                f"-n  {self.muc_keys['muc_underscore']}  switch-client -l"
+                f"-n  {self.muc_keys['M_underscore']}  switch-client -l"
             )
             w(
                 "bind -N 'Select previous session  - P+( C-M-Up'"
-                f" -n  {self.muc_keys['muc_par_open']}  switch-client -p"
+                f" -n  {self.muc_keys['M_par_open']}  switch-client -p"
             )
 
-            # P+)  {self.muc_keys['muc_par_close']} C-M-Down
+            # P+)  {self.muc_keys['M_par_close']} C-M-Down
             w(
                 "bind -N 'Select next session  - P+) C-M-Down'   "
-                f"-n  {self.muc_keys['muc_par_close']}  switch-client -n"
+                f"-n  {self.muc_keys['M_par_close']}  switch-client -n"
             )
 
     def auc_display_plugins_used(self):  # used by iSH Console
@@ -1518,7 +1518,7 @@ class BaseConfig(TmuxConfig):
             # There is no plugin support...
             return
 
-        if self.muc_keys["muc_P"] != "M-P":
+        if self.muc_keys["M_P"] != "M-P":
             # If a custom defined key is used the hint won't be helpful about
             # that the key combo for this is...
             note_prefix = "Press: P+M-P - "
@@ -1531,7 +1531,7 @@ class BaseConfig(TmuxConfig):
         #
         repo_dir = os.path.dirname(__file__)
         self.write(
-            f'bind -N "{note_prefix}List all plugins defined"  {self.muc_keys["muc_P"]}  '
+            f'bind -N "{note_prefix}List all plugins defined"  {self.muc_keys["M_P"]}  '
             'run-shell "'
             '$TMUX_BIN display-message \\"Generating plugin list\\" \\; '
             # 1st load venv if used
@@ -1554,7 +1554,7 @@ class BaseConfig(TmuxConfig):
             return
 
         self.write("# auc_kill_tmux_server()")
-        if self.muc_keys["muc_X"] != "M-X":
+        if self.muc_keys["M_X"] != "M-X":
             note_prefix = "Press: M-X - "
         else:
             note_prefix = ""
@@ -1589,10 +1589,10 @@ class BaseConfig(TmuxConfig):
 
         w(
             f"""# auc_split_entire_window()
-            {pref}left - P+C-M-Left"    {self.muc_keys["muc_H"]}  {sw}hb {cp}
-            {pref}down - P+C-M-Down"    {self.muc_keys["muc_J"]}  {sw}v  {cp}
-            {pref}up - P+C-M-Up"        {self.muc_keys["muc_K"]}  {sw}vb {cp}
-            {pref}right - P+C-M-Right"  {self.muc_keys["muc_L"]}  {sw}h  {cp}
+            {pref}left - P+C-M-Left"    {self.muc_keys["C_M_h"]}  {sw}hb {cp}
+            {pref}down - P+C-M-Down"    {self.muc_keys["C_M_j"]}  {sw}v  {cp}
+            {pref}up - P+C-M-Up"        {self.muc_keys["C_M_l"]}  {sw}vb {cp}
+            {pref}right - P+C-M-Right"  {self.muc_keys["C_M_l"]}  {sw}h  {cp}
             """
         )
 

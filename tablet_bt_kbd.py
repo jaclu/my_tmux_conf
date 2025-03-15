@@ -400,16 +400,18 @@ class IshConsole(BtKbdSpecialHandling):
         }
 
         self.tc.muc_keys = {
-            "muc_plus": f"User{uk_ms_char['M-+']}",
-            "muc_par_open": f"User{uk_ms_numb['M-(']}",
-            "muc_par_close": f"User{uk_ms_numb['M-)']}",
-            "muc_underscore": f"User{uk_ms_char['M-_']}",
-            "muc_P": f"User{uk_ms_char['M-P']}",
-            "muc_X": f"User{uk_ms_char['M-X']}",
-            "muc_H": f"User{uk_ms_char['M-H']}",
-            "muc_J": f"User{uk_ms_char['M-J']}",
-            "muc_K": f"User{uk_ms_char['M-K']}",
-            "muc_L": f"User{uk_ms_char['M-L']}",
+            "M_plus": f"User{uk_ms_char['M-+']}",
+            "M_par_open": f"User{uk_ms_numb['M-(']}",
+            "M_par_close": f"User{uk_ms_numb['M-)']}",
+            "M_underscore": f"User{uk_ms_char['M-_']}",
+            "M_P": f"User{uk_ms_char['M-P']}",
+            "M_X": f"User{uk_ms_char['M-X']}",
+            # iSH console is unable to generate C-M keys
+            # so using M-UpperCase equivalents
+            "C_M_h": f"User{uk_ms_char['M-H']}",
+            "C_M_j": f"User{uk_ms_char['M-J']}",
+            "C_M_k": f"User{uk_ms_char['M-K']}",
+            "C_M_l": f"User{uk_ms_char['M-L']}",
         }
 
         w = self.tc.write
