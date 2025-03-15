@@ -488,12 +488,12 @@ class IshConsole(BtKbdSpecialHandling):
                 # print(f"{key} is used in: self.tc.muc_keys")
                 continue
 
-            if sequence == "M-N":
+            if key == "M-N":
                 #    Special case to avoid cutof at second -N
                 #    on tmux < 3.1
                 w(f"bind -N 'Enables M-N' -n  User{sequence}  send {key}")
-            elif sequence == 'M-"':
-                w(f"bind -N 'Enables {key}' -n  User{sequence}  send '{key}'")
+            elif key == 'M-"':
+                w(f'bind -N \\"Enables M-"\\" -n  User{sequence}  send \\"M-"\\"')
             else:
                 w(f'bind -N "Enables {key}" -n  User{sequence}  send "{key}"')
 
