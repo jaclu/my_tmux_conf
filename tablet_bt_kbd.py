@@ -516,12 +516,20 @@ class IshConsole(BtKbdSpecialHandling):
                     f"{self.tc.opt_server} user-keys[{uk_ms_numb['M-@']}]"
                     '  "\\342\\202\\254"  # M-@'
                 )
-            for sequence, key in uk_ms_numb.items():
-                if sequence in self.tc.muc_keys.values():
-                    continue  # - used in  auc_meta_ses_handling()
-                if sequence == "M-@" and self.euro_has_been_handled:
-                    continue  # was used for euro symbol
-                w(f'bind -N "Enables {sequence}" -n  User{key}  send "{sequence}"')
+            print("uk_ms_numb")
+            for k, v in uk_ms_numb.items():
+                print(f"Key: {k}, Value: {v}")
+            print("muc_keys")
+            for k, v in self.tc.muc_keys.items():
+                print(f"Key: {k}, Value: {v}")
+            sys.exit(1)
+
+        #            for key, value in uk_ms_numb.items():
+        #                #if key in muc_values:
+        #                #    continue  # - used in  auc_meta_ses_handling()
+        #                if sequence == "M-@" and self.euro_has_been_handled:
+        #                    continue  # was used for euro symbol
+        #                w(f'bind -N "Enables {sequence}" -n  User{key}  send "{sequence}"')
 
         w()
 
