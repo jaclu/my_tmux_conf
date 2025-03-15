@@ -485,7 +485,7 @@ class IshConsole(BtKbdSpecialHandling):
             # ):
             #     continue
             if f"User{sequence}" in muc_values:
-                print(f"{key} is used in: self.tc.muc_keys")
+                # print(f"{key} is used in: self.tc.muc_keys")
                 continue
 
             if sequence == "M-N":
@@ -518,25 +518,24 @@ class IshConsole(BtKbdSpecialHandling):
                     f"{self.tc.opt_server} user-keys[{uk_ms_numb['M-@']}]"
                     '  "\\342\\202\\254"  # M-@'
                 )
-            print("muc_keys")
-            for k, v in self.tc.muc_keys.items():
-                print(f"Key: {k}, Value: {v}")
-            muc_values = set(self.tc.muc_keys.values())
-            print("uk_ms_numb")
-            for k, v in uk_ms_numb.items():
-                if f"User{v}" in muc_values:
-                    print(f"{k} is used in: self.tc.muc_keys")
-                    continue
-                print(f"Key: {k}, Value: {v}")
-            sys.exit(1)
+            # print("muc_keys")
+            # for k, v in self.tc.muc_keys.items():
+            #     print(f"Key: {k}, Value: {v}")
+            # muc_values = set(self.tc.muc_keys.values())
+            # print("uk_ms_numb")
+            # for k, v in uk_ms_numb.items():
+            #     if f"User{v}" in muc_values:
+            #         # print(f"{k} is used in: self.tc.muc_keys")
+            #         continue
+            #     # print(f"Key: {k}, Value: {v}")
 
-        #            for key, value in uk_ms_numb.items():
-        #                #if key in muc_values:
-        #                #    continue  # - used in  auc_meta_ses_handling()
-        #                if sequence == "M-@" and self.euro_has_been_handled:
-        #                    continue  # was used for euro symbol
-        #                w(f'bind -N "Enables {sequence}" -n  User{key}  send "{sequence}"')
-
+            for key, value in uk_ms_numb.items():
+                if f"User{value}" in muc_values:
+                    # print(f"{k} is used in: self.tc.muc_keys")
+                    continue  # - used in  auc_meta_ses_handling()
+                if key == "M-@" and self.euro_has_been_handled:
+                    continue  # was used for euro symbol
+                w(f'bind -N "Enables {key}" -n  User{value}  send "{key}"')
         w()
 
         #
