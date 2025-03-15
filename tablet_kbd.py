@@ -42,7 +42,7 @@ KBD_OMNITYPE = "Omnitype Keyboard"
 KBD_BLUETOOTH = "Bluetooth Keyboard"  # sadly generic name
 
 
-class BtKbdSpecialHandling:
+class LimitedKbdSpecialHandling:
     """Groupings of user-keys
 
     < 200 Handled by base.py
@@ -145,7 +145,7 @@ class BtKbdSpecialHandling:
     def euro_fix(self, sequence):
         if sequence[:1] != "\\":
             err_msg = (
-                f"ERROR: TabletBtKbd:euro_fix({sequence}) must be given in octal notation"
+                f"ERROR: TabletKbd:euro_fix({sequence}) must be given in octal notation"
             )
             sys.exit(err_msg)
         if self.euro_has_been_handled:
@@ -156,7 +156,7 @@ class BtKbdSpecialHandling:
     def alternate_escape_key(self, sequence: str) -> None:
         if sequence[:1] != "\\":
             err_msg = (
-                f"ERROR: TabletBtKbd:alternate_escape_key({sequence}) "
+                f"ERROR: TabletKbd:alternate_escape_key({sequence}) "
                 "must be given in octal notation"
             )
             sys.exit(err_msg)
@@ -175,7 +175,7 @@ class BtKbdSpecialHandling:
     def alternate_backtick_key(self, sequence: str, modifier="") -> None:
         if sequence[:1] != "\\":
             err_msg = (
-                f"ERROR: TabletBtKbd:alternate_backtick_key({sequence}) "
+                f"ERROR: TabletKbd:alternate_backtick_key({sequence}) "
                 "must be given in octal notation"
             )
             sys.exit(err_msg)
@@ -194,7 +194,7 @@ class BtKbdSpecialHandling:
     def alternate_delete(self, sequence: str) -> None:
         if sequence[:1] != "\\":
             err_msg = (
-                f"ERROR: TabletBtKbd:alternate_delete({sequence}) "
+                f"ERROR: TabletKbd:alternate_delete({sequence}) "
                 "must be given in octal notation"
             )
             sys.exit(err_msg)
@@ -211,7 +211,7 @@ class BtKbdSpecialHandling:
         self.delete_has_been_handled = True
 
 
-class TermuxConsole(BtKbdSpecialHandling):
+class TermuxConsole(LimitedKbdSpecialHandling):
     """Used to adopt the Termux console"""
 
     def keyb_type_1(self):
@@ -222,7 +222,7 @@ class TermuxConsole(BtKbdSpecialHandling):
         super().keyb_type_1()
 
 
-class IshConsole(BtKbdSpecialHandling):
+class IshConsole(LimitedKbdSpecialHandling):
     """Used to adopt the iSH console
     This redefines the rather limited keyboard in order to make it more useful.
     """

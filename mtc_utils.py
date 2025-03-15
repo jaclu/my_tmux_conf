@@ -30,6 +30,31 @@ import random
 import shutil
 import subprocess  # nosec
 
+#
+# I keep track on if it is a remote session, to be able to figure out if
+# this session is using a limited console like if running on an iSH node.
+# It can also be used to disable unintentionally activated multi-media related
+# plugins. not much point trying to stream audio on a cloud hosted node.
+#
+IS_REMOTE = bool(os.getenv("SSH_CLIENT"))
+
+#
+# I often test things out on a separate tmux instance, that can either run
+# standalone or inside the other.
+# TMUX_OUTER indicates that one of my envs runs inside the other. In such cases
+# any attempt to restart the outer inside the inner is refused to avoid
+# bizarre recursive screen updates, and getting disconnected since if the outer
+# disconnects the previously inner normally also disappears.
+#
+IS_INNER_TMUX = bool(os.getenv("TMUX_OUTER"))
+
+#
+#  Hosts with limited consoles are setup to have defined this to indicate what
+#  keyboard it is currently using, in order for the right special adaptions defined in
+#  in tablet_kbd.py can be used.
+#
+LC_KEYBOARD = os.getenv("LC_KEYBOARD") or ""
+
 
 #
 #  Public methods
@@ -102,14 +127,10 @@ if HOSTNAME:
 else:
     HOSTNAME = _get_short_hostname()
 
-IS_REMOTE = bool(os.getenv("SSH_CLIENT"))
-IS_INNER_TMUX = bool(os.getenv("TMUX_OUTER"))
 
 IS_DARWIN = platform.system() == "Darwin"
 IS_ISH = os.path.isdir("/proc/ish")
 IS_TERMUX = os.environ.get("TERMUX_VERSION") is not None
-
-LC_KEYBOARD = os.getenv("LC_KEYBOARD") or ""
 
 #
 #  If the session originated on a "primitive keyboard" console, such as

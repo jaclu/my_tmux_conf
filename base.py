@@ -52,7 +52,7 @@ import __main__
 from tmux_conf import TmuxConfig
 
 import mtc_utils
-from tablet_bt_kbd import special_consoles_config
+from tablet_kbd import special_consoles_config
 
 # ruff checks might be relevant F403,F401
 
@@ -75,7 +75,7 @@ class BaseConfig(TmuxConfig):
     <200 used here
     180 Used for generating Euro sign
 
-    200-499 tablet_bt_kbd.py
+    200-499 tablet_kbd.py
     """
 
     prefix_key: str = "C-a"
