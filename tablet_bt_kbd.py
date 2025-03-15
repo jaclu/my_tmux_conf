@@ -471,7 +471,8 @@ class IshConsole(BtKbdSpecialHandling):
         """
         )
 
-        for sequence, key in uk_ms_char.items():
+        muc_values = set(self.tc.muc_keys.values())
+        for key, sequence in uk_ms_char.items():
             # if sequence in (
             #     "M-H",  # used in  auc_split_entire_window()
             #     "M-J",  # used in  auc_split_entire_window()
@@ -483,8 +484,9 @@ class IshConsole(BtKbdSpecialHandling):
             #     "M-+",  # used in  auc_meta_ses_handling()
             # ):
             #     continue
-            if sequence in self.tc.muc_keys.values():
-                continue  # automate above task, to reduce human-error
+            if f"User{sequence}" in muc_values:
+                print(f"{key} is used in: self.tc.muc_keys")
+                continue
 
             if sequence == "M-N":
                 #    Special case to avoid cutof at second -N
