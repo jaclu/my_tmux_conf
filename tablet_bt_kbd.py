@@ -492,8 +492,10 @@ class IshConsole(BtKbdSpecialHandling):
                 #    Special case to avoid cutof at second -N
                 #    on tmux < 3.1
                 w(f"bind -N 'Enables M-N' -n  User{sequence}  send {key}")
+
             elif key == 'M-"':
-                w(f'bind -N \\"Enables M-"\\" -n  User{sequence}  send \\"M-"\\"')
+                # w(f"bind -N 'Enables {key}' -n  User{sequence}  send '{key}'")
+                w(f"bind -N 'Enables {key}' -n  User{sequence}  send '{key}'")
             else:
                 w(f'bind -N "Enables {key}" -n  User{sequence}  send "{key}"')
 
