@@ -486,6 +486,7 @@ class IshConsole(BtKbdSpecialHandling):
             #     continue
             if f"User{sequence}" in muc_values:
                 # print(f"{key} is used in: self.tc.muc_keys")
+                w(f"# User{sequence} ({key}) used by: self.tc.muc_keys")
                 continue
 
             if key == "M-N":
@@ -533,9 +534,10 @@ class IshConsole(BtKbdSpecialHandling):
 
             for key, value in uk_ms_numb.items():
                 if f"User{key}" in muc_values:
-                    # print(f"{k} is used in: self.tc.muc_keys")
+                    w(f"# User{value} ({key}) used by: self.tc.muc_keys")
                     continue  # - used in  auc_meta_ses_handling()
                 if key == "M-@" and self.euro_has_been_handled:
+                    w(f"# User{value} ({key}) used for: Euro")
                     continue  # was used for euro symbol
                 w(f'bind -N "Enables {key}" -n  User{value}  send "{key}"')
         w()
