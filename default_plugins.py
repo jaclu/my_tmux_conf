@@ -78,6 +78,10 @@ class DefaultPlugins(BaseConfig):
     use_plugin_session_wizard = True
     use_plugin_suspend = True
 
+
+    if mtc_utils.IS_ISH:
+        use_plugin_session_wizard = False
+
     #
     # Replaced by corresponding use_plugin variables
     #
