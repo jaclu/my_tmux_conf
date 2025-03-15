@@ -473,20 +473,9 @@ class IshConsole(BtKbdSpecialHandling):
 
         muc_values = set(self.tc.muc_keys.values())
         for key, sequence in uk_ms_char.items():
-            # if sequence in (
-            #     "M-H",  # used in  auc_split_entire_window()
-            #     "M-J",  # used in  auc_split_entire_window()
-            #     "M-K",  # used in  auc_split_entire_window()
-            #     "M-L",  # used in  auc_split_entire_window()
-            #     "M-P",  # used in  auc_display_plugins_used()
-            #     "M-X",  # used in  auc_kill_tmux_server()
-            #     "M-_",  # used in  auc_meta_ses_handling()
-            #     "M-+",  # used in  auc_meta_ses_handling()
-            # ):
-            #     continue
             if f"User{sequence}" in muc_values:
                 # print(f"{key} is used in: self.tc.muc_keys")
-                w(f"# {key} (User{sequence}) used by: self.tc.muc_keys")
+                w(f"#  {key} (User{sequence}) used by: self.tc.muc_keys")
                 continue
 
             if key == "M-N":
@@ -494,11 +483,10 @@ class IshConsole(BtKbdSpecialHandling):
                 #    on tmux < 3.1
                 w(f"bind -N 'Enables M-N' -n  User{sequence}  send {key}")
 
-            elif key == 'M-"':
-                # w(f"bind -N 'Enables {key}' -n  User{sequence}  send '{key}'")
-                w(f"bind -N 'Enables {key}' -n  User{sequence}  send '{key}'")
-            else:
-                w(f'bind -N "Enables {key}" -n  User{sequence}  send "{key}"')
+            # elif key == 'M-"':
+            w(f"bind -N 'Enables {key}' -n  User{sequence}  send '{key}'")
+            # else:
+            #     w(f'bind -N "Enables {key}" -n  User{sequence}  send "{key}"')
 
         if not ms_fn_keys_mapped:
             # use meta shift numbers as normal m- chars
@@ -521,23 +509,12 @@ class IshConsole(BtKbdSpecialHandling):
                     f"{self.tc.opt_server} user-keys[{uk_ms_numb['M-@']}]"
                     '  "\\342\\202\\254"  # M-@'
                 )
-            # print("muc_keys")
-            # for k, v in self.tc.muc_keys.items():
-            #     print(f"Key: {k}, Value: {v}")
-            # muc_values = set(self.tc.muc_keys.values())
-            # print("uk_ms_numb")
-            # for k, v in uk_ms_numb.items():
-            #     if f"User{v}" in muc_values:
-            #         # print(f"{k} is used in: self.tc.muc_keys")
-            #         continue
-            #     # print(f"Key: {k}, Value: {v}")
-
             for key, value in uk_ms_numb.items():
                 if f"User{key}" in muc_values:
-                    w(f"# {key} (User{value}) used by: self.tc.muc_keys")
+                    w(f"#  {key} (User{value}) used by: self.tc.muc_keys")
                     continue  # - used in  auc_meta_ses_handling()
                 if key == "M-@" and self.euro_has_been_handled:
-                    w(f"# User{value} ({key}) used for: Euro")
+                    w(f"#  User{value} ({key}) used for: Euro")
                     continue  # was used for euro symbol
                 w(f'bind -N "Enables {key}" -n  User{value}  send "{key}"')
         w()
