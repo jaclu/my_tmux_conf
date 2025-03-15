@@ -73,8 +73,7 @@ class BtKbdSpecialHandling:
         #
         #  This keyb type already generates Esc on the key above tab
         #
-        # # self.euro_fix("\\342\\202\\254")
-        pass
+        self.euro_fix("\\342\\202\\254")
 
     def keyb_type_2(self):
         #
@@ -473,20 +472,17 @@ class IshConsole(BtKbdSpecialHandling):
         )
 
         muc_values = set(self.tc.muc_keys.values())
-        for key, sequence in uk_ms_char.items():
-            if f"User{sequence}" in muc_values:
-                w(f"#  {key}  User{sequence} - used by: self.tc.muc_keys")
+        # for key, sequence in uk_ms_char.items():
+        for key_name, user_key in uk_ms_char.items():
+            if f"User{user_key}" in muc_values:
+                w(f"#  {key_name}  User{user_key} - used by: self.tc.muc_keys")
                 continue
 
-            if key == "M-N":
+            if key_name == "M-N":
                 #    Special case to avoid cutof at second -N
                 #    on tmux < 3.1
-                w(f"bind -N 'Enables M-N' -n  User{sequence}  send {key}")
-
-            # elif key == 'M-"':
-            w(f"bind -N 'Enables {key}' -n  User{sequence}  send '{key}'")
-            # else:
-            #     w(f'bind -N "Enables {key}" -n  User{sequence}  send "{key}"')
+                w(f"bind -N 'Enables M-N' -n  User{user_key}  send {key_name}")
+            w(f"bind -N 'Enables {key_name}' -n  User{user_key}  send '{key_name}'")
 
         if not ms_fn_keys_mapped:
             # use meta shift numbers as normal m- chars
@@ -512,14 +508,14 @@ class IshConsole(BtKbdSpecialHandling):
             #         '  "\\342\\202\\254"  # M-@'
             #     )
 
-            for key, user_key in uk_ms_numb.items():
+            for key_name, user_key in uk_ms_numb.items():
                 if f"User{user_key}" in muc_values:
-                    w(f"#  {key}  User{user_key} - used by: self.tc.muc_keys")
+                    w(f"#  {key_name}  User{user_key} - used by: self.tc.muc_keys")
                     continue  # - used in  auc_meta_ses_handling()
-                if key == "M-@" and self.euro_has_been_handled:
-                    w(f"#  {key}  User{user_key} - used for: Euro")
+                if key_name == "M-@" and self.euro_has_been_handled:
+                    w(f"#  {key_name}  User{user_key} - used for: Euro")
                     continue  # was used for euro symbol
-                w(f'bind -N "Enables {key}" -n  User{user_key}  send "{key}"')
+                w(f'bind -N "Enables {key_name}" -n  User{user_key}  send "{key_name}"')
         w()
 
         #
