@@ -535,8 +535,8 @@ class IshConsole(BtKbdSpecialHandling):
                     continue  # - used in  auc_meta_ses_handling()
                 if key == "M-@" and self.euro_has_been_handled:
                     continue  # was used for euro symbol
-                w(f'bind -N "Enables {key}" -n  User{value}  send "{key}"')
-                # w(f'bind -N "Enables {value}" -n  User{key}  send "{key}"')
+                # w(f'bind -N "Enables {key}" -n  User{value}  send "{key}"')
+                w(f'bind -N "Enables {value}" -n  User{key}  send "{value}"')
         w()
 
         #
