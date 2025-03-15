@@ -1477,7 +1477,7 @@ class BaseConfig(TmuxConfig):
         self.write("# auc_meta_ses_handling()")
 
         if self.muc_keys["M_plus"] in (None, ""):
-            sys.exit("ERROR: auc_meta_ses_handling() muc_plus undefined!")
+            sys.exit("ERROR: auc_meta_ses_handling() M_plus undefined!")
 
         w = self.write
         if self.vers_ok(1.0):
@@ -1561,7 +1561,7 @@ class BaseConfig(TmuxConfig):
 
         s = (
             f'bind -N "{note_prefix}Kill tmux server"  '
-            f"{self.muc_keys['muc_X']}  confirm-before"
+            f"{self.muc_keys['M_X']}  confirm-before"
         )
         if self.vers_ok(1.5):
             s += f' -p "kill tmux server {self.conf_file}? (y/n)"'
