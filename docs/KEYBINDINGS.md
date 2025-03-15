@@ -20,62 +20,6 @@ dependent actions.
 | `<p>` | Prefix key                          |
 | \*\*  | Rebound with: detach-on-destroy off |
 
-### General environment
-
-| Key       | Description              |
-| --------- | ------------------------ |
-| `<p> N`   | Navigate ses/win/pane    |
-| `<p> O`   | Scratchpad popup session |
-| `<p> M-P` | List all plugins defined |
-| `<p> R`   | Re-source config         |
-| `<p> M-X` | Kill Server              |
-
-### Mouse handling
-
-| Key                | Description                       |
-| ------------------ | --------------------------------- |
-| `<p> M`            | Toggle tmux mouse handling on/off |
-| `DoubleClick3Pane` | Toggle zoom for clicked pane      |
-
-### Status bar
-
-| Key     | Description                  |
-| ------- | ---------------------------- |
-| `<p>` T | Toggle display of status bar |
-
-### Session handling (sometimes referred to as clients by tmux man)
-
-| Key       | No Prefix        | Default | Description                |
-| --------- | ---------------- | ------- | -------------------------- |
-| `<p> _`   | `M-_`            |         | Previously current session |
-|           | `M-)` `C-M-Down` | `<p> )` | Next session in order      |
-|           | `M-(` `C-M-Up`   | `<p> (` | Previous session in order  |
-|           |                  |         |                            |
-| `<p> S`   |                  | `<p> $` | Rename session             |
-| `<p> M-x` |                  |         | Kill session               |
-| `<p> +`   | `M-+`            |         | Create named session       |
-
-### Window handling
-
-| Key                         | No Prefix           | Default | Description               |
-| --------------------------- | ------------------- | ------- | ------------------------- |
-| `<p> -`                     | `M--`               | `<p>` l | Previously current window |
-| `<p> 9`                     | `M-0` (`C-M-Left`)  | `<p>` p | Previow window            |
-| `<p> 0`                     | `M-9` (`C-M-Right`) | `<p>` n | Next window               |
-| `<p> =`                     | `M-=`               | `<p>` c | New window                |
-| `<p> <`                     | `M-<`               |         | Swap window left          |
-| `<p> >`                     | `M->`               |         | Swap window right         |
-|                             |                     |         |                           |
-| `<p> W`                     |                     | `<p> ,` | Rename window             |
-| `<p> X`                     |                     | `<p> &` | Kill window \*\*          |
-| `<p> *`                     |                     |         | Toggle synchronized tabs  |
-| `<p> e`                     |                     | `<p> E` | Spread panes out evenly.  |
-|                             |                     |         |                           |
-| `<p> C-M-h` `<p> C-M-Left`  |                     |         | Split window left         |
-| `<p> C-M-j` `<p> C-M-Down`  |                     |         | Split window down         |
-| `<p> C-M-k` `<p> C-M-Up`    |                     |         | Split window up           |
-| `<p> C-M-l` `<p> C-M-Right` |                     |         | Split window right        |
-
 ### Pane handling
 
 | Key                 | No Prefix   | Default       | Description                         |
@@ -110,3 +54,60 @@ dependent actions.
 |                     | `M-S-Down`  |               | Resize the pane down by 5           |
 |                     | `M-S-Up`    |               | Resize the pane up by 5             |
 |                     | `M-S-Right` |               | Resize the pane right by 5          |
+
+### Window handling
+
+| Key                         | No Prefix           | Default | Description               |
+| --------------------------- | ------------------- | ------- | ------------------------- |
+| `<p> -`                     | `M--`               | `<p>` l | Previously current window |
+| `<p> 9`                     | `M-0` (`C-M-Left`)  | `<p>` p | Previow window            |
+| `<p> 0`                     | `M-9` (`C-M-Right`) | `<p>` n | Next window               |
+| `<p> =`                     | `M-=`               | `<p>` c | New window                |
+| `<p> <`                     | `M-<`               |         | Swap window left          |
+| `<p> >`                     | `M->`               |         | Swap window right         |
+|                             |                     |         |                           |
+| `<p> W`                     |                     | `<p> ,` | Rename window             |
+| `<p> X`                     |                     | `<p> &` | Kill window \*\*          |
+| `<p> *`                     |                     |         | Toggle synchronized tabs  |
+| `<p> e`                     |                     | `<p> E` | Spread panes out evenly.  |
+|                             |                     |         |                           |
+| `<p> C-M-h` `<p> C-M-Left`  |                     |         | Split window left         |
+| `<p> C-M-j` `<p> C-M-Down`  |                     |         | Split window down         |
+| `<p> C-M-k` `<p> C-M-Up`    |                     |         | Split window up           |
+| `<p> C-M-l` `<p> C-M-Right` |                     |         | Split window right        |
+
+### Session handling (sometimes referred to as clients by tmux man)
+
+| Key       | No Prefix        | Default | Description                |
+| --------- | ---------------- | ------- | -------------------------- |
+| `<p> _`   | `M-_`            |         | Previously current session |
+|           | `M-)` `C-M-Down` | `<p> )` | Next session in order      |
+|           | `M-(` `C-M-Up`   | `<p> (` | Previous session in order  |
+|           |                  |         |                            |
+| `<p> S`   |                  | `<p> $` | Rename session             |
+| `<p> M-x` |                  |         | Kill session               |
+| `<p> +`   | `M-+`            |         | Create named session       |
+
+### General environment
+
+| Key       | Description              |
+| --------- | ------------------------ |
+| `<p> N`   | Navigate ses/win/pane    |
+| `<p> O`   | Scratchpad popup session |
+| `<p> M-P` | List all plugins defined |
+| `<p> R`   | Re-source config         |
+| `<p> M-X` | Kill Server              |
+
+### Mouse handling
+
+| Key                | Description                       |
+| ------------------ | --------------------------------- |
+| `<p> M`            | Toggle tmux mouse handling on/off |
+| `DoubleClick3Pane` | Toggle zoom for clicked pane      |
+
+### Status bar
+
+| Key     | Description                  |
+| ------- | ---------------------------- |
+| `<p>` T | Toggle display of status bar |
+

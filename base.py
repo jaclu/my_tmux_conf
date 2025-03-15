@@ -798,8 +798,8 @@ class BaseConfig(TmuxConfig):
         {pref}previously current window  - M--"         -  last-window
         {pref}previous window  - P+9 M-9 C-M-Left"  -r  p  previous-window
         {pref}next window      - P+0 M-0 C-M-Right" -r  n  next-window
-        {pref}previous window  - P+p M-9 C-M-Left" -r   9  previous-window
-        {pref}next window  - P+n M-0 C-M-Right"    -r   0  next-window
+        {pref}previous window  - P+p M-9 C-M-Left"  -r  9  previous-window
+        {pref}next window  - P+n M-0 C-M-Right"     -r  0  next-window
         """
         )
         if self.vers_ok(91.2):
