@@ -491,11 +491,11 @@ class IshConsole(BtKbdSpecialHandling):
             if sequence == "M-N":
                 #    Special case to avoid cutof at second -N
                 #    on tmux < 3.1
-                w(f"bind -N 'Enables M-N' -n  User{key}  send {sequence}")
+                w(f"bind -N 'Enables M-N' -n  User{sequence}  send {key}")
             elif sequence == 'M-"':
-                w(f"bind -N 'Enables {sequence}' -n  User{key}  send '{sequence}'")
+                w(f"bind -N 'Enables {key}' -n  User{sequence}  send '{key}'")
             else:
-                w(f'bind -N "Enables {sequence}" -n  User{key}  send "{sequence}"')
+                w(f'bind -N "Enables {key}" -n  User{sequence}  send "{key}"')
 
         if not ms_fn_keys_mapped:
             # use meta shift numbers as normal m- chars
@@ -535,8 +535,7 @@ class IshConsole(BtKbdSpecialHandling):
                     continue  # - used in  auc_meta_ses_handling()
                 if key == "M-@" and self.euro_has_been_handled:
                     continue  # was used for euro symbol
-                # w(f'bind -N "Enables {key}" -n  User{value}  send "{key}"')
-                w(f'bind -N "Enables {value}" -n  User{key}  send "{value}"')
+                w(f'bind -N "Enables {key}" -n  User{value}  send "{key}"')
         w()
 
         #
