@@ -1591,7 +1591,7 @@ class BaseConfig(TmuxConfig):
             f"""# auc_split_entire_window()
             {pref}left - P+C-M-Left"    {self.muc_keys["C_M_h"]}  {sw}hb {cp}
             {pref}down - P+C-M-Down"    {self.muc_keys["C_M_j"]}  {sw}v  {cp}
-            {pref}up - P+C-M-Up"        {self.muc_keys["C_M_l"]}  {sw}vb {cp}
+            {pref}up - P+C-M-Up"        {self.muc_keys["C_M_k"]}  {sw}vb {cp}
             {pref}right - P+C-M-Right"  {self.muc_keys["C_M_l"]}  {sw}h  {cp}
             """
         )
