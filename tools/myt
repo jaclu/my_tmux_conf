@@ -177,6 +177,11 @@ select_tmux_bin() {
 }
 
 asdf_scan() {
+    command -v asdf >/dev/null || {
+        # asdf not available
+        return 1
+    }
+
     # if asdf is used expand the shim into the actual tmux  bin
     [ ! -x "${ASDF_DATA_DIR:-$HOME/.asdf}/shims/tmux" ] && {
         # asdf tmux not installed
