@@ -239,20 +239,19 @@ define_tmux_env() {
     fi
     # log_it "><>   tmux_vers [$tmux_vers]"
 
-#    chk_incompatible_socket
-#}
+    #    chk_incompatible_socket
+    #}
 
-#chk_recursive_tmux() {
+    #chk_recursive_tmux() {
 
     # shellcheck disable=SC2154
     if echo "$TMUX" | grep -q "$socket" ||
-	    echo "$TMUX_OUTER" | grep -q "$socket"; then
+        echo "$TMUX_OUTER" | grep -q "$socket"; then
 
-	# ensure socket is not used inside itself
+        # ensure socket is not used inside itself
         error_msg "Attempt to use '$TMUX_BIN $conf_file' from within itself"
     fi
 }
-
 
 chk_incompatible_socket() {
     # log_it "><> chk_incompatible_socket()"
@@ -375,7 +374,7 @@ start_tmux() {
 
     define_tmux_env
     [ -n "$TMUX" ] && {
-	# keep track of this tmux to prevent recursive runs
+        # keep track of this tmux to prevent recursive runs
         export TMUX_OUTER="$TMUX"
     }
 
@@ -413,22 +412,22 @@ kill_tmux() {
     # then use more primitive methods
     cmd=" -L $socket"
     pids="$(pgrep -f "$cmd")"
-    if  [ -n "$pids" ]; then
-	log_it "tmux kill-server failed, trying to kill by pid"
-	pgrep -f "$cmd" | xargs kill || {
-	    error_msg "Failed to kill tmux using socket: $socket"
-	}
-	pgrep -f "$cmd" >/dev/null && {
-	    echo "Failed when using normal kill, attempting kill -9"
-	    pgrep -f "$cmd" | xargs kill -9 || {
-		error_msg "Failed to kill tmux using socket: $socket"
-	    }
-	}
-	pgrep -f "$cmd" >/dev/null  && error_msg "Process remains: $pids"
-	echo "Killed: $pids"
+    if [ -n "$pids" ]; then
+        log_it "tmux kill-server failed, trying to kill by pid"
+        pgrep -f "$cmd" | xargs kill || {
+            error_msg "Failed to kill tmux using socket: $socket"
+        }
+        pgrep -f "$cmd" >/dev/null && {
+            echo "Failed when using normal kill, attempting kill -9"
+            pgrep -f "$cmd" | xargs kill -9 || {
+                error_msg "Failed to kill tmux using socket: $socket"
+            }
+        }
+        pgrep -f "$cmd" >/dev/null && error_msg "Process remains: $pids"
+        echo "Killed: $pids"
     elif [ "$ex_code" = 0 ]; then
-	# tmux kill-server succeeded
-	echo "killed tmux server using socket: $socket"
+        # tmux kill-server succeeded
+        echo "killed tmux server using socket: $socket"
     fi
     exit 0
 }
@@ -482,7 +481,7 @@ create_tmux_conf() {
         if $attempt_venv_rebuild; then
             # Creating conf file failed, try once to ensure (the right)
             # tmux_conf library is available
-            if [ "$ex_code" = 23 ]; then
+            if [ "$ex_code" = "$ERROR_INCOMPATIBLE_TMUX_CONF_LIB" ]; then
                 # incorrect version of tmux-conf pip found
                 log_it "=====   trying to recreate venv   ====="
 
@@ -499,6 +498,19 @@ create_tmux_conf() {
                 run_cmd "$cmd"
             fi
         else
+            [ "$ex_code" != 0 ] && {
+                case "$ex_code" in
+                "$ERROR_INCOMPATIBLE_TMUX_CONF_LIB" | \
+                    "$ERROR_MISSING_KEY_IN_MUC_KEYS" | \
+                    "$ERROR_USER_KEY_NOT_OCTAL" | \
+                    "$ERROR_T2_USING_DEF_TMUX_CONF" | \
+                    "$ERROR_STYLE_REDEFINED")
+                    # Capture defined errors that have already displayed an error message
+                    exit "$ex_code"
+                    ;;
+                *) ;;
+                esac
+            }
             error_msg "Try running with -r to install tmux_conf"
         fi
     }
@@ -583,7 +595,7 @@ tmux_2() {
 #
 #===============================================================
 
-d_initial="$PWD" #  original pwd, will switch back to it before starting tmux
+d_initial="$PWD"                            #  original pwd, will switch back to it before starting tmux
 f_myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log #  Logs how the latest tmux env was setup
 f_skip_venv="$HOME"/.myt_skip_venv
 tmux_bin=""
@@ -595,6 +607,13 @@ single_session=true
 t2_env=false
 create_venv=false
 profile=""
+
+# align with mtc_utils.ERROR_... codes
+ERROR_INCOMPATIBLE_TMUX_CONF_LIB=64
+ERROR_MISSING_KEY_IN_MUC_KEYS=65
+ERROR_USER_KEY_NOT_OCTAL=65
+ERROR_T2_USING_DEF_TMUX_CONF=67
+ERROR_STYLE_REDEFINED=68
 
 [ -n "$f_myt_log" ] && {
     rm -f "$f_myt_log" # clear log on each run
@@ -637,11 +656,12 @@ while [ -n "$1" ]; do
         $use_python_venv || {
             error_msg "--venv can't be used when $f_skip_venv is present"
         }
-	create_venv=true ;;
+        create_venv=true
+        ;;
     *)
-	[ -n "$profile" ] && errror_msg "profile can only be defined once"
-	profile="$1"
-	;;
+        [ -n "$profile" ] && errror_msg "profile can only be defined once"
+        profile="$1"
+        ;;
     esac
 
     shift

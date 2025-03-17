@@ -137,3 +137,22 @@ IS_TERMUX = os.environ.get("TERMUX_VERSION") is not None
 #  iSH or Termux, it is indicated in LC_CONSOLE
 #
 LC_CONSOLE = os.getenv("LC_CONSOLE") or ""
+
+# muc keys and default values
+K_M_PLUS = "M-+"
+K_M_PAR_OPEN = "M-("
+K_M_PAR_CLOSE = "M-)"
+K_M_UNDERSCORE = "M-_"
+K_M_P = "M-P"
+K_M_X = "M-X"
+K_CM_H = "C-M-H"
+K_CM_J = "C-M-J"
+K_CM_K = "C-M-K"
+K_CM_L = "C-M-L"
+
+
+ERROR_INCOMPATIBLE_TMUX_CONF_LIB = 64
+ERROR_MISSING_KEY_IN_MUC_KEYS = 65
+ERROR_USER_KEY_NOT_OCTAL = 65
+ERROR_T2_USING_DEF_TMUX_CONF = 67
+ERROR_STYLE_REDEFINED = 68
