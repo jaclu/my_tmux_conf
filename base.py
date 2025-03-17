@@ -1607,8 +1607,8 @@ class BaseConfig(TmuxConfig):
         user keys will be given
         """
         w = self.write
-        pref = 'bind -N "Split window '
-        sw = "split-window -f"
+        # pref = 'bind -N "Split window '
+        # sw = "split-window -f"
         cp = self.current_path_directive
 
         if self.is_tmate() or not self.vers_ok(2.3):
@@ -1619,13 +1619,34 @@ class BaseConfig(TmuxConfig):
             return
 
         w(
-            f"""# auc_split_entire_window()
-            {pref}left - P+C-M-Left"    {self.muc_keys[mtc_utils.K_CM_H]}  {sw}hb {cp}
-            {pref}down - P+C-M-Down"    {self.muc_keys[mtc_utils.K_CM_J]}  {sw}v  {cp}
-            {pref}up - P+C-M-Up"        {self.muc_keys[mtc_utils.K_CM_K]}  {sw}vb {cp}
-            {pref}right - P+C-M-Right"  {self.muc_keys[mtc_utils.K_CM_L]}  {sw}h  {cp}
-            """
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_H)}Split window left'  {
+                self.muc_keys[mtc_utils.K_CM_H]
+            }  split-window -fhb {cp}"
         )
+        w(
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_J)}Split window down'  {
+                self.muc_keys[mtc_utils.K_CM_J]
+            }  split-window -fv {cp}"
+        )
+        w(
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_K)}Split window up'  {
+                self.muc_keys[mtc_utils.K_CM_K]
+            }  split-window -fvb {cp}"
+        )
+        w(
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_L)}Split window right'  {
+                self.muc_keys[mtc_utils.K_CM_L]
+            }  split-window -fh {cp}"
+        )
+
+        # w(
+        #     f"""# auc_split_entire_window()
+        #     {pref}left - P+C-M-Left"    {self.muc_keys[mtc_utils.K_CM_H]}  {sw}hb {cp}
+        #     {pref}down - P+C-M-Down"    {self.muc_keys[mtc_utils.K_CM_J]}  {sw}v  {cp}
+        #     {pref}up - P+C-M-Up"        {self.muc_keys[mtc_utils.K_CM_K]}  {sw}vb {cp}
+        #     {pref}right - P+C-M-Right"  {self.muc_keys[mtc_utils.K_CM_L]}  {sw}h  {cp}
+        #     """
+        # )
 
     #
     #  Utility methods

@@ -418,7 +418,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         # argh inside f-strings {/} needs to be contained in variables...
         # curly_open = "{"
         # curly_close = "}"
-        w(
+        w(  # not in root 308 310 311 312 316 324
             f"""
         #
         #  iSH console doesn't generate the right keys for
