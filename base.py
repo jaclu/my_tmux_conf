@@ -1476,7 +1476,7 @@ class BaseConfig(TmuxConfig):
     def muc_non_default_prefix(self, default):
         # If a non-default is used, display it as a prefix
         if default != self.muc_keys[default]:
-            return f"Use key: {default} | "
+            return f"(Use key: {default} ) "
         return ""
 
     def auc_meta_ses_handling(self):
