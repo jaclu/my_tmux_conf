@@ -31,9 +31,12 @@
 #
 #  The alternate session has its own plugin directory if jaclu/tpm is used
 #
-#  Normally exit 1 is used for errors, with the exception:
-#   incorrect tmux_conf python lib installed - triggers exit ERROR_INCOMPATIBLE_TMUX_CONF
-#   In order to hint to myt to potentially try to recreate the venv
+#  Custom exit codes are defined in mtc_utils.ERROR_
+#  Those print customized error messages, so myt can just exit without
+#  printing it's own error message.
+#
+#  In the case of ERROR_INCOMPATIBLE_TMUX_CONF_LIB
+#    myt will attempt to recreate the venv (if used)
 #
 
 # pylint: disable=C0116,C0302
@@ -58,7 +61,6 @@ from tablet_kbd import special_consoles_config
 
 TMUX_CONF_NEEDED = "0.20.0"
 
-ERROR_INCOMPATIBLE_TMUX_CONF = 23
 
 # https://youtu.be/yFLY0SVutgM?si=VoKETDw39BAUHfST&t=420
 # class Environment(StrEnum):
@@ -231,7 +233,7 @@ class BaseConfig(TmuxConfig):
             if self.conf_file == os.path.expanduser("~/.tmux.conf"):
                 print()
                 print("ERROR: T2_ENV & ~/.tmux.conf can't be combined!")
-                sys.exit(1)
+                sys.exit(mtc_utils.ERROR_T2_USING_DEF_TMUX_CONF)
             conf_dir = os.path.dirname(self.conf_file)
             self.tpm_location = os.path.join(conf_dir, "plugins", "tpm")
             self.prefix_key = self.prefix_key_T2
@@ -259,10 +261,12 @@ class BaseConfig(TmuxConfig):
         if self.style:
             # return  # error_disabled
             # used to prevent if multiple styles are inherited and colliding
-            sys.exit(
+            print()
+            print(
                 f"ERROR: Style already assigned as: {self.style}, "
                 f"Can not use style: {this_style}"
             )
+            sys.exit(mtc_utils.ERROR_STYLE_REDEFINED)
         self.style = this_style
         print(f"Style used is: >> {self.style} <<")
 
@@ -1863,8 +1867,7 @@ timer_end() {{
             print()
             print(f"ERROR: Needs tmux_conf lib version: {TMUX_CONF_NEEDED}")
             print("       Failed to read version, probably too old()")
-            print()
-            sys.exit(1)
+            sys.exit(mtc_utils.ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
 
         maj_vers_found = ".".join(lib_vers_found.split(".")[:2])
         maj_vers_needed = ".".join(TMUX_CONF_NEEDED.split(".")[:2])
@@ -1891,7 +1894,7 @@ timer_end() {{
             print(details)
         print()
         print(f"vers found: {lib_vers_found}   needs: {TMUX_CONF_NEEDED}")
-        sys.exit(ERROR_INCOMPATIBLE_TMUX_CONF)
+        sys.exit(mtc_utils.ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
 
     def euro_fix(self, sequence: str):
         """Some keybs fail to render the Euro sign for M-S-2
@@ -1902,7 +1905,9 @@ timer_end() {{
 
         w = self.write
         if sequence[:1] != "\\":
-            sys.exit(f"ERROR: euro_fix({sequence}) must be given in octal notation")
+            print()
+            print(f"ERROR: euro_fix({sequence}) must be given in octal notation")
+            sys.exit(mtc_utils.ERROR_USER_KEY_NOT_OCTAL)
         currency = mtc_utils.get_currency()
         if currency == "EUR":
             # print("><> Wiill write euro workaround")
