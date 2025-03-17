@@ -471,11 +471,11 @@ class IshConsole(LimitedKbdSpecialHandling):
         """
         )
 
-        print("---  self.tc.muc_keys  ---")
-        for k, v in self.tc.muc_keys.items():
-            print(f"  key: [{k}] value: [{v}]")
-        print()
-        # sys.exit("Aborting after listing muc_keys")
+        if any("User" in key for key in self.tc.muc_keys):
+            print("---  self.tc.muc_keys  ---")
+            for k, v in self.tc.muc_keys.items():
+                print(f"  key: {k} value: {v}")
+            print()
 
         muc_values = set(self.tc.muc_keys.values())
         # for key, sequence in uk_ms_char.items():
