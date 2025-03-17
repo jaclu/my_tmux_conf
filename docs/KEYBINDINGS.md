@@ -90,13 +90,16 @@ dependent actions.
 
 ### General environment
 
-| Key       | Description              |
-| --------- | ------------------------ |
-| `<p> N`   | Navigate ses/win/pane    |
-| `<p> O`   | Scratchpad popup session |
-| `<p> M-P` | List all plugins defined |
-| `<p> R`   | Re-source config         |
-| `<p> M-X` | Kill Server              |
+| Key       | Default | Description              |
+| --------- | ------- | ------------------------ |
+|           | `C-v`   | Page Down                |
+|           | `M-v`   | Page Up                  |
+|           |         |                          |
+| `<p> N`   |         | Navigate ses/win/pane    |
+| `<p> O`   |         | Scratchpad popup session |
+| `<p> M-P` |         | List all plugins defined |
+| `<p> R`   |         | Re-source config         |
+| `<p> M-X` |         | Kill Server              |
 
 ### Mouse handling
 
