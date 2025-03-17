@@ -181,20 +181,29 @@ class BaseConfig(TmuxConfig):
         )
 
         self.tablet_keyb = None
+        self.default_m_plus = "M-+"
+        self.default_m_par_open = "M-("
+        self.default_m_par_close = "M-)"
         self.default_m_underscore = "M-_"
+        self.default_m_p = "M-P"
+        self.default_m_x = "M-X"
+        self.default_cmh = "C-M-h"
+        self.default_cmj = "C-M-j"
+        self.default_cmk = "C-M-k"
+        self.default_cml = "C-M-l"
         self.muc_keys = {
             # Kbd binds that might need to be replaced by user-keys on nonstandard
             # consoles
-            "M_plus": "M-+",
-            "M_par_open": "M-(",
-            "M_par_close": "M-)",
-            "M_underscore": self.default_m_underscore,
-            "M_P": "M-P",
-            "M_X": "M-X",
-            "C_M_h": "C-M-h",
-            "C_M_j": "C-M-j",
-            "C_M_k": "C-M-k",
-            "C_M_l": "C-M-l",
+            self.default_m_plus: self.default_m_plus,  # M_plus
+            self.default_m_par_open: self.default_m_par_open,  # M_par_open
+            self.default_m_par_close: self.default_m_par_close,  # M_par_close
+            self.default_m_underscore: self.default_m_underscore,  # M_underscore
+            self.default_m_p: self.default_m_p,  # M-P
+            self.default_m_x: self.default_m_x,  # M_X
+            self.default_cmh: self.default_cmh,  # C_M_h
+            self.default_cmj: self.default_cmj,  # C_M_j
+            self.default_cmk: self.default_cmk,  # C_M_k
+            self.default_cml: self.default_cml,  # C_M_l
         }
         self.define_opt_params()
 
@@ -1473,23 +1482,26 @@ class BaseConfig(TmuxConfig):
             #  the intended action fairly simply.
             #
 
-    def muc_non_default_prefix(self, default, current):
+    def muc_non_default_prefix(self, default):
         # If a non-default is used, display it as a prefix
-        if default != current:
-            return f"{default} - "
+        if default != self.muc_keys[default]:
+            return f"Press: {default} - "
         return ""
 
     def auc_meta_ses_handling(self):
         # Defaults might be overridden by TabletBtKbd()
         self.write("# auc_meta_ses_handling()")
 
-        if self.muc_keys["M_plus"] in (None, ""):
-            sys.exit("ERROR: auc_meta_ses_handling() M_plus undefined!")
+        if self.muc_keys[self.default_m_plus] in (None, ""):
+            sys.exit(f"ERROR: auc_meta_ses_handling() {self.default_m_plus} undefined!")
 
         w = self.write
         if self.vers_ok(1.0):
             s = (
-                'bind -N "Create new session  - P++"      '
+                f"bind -N '{
+                    self.muc_non_default_prefix(self.default_m_plus)
+                }                'bind -N "
+                Create new session  - P++"      '
                 f"-n  {self.muc_keys['M_plus']}  command-prompt "
             )
             if self.vers_ok(1.5):
@@ -1498,21 +1510,24 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.2):
             w(
-                f"bind -N '{self.muc_non_default_prefix(
-                    self.default_m_underscore,
-                    self.muc_keys['M_underscore'])
+                f"bind -N '{
+                    self.muc_non_default_prefix(self.default_m_underscore)
                 }Switch to last session  - P+_'  "
-                f"-n  {self.muc_keys['M_underscore']}  switch-client -l"
+                f"-n  {self.muc_keys[self.default_m_underscore]}  switch-client -l"
             )
             w(
-                "bind -N 'Select previous session  - P+( C-M-Up'"
-                f" -n  {self.muc_keys['M_par_open']}  switch-client -p"
+                f"bind -N '{
+                    self.muc_non_default_prefix(self.default_m_par_open)
+                }Select previous session  - P+( C-M-Up'"
+                f" -n  {self.muc_keys[self.default_m_par_open]}  switch-client -p"
             )
 
             # P+)  {self.muc_keys['M_par_close']} C-M-Down
             w(
-                "bind -N 'Select next session  - P+) C-M-Down'   "
-                f"-n  {self.muc_keys['M_par_close']}  switch-client -n"
+                f"bind -N '{
+                    self.muc_non_default_prefix(self.default_m_par_close)
+                }Select next session  - P+) C-M-Down'   "
+                f"-n  {self.muc_keys[self.default_m_par_close]}  switch-client -n"
             )
 
     def auc_display_plugins_used(self):  # used by iSH Console
@@ -1528,12 +1543,6 @@ class BaseConfig(TmuxConfig):
             # There is no plugin support...
             return
 
-        if self.muc_keys["M_P"] != "M-P":
-            # If a custom defined key is used the hint won't be helpful about
-            # that the key combo for this is...
-            note_prefix = "Press: P+M-P - "
-        else:
-            note_prefix = ""
         #
         # The conf_file needs to be mentioned below to make sure
         # the -p2 run-shell doesn't complain if a non-standard config is used
@@ -1541,7 +1550,9 @@ class BaseConfig(TmuxConfig):
         #
         repo_dir = os.path.dirname(__file__)
         self.write(
-            f'bind -N "{note_prefix}List all plugins defined"  {self.muc_keys["M_P"]}  '
+            f'bind -N "{
+                self.muc_non_default_prefix(self.default_m_p)
+            }List all plugins defined"  {self.muc_keys[self.default_m_p]}  '
             'run-shell "'
             '$TMUX_BIN display-message \\"Generating plugin list\\" \\; '
             # 1st load venv if used
@@ -1564,14 +1575,11 @@ class BaseConfig(TmuxConfig):
             return
 
         self.write("# auc_kill_tmux_server()")
-        if self.muc_keys["M_X"] != "M-X":
-            note_prefix = "Press: M-X - "
-        else:
-            note_prefix = ""
-
         s = (
-            f'bind -N "{note_prefix}Kill tmux server"  '
-            f"{self.muc_keys['M_X']}  confirm-before"
+            f'bind -N "{
+                self.muc_non_default_prefix(self.default_m_x)
+            }Kill tmux server"  '
+            f"{self.muc_keys[self.default_m_x]}  confirm-before"
         )
         if self.vers_ok(1.5):
             s += f' -p "kill tmux server {self.conf_file}? (y/n)"'
