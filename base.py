@@ -151,6 +151,21 @@ class BaseConfig(TmuxConfig):
     #
     use_prefix_arrow_nav_keys = False
 
+    muc_keys = {
+        # Kbd binds that might need to be replaced by user-keys on nonstandard
+        # consoles
+        mtc_utils.K_M_PLUS: mtc_utils.K_M_PLUS,
+        mtc_utils.K_M_PAR_OPEN: mtc_utils.K_M_PAR_OPEN,
+        mtc_utils.K_M_PAR_CLOSE: mtc_utils.K_M_PAR_CLOSE,
+        mtc_utils.K_M_UNDERSCORE: mtc_utils.K_M_UNDERSCORE,
+        mtc_utils.K_M_P: mtc_utils.K_M_P,
+        mtc_utils.K_M_X: mtc_utils.K_M_X,
+        mtc_utils.K_CM_H: mtc_utils.K_CM_H,
+        mtc_utils.K_CM_J: mtc_utils.K_CM_J,
+        mtc_utils.K_CM_K: mtc_utils.K_CM_K,
+        mtc_utils.K_CM_L: mtc_utils.K_CM_L,
+    }
+
     # use_debug_log = True  # if True, debug log will be printed
 
     # pylint: disable=too-many-positional-arguments,too-many-arguments
@@ -181,23 +196,7 @@ class BaseConfig(TmuxConfig):
             clear_plugins=clear_plugins,
             plugins_display=plugins_display,
         )
-
         self.tablet_keyb = None
-        self.default_m_underscore = "M-_"
-        self.muc_keys = {
-            # Kbd binds that might need to be replaced by user-keys on nonstandard
-            # consoles
-            "M_plus": "M-+",
-            "M_par_open": "M-(",
-            "M_par_close": "M-)",
-            "M_underscore": self.default_m_underscore,
-            "M_P": "M-P",
-            "M_X": "M-X",
-            "C_M_h": "C-M-h",
-            "C_M_j": "C-M-j",
-            "C_M_k": "C-M-k",
-            "C_M_l": "C-M-l",
-        }
         self.define_opt_params()
 
         if self.vers_ok(1.8):
@@ -334,6 +333,7 @@ class BaseConfig(TmuxConfig):
         """
         self.tablet_keyb = special_consoles_config(self)
         self.remove_unwanted_default_bindings()
+        self.check_all_muc_keys_are_defined()
         self.connecting_terminal()
         self.general_environment()
         self.session_handling()
@@ -1477,24 +1477,49 @@ class BaseConfig(TmuxConfig):
             #  the intended action fairly simply.
             #
 
-    def muc_non_default_prefix(self, default, current):
+    #
+    #  Handling of muc_keys - keys limited keyboards might need to override
+    #  with user keys
+    #
+
+    def check_if_muc_key_is_defined(self, k):
+        # should raise key error if missing
+        try:
+            _ = self.muc_keys[k]
+        except KeyError:
+            print()
+            print(f"ERROR: The key '{k}' was not defined in self.muc_keys")
+            sys.exit(mtc_utils.ERROR_MISSING_KEY_IN_MUC_KEYS)
+
+    def check_all_muc_keys_are_defined(self):
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_PLUS)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_PAR_OPEN)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_PAR_CLOSE)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_UNDERSCORE)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_P)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_X)
+        self.check_if_muc_key_is_defined(mtc_utils.K_CM_H)
+        self.check_if_muc_key_is_defined(mtc_utils.K_CM_J)
+        self.check_if_muc_key_is_defined(mtc_utils.K_CM_K)
+        self.check_if_muc_key_is_defined(mtc_utils.K_CM_L)
+
+    def muc_non_default_value(self, default):
         # If a non-default is used, display it as a prefix
-        if default != current:
-            return f"{default} - "
+        if default != self.muc_keys[default]:
+            return f"(Use key: {default} ) "
         return ""
 
     def auc_meta_ses_handling(self):
         # Defaults might be overridden by TabletBtKbd()
         self.write("# auc_meta_ses_handling()")
 
-        if self.muc_keys["M_plus"] in (None, ""):
-            sys.exit("ERROR: auc_meta_ses_handling() M_plus undefined!")
-
         w = self.write
         if self.vers_ok(1.0):
             s = (
-                'bind -N "Create new session  - P++"      '
-                f"-n  {self.muc_keys['M_plus']}  command-prompt "
+                f'bind -N "{
+                    self.muc_non_default_value(mtc_utils.K_M_PLUS)
+                }Create new session  - P++"      '
+                f"-n  {self.muc_keys[mtc_utils.K_M_PLUS]}  command-prompt "
             )
             if self.vers_ok(1.5):
                 s += ' -I "?"'
@@ -1502,21 +1527,22 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.2):
             w(
-                f"bind -N '{self.muc_non_default_prefix(
-                    self.default_m_underscore,
-                    self.muc_keys['M_underscore'])
+                f"bind -N '{
+                    self.muc_non_default_value(mtc_utils.K_M_UNDERSCORE)
                 }Switch to last session  - P+_'  "
-                f"-n  {self.muc_keys['M_underscore']}  switch-client -l"
+                f"-n  {self.muc_keys[mtc_utils.K_M_UNDERSCORE]}  switch-client -l"
             )
             w(
-                "bind -N 'Select previous session  - P+( C-M-Up'"
-                f" -n  {self.muc_keys['M_par_open']}  switch-client -p"
+                f"bind -N '{
+                    self.muc_non_default_value(mtc_utils.K_M_PAR_OPEN)
+                }Select previous session  - P+( C-M-Up'"
+                f" -n  {self.muc_keys[mtc_utils.K_M_PAR_OPEN]}  switch-client -p"
             )
-
-            # P+)  {self.muc_keys['M_par_close']} C-M-Down
             w(
-                "bind -N 'Select next session  - P+) C-M-Down'   "
-                f"-n  {self.muc_keys['M_par_close']}  switch-client -n"
+                f"bind -N '{
+                    self.muc_non_default_value(mtc_utils.K_M_PAR_CLOSE)
+                }Select next session  - P+) C-M-Down'   "
+                f"-n  {self.muc_keys[mtc_utils.K_M_PAR_CLOSE]}  switch-client -n"
             )
 
     def auc_display_plugins_used(self):  # used by iSH Console
@@ -1532,12 +1558,6 @@ class BaseConfig(TmuxConfig):
             # There is no plugin support...
             return
 
-        if self.muc_keys["M_P"] != "M-P":
-            # If a custom defined key is used the hint won't be helpful about
-            # that the key combo for this is...
-            note_prefix = "Press: P+M-P - "
-        else:
-            note_prefix = ""
         #
         # The conf_file needs to be mentioned below to make sure
         # the -p2 run-shell doesn't complain if a non-standard config is used
@@ -1545,7 +1565,9 @@ class BaseConfig(TmuxConfig):
         #
         repo_dir = os.path.dirname(__file__)
         self.write(
-            f'bind -N "{note_prefix}List all plugins defined"  {self.muc_keys["M_P"]}  '
+            f'bind -N "{
+                self.muc_non_default_value(mtc_utils.K_M_P)
+            }List all plugins defined"  {self.muc_keys[mtc_utils.K_M_P]}  '
             'run-shell "'
             '$TMUX_BIN display-message \\"Generating plugin list\\" \\; '
             # 1st load venv if used
@@ -1568,14 +1590,9 @@ class BaseConfig(TmuxConfig):
             return
 
         self.write("# auc_kill_tmux_server()")
-        if self.muc_keys["M_X"] != "M-X":
-            note_prefix = "Press: M-X - "
-        else:
-            note_prefix = ""
-
         s = (
-            f'bind -N "{note_prefix}Kill tmux server"  '
-            f"{self.muc_keys['M_X']}  confirm-before"
+            f'bind -N "{self.muc_non_default_value(mtc_utils.K_M_X)}Kill tmux server"  '
+            f"{self.muc_keys[mtc_utils.K_M_X]}  confirm-before"
         )
         if self.vers_ok(1.5):
             s += f' -p "kill tmux server {self.conf_file}? (y/n)"'
@@ -1590,8 +1607,8 @@ class BaseConfig(TmuxConfig):
         user keys will be given
         """
         w = self.write
-        pref = 'bind -N "Split window '
-        sw = "split-window -f"
+        # pref = 'bind -N "Split window '
+        # sw = "split-window -f"
         cp = self.current_path_directive
 
         if self.is_tmate() or not self.vers_ok(2.3):
@@ -1602,13 +1619,35 @@ class BaseConfig(TmuxConfig):
             return
 
         w(
-            f"""# auc_split_entire_window()
-            {pref}left - P+C-M-Left"    {self.muc_keys["C_M_h"]}  {sw}hb {cp}
-            {pref}down - P+C-M-Down"    {self.muc_keys["C_M_j"]}  {sw}v  {cp}
-            {pref}up - P+C-M-Up"        {self.muc_keys["C_M_k"]}  {sw}vb {cp}
-            {pref}right - P+C-M-Right"  {self.muc_keys["C_M_l"]}  {sw}h  {cp}
-            """
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_H)}Split window left'   {
+                self.muc_keys[mtc_utils.K_CM_H]
+            }  split-window -fhb {cp}"
         )
+        w(
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_J)}Split window down'   {
+                self.muc_keys[mtc_utils.K_CM_J]
+            }  split-window -fv  {cp}"
+        )
+        w(
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_K)}Split window up'     {
+                self.muc_keys[mtc_utils.K_CM_K]
+            }  split-window -fvb {cp}"
+        )
+        w(
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_L)}Split window right'  {
+                self.muc_keys[mtc_utils.K_CM_L]
+            }  split-window -fh  {cp}"
+        )
+        w()
+
+        # w(
+        #     f"""# auc_split_entire_window()
+        #     {pref}left - P+C-M-Left"    {self.muc_keys[mtc_utils.K_CM_H]}  {sw}hb {cp}
+        #     {pref}down - P+C-M-Down"    {self.muc_keys[mtc_utils.K_CM_J]}  {sw}v  {cp}
+        #     {pref}up - P+C-M-Up"        {self.muc_keys[mtc_utils.K_CM_K]}  {sw}vb {cp}
+        #     {pref}right - P+C-M-Right"  {self.muc_keys[mtc_utils.K_CM_L]}  {sw}h  {cp}
+        #     """
+        # )
 
     #
     #  Utility methods
