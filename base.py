@@ -181,13 +181,14 @@ class BaseConfig(TmuxConfig):
         )
 
         self.tablet_keyb = None
+        self.default_m_underscore = "M-_"
         self.muc_keys = {
             # Kbd binds that might need to be replaced by user-keys on nonstandard
             # consoles
             "M_plus": "M-+",
             "M_par_open": "M-(",
             "M_par_close": "M-)",
-            "M_underscore": "M-_",
+            "M_underscore": self.default_m_underscore,
             "M_P": "M-P",
             "M_X": "M-X",
             "C_M_h": "C-M-h",
@@ -1472,6 +1473,12 @@ class BaseConfig(TmuxConfig):
             #  the intended action fairly simply.
             #
 
+    def muc_non_default_prefix(self, default, current):
+        # If a non-default is used, display it as a prefix
+        if default != current:
+            return f"{current} - "
+        return ""
+
     def auc_meta_ses_handling(self):
         # Defaults might be overridden by TabletBtKbd()
         self.write("# auc_meta_ses_handling()")
@@ -1491,7 +1498,10 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.2):
             w(
-                "bind -N 'Switch to last session  - P+_'  "
+                f"bind -N '{self.muc_non_default_prefix(
+                    self.default_m_underscore,
+                    self.muc_keys['M_underscore'])
+                }Switch to last session  - P+_'  "
                 f"-n  {self.muc_keys['M_underscore']}  switch-client -l"
             )
             w(
