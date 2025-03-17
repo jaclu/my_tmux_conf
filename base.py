@@ -1126,17 +1126,20 @@ class BaseConfig(TmuxConfig):
                 bind -N "Select pane up - P+Up M-Up"          -r  k  {pane_up}
                 bind -N "Select pane right - P+Right M-Right" -r  l  {pane_right}
 
-                bind -N "Select pane left - P+h M-Left"   -r  Left   {pane_left}
-                bind -N "Select pane down - P+j M-Down"   -r  Down   {pane_down}
-                bind -N "Select pane up - P+k M-Up"       -r  Up     {pane_up}
-                bind -N "Select pane right - P+l M-Right" -r  Right  {pane_right}
-
                 bind -N "Select pane left - P+h P+Left"   -n  M-Left   {pane_left}
                 bind -N "Select pane down - P+j P+Down"   -n  M-Down   {pane_down}
                 bind -N "Select pane up - P+k P+Up"       -n  M-Up     {pane_up}
                 bind -N "Select pane right - P+l P+Right" -n  M-Right  {pane_right}
                 """
             )
+            if not self.use_prefix_arrow_nav_keys:
+                w(
+                    f"""bind -N "Select pane left - P+h M-Left"   -r  Left   {pane_left}
+                        bind -N "Select pane down - P+j M-Down"   -r  Down   {pane_down}
+                        bind -N "Select pane up - P+k M-Up"       -r  Up     {pane_up}
+                        bind -N "Select pane right - P+l M-Right" -r  Right  {pane_right}
+                        """
+                )
 
         if self.vers_ok(2.4):
             #
@@ -1481,7 +1484,6 @@ class BaseConfig(TmuxConfig):
     #  Handling of muc_keys - keys limited keyboards might need to override
     #  with user keys
     #
-
     def check_if_muc_key_is_defined(self, k):
         # should raise key error if missing
         try:
