@@ -1619,25 +1619,26 @@ class BaseConfig(TmuxConfig):
             return
 
         w(
-            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_H)}Split window left'  {
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_H)}Split window left'   {
                 self.muc_keys[mtc_utils.K_CM_H]
             }  split-window -fhb {cp}"
         )
         w(
-            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_J)}Split window down'  {
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_J)}Split window down'   {
                 self.muc_keys[mtc_utils.K_CM_J]
-            }  split-window -fv {cp}"
+            }  split-window -fv  {cp}"
         )
         w(
-            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_K)}Split window up'  {
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_K)}Split window up'     {
                 self.muc_keys[mtc_utils.K_CM_K]
             }  split-window -fvb {cp}"
         )
         w(
             f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_L)}Split window right'  {
                 self.muc_keys[mtc_utils.K_CM_L]
-            }  split-window -fh {cp}"
+            }  split-window -fh  {cp}"
         )
+        w()
 
         # w(
         #     f"""# auc_split_entire_window()
