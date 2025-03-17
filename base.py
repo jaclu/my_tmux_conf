@@ -181,29 +181,20 @@ class BaseConfig(TmuxConfig):
         )
 
         self.tablet_keyb = None
-        self.muc_def_m_plus = "M-+"
-        self.muc_def_m_par_open = "M-("
-        self.muc_def_m_par_close = "M-)"
-        self.muc_def_m_underscore = "M-_"
-        self.muc_def_m_p = "M-P"
-        self.muc_def_m_x = "M-X"
-        self.muc_def_cmh = "C-M-h"
-        self.muc_def_cmj = "C-M-j"
-        self.muc_def_cmk = "C-M-k"
-        self.muc_def_cml = "C-M-l"
+
         self.muc_keys = {
             # Kbd binds that might need to be replaced by user-keys on nonstandard
             # consoles
-            self.muc_def_m_plus: self.muc_def_m_plus,  # M_plus
-            self.muc_def_m_par_open: self.muc_def_m_par_open,  # M_par_open
-            self.muc_def_m_par_close: self.muc_def_m_par_close,  # M_par_close
-            self.muc_def_m_underscore: self.muc_def_m_underscore,  # M_underscore
-            self.muc_def_m_p: self.muc_def_m_p,  # M-P
-            self.muc_def_m_x: self.muc_def_m_x,  # M_X
-            self.muc_def_cmh: self.muc_def_cmh,  # C_M_h
-            self.muc_def_cmj: self.muc_def_cmj,  # C_M_j
-            self.muc_def_cmk: self.muc_def_cmk,  # C_M_k
-            self.muc_def_cml: self.muc_def_cml,  # C_M_l
+            mtc_utils.K_M_PLUS: mtc_utils.K_M_PLUS,  # M_plus
+            mtc_utils.K_M_PAR_OPEN: mtc_utils.K_M_PAR_OPEN,  # M_par_open
+            mtc_utils.K_M_PAR_CLOSE: mtc_utils.K_M_PAR_CLOSE,  # M_par_close
+            mtc_utils.K_M_UNDERSCORE: mtc_utils.K_M_UNDERSCORE,  # M_underscore
+            mtc_utils.K_M_P: mtc_utils.K_M_P,  # M-P
+            mtc_utils.K_M_X: mtc_utils.K_M_X,  # M_X
+            mtc_utils.K_CM_H: mtc_utils.K_CM_H,  # C_M_h
+            mtc_utils.K_CM_J: mtc_utils.K_CM_J,  # C_M_j
+            mtc_utils.K_CM_K: mtc_utils.K_CM_K,  # C_M_k
+            mtc_utils.K_CM_L: mtc_utils.K_CM_L,  # C_M_l
         }
         self.define_opt_params()
 
@@ -1492,16 +1483,16 @@ class BaseConfig(TmuxConfig):
         # Defaults might be overridden by TabletBtKbd()
         self.write("# auc_meta_ses_handling()")
 
-        if self.muc_keys[self.muc_def_m_plus] in (None, ""):
-            sys.exit(f"ERROR: auc_meta_ses_handling() {self.muc_def_m_plus} undefined!")
+        if self.muc_keys[mtc_utils.K_M_PLUS] in (None, ""):
+            sys.exit(f"ERROR: auc_meta_ses_handling() {mtc_utils.K_M_PLUS} undefined!")
 
         w = self.write
         if self.vers_ok(1.0):
             s = (
                 f'bind -N "{
-                    self.muc_non_default_prefix(self.muc_def_m_plus)
+                    self.muc_non_default_prefix(mtc_utils.K_M_PLUS)
                 }Create new session  - P++"      '
-                f"-n  {self.muc_keys[self.muc_def_m_plus]}  command-prompt "
+                f"-n  {self.muc_keys[mtc_utils.K_M_PLUS]}  command-prompt "
             )
             if self.vers_ok(1.5):
                 s += ' -I "?"'
@@ -1510,23 +1501,23 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.2):
             w(
                 f"bind -N '{
-                    self.muc_non_default_prefix(self.muc_def_m_underscore)
+                    self.muc_non_default_prefix(mtc_utils.K_M_UNDERSCORE)
                 }Switch to last session  - P+_'  "
-                f"-n  {self.muc_keys[self.muc_def_m_underscore]}  switch-client -l"
+                f"-n  {self.muc_keys[mtc_utils.K_M_UNDERSCORE]}  switch-client -l"
             )
             w(
                 f"bind -N '{
-                    self.muc_non_default_prefix(self.muc_def_m_par_open)
+                    self.muc_non_default_prefix(mtc_utils.K_M_PAR_OPEN)
                 }Select previous session  - P+( C-M-Up'"
-                f" -n  {self.muc_keys[self.muc_def_m_par_open]}  switch-client -p"
+                f" -n  {self.muc_keys[mtc_utils.K_M_PAR_OPEN]}  switch-client -p"
             )
 
             # P+)  {self.muc_keys['M_par_close']} C-M-Down
             w(
                 f"bind -N '{
-                    self.muc_non_default_prefix(self.muc_def_m_par_close)
+                    self.muc_non_default_prefix(mtc_utils.K_M_PAR_CLOSE)
                 }Select next session  - P+) C-M-Down'   "
-                f"-n  {self.muc_keys[self.muc_def_m_par_close]}  switch-client -n"
+                f"-n  {self.muc_keys[mtc_utils.K_M_PAR_CLOSE]}  switch-client -n"
             )
 
     def auc_display_plugins_used(self):  # used by iSH Console
@@ -1550,8 +1541,8 @@ class BaseConfig(TmuxConfig):
         repo_dir = os.path.dirname(__file__)
         self.write(
             f'bind -N "{
-                self.muc_non_default_prefix(self.muc_def_m_p)
-            }List all plugins defined"  {self.muc_keys[self.muc_def_m_p]}  '
+                self.muc_non_default_prefix(mtc_utils.K_M_P)
+            }List all plugins defined"  {self.muc_keys[mtc_utils.K_M_P]}  '
             'run-shell "'
             '$TMUX_BIN display-message \\"Generating plugin list\\" \\; '
             # 1st load venv if used
@@ -1575,8 +1566,8 @@ class BaseConfig(TmuxConfig):
 
         self.write("# auc_kill_tmux_server()")
         s = (
-            f'bind -N "{self.muc_non_default_prefix(self.muc_def_m_x)}Kill tmux server"  '
-            f"{self.muc_keys[self.muc_def_m_x]}  confirm-before"
+            f'bind -N "{self.muc_non_default_prefix(mtc_utils.K_M_X)}Kill tmux server"  '
+            f"{self.muc_keys[mtc_utils.K_M_X]}  confirm-before"
         )
         if self.vers_ok(1.5):
             s += f' -p "kill tmux server {self.conf_file}? (y/n)"'
@@ -1604,10 +1595,10 @@ class BaseConfig(TmuxConfig):
 
         w(
             f"""# auc_split_entire_window()
-            {pref}left - P+C-M-Left"    {self.muc_keys[self.muc_def_cmh]}  {sw}hb {cp}
-            {pref}down - P+C-M-Down"    {self.muc_keys[self.muc_def_cmj]}  {sw}v  {cp}
-            {pref}up - P+C-M-Up"        {self.muc_keys[self.muc_def_cmk]}  {sw}vb {cp}
-            {pref}right - P+C-M-Right"  {self.muc_keys[self.muc_def_cml]}  {sw}h  {cp}
+            {pref}left - P+C-M-Left"    {self.muc_keys[mtc_utils.K_CM_H]}  {sw}hb {cp}
+            {pref}down - P+C-M-Down"    {self.muc_keys[mtc_utils.K_CM_J]}  {sw}v  {cp}
+            {pref}up - P+C-M-Up"        {self.muc_keys[mtc_utils.K_CM_K]}  {sw}vb {cp}
+            {pref}right - P+C-M-Right"  {self.muc_keys[mtc_utils.K_CM_L]}  {sw}h  {cp}
             """
         )
 
