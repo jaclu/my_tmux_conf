@@ -31,9 +31,12 @@
 #
 #  The alternate session has its own plugin directory if jaclu/tpm is used
 #
-#  Normally exit 1 is used for errors, with the exception:
-#   incorrect tmux_conf python lib installed - triggers exit ERROR_INCOMPATIBLE_TMUX_CONF
-#   In order to hint to myt to potentially try to recreate the venv
+#  Custom exit codes are defined in mtc_utils.ERROR_
+#  Those print customized error messages, so myt can just exit without
+#  printing it's own error message.
+#
+#  In the case of ERROR_INCOMPATIBLE_TMUX_CONF_LIB
+#    myt will attempt to recreate the venv (if used)
 #
 
 # pylint: disable=C0116,C0302
@@ -58,7 +61,6 @@ from tablet_kbd import special_consoles_config
 
 TMUX_CONF_NEEDED = "0.20.0"
 
-ERROR_INCOMPATIBLE_TMUX_CONF = 23
 
 # https://youtu.be/yFLY0SVutgM?si=VoKETDw39BAUHfST&t=420
 # class Environment(StrEnum):
@@ -149,6 +151,21 @@ class BaseConfig(TmuxConfig):
     #
     use_prefix_arrow_nav_keys = False
 
+    muc_keys = {
+        # Kbd binds that might need to be replaced by user-keys on nonstandard
+        # consoles
+        mtc_utils.K_M_PLUS: mtc_utils.K_M_PLUS,
+        mtc_utils.K_M_PAR_OPEN: mtc_utils.K_M_PAR_OPEN,
+        mtc_utils.K_M_PAR_CLOSE: mtc_utils.K_M_PAR_CLOSE,
+        mtc_utils.K_M_UNDERSCORE: mtc_utils.K_M_UNDERSCORE,
+        mtc_utils.K_M_P: mtc_utils.K_M_P,
+        mtc_utils.K_M_X: mtc_utils.K_M_X,
+        mtc_utils.K_CM_H: mtc_utils.K_CM_H,
+        mtc_utils.K_CM_J: mtc_utils.K_CM_J,
+        mtc_utils.K_CM_K: mtc_utils.K_CM_K,
+        mtc_utils.K_CM_L: mtc_utils.K_CM_L,
+    }
+
     # use_debug_log = True  # if True, debug log will be printed
 
     # pylint: disable=too-many-positional-arguments,too-many-arguments
@@ -179,23 +196,7 @@ class BaseConfig(TmuxConfig):
             clear_plugins=clear_plugins,
             plugins_display=plugins_display,
         )
-
         self.tablet_keyb = None
-
-        self.muc_keys = {
-            # Kbd binds that might need to be replaced by user-keys on nonstandard
-            # consoles
-            mtc_utils.K_M_PLUS: mtc_utils.K_M_PLUS,  # M_plus
-            mtc_utils.K_M_PAR_OPEN: mtc_utils.K_M_PAR_OPEN,  # M_par_open
-            mtc_utils.K_M_PAR_CLOSE: mtc_utils.K_M_PAR_CLOSE,  # M_par_close
-            mtc_utils.K_M_UNDERSCORE: mtc_utils.K_M_UNDERSCORE,  # M_underscore
-            mtc_utils.K_M_P: mtc_utils.K_M_P,  # M-P
-            mtc_utils.K_M_X: mtc_utils.K_M_X,  # M_X
-            mtc_utils.K_CM_H: mtc_utils.K_CM_H,  # C_M_h
-            mtc_utils.K_CM_J: mtc_utils.K_CM_J,  # C_M_j
-            mtc_utils.K_CM_K: mtc_utils.K_CM_K,  # C_M_k
-            mtc_utils.K_CM_L: mtc_utils.K_CM_L,  # C_M_l
-        }
         self.define_opt_params()
 
         if self.vers_ok(1.8):
@@ -231,7 +232,7 @@ class BaseConfig(TmuxConfig):
             if self.conf_file == os.path.expanduser("~/.tmux.conf"):
                 print()
                 print("ERROR: T2_ENV & ~/.tmux.conf can't be combined!")
-                sys.exit(1)
+                sys.exit(mtc_utils.ERROR_T2_USING_DEF_TMUX_CONF)
             conf_dir = os.path.dirname(self.conf_file)
             self.tpm_location = os.path.join(conf_dir, "plugins", "tpm")
             self.prefix_key = self.prefix_key_T2
@@ -259,10 +260,12 @@ class BaseConfig(TmuxConfig):
         if self.style:
             # return  # error_disabled
             # used to prevent if multiple styles are inherited and colliding
-            sys.exit(
+            print()
+            print(
                 f"ERROR: Style already assigned as: {self.style}, "
                 f"Can not use style: {this_style}"
             )
+            sys.exit(mtc_utils.ERROR_STYLE_REDEFINED)
         self.style = this_style
         print(f"Style used is: >> {self.style} <<")
 
@@ -330,6 +333,7 @@ class BaseConfig(TmuxConfig):
         """
         self.tablet_keyb = special_consoles_config(self)
         self.remove_unwanted_default_bindings()
+        self.check_all_muc_keys_are_defined()
         self.connecting_terminal()
         self.general_environment()
         self.session_handling()
@@ -1473,7 +1477,33 @@ class BaseConfig(TmuxConfig):
             #  the intended action fairly simply.
             #
 
-    def muc_non_default_prefix(self, default):
+    #
+    #  Handling of muc_keys - keys limited keyboards might need to override
+    #  with user keys
+    #
+
+    def check_if_muc_key_is_defined(self, k):
+        # should raise key error if missing
+        try:
+            _ = self.muc_keys[k]
+        except KeyError:
+            print()
+            print(f"ERROR: The key '{k}' was not defined in self.muc_keys")
+            sys.exit(mtc_utils.ERROR_MISSING_KEY_IN_MUC_KEYS)
+
+    def check_all_muc_keys_are_defined(self):
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_PLUS)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_PAR_OPEN)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_PAR_CLOSE)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_UNDERSCORE)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_P)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_X)
+        self.check_if_muc_key_is_defined(mtc_utils.K_CM_H)
+        self.check_if_muc_key_is_defined(mtc_utils.K_CM_J)
+        self.check_if_muc_key_is_defined(mtc_utils.K_CM_K)
+        self.check_if_muc_key_is_defined(mtc_utils.K_CM_L)
+
+    def muc_non_default_value(self, default):
         # If a non-default is used, display it as a prefix
         if default != self.muc_keys[default]:
             return f"(Use key: {default} ) "
@@ -1483,14 +1513,11 @@ class BaseConfig(TmuxConfig):
         # Defaults might be overridden by TabletBtKbd()
         self.write("# auc_meta_ses_handling()")
 
-        if self.muc_keys[mtc_utils.K_M_PLUS] in (None, ""):
-            sys.exit(f"ERROR: auc_meta_ses_handling() {mtc_utils.K_M_PLUS} undefined!")
-
         w = self.write
         if self.vers_ok(1.0):
             s = (
                 f'bind -N "{
-                    self.muc_non_default_prefix(mtc_utils.K_M_PLUS)
+                    self.muc_non_default_value(mtc_utils.K_M_PLUS)
                 }Create new session  - P++"      '
                 f"-n  {self.muc_keys[mtc_utils.K_M_PLUS]}  command-prompt "
             )
@@ -1501,21 +1528,19 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.2):
             w(
                 f"bind -N '{
-                    self.muc_non_default_prefix(mtc_utils.K_M_UNDERSCORE)
+                    self.muc_non_default_value(mtc_utils.K_M_UNDERSCORE)
                 }Switch to last session  - P+_'  "
                 f"-n  {self.muc_keys[mtc_utils.K_M_UNDERSCORE]}  switch-client -l"
             )
             w(
                 f"bind -N '{
-                    self.muc_non_default_prefix(mtc_utils.K_M_PAR_OPEN)
+                    self.muc_non_default_value(mtc_utils.K_M_PAR_OPEN)
                 }Select previous session  - P+( C-M-Up'"
                 f" -n  {self.muc_keys[mtc_utils.K_M_PAR_OPEN]}  switch-client -p"
             )
-
-            # P+)  {self.muc_keys['M_par_close']} C-M-Down
             w(
                 f"bind -N '{
-                    self.muc_non_default_prefix(mtc_utils.K_M_PAR_CLOSE)
+                    self.muc_non_default_value(mtc_utils.K_M_PAR_CLOSE)
                 }Select next session  - P+) C-M-Down'   "
                 f"-n  {self.muc_keys[mtc_utils.K_M_PAR_CLOSE]}  switch-client -n"
             )
@@ -1541,7 +1566,7 @@ class BaseConfig(TmuxConfig):
         repo_dir = os.path.dirname(__file__)
         self.write(
             f'bind -N "{
-                self.muc_non_default_prefix(mtc_utils.K_M_P)
+                self.muc_non_default_value(mtc_utils.K_M_P)
             }List all plugins defined"  {self.muc_keys[mtc_utils.K_M_P]}  '
             'run-shell "'
             '$TMUX_BIN display-message \\"Generating plugin list\\" \\; '
@@ -1566,7 +1591,7 @@ class BaseConfig(TmuxConfig):
 
         self.write("# auc_kill_tmux_server()")
         s = (
-            f'bind -N "{self.muc_non_default_prefix(mtc_utils.K_M_X)}Kill tmux server"  '
+            f'bind -N "{self.muc_non_default_value(mtc_utils.K_M_X)}Kill tmux server"  '
             f"{self.muc_keys[mtc_utils.K_M_X]}  confirm-before"
         )
         if self.vers_ok(1.5):
@@ -1859,8 +1884,7 @@ timer_end() {{
             print()
             print(f"ERROR: Needs tmux_conf lib version: {TMUX_CONF_NEEDED}")
             print("       Failed to read version, probably too old()")
-            print()
-            sys.exit(1)
+            sys.exit(mtc_utils.ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
 
         maj_vers_found = ".".join(lib_vers_found.split(".")[:2])
         maj_vers_needed = ".".join(TMUX_CONF_NEEDED.split(".")[:2])
@@ -1887,7 +1911,7 @@ timer_end() {{
             print(details)
         print()
         print(f"vers found: {lib_vers_found}   needs: {TMUX_CONF_NEEDED}")
-        sys.exit(ERROR_INCOMPATIBLE_TMUX_CONF)
+        sys.exit(mtc_utils.ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
 
     def euro_fix(self, sequence: str):
         """Some keybs fail to render the Euro sign for M-S-2
@@ -1898,7 +1922,9 @@ timer_end() {{
 
         w = self.write
         if sequence[:1] != "\\":
-            sys.exit(f"ERROR: euro_fix({sequence}) must be given in octal notation")
+            print()
+            print(f"ERROR: euro_fix({sequence}) must be given in octal notation")
+            sys.exit(mtc_utils.ERROR_USER_KEY_NOT_OCTAL)
         currency = mtc_utils.get_currency()
         if currency == "EUR":
             # print("><> Wiill write euro workaround")

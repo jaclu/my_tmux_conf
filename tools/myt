@@ -481,7 +481,7 @@ create_tmux_conf() {
         if $attempt_venv_rebuild; then
             # Creating conf file failed, try once to ensure (the right)
             # tmux_conf library is available
-            if [ "$ex_code" = 23 ]; then
+            if [ "$ex_code" = "$ERROR_INCOMPATIBLE_TMUX_CONF_LIB" ]; then
                 # incorrect version of tmux-conf pip found
                 log_it "=====   trying to recreate venv   ====="
 
@@ -498,6 +498,19 @@ create_tmux_conf() {
                 run_cmd "$cmd"
             fi
         else
+            [ "$ex_code" != 0 ] && {
+                case "$ex_code" in
+                "$ERROR_INCOMPATIBLE_TMUX_CONF_LIB" | \
+                    "$ERROR_MISSING_KEY_IN_MUC_KEYS" | \
+                    "$ERROR_USER_KEY_NOT_OCTAL" | \
+                    "$ERROR_T2_USING_DEF_TMUX_CONF" | \
+                    "$ERROR_STYLE_REDEFINED")
+                    # Capture defined errors that have already displayed an error message
+                    exit "$ex_code"
+                    ;;
+                *) ;;
+                esac
+            }
             error_msg "Try running with -r to install tmux_conf"
         fi
     }
@@ -594,6 +607,13 @@ single_session=true
 t2_env=false
 create_venv=false
 profile=""
+
+# align with mtc_utils.ERROR_... codes
+ERROR_INCOMPATIBLE_TMUX_CONF_LIB=64
+ERROR_MISSING_KEY_IN_MUC_KEYS=65
+ERROR_USER_KEY_NOT_OCTAL=65
+ERROR_T2_USING_DEF_TMUX_CONF=67
+ERROR_STYLE_REDEFINED=68
 
 [ -n "$f_myt_log" ] && {
     rm -f "$f_myt_log" # clear log on each run
