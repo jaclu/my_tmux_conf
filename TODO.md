@@ -8,13 +8,7 @@ Come up with a simple way to indicate using this notation where it is allowed
 
 ## plugins to check
 
-inner tmux plugin filyrting
-
 [try to be mostly bind compatible](https://github.com/tmux-plugins/tmux-pain-control)
-
-## <prefix> M-P list plugins fails
-
-same cmd on cmd line works - odd
 
 ## M-9 & M-0 collides with ish_console
 
