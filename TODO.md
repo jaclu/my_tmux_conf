@@ -1,5 +1,10 @@
 # TODO
 
+## M-S Left/Right temp disabled 25-03-10
+
+they used to be used for split pane, will become next/prev window once I
+jave unlearned to use them for pane split
+
 ## Full access to your own plugins
 
 Come up with a simple way to indicate using this notation where it is allowed
