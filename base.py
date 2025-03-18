@@ -816,8 +816,8 @@ class BaseConfig(TmuxConfig):
             w(
                 """
             # temp disabled until I stop using this for split pane
-            bind -n C-M-Left display "Soon win navigation - use: <P> M-Left"
-            bind -n C-M-Right display "Soon win navigation - use: <P> M-Right"
+            bind -n C-M-Left display "Soon win navigation - For new pane use: <P> M-Left"
+            bind -n C-M-Right display "Soon win navigation - For new pane use: <P> M-Right"
             """
             )
 
