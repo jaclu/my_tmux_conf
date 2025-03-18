@@ -1134,10 +1134,12 @@ class BaseConfig(TmuxConfig):
             )
             if not self.use_prefix_arrow_nav_keys:
                 w(
-                    f"""bind -N "Select pane left - P+h M-Left"   -r  Left   {pane_left}
-                        bind -N "Select pane down - P+j M-Down"   -r  Down   {pane_down}
-                        bind -N "Select pane up - P+k M-Up"       -r  Up     {pane_up}
-                        bind -N "Select pane right - P+l M-Right" -r  Right  {pane_right}
+                    f"""# No repeats here, since I so often use arrows directly
+                    # after moving to another pane
+                    bind -N "Select pane left - P+h M-Left"   Left   {pane_left}
+                        bind -N "Select pane down - P+j M-Down"   Down   {pane_down}
+                        bind -N "Select pane up - P+k M-Up"       Up     {pane_up}
+                        bind -N "Select pane right - P+l M-Right" Right  {pane_right}
                         """
                 )
 
