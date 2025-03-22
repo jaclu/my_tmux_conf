@@ -59,17 +59,31 @@ class T2(SB):  # type: ignore
         #  Display what class this override comes from
         w("# --- T2.local_overides()")
 
-        if self.vers_ok(1.8):
-            # @variables can't be used earlier
+        if self.vers_ok(1.9):
+            #
+            #  Works both on bright and dark backgrounds
+            #  this makes it easier to see if a pane is part of a t2 env
+            #
             w(
+                """# t2 border style
+                set -g pane-active-border-style "fg=yellow"
+                set -g pane-border-style        "fg=colour105"
                 """
+            )
+
+        if "tmux-menus" in self.plugins.installed(short_name=True):
+            w(
+                """#
+                # tmux-menus - overrides
+                #
+
                 # set -g @menus_without_prefix Yes
 
                 set -gu @menus_trigger
                 set -gu @menus_log_file
 
                 # set -g @menus_use_cache No
-                # set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
+                set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
 
                 #  Separate style from main environment
                 set -gu @menus_format_title
@@ -81,24 +95,20 @@ class T2(SB):  # type: ignore
                 # set -gu @menus_nav_home
                 # set -g @menus_use_hint_overlays No
                 # set -g @menus_show_key_hints Yes
+                """
+            )
+
+        if "tmux-packet-loss" in self.plugins.installed(short_name=True):
+            w(
+                """#
+                # tmux-packet-loss - overrides
+                #
 
                 # Use a different host vs the outer tmux
                 set -g @packet-loss-ping_host "8.8.4.4"
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
                 set -g @packet-loss-run_disconnected No
             """
-            )
-
-        if self.vers_ok(1.9):
-            #
-            #  Works both on bright and dark backgrounds
-            #  this makes it easier to see if a pane is part of a t2 env
-            #
-            w(
-                """# t2 border style
-                set -g pane-active-border-style "fg=yellow"
-                set -g pane-border-style        "fg=colour105"
-                """
             )
 
 
