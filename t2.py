@@ -39,6 +39,9 @@ class T2(SB):  # type: ignore
 
     t2_env = "1"
 
+    # if mtc_utils.HOSTNAME == "JacMac":
+    #     use_plugin_battery = True
+
     # plugin_handler = "manual"
     # plugin_handler: str = "tmux-plugins/tpm"
     # use_embedded_scripts = False
