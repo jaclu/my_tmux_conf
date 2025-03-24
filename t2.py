@@ -79,14 +79,18 @@ class T2(SB):  # type: ignore
                 """#
                 # tmux-menus - overrides
                 #
+                set -gu @menus_trigger
+                set -gu @menus_without_prefix
+                set -gu @menus_log_file
+                set -gu @menus_use_cache
+                set -gu @menus_use_hint_overlays
+                set -gu @menus_show_key_hints
 
                 # set -g @menus_without_prefix Yes
-
-                set -gu @menus_trigger
-                set -gu @menus_log_file
-
                 # set -g @menus_use_cache No
                 set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
+                # set -g @menus_use_hint_overlays No
+                # set -g @menus_show_key_hints No
 
                 #  Separate style from main environment
                 set -gu @menus_format_title
@@ -96,8 +100,6 @@ class T2(SB):  # type: ignore
                 # set -gu @menus_nav_next
                 # set -gu @menus_nav_prev
                 # set -gu @menus_nav_home
-                # set -g @menus_use_hint_overlays No
-                # set -g @menus_show_key_hints Yes
                 """
             )
 
