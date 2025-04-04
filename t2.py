@@ -91,6 +91,7 @@ class T2(SB):  # type: ignore
                 set -gu @menus_use_cache
                 set -gu @menus_use_hint_overlays
                 set -gu @menus_show_key_hints
+                set -gu @menus_display_commands
 
                 #  Separate style from main environment
                 set -gu @menus_format_title
@@ -102,12 +103,14 @@ class T2(SB):  # type: ignore
                 # set -gu @menus_nav_home
                 """)
 
-            w("""# set -g @menus_without_prefix Yes
-                # set -g @menus_use_cache  No
-                set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
-                # set -g @menus_use_hint_overlays No
-                # set -g @menus_show_key_hints No
-                """)
+            w("""
+            # set -g @menus_without_prefix Yes
+            set -g @menus_display_commands 'Yes'
+            # set -g @menus_use_cache  No
+            set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
+            # set -g @menus_use_hint_overlays No
+            # set -g @menus_show_key_hints No
+            """)
 
         if "tmux-packet-loss" in self.plugins.installed(short_name=True):
             w(
