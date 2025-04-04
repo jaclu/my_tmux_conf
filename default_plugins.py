@@ -299,7 +299,8 @@ class DefaultPlugins(BaseConfig):
 
             # set -g @menus_use_cache no
 
-            # set -g @menus_use_hint_overlays No
+            set -g @menus_display_commands 'Yes'
+            set -g @menus_use_hint_overlays No
             # set -g @menus_show_key_hints Yes
 
             set -g @menus_log_file "$HOME/tmp/tmux-menus.log"

@@ -81,10 +81,12 @@ class T2(SB):  # type: ignore
                 """#
                 # tmux-menus - overrides
                 #
-                """)
+                """
+            )
             if self.vers_ok(2.4):
 
-                w("""# First clear any default plugin settings
+                w(
+                    """# First clear any default plugin settings
                 set -gu @menus_trigger
                 set -gu @menus_without_prefix
                 set -gu @menus_log_file
@@ -101,16 +103,19 @@ class T2(SB):  # type: ignore
                 # set -gu @menus_nav_next
                 # set -gu @menus_nav_prev
                 # set -gu @menus_nav_home
-                """)
+                """
+                )
 
-            w("""
+            w(
+                """
             # set -g @menus_without_prefix Yes
-            set -g @menus_display_commands 'Yes'
+            # set -g @menus_display_commands 'Yes'
             # set -g @menus_use_cache  No
             set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
             # set -g @menus_use_hint_overlays No
             # set -g @menus_show_key_hints No
-            """)
+            """
+            )
 
         if "tmux-packet-loss" in self.plugins.installed(short_name=True):
             w(
