@@ -109,7 +109,7 @@ class T2(SB):  # type: ignore
             w(
                 """
             # set -g @menus_without_prefix Yes
-            # set -g @menus_display_commands 'Yes'
+            set -g @menus_display_commands 'Yes'
             # set -g @menus_use_cache  No
             set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
             # set -g @menus_use_hint_overlays No
