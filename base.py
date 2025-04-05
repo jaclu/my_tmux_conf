@@ -881,8 +881,8 @@ class BaseConfig(TmuxConfig):
         #
         w(
             """# window shuffle
-            bind -N "Swap window left"         -r  <    swap-window -dt:-1
-            bind -N "Swap window right"        -r  >    swap-window -dt:+1"""
+            bind -N "Swap window left"         -r  <    swap-window -d -t :-1
+            bind -N "Swap window right"        -r  >    swap-window -d -t :+1"""
         )
 
         s = 'bind -N "Rename current window"   W  command-prompt'
