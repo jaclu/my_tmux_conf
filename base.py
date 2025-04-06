@@ -1053,7 +1053,7 @@ class BaseConfig(TmuxConfig):
                 w(f'{self.opt_pane} pane-border-format "{pane_label}"')
 
             # new windows with just one pane should not display pane border lines
-            w('set-hook -g after-new-window "set -w pane-border-status off"')
+            w('set-hook -g after-new-window "set-option -w pane-border-status off"')
 
             #  Display pane border lines when more than one pane is present
             if self.vers_ok(2.6):  # and not self.vers_ok(2.5)):
@@ -1662,15 +1662,15 @@ class BaseConfig(TmuxConfig):
         # in general they are global, except for opt_win_loc that needs to modify
         # settings on a specific window
         #
-        self.opt_server = "set -g"
-        self.opt_ses = "set -g"
+        self.opt_server = "set-option -g"
+        self.opt_ses = "set-option -g"
         if self.vers_ok(1.8):
-            self.opt_win_loc = "set -w"
+            self.opt_win_loc = "set-option -w"
         else:
             self.opt_win_loc = "set-window-option"
         self.opt_win = f"{self.opt_win_loc} -g"
         if self.vers_ok(3.1):
-            self.opt_pane = "set -g"
+            self.opt_pane = "set-option -g"
         else:
             # prior to 3.1 pane options were listed as win options
             self.opt_pane = self.opt_win

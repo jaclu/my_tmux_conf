@@ -36,13 +36,13 @@ class SB(DefaultPlugins):
 
         if self.vers_ok("1.9"):
             self.mkscript_rev_sb_color()
-            self.write(f"set -g status-style fg={fg_clr},bg={bg_clr}")
+            self.write(f"set-option -g status-style fg={fg_clr},bg={bg_clr}")
             self.write(self.es.run_it(self.fnc_rev_sb_color))
         else:
             self.write(
                 f"""
-                set -g status-fg {fg_clr}
-                set -g status-bg {bg_clr}
+                set-option -g status-fg {fg_clr}
+                set-option -g status-bg {bg_clr}
                 """
             )
         return print_header  # request footer to be printed
@@ -61,7 +61,7 @@ class SB(DefaultPlugins):
             "",
             f'    bg_c="$(echo $sb | {cut_this1} -f2)"',
             f'    fg_c="$(echo $sb | {cut_this2} -f2)"',
-            '    $TMUX_BIN set -g message-style "fg=$fg_c,bg=$bg_c"',
+            '    $TMUX_BIN set-option -g message-style "fg=$fg_c,bg=$bg_c"',
             "    exit 0 # Ensure exit is true",
             "}",
         ]
