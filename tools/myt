@@ -151,7 +151,6 @@ select_tmux_bin() {
     #
     #  Selects what tmux bin to use
     #
-    TMUX_BIN=""
     if [ -n "$tmux_bin" ]; then
         # User defined tmux
         TMUX_BIN="$tmux_bin"
@@ -197,6 +196,17 @@ asdf_scan() {
 
 define_tmux_env() {
     # log_it "><> define_tmux_env()"
+
+    # First clear some env variables potentially set by an outer tmux
+    unset TMUX_BIN
+    unset TMUX_CONF
+    unset TMUX_PLUGIN_MANAGER_PATH
+
+    # really old tmux'es < 1.4 complain if TMUX is set,
+    # even if it is using a different socket
+    unset TMUX
+
+
     select_tmux_bin
     #
     #  To not collide when checking for colliding versions
@@ -386,10 +396,6 @@ start_tmux() {
     fi
 
     cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
-
-    # really old tmux'es < 1.4 complain if TMUX is set,
-    # even if it is using a different socket
-    unset TMUX
 
     if is_tmux_ses_running; then
         $single_session && drop_other_clients
