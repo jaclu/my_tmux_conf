@@ -42,7 +42,8 @@ class T2(SB):  # type: ignore
     # if mtc_utils.HOSTNAME == "JacMac":
     #     use_plugin_battery = True
 
-    use_plugin_battery = True
+    if mtc_utils.HOSTNAME == "JacMac":
+        use_plugin_battery = True
 
     # plugin_handler = "manual"
     # plugin_handler: str = "tmux-plugins/tpm"
