@@ -90,6 +90,7 @@ class T2(SB):  # type: ignore
                     """# First clear any default plugin settings
                 set -gu @menus_trigger
                 set -gu @menus_without_prefix
+                set -gu @menus_config_file
                 set -gu @menus_log_file
                 set -gu @menus_use_cache
                 set -gu @menus_use_hint_overlays
@@ -97,6 +98,8 @@ class T2(SB):  # type: ignore
                 set -gu @menus_display_commands
                 set -gu @menus_display_cmds_cols
 
+
+                # set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'
                 #  Separate style from main environment
                 set -gu @menus_format_title
                 set -gu @menus_simple_style_selected
