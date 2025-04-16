@@ -36,11 +36,10 @@ else
     # plugin_cmd="flake8 --color=always"
     # If used on the whole project
     proj_plugin_cmd="flake8 --color=always"
-
     # iSH doesn't support flake8 multiprocessing
-    [[ -d /proc/ish ]] && [[ -n "$proj_plugin_cmd" ]] && {
+    if [[ -d /proc/ish ]] || [[ -f "/.chroot_default_cmd" ]]; then
         proj_plugin_cmd+=" -j 1"
-    }
+    fi
 fi
 
 plugin_priority=60
