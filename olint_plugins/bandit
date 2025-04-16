@@ -21,7 +21,7 @@
 # If used on the whole project
 proj_plugin_cmd="bandit --exclude './.venv' -r ."
 
-plugin_priority=55
+plugin_priority=20
 
 # file extensions this plugin handles
 plugin_extensions=(

@@ -20,10 +20,11 @@
 # inline-excludes:  # noqa: F403,F401
 
 # plugin_cmd="ruff check"
+# If used on the whole project
 proj_plugin_cmd="ruff check ."
 
 # really fast so run early
-plugin_priority=90
+plugin_priority=60
 
 # file extensions this plugin handles
 plugin_extensions=(

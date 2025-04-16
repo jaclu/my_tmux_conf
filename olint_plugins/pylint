@@ -31,9 +31,10 @@
 
 
 plugin_cmd="pylint"
+# If used on the whole project
 # proj_plugin_cmd="pylint ."
 
-plugin_priority=30
+plugin_priority=90
 
 # file extensions this plugin handles
 plugin_extensions=(

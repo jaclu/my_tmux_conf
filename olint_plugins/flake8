@@ -42,7 +42,7 @@ else
     fi
 fi
 
-plugin_priority=60
+plugin_priority=80
 
 # file extensions this plugin handles
 plugin_extensions=(
