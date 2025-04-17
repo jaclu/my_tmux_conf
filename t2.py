@@ -100,9 +100,9 @@ class T2(SB):  # type: ignore
                 set -gu @menus_format_title
                 set -gu @menus_location_x
                 set -gu @menus_location_y
-                set -gu @menus_nav_next
-                set -gu @menus_nav_prev
-                set -gu @menus_nav_home
+                # set -gu @menus_nav_next
+                # set -gu @menus_nav_prev
+                # set -gu @menus_nav_home
                 set -gu @menus_config_file
                 set -gu @menus_log_file
                 """
