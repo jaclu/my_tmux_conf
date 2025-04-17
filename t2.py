@@ -113,11 +113,11 @@ class T2(SB):  # type: ignore
                 set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
                 set -g @menus_config_file '~/t2/tmux/tmux.conf'
                 # set -g @menus_use_cache  No
-                # set -g @menus_use_hint_overlays No
-                # set -g @menus_show_key_hints No
-                # set -g @menus_display_commands 'Yes'
-                # set -g @menus_display_cmds_cols 95
-                # TMUX_PLUGIN_MANAGER_PATH="/Users/jaclu/t2/tmux/plugins"
+                set -g @menus_use_hint_overlays No
+                set -g @menus_show_key_hints No
+                set -g @menus_display_commands 'Yes'
+                set -g @menus_display_cmds_cols 95
+                TMUX_PLUGIN_MANAGER_PATH="~/t2/tmux/plugins"
             """
             )
 
