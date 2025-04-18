@@ -955,7 +955,7 @@ class BaseConfig(TmuxConfig):
         #
         if self.vers_ok(1.1):
             w(
-                'bind -N "Clear history & screen" -n  M-l  send-keys C-l \\; '
+                'bind -N "Clear history & screen" C-M-l  send-keys C-l \\; '
                 'run-shell "sleep 0.1" \\; clear-history'
             )
 
