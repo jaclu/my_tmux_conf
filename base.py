@@ -837,10 +837,10 @@ class BaseConfig(TmuxConfig):
             sw2 = "split-window -f"  # to make sure
             suffix = self.current_path_directive
             w(
-                f"""{sw1} left - P+C-M-h"   C-M-Left   {sw2}hb {suffix}
-            {sw1} down - P+C-M-j"   C-M-Down   {sw2}v  {suffix}
-            {sw1} up - P+C-M-k"     C-M-Up     {sw2}vb {suffix}
-            {sw1} right - P+C-M-l"  C-M-Right  {sw2}h  {suffix}
+                f"""{sw1} left - P+C-M-H"   C-M-Left   {sw2}hb {suffix}
+            {sw1} down - P+C-M-J"   C-M-Down   {sw2}v  {suffix}
+            {sw1} up - P+C-M-K"     C-M-Up     {sw2}vb {suffix}
+            {sw1} right - P+C-M-L"  C-M-Right  {sw2}h  {suffix}
             """
             )
 
@@ -951,12 +951,19 @@ class BaseConfig(TmuxConfig):
         #  Without a sleep in between the actions, history is not cleared.
         #  Just a guess, but most likely clear-history is run before C-l
         #  is handled by the terminal. Thus pushing the current screen
-        #  back into history
+        #  back into history.
         #
         if self.vers_ok(1.1):
+            note = "Clear history & screen"
+            key = "C-M-l"
+            cmd = "send-keys C-l \\; run-shell 'sleep 0.1' \\; clear-history"
             w(
-                'bind -N "Clear history & screen" C-M-l  send-keys C-l \\; '
-                'run-shell "sleep 0.1" \\; clear-history'
+                f"""
+                # Defining this both with and without prefix, to make it convenient
+                # in the normal case and still accessible in an inner tmux
+                bind -N "{note}"     {key}  {cmd}
+                bind -N "{note}" -n  {key}  {cmd}
+                """
             )
 
         #
