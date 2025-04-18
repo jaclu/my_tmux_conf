@@ -33,9 +33,10 @@ if [[ -n "$(command -v ruff)" ]]; then
     #
     plugin_cmd="/dev/null"
 else
-    # plugin_cmd="flake8 --color=always"
+    _cmd="flake8 --color=always"
+    # plugin_cmd="$_cmd"
     # If used on the whole project
-    proj_plugin_cmd="flake8 --color=always"
+    proj_plugin_cmd="$_cmd"
     # iSH doesn't support flake8 multiprocessing
     if [[ -d /proc/ish ]] || [[ -f "/.chroot_default_cmd" ]]; then
         proj_plugin_cmd+=" -j 1"

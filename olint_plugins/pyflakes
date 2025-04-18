@@ -24,10 +24,13 @@ if [[ -n "$(command -v flake8)" ]]; then
 else
     # obviously there are two names it might use...
     if [[ -n "$(command -v pyflakes3)" ]]; then
-        plugin_cmd="pyflakes3"
+        _cmd="pyflakes3"
     else
-        plugin_cmd="pyflakes"
+        _cmd="pyflakes"
     fi
+    plugin_cmd="$_cmd"
+    # If used on the whole project
+    # proj_plugin_cmd="$_cmd ."
 fi
 
 plugin_priority=80

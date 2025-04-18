@@ -14,7 +14,9 @@
 #    skip:
 #      - ANSIBLE0012
 
-plugin_cmd=ansible-lint
+# plugin_cmd=ansible-lint
+# If used on the whole project
+proj_plugin_cmd=ansible-lint
 
 # This is a slow one, so make it run towards
 # the end of any chain

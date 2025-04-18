@@ -10,6 +10,8 @@
 #    cargo install rslint
 
 plugin_cmd="rslint"
+# If used on the whole project
+# proj_plugin_cmd="rslint ."
 
 # file extensions this plugin handles
 plugin_extensions=(

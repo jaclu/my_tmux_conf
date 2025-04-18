@@ -11,7 +11,11 @@
 #      sudo apt install nodejs npm
 #      sudo npm install -g jsonlint
 
-plugin_cmd="jsonlint -p"
+_cmd="jsonlint -p"
+
+# plugin_cmd="$_cmd"
+# If used on the whole project
+proj_plugin_cmd="$_cmd"
 
 # file extensions this plugin handles
 plugin_extensions=(

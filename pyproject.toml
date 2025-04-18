@@ -4,11 +4,11 @@ exclude_dirs = [".venv",]
 
 [tool.black]
 line-length = 92
-# exclude = '''
-# /(
-#     \.venv    # Match .venv directory
-# )/
-# '''
+exclude = '''
+/(
+    \.venv    # Match .venv directory
+)/
+'''
 
 [tool.pymarkdown]
 plugins.line-length.line_length = 92
