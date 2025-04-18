@@ -13,9 +13,9 @@
 
 _cmd="jsonlint -p"
 
-# plugin_cmd="$_cmd"
+plugin_cmd="$_cmd"
 # If used on the whole project
-proj_plugin_cmd="$_cmd"
+# proj_plugin_cmd="$_cmd"
 
 # file extensions this plugin handles
 plugin_extensions=(
