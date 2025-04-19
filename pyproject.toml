@@ -10,14 +10,6 @@ exclude = '''
 )/
 '''
 
-[tool.pymarkdown]
-plugins.line-length.line_length = 92
-plugins.md033.allowed_elements = "nbsp,prefix"
-
-[tool.mypy]
-exclude = [".venv",]
-ignore_missing_imports = true
-
 [tool.isort]
 profile = "black"
 line_length = 92
@@ -25,9 +17,29 @@ line_length = 92
 combine_as_imports = true
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
+[tool.mypy]
+exclude = [".venv",]
+ignore_missing_imports = true
+
 [tool.pylint]
 line_length = 92
 # init-hook = 'import sys; sys.path.append(".")'
+
+[tool.pymarkdown]
+plugins.line-length.line_length = 92
+plugins.md033.allowed_elements = "nbsp,prefix"
+
+[tool.pyright]
+exclude = [
+    ".venv",
+    "**/__pycache__",
+]
+# ignore = ["src/oldstuff"]
+# defineConstant = { DEBUG = true }
+# stubPath = "src/stubs"
+
+reportMissingImports = "error"
+reportMissingTypeStubs = false
 
 [tool.ruff]
 line-length = 92
