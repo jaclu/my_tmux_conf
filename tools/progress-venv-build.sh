@@ -36,7 +36,7 @@ echo "are approximately:"
 if [ "$(uname -o)" = "Android" ]; then
     echo "  size  31M  -  file count: 1520"
 elif [ "$(uname -s)" = "Linux" ] || [ "$(uname -s)" = "Darwin" ]; then
-    echo "  size  13M  -  file count: 997"
+    echo "  size: 13M  -  file count:  1000"
 fi
 echo
 
@@ -44,10 +44,10 @@ d_venv="$my_tmux_conf_location"/.venv
 while true; do
     if [ -d "$d_venv" ]; then
 	printf "size: %s   -  file count:  %s\n" \
-	       "$(du -sh  | cut -f1)" \
+	       "$(du -sh "$d_venv" | cut -f1)" \
 	       "$(find "$my_tmux_conf_location"/.venv | wc -l)"
     else
 	echo "Not present ATM: $d_venv"
 	fi
-    sleep 1
+    sleep 2
 done
