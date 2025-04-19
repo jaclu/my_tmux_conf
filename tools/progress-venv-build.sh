@@ -36,7 +36,7 @@ echo "are approximately:"
 if [ "$(uname -o)" = "Android" ]; then
     echo "  size  31M  -  file count: 1520"
 elif [ "$(uname -s)" = "Linux" ] || [ "$(uname -s)" = "Darwin" ]; then
-    echo "  size: 13M  -  file count:  1000"
+    echo "  size: 13M  -  file count:  999"
 fi
 echo
 
