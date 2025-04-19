@@ -25,7 +25,7 @@ my_tmux_conf_location="$(cat "$f_destination")"
 
 echo
 echo "On some systems like iSH, creating the venv can take a really"
-echo "long time,  example: iPad 7th - 8 mins"
+echo "long time,  example: iPad 7th - 5 mins"
 echo
 echo "Running this in during 'myt --venv' will indicate status of the venv install."
 echo "Be aware that sometimes it takes a while for any changes to happen,"
