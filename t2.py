@@ -93,6 +93,7 @@ class T2(SB):  # type: ignore
                 set -gu @menus_use_hint_overlays
                 set -gu @menus_show_key_hints
                 set -gu @menus_display_commands
+                set -gu @menus_display_cmds_binds
                 set -gu @menus_display_cmds_cols
                 set -gu @menus_simple_style_selected
                 set -gu @menus_simple_style
@@ -117,6 +118,7 @@ class T2(SB):  # type: ignore
                 set -g @menus_use_hint_overlays No
                 set -g @menus_show_key_hints No
                 set -g @menus_display_commands 'Yes'
+                # set -g @menus_display_cmds_binds 'No'
                 set -g @menus_display_cmds_cols 95
                 TMUX_PLUGIN_MANAGER_PATH="~/t2/tmux/plugins"
             """
