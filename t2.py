@@ -87,23 +87,23 @@ class T2(SB):  # type: ignore
             if self.vers_ok(1.8):
                 w(
                     """# First clear any default plugin settings
-                set -gu @menus_use_cache
                 set -gu @menus_trigger
                 set -gu @menus_without_prefix
-                set -gu @menus_use_hint_overlays
-                set -gu @menus_show_key_hints
-                set -gu @menus_display_commands
-                set -gu @menus_display_cmds_binds
-                set -gu @menus_display_cmds_cols
+                set -gu @menus_use_cache
+                set -gu @menus_location_x
+                set -gu @menus_location_y
+                set -gu @menus_format_title
+                set -gu @menus_border_type
                 set -gu @menus_simple_style_selected
                 set -gu @menus_simple_style
                 set -gu @menus_simple_style_border
-                set -gu @menus_format_title
-                set -gu @menus_location_x
-                set -gu @menus_location_y
                 # set -gu @menus_nav_next
                 # set -gu @menus_nav_prev
                 # set -gu @menus_nav_home
+                set -gu @menus_display_commands
+                set -gu @menus_display_cmds_cols
+                set -gu @menus_use_hint_overlays
+                set -gu @menus_show_key_hints
                 set -gu @menus_config_file
                 set -gu @menus_log_file
                 """
@@ -111,16 +111,20 @@ class T2(SB):  # type: ignore
 
             w(
                 """
-                set -g @menus_log_file "~/tmp/tmux-menus-t2.log"
-                set -g @menus_config_file '~/t2/tmux/tmux.conf'
-                # set -g @menus_use_cache  No
+            set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
 
-                set -g @menus_use_hint_overlays No
-                set -g @menus_show_key_hints No
-                set -g @menus_display_commands 'Yes'
-                # set -g @menus_display_cmds_binds 'No'
-                set -g @menus_display_cmds_cols 95
-                TMUX_PLUGIN_MANAGER_PATH="~/t2/tmux/plugins"
+            # set -g @menus_use_cache  No
+
+            set -g @menus_display_commands 'Yes'
+            # set -g @menus_display_cmds_cols 95
+
+            set -g @menus_use_hint_overlays no
+            set -g @menus_show_key_hints no
+
+            set -g @menus_border_type 'rounded'
+            set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'
+
+            set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/t2/tmux/plugins"
             """
             )
 

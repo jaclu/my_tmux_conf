@@ -31,6 +31,9 @@ __pycache__/
 # Used by tool-versioning stuff like asdf
 .tool-versions
 
+# ansible lint created
+.ansible/
+
 # Deploy location hint
 .destination
 
