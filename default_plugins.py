@@ -311,6 +311,7 @@ class DefaultPlugins(BaseConfig):
             #  Slightly catppuccin frappe inspired
             #
             # fg @thm_surface_0 bg @thm_yellow
+            set -g @menus_border_type 'rounded'
             set -g @menus_simple_style_selected "fg=#414559,bg=#e5c890"
             set -g @menus_simple_style "bg=#414559"        # @thm_surface_0
             set -g @menus_simple_style_border "bg=#414559" # @thm_surface_0
@@ -340,7 +341,7 @@ class DefaultPlugins(BaseConfig):
         if not self.use_plugin_power_zoom or self.is_tmate():
             vers_min = -1.0  # Dont use
         else:
-            vers_min = 2.0
+            vers_min = 3.0  # should be 2.0 but now it fails < 3.0 ??
 
         return [
             "jaclu/tmux-power-zoom",
