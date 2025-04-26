@@ -291,6 +291,7 @@ class DefaultPlugins(BaseConfig):
             "jaclu/tmux-menus",
             min_vers,
             """
+            # set -g @menus_use_cache no
 
             set -g @menus_trigger Space
             # set -g @menus_without_prefix No
@@ -298,27 +299,25 @@ class DefaultPlugins(BaseConfig):
             # set -g @menus_location_x C
             # set -g @menus_location_y C
 
-            # set -g @menus_use_cache no
-
             set -g @menus_display_commands Yes
             # set -g @menus_display_cmds_cols 170
 
             set -g @menus_use_hint_overlays No
             # set -g @menus_show_key_hints Yes
 
-            set -g @menus_log_file "$HOME/tmp/tmux-menus.log"
-
+            set -g @menus_border_type 'rounded'
             #
             #  Slightly catppuccin frappe inspired
             #
             # fg @thm_surface_0 bg @thm_yellow
-            set -g @menus_border_type 'rounded'
             set -g @menus_simple_style_selected "fg=#414559,bg=#e5c890"
             set -g @menus_simple_style "bg=#414559"        # @thm_surface_0
             set -g @menus_simple_style_border "bg=#414559" # @thm_surface_0
             set -g @menus_nav_next "#[fg=colour220]-->"
             set -g @menus_nav_prev "#[fg=colour71]<--"
             set -g @menus_nav_home "#[fg=colour84]<=="
+
+            set -g @menus_log_file "$HOME/tmp/tmux-menus.log"
             """,
         ]
 

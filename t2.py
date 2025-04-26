@@ -50,6 +50,40 @@ class T2(SB):  # type: ignore
     # use_embedded_scripts = False
     # is_limited_host = True
 
+    def plugin_menus(self) -> list:  # 1.8
+        #  Tested down to vers 1.8
+        if not self.use_plugin_menus:
+            # it works on iSH, but soo slow it is of no practical usage
+            min_vers = -1.0  # Dont use
+        else:
+            min_vers = 1.8
+
+        return [
+            "jaclu/tmux-menus",
+            min_vers,
+            """
+            # set -g @menus_use_cache  No
+
+            set -g @menus_trigger Space
+
+            set -g @menus_border_type 'rounded'
+            set -g @menus_nav_next "#[fg=colour220]-->"
+            set -g @menus_nav_prev "#[fg=colour71]<--"
+            set -g @menus_nav_home "#[fg=colour84]<=="
+
+            set -g @menus_display_commands 'Yes'
+            # set -g @menus_display_cmds_cols 95
+
+            set -g @menus_use_hint_overlays no
+            set -g @menus_show_key_hints no
+
+            set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'
+            set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
+
+            set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/t2/tmux/plugins"
+            """,
+        ]
+
     def local_overrides(self) -> None:
         """
         Applies local configuration overrides, executed after all other
@@ -77,65 +111,11 @@ class T2(SB):  # type: ignore
                 """
             )
 
-        if "tmux-menus" in self.plugins.installed(short_name=True):
-            w(
-                """#
-                # tmux-menus - overrides
-                #
-                """
-            )
-            if not self.vers_ok(2.4) or self.vers_ok(2.7):
-                w(
-                    """# First clear any default plugin settings
-                # set -gu @menus_trigger
-                set -gu @menus_without_prefix
-                set -gu @menus_use_cache
-                set -gu @menus_location_x
-                set -gu @menus_location_y
-                set -gu @menus_format_title
-                set -gu @menus_border_type
-                set -gu @menus_simple_style_selected
-                set -gu @menus_simple_style
-                set -gu @menus_simple_style_border
-
-                # set -gu @menus_nav_next
-                # set -gu @menus_nav_prev
-                # set -gu @menus_nav_home
-
-                set -gu @menus_display_commands
-                set -gu @menus_display_cmds_cols
-                set -gu @menus_use_hint_overlays
-                set -gu @menus_show_key_hints
-                set -gu @menus_config_file
-                set -gu @menus_log_file
-                """
-                )
-
-            w(
-                """
-            set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
-
-            # set -g @menus_use_cache  No
-
-            set -g @menus_display_commands 'Yes'
-            # set -g @menus_display_cmds_cols 95
-
-            set -g @menus_use_hint_overlays no
-            set -g @menus_show_key_hints no
-
-            set -g @menus_border_type 'rounded'
-            set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'
-
-            set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/t2/tmux/plugins"
-            """
-            )
-
         if "tmux-packet-loss" in self.plugins.installed(short_name=True):
             w(
                 """#
                 # tmux-packet-loss - overrides
                 #
-
                 # Use a different host vs the outer tmux
                 set -g @packet-loss-ping_host "8.8.4.4"
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
