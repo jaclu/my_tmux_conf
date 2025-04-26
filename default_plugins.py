@@ -291,8 +291,7 @@ class DefaultPlugins(BaseConfig):
             min_vers,
             """
 
-            # set -g @menus_trigger "\\\\"
-            set -g @menus_trigger space
+            set -g @menus_trigger Space
             # set -g @menus_without_prefix No
 
             # set -g @menus_location_x C
@@ -300,7 +299,7 @@ class DefaultPlugins(BaseConfig):
 
             # set -g @menus_use_cache no
 
-            set -g @menus_display_commands 'Yes'
+            set -g @menus_display_commands Yes
             # set -g @menus_display_cmds_cols 170
 
             set -g @menus_use_hint_overlays No
