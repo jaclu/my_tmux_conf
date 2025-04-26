@@ -568,7 +568,7 @@ class BaseConfig(TmuxConfig):
             )
 
         if self.vers_ok(2.8):
-            w('bind Any display "This key is not bound to any action"\n')
+            w('bind -N "Key not bound" Any display "This key is not bound to any action"\n')
 
         scrpad_min_vers = 3.2
         scrpad_key = "O"  # P being taken this is pOpup :)
