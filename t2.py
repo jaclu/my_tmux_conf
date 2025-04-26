@@ -98,9 +98,9 @@ class T2(SB):  # type: ignore
                 set -gu @menus_simple_style
                 set -gu @menus_simple_style_border
 
-                set -gu @menus_nav_next
-                set -gu @menus_nav_prev
-                set -gu @menus_nav_home
+                # set -gu @menus_nav_next
+                # set -gu @menus_nav_prev
+                # set -gu @menus_nav_home
 
                 set -gu @menus_display_commands
                 set -gu @menus_display_cmds_cols
