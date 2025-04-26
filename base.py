@@ -953,7 +953,7 @@ class BaseConfig(TmuxConfig):
         #  is handled by the terminal. Thus pushing the current screen
         #  back into history.
         #
-        if self.vers_ok(1.1):
+        if self.vers_ok(1.2):
             note = "Clear history & screen"
             key = "C-M-l"
             cmd = "send-keys C-l \\; run-shell 'sleep 0.1' \\; clear-history"
