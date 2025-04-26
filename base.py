@@ -1085,8 +1085,8 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(3.2):
             w(f"{self.opt_pane} pane-border-lines single")
 
-        if self.vers_ok(3.3):
-            w(f"{self.opt_pane} pane-border-indicators arrows")
+        # if self.vers_ok(3.3):
+        #     w(f"{self.opt_pane} pane-border-indicators arrows")
 
         if self.show_pane_title:
             if self.vers_ok(2.6):
