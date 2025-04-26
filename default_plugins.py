@@ -88,6 +88,7 @@ class DefaultPlugins(BaseConfig):
     if mtc_utils.IS_INNER_TMUX:
         #  Doesn't make much sense in an inner tmux
         use_plugin_mouse_swipe = False
+        # use_plugin_power_zoom = False
         # use_plugin_session_wizard = False
 
     #
@@ -341,17 +342,18 @@ class DefaultPlugins(BaseConfig):
         if not self.use_plugin_power_zoom or self.is_tmate():
             vers_min = -1.0  # Dont use
         else:
-            vers_min = 3.0  # should be 2.0 but now it fails < 3.0 ??
+            vers_min = 2.0
 
-        return [
-            "jaclu/tmux-power-zoom",
-            vers_min,
-            """
-            set -g @power_zoom_trigger  Z
+        conf = """
+        set -g @power_zoom_trigger  Z
+        """
+        if self.vers_ok(3.0):
+            #  Using mouse in this plugin doesn't work on old versions
+            conf += """
             # it seems mouse events can't use any combination of S-
             set -g @power_zoom_mouse_action "C-DoubleClick3Pane"
-            """,
-        ]
+            """
+        return ["jaclu/tmux-power-zoom", vers_min, conf]
 
     def plugin_resurrect(self) -> list:  # 1.9
         """Saves & Restores server sessions
