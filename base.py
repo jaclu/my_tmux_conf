@@ -1137,6 +1137,11 @@ class BaseConfig(TmuxConfig):
                 bind -N "Select pane down - P+j P+Down"   -n  M-Down   {pane_down}
                 bind -N "Select pane up - P+k P+Up"       -n  M-Up     {pane_up}
                 bind -N "Select pane right - P+l P+Right" -n  M-Right  {pane_right}
+
+                # Ghostty has preey good key defs  out of the box, but doesn't
+                # generate M Left/Right !!!
+                bind -N "Select pane left - P+h P+Left"   -n  M-b  {pane_left}
+                bind -N "Select pane right - P+l P+Right" -n  M-f  {pane_right}
                 """
             )
             if not self.use_prefix_arrow_nav_keys:
