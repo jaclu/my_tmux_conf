@@ -84,7 +84,7 @@ class T2(SB):  # type: ignore
                 #
                 """
             )
-            if self.vers_ok(1.8):
+            if self.vers_ok(2.4):
                 w(
                     """# First clear any default plugin settings
                 # set -gu @menus_trigger
