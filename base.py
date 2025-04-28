@@ -160,10 +160,6 @@ class BaseConfig(TmuxConfig):
         mtc_utils.K_M_UNDERSCORE: mtc_utils.K_M_UNDERSCORE,
         mtc_utils.K_M_P: mtc_utils.K_M_P,
         mtc_utils.K_M_X: mtc_utils.K_M_X,
-        mtc_utils.K_M_h: mtc_utils.K_M_h,
-        mtc_utils.K_M_j: mtc_utils.K_M_j,
-        mtc_utils.K_M_k: mtc_utils.K_M_k,
-        mtc_utils.K_M_l: mtc_utils.K_M_l,
     }
 
     # use_debug_log = True  # if True, debug log will be printed
@@ -558,17 +554,21 @@ class BaseConfig(TmuxConfig):
                 """
             )
 
+        if self.vers_ok(2.8):
+            w(
+                """# All keys not nound will display this warning
+                bind -N "Key not bound"  Any  display "This key is not bound to any action"
+                """
+            )
+
         nav_key = "N"
         if self.vers_ok(2.7):
-            w(f'bind -N "Navigate ses/win/pane"     {nav_key}    choose-tree -O time -sZ')
+            w(f'bind -N "Navigate ses/win/pane"     {nav_key}  choose-tree -O time -sZ')
         elif self.vers_ok(1.0):
             w(
                 f'bind -N "Navigate ses/win/pane not available warning"  {nav_key}  '
                 'display "Navigate needs 2.7"'
             )
-
-        if self.vers_ok(2.8):
-            w('bind -N "Key not bound" Any display "This key is not bound to any action"\n')
 
         scrpad_min_vers = 3.2
         scrpad_key = "O"  # P being taken this is pOpup :)
@@ -701,12 +701,12 @@ class BaseConfig(TmuxConfig):
         )
 
         if self.vers_ok(0.9):
-            s = 'bind -N "Kill session in focus"      M-x  confirm-before'
+            s = 'bind -N "Kill session in focus"         M-x  confirm-before'
             if self.vers_ok(1.5):
                 s += ' -p "Kill session: #{session_name}? (y/n)"'
             w(f"{s} kill-session")
 
-        s = 'bind -N "Create new session  - M-+"  +    command-prompt'
+        s = 'bind -N "Create new session  - M-+"     +    command-prompt'
         if self.vers_ok(1.5):
             s += ' -I "?"'
         if self.vers_ok(1.0):
@@ -722,14 +722,14 @@ class BaseConfig(TmuxConfig):
             sc_n = "switch-client -n"
             w(
                 f"""# session navigation
-                bind -N "Select previous session  - M-("  -r  (  {sc_p}
-                bind -N "Select next session  - M-)"    -r  )  {sc_n}
-                bind -N "Switch to last session"      _  switch-client -l
+                bind -N "Switch to last session"                 _         switch-client -l
+                bind -N "Select previous session  - M-("     -r  (         {sc_p}
+                bind -N "Select next session  - M-)"         -r  )         {sc_n}
                 bind -N "Select previous session  - P+( M-(" -n  C-M-Up    {sc_p}
-                bind -N "Select next session  - P+) M-)"    -n  C-M-Down  {sc_n}"""
+                bind -N "Select next session  - P+) M-)"     -n  C-M-Down  {sc_n}"""
             )
 
-        s = 'bind -N "Rename Session"  S  command-prompt'
+        s = '\nbind -N "Rename Session"  S  command-prompt'
         if self.vers_ok(1.5):
             s += ' -I "#S"'
         w(f'{s} "rename-session -- \\"%%\\""')
@@ -788,13 +788,22 @@ class BaseConfig(TmuxConfig):
             '"'  # wrap cmd in "
         )
 
-        for key in ("c", "="):  # c is just for compatibility with default key
-            if self.vers_ok(1.0):
-                w(f'bind -N "New window"  {key}  {cmd_new_win_named}')
-            else:
-                w(f'bind -N "New window"  {key} new-window')
+        # for key in ("c", "="):  # c is just for compatibility with default key
         if self.vers_ok(1.0):
-            w(f'bind -N "New window  - P+=" -n  M-=  {cmd_new_win_named}')
+            w(
+                f"""
+                bind -N "New window - P+= M-="      c    {cmd_new_win_named}
+                bind -N "New window - P+c M-="      =    {cmd_new_win_named}
+                bind -N "New window  - P+= P+c" -n  M-=  {cmd_new_win_named}
+                """
+            )
+        else:
+            w(
+                """
+                bind -N "New window - P+="  c  new-window
+                bind -N "New window - P+c"  =  new-window
+                """
+            )
 
         pref = 'bind -N "Select the '
         w(
@@ -824,7 +833,21 @@ class BaseConfig(TmuxConfig):
         #
         #  Splitting the entire window
         #
-        self.auc_split_entire_window()  # used by iSH Console
+        if self.vers_ok(2.3) and not self.is_tmate():
+            #
+            #  tmate does not support split-window -f  despite they claim
+            #  to be 2.4 compatible and this is a 2.3 feature...
+            #
+            cp = self.current_path_directive
+            w(
+                f"""
+                # Split entire window
+                bind -N 'Split window left'   M-h  split-window  -fhb  {cp}
+                bind -N 'Split window down'   M-j  split-window  -fv   {cp}
+                bind -N 'Split window up'     M-k  split-window  -fvb  {cp}
+                bind -N 'Split window right'  M-l  split-window  -fh   {cp}
+                """
+            )
 
     def windows_handling(self):
         self.windows_handling_part_1()
@@ -847,7 +870,7 @@ class BaseConfig(TmuxConfig):
             )
         if self.vers_ok(2.1):
             w2 = "window"  # hackish strings to make sure
-            cm = "-T copy-mode -n M-"  # line is not to long
+            cm = "-T copy-mode -n  M-"  # line is not to long
             w(
                 f"""# Override odd behaviour in copy-mode
                 bind -N "Previous {w2}  - P+9" {cm}9  previous-{w2}
@@ -863,8 +886,8 @@ class BaseConfig(TmuxConfig):
         #
         w(
             """# window shuffle
-            bind -N "Swap window left"         -r  <    swap-window -d -t :-1
-            bind -N "Swap window right"        -r  >    swap-window -d -t :+1"""
+            bind -N "Swap window left"    -r  <    swap-window -d -t :-1
+            bind -N "Swap window right"   -r  >    swap-window -d -t :+1"""
         )
 
         s = 'bind -N "Rename current window"   W  command-prompt'
@@ -1105,7 +1128,7 @@ class BaseConfig(TmuxConfig):
             pane_right = "select-pane -R"
             pane_down = "select-pane -D"
         else:
-            # Really old tmuxes can only navigate up/down by pane index
+            # Really old tmuxes can only navigate[<0;105;38M up/down by pane index
             pane_left = "up-pane"
             pane_up = "up-pane"
             pane_right = "down-pane"
@@ -1134,10 +1157,10 @@ class BaseConfig(TmuxConfig):
                 w(
                     f"""# No repeats here, since I so often use arrows directly
                     # after moving to another pane
-                    bind -N "Select pane left - P+h M-Left"   Left   {pane_left}
-                        bind -N "Select pane down - P+j M-Down"   Down   {pane_down}
-                        bind -N "Select pane up - P+k M-Up"       Up     {pane_up}
-                        bind -N "Select pane right - P+l M-Right" Right  {pane_right}
+                    bind -N "Select pane left - P+h M-Left"    Left   {pane_left}
+                        bind -N "Select pane down - P+j M-Down"    Down   {pane_down}
+                        bind -N "Select pane up - P+k M-Up"        Up     {pane_up}
+                        bind -N "Select pane right - P+l M-Right"  Right  {pane_right}
                         """
                 )
 
@@ -1147,8 +1170,8 @@ class BaseConfig(TmuxConfig):
             #  to be an important feature.
             #  Better to keep them to their normal setting as per above
             #
-            w(f'bind -N "Select pane up"   -T "copy-mode"  M-Up   {pane_up}')
-            w(f'bind -N "Select pane down" -T "copy-mode"  M-Down {pane_down}')
+            w(f'bind -N "Select pane up"   -T "copy-mode"  M-Up    {pane_up}')
+            w(f'bind -N "Select pane down" -T "copy-mode"  M-Down  {pane_down}')
 
     def pane_splitting(self):
         #
@@ -1173,40 +1196,40 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.0):
             w(
-                "bind -N 'Split pane down - P+M-Down'   C-j  "
-                f"split-window     {cur_path}"
+                "bind -N 'Split pane down - P+M-Down'    C-j  "
+                f"split-window       {cur_path}"
             )
             w(
-                "bind -N 'Split pane right - P+M-Right' C-l  "
-                f"split-window -h  {cur_path}"
+                "bind -N 'Split pane right - P+M-Right'  C-l  "
+                f"split-window  -h   {cur_path}"
             )
         if self.vers_ok(2.0):
             w(
-                "bind -N 'Split pane left - P+M-Left'   C-h  "
-                f"split-window -hb {cur_path}"
+                "bind -N 'Split pane left - P+M-Left'    C-h  "
+                f"split-window  -hb  {cur_path}"
             )
             w(
-                "bind -N 'Split pane up - P+M-Up'       C-k  "
-                f"split-window -vb {cur_path}"
+                "bind -N 'Split pane up - P+M-Up'        C-k  "
+                f"split-window  -vb  {cur_path}"
             )
         w()  # spacer
         if self.vers_ok(1.0):
             w(
-                "bind -N 'Split pane down - P+C-j'  M-Down   "
-                f"split-window     {cur_path}"
+                "bind -N 'Split pane down - P+C-j'   M-Down   "
+                f"split-window       {cur_path}"
             )
             w(
-                "bind -N 'Split pane right - P+C-l' M-Right  "
-                f"split-window -h  {cur_path}"
+                "bind -N 'Split pane right - P+C-l'  M-Right  "
+                f"split-window  -h   {cur_path}"
             )
         if self.vers_ok(2.0):
             w(
-                "bind -N 'Split pane left - P+C-h'  M-Left   "
-                f"split-window -hb {cur_path}"
+                "bind -N 'Split pane left - P+C-h'   M-Left   "
+                f"split-window  -hb  {cur_path}"
             )
             w(
-                "bind -N 'Split pane up - P+C-k'    M-Up     "
-                f"split-window -vb {cur_path}"
+                "bind -N 'Split pane up - P+C-k'     M-Up     "
+                f"split-window  -vb  {cur_path}"
             )
         w()  # spacer between sections
 
@@ -1500,10 +1523,6 @@ class BaseConfig(TmuxConfig):
         self.check_if_muc_key_is_defined(mtc_utils.K_M_UNDERSCORE)
         self.check_if_muc_key_is_defined(mtc_utils.K_M_P)
         self.check_if_muc_key_is_defined(mtc_utils.K_M_X)
-        self.check_if_muc_key_is_defined(mtc_utils.K_M_h)
-        self.check_if_muc_key_is_defined(mtc_utils.K_M_j)
-        self.check_if_muc_key_is_defined(mtc_utils.K_M_k)
-        self.check_if_muc_key_is_defined(mtc_utils.K_M_l)
 
     def muc_non_default_value(self, default):
         # If a non-default is used, display it as a prefix
@@ -1513,14 +1532,15 @@ class BaseConfig(TmuxConfig):
 
     def auc_meta_ses_handling(self):
         # Defaults might be overridden by TabletBtKbd()
-        self.write("# auc_meta_ses_handling()")
-
         w = self.write
+        w()
+        w("# auc_meta_ses_handling()")
+
         if self.vers_ok(1.0):
             s = (
                 f'bind -N "{
                     self.muc_non_default_value(mtc_utils.K_M_PLUS)
-                }Create new session  - P++"      '
+                }Create new session  - P++" '
                 f"-n  {self.muc_keys[mtc_utils.K_M_PLUS]}  command-prompt "
             )
             if self.vers_ok(1.5):
@@ -1529,22 +1549,20 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.2):
             w(
-                f"bind -N '{
+                f"""
+                bind -N '{
                     self.muc_non_default_value(mtc_utils.K_M_UNDERSCORE)
-                }Switch to last session  - P+_'  "
-                f"-n  {self.muc_keys[mtc_utils.K_M_UNDERSCORE]}  switch-client -l"
-            )
-            w(
-                f"bind -N '{
+                }Switch to last session  - P+_'         -n  {
+                    self.muc_keys[mtc_utils.K_M_UNDERSCORE]}  switch-client -l
+                bind -N '{
                     self.muc_non_default_value(mtc_utils.K_M_PAR_OPEN)
-                }Select previous session  - P+( C-M-Up'"
-                f" -n  {self.muc_keys[mtc_utils.K_M_PAR_OPEN]}  switch-client -p"
-            )
-            w(
-                f"bind -N '{
+                }Select previous session  - P+( C-M-Up' -n  {
+                    self.muc_keys[mtc_utils.K_M_PAR_OPEN]}  switch-client -p
+                bind -N '{
                     self.muc_non_default_value(mtc_utils.K_M_PAR_CLOSE)
-                }Select next session  - P+) C-M-Down'   "
-                f"-n  {self.muc_keys[mtc_utils.K_M_PAR_CLOSE]}  switch-client -n"
+                }Select next session  - P+) C-M-Down'   -n  {
+                    self.muc_keys[mtc_utils.K_M_PAR_CLOSE]}  switch-client -n
+                """
             )
 
     def auc_display_plugins_used(self):  # used by iSH Console
@@ -1599,57 +1617,6 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.5):
             s += f' -p "kill tmux server {self.conf_file}? (y/n)"'
         self.write(f"{s} kill-server")
-
-    def auc_split_entire_window(self):
-        """iSH console doesn't generate correct ALT - Upper Case sequences,
-        so when that is the env, intended keys must be bound as user keys.
-        To make that without having two separate snippets of code doing
-        the same and keeping them in sync, the default parameters are
-        the "normal" case, when used for iSH console, the
-        user keys will be given
-        """
-        w = self.write
-        # pref = 'bind -N "Split window '
-        # sw = "split-window -f"
-        cp = self.current_path_directive
-
-        if self.is_tmate() or not self.vers_ok(2.3):
-            #
-            #  tmate does not support split-window -f  despite they claim
-            #  to be 2.4 compatible and this is a 2.3 feature...
-            #
-            return
-
-        w(
-            f"bind -N '{self.muc_non_default_value(mtc_utils.K_M_h)}Split window left'   {
-                self.muc_keys[mtc_utils.K_M_h]
-            }  split-window -fhb {cp}"
-        )
-        w(
-            f"bind -N '{self.muc_non_default_value(mtc_utils.K_M_j)}Split window down'   {
-                self.muc_keys[mtc_utils.K_M_j]
-            }  split-window -fv  {cp}"
-        )
-        w(
-            f"bind -N '{self.muc_non_default_value(mtc_utils.K_M_k)}Split window up'     {
-                self.muc_keys[mtc_utils.K_M_k]
-            }  split-window -fvb {cp}"
-        )
-        w(
-            f"bind -N '{self.muc_non_default_value(mtc_utils.K_M_l)}Split window right'  {
-                self.muc_keys[mtc_utils.K_M_l]
-            }  split-window -fh  {cp}"
-        )
-        w()
-
-        # w(
-        #     f"""# auc_split_entire_window()
-        #     {pref}left - P+M-Left"    {self.muc_keys[mtc_utils.K_M_h]}  {sw}hb {cp}
-        #     {pref}down - P+M-Down"    {self.muc_keys[mtc_utils.K_M_j]}  {sw}v  {cp}
-        #     {pref}up - P+M-Up"        {self.muc_keys[mtc_utils.K_M_k]}  {sw}vb {cp}
-        #     {pref}right - P+M-Right"  {self.muc_keys[mtc_utils.K_M_l]}  {sw}h  {cp}
-        #     """
-        # )
 
     #
     #  Utility methods
