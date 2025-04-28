@@ -517,11 +517,34 @@ class BaseConfig(TmuxConfig):
         )
         # escape-time < 3.5 = 500 3.5 = 10
 
+        if self.prefix_key.lower() != "c-b":
+            w(
+                f"""# Remove the default prefix, do it before assigning
+                # the selected one, in case it was some variant of C-b
+                # keep it for now, doesn't hurt and might help pairprogrammers
+                # unbind  C-b
+                {self.opt_ses} prefix {self.prefix_key}"""
+            )
+            w(  # double prefix always works
+                f'bind -N "Repeats sends {self.prefix_key} through"  '
+                f"{self.prefix_key}  send-prefix"
+            )
+            if self.prefix_key.lower() not in ("c-w",):
+                # this is recommended in tmux-sensible
+                # I added filtering chars colliding with other binds
+                w(
+                    f'bind -N "prefix then same char sends {self.prefix_key} through"  '
+                    f"{self.remove_prefix(self.prefix_key)}  send-keys {self.prefix_key}"
+                )
+
+            # in tmux-sensible it was recommended to bind prefix + same char without ctrl
+            # to last-window, not sure, but perhaps a good idea?
+            w()  # spacer
+
         if self.vers_ok(1.1):
             self.mkscript_shlvl_offset()
             w(
-                f"""
-                # Save correction factor for displaying SHLVL inside tmux
+                f"""# Save correction factor for displaying SHLVL inside tmux
                 {self.es.run_it(self._fnc_shlvl_offset, in_bg=True)}"""
             )
 
@@ -628,30 +651,6 @@ class BaseConfig(TmuxConfig):
         #======================================================
         """
         )
-        if self.prefix_key.lower() != "c-b":
-            w(
-                f"""# Remove the default prefix, do it before assigning
-                # the selected one, in case it was some variant of C-b
-                # keep it for now, doesn't hurt and might help pairprogrammers
-                # unbind  C-b
-                {self.opt_ses} prefix {self.prefix_key}"""
-            )
-            w(  # double prefix always works
-                f'bind -N "Repeats sends {self.prefix_key} through"  '
-                f"{self.prefix_key}  send-prefix"
-            )
-            if self.prefix_key.lower() not in ("c-w",):
-                # this is recommended in tmux-sensible
-                # I added filtering chars colliding with other binds
-                w(
-                    f'bind -N "prefix then same char sends {self.prefix_key} through"  '
-                    f"{self.remove_prefix(self.prefix_key)}  send-keys {self.prefix_key}"
-                )
-
-            # in tmux-sensible it was recommended to bind prefix + same char without ctrl
-            # to last-window, not sure, but perhaps a good idea?
-            w()  # spacer
-
         w(f"{self.opt_ses} set-titles on")
 
         #
@@ -775,8 +774,6 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(3.3):
             w(f"{self.opt_win} popup-border-lines rounded")
 
-        w()  # spacer
-
         if self.vers_ok(1.5):
             s = "-I ?"
         else:
@@ -807,8 +804,7 @@ class BaseConfig(TmuxConfig):
 
         pref = 'bind -N "Select the '
         w(
-            f"""
-        # window navigation
+            f"""# window navigation
         {pref}previously current window  - M--"         -  last-window
         {pref}previous window  - P+9 M-9 C-M-Left"  -r  p  previous-window
         {pref}next window      - P+0 M-0 C-M-Right" -r  n  next-window
@@ -872,10 +868,10 @@ class BaseConfig(TmuxConfig):
             w2 = "window"  # hackish strings to make sure
             cm = "-T copy-mode -n  M-"  # line is not to long
             w(
-                f"""# Override odd behaviour in copy-mode
+                f"""
+                # Override odd behaviour in copy-mode
                 bind -N "Previous {w2}  - P+9" {cm}9  previous-{w2}
-                bind -N "Next {w2} - P+0"      {cm}0  next-{w2}
-                """
+                bind -N "Next {w2} - P+0"      {cm}0  next-{w2}"""
             )
         #
         #  Swap window left/right <prefix>  < / >
@@ -885,7 +881,8 @@ class BaseConfig(TmuxConfig):
         #  regardless of default popup status.
         #
         w(
-            """# window shuffle
+            """
+            # window shuffle
             bind -N "Swap window left"    -r  <    swap-window -d -t :-1
             bind -N "Swap window right"   -r  >    swap-window -d -t :+1"""
         )
@@ -1573,7 +1570,9 @@ class BaseConfig(TmuxConfig):
         the "normal" case, when used for iSH console, the
         user keys will be given
         """
-        self.write("# auc_display_plugins_used()")
+        w = self.write
+        w()
+        w("# auc_display_plugins_used()")
         if not self.vers_ok(1.8):
             # There is no plugin support...
             return
@@ -1584,7 +1583,7 @@ class BaseConfig(TmuxConfig):
         # it won't be over-written!
         #
         repo_dir = os.path.dirname(__file__)
-        self.write(
+        w(
             f'bind -N "{
                 self.muc_non_default_value(mtc_utils.K_M_P)
             }List all plugins defined"  {self.muc_keys[mtc_utils.K_M_P]}  '
@@ -1609,14 +1608,16 @@ class BaseConfig(TmuxConfig):
         if not self.vers_ok(0.9):
             return
 
-        self.write("# auc_kill_tmux_server()")
+        w = self.write
+        w()
+        w("# auc_kill_tmux_server()")
         s = (
             f'bind -N "{self.muc_non_default_value(mtc_utils.K_M_X)}Kill tmux server"  '
             f"{self.muc_keys[mtc_utils.K_M_X]}  confirm-before"
         )
         if self.vers_ok(1.5):
             s += f' -p "kill tmux server {self.conf_file}? (y/n)"'
-        self.write(f"{s} kill-server")
+        w(f"{s} kill-server")
 
     #
     #  Utility methods
