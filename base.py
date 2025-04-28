@@ -160,10 +160,10 @@ class BaseConfig(TmuxConfig):
         mtc_utils.K_M_UNDERSCORE: mtc_utils.K_M_UNDERSCORE,
         mtc_utils.K_M_P: mtc_utils.K_M_P,
         mtc_utils.K_M_X: mtc_utils.K_M_X,
-        mtc_utils.K_CM_H: mtc_utils.K_CM_H,
-        mtc_utils.K_CM_J: mtc_utils.K_CM_J,
-        mtc_utils.K_CM_K: mtc_utils.K_CM_K,
-        mtc_utils.K_CM_L: mtc_utils.K_CM_L,
+        mtc_utils.K_M_h: mtc_utils.K_M_h,
+        mtc_utils.K_M_j: mtc_utils.K_M_j,
+        mtc_utils.K_M_k: mtc_utils.K_M_k,
+        mtc_utils.K_M_l: mtc_utils.K_M_l,
     }
 
     # use_debug_log = True  # if True, debug log will be printed
@@ -825,24 +825,6 @@ class BaseConfig(TmuxConfig):
         #  Splitting the entire window
         #
         self.auc_split_entire_window()  # used by iSH Console
-        #
-        #  Same using arrow keys with <prefix> M-S modifier
-        #
-        if self.vers_ok(2.3) and not self.is_tmate():
-            #
-            #  tmate does not support split-window -f  despite they claim
-            #  to be 2.4 compatible and this is a 2.3 feature...
-            #
-            sw1 = 'bind -N "Split window'  # hackish strings
-            sw2 = "split-window -f"  # to make sure
-            suffix = self.current_path_directive
-            w(
-                f"""{sw1} left - P+C-M-H"   C-M-Left   {sw2}hb {suffix}
-            {sw1} down - P+C-M-J"   C-M-Down   {sw2}v  {suffix}
-            {sw1} up - P+C-M-K"     C-M-Up     {sw2}vb {suffix}
-            {sw1} right - P+C-M-L"  C-M-Right  {sw2}h  {suffix}
-            """
-            )
 
     def windows_handling(self):
         self.windows_handling_part_1()
@@ -966,31 +948,7 @@ class BaseConfig(TmuxConfig):
                 """
             )
 
-        #
-        #  Save history for current pane, prompts for filename
-        #
-        #  Save as text              <prefix> M-h
-        #  Save with escape codes    <prefix> M-e
-        #
-        #  When saved with escape code, less/most fails to display
-        #  cat history-file will display the included colors correctly.
-        #
-        s = 'bind -N "Save history to prompted file name (no escapes)"  M-h  command-prompt'
-        if self.vers_ok(1.0):
-            s += ' -p "save history (no escapes) to:"'
-            if self.vers_ok(1.5):
-                s += ' -I "$TMPDIR"/tmux.history'
-            s2 = "%1"
-        else:
-            s2 = "$TMPDIR/tmux.history"
-        w(f'{s} "capture-pane -S - -E - \\; save-buffer {s2} \\; delete-buffer"')
-        if self.vers_ok(1.8):
-            w(
-                'bind -N "Save history to prompted file name (includes escapes)"  '
-                'M-e  command-prompt -p "save history (includes escapes) to:" '
-                '-I "$TMPDIR/tmux-e.history" "capture-pane -S - -E - -e \\; '
-                'save-buffer %1 \\; delete-buffer"'
-            )
+        self.save_history()
 
         if self.vers_ok(1.2):
             w(
@@ -1009,6 +967,34 @@ class BaseConfig(TmuxConfig):
         self.pane_navigation()
         self.pane_splitting()
         self.pane_resizing()
+
+    def save_history(self):
+        #
+        #  Save history for current pane, prompts for filename
+        #
+        #  Save as text              <prefix> M-H
+        #  Save with escape codes    <prefix> M-E
+        #
+        #  When saved with escape code, less/most fails to display
+        #  cat history-file will display the included colors correctly.
+        #
+        w = self.write
+        s = 'bind -N "Save history to prompted file name (no escapes)"  M-H  command-prompt'
+        if self.vers_ok(1.0):
+            s += ' -p "save history (no escapes) to:"'
+            if self.vers_ok(1.5):
+                s += ' -I "$TMPDIR"/tmux.history'
+            s2 = "%1"
+        else:
+            s2 = "$TMPDIR/tmux.history"
+        w(f'{s} "capture-pane -S - -E - \\; save-buffer {s2} \\; delete-buffer"')
+        if self.vers_ok(1.8):
+            w(
+                'bind -N "Save history to prompted file name (includes escapes)"  '
+                'M-E  command-prompt -p "save history (includes escapes) to:" '
+                '-I "$TMPDIR/tmux-e.history" "capture-pane -S - -E - -e \\; '
+                'save-buffer %1 \\; delete-buffer"'
+            )
 
     def pane_frame_lines(self):
         if not self.vers_ok(1.9):
@@ -1187,39 +1173,39 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.0):
             w(
-                "bind -N 'Split pane down - P+M-Down'    -r  C-j  "
+                "bind -N 'Split pane down - P+M-Down'   C-j  "
                 f"split-window     {cur_path}"
             )
             w(
-                "bind -N 'Split pane right - P+M-Right' -r  C-l  "
+                "bind -N 'Split pane right - P+M-Right' C-l  "
                 f"split-window -h  {cur_path}"
             )
         if self.vers_ok(2.0):
             w(
-                "bind -N 'Split pane left - P+M-Left'   -r  C-h  "
+                "bind -N 'Split pane left - P+M-Left'   C-h  "
                 f"split-window -hb {cur_path}"
             )
             w(
-                "bind -N 'Split pane up - P+M-Up'       -r  C-k  "
+                "bind -N 'Split pane up - P+M-Up'       C-k  "
                 f"split-window -vb {cur_path}"
             )
         w()  # spacer
         if self.vers_ok(1.0):
             w(
-                "bind -N 'Split pane down - P+C-j'  -r  M-Down   "
+                "bind -N 'Split pane down - P+C-j'  M-Down   "
                 f"split-window     {cur_path}"
             )
             w(
-                "bind -N 'Split pane right - P+C-l' -r  M-Right  "
+                "bind -N 'Split pane right - P+C-l' M-Right  "
                 f"split-window -h  {cur_path}"
             )
         if self.vers_ok(2.0):
             w(
-                "bind -N 'Split pane left - P+C-h'  -r  M-Left   "
+                "bind -N 'Split pane left - P+C-h'  M-Left   "
                 f"split-window -hb {cur_path}"
             )
             w(
-                "bind -N 'Split pane up - P+C-k'    -r  M-Up     "
+                "bind -N 'Split pane up - P+C-k'    M-Up     "
                 f"split-window -vb {cur_path}"
             )
         w()  # spacer between sections
@@ -1514,10 +1500,10 @@ class BaseConfig(TmuxConfig):
         self.check_if_muc_key_is_defined(mtc_utils.K_M_UNDERSCORE)
         self.check_if_muc_key_is_defined(mtc_utils.K_M_P)
         self.check_if_muc_key_is_defined(mtc_utils.K_M_X)
-        self.check_if_muc_key_is_defined(mtc_utils.K_CM_H)
-        self.check_if_muc_key_is_defined(mtc_utils.K_CM_J)
-        self.check_if_muc_key_is_defined(mtc_utils.K_CM_K)
-        self.check_if_muc_key_is_defined(mtc_utils.K_CM_L)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_h)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_j)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_k)
+        self.check_if_muc_key_is_defined(mtc_utils.K_M_l)
 
     def muc_non_default_value(self, default):
         # If a non-default is used, display it as a prefix
@@ -1635,33 +1621,33 @@ class BaseConfig(TmuxConfig):
             return
 
         w(
-            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_H)}Split window left'   {
-                self.muc_keys[mtc_utils.K_CM_H]
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_M_h)}Split window left'   {
+                self.muc_keys[mtc_utils.K_M_h]
             }  split-window -fhb {cp}"
         )
         w(
-            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_J)}Split window down'   {
-                self.muc_keys[mtc_utils.K_CM_J]
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_M_j)}Split window down'   {
+                self.muc_keys[mtc_utils.K_M_j]
             }  split-window -fv  {cp}"
         )
         w(
-            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_K)}Split window up'     {
-                self.muc_keys[mtc_utils.K_CM_K]
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_M_k)}Split window up'     {
+                self.muc_keys[mtc_utils.K_M_k]
             }  split-window -fvb {cp}"
         )
         w(
-            f"bind -N '{self.muc_non_default_value(mtc_utils.K_CM_L)}Split window right'  {
-                self.muc_keys[mtc_utils.K_CM_L]
+            f"bind -N '{self.muc_non_default_value(mtc_utils.K_M_l)}Split window right'  {
+                self.muc_keys[mtc_utils.K_M_l]
             }  split-window -fh  {cp}"
         )
         w()
 
         # w(
         #     f"""# auc_split_entire_window()
-        #     {pref}left - P+C-M-Left"    {self.muc_keys[mtc_utils.K_CM_H]}  {sw}hb {cp}
-        #     {pref}down - P+C-M-Down"    {self.muc_keys[mtc_utils.K_CM_J]}  {sw}v  {cp}
-        #     {pref}up - P+C-M-Up"        {self.muc_keys[mtc_utils.K_CM_K]}  {sw}vb {cp}
-        #     {pref}right - P+C-M-Right"  {self.muc_keys[mtc_utils.K_CM_L]}  {sw}h  {cp}
+        #     {pref}left - P+M-Left"    {self.muc_keys[mtc_utils.K_M_h]}  {sw}hb {cp}
+        #     {pref}down - P+M-Down"    {self.muc_keys[mtc_utils.K_M_j]}  {sw}v  {cp}
+        #     {pref}up - P+M-Up"        {self.muc_keys[mtc_utils.K_M_k]}  {sw}vb {cp}
+        #     {pref}right - P+M-Right"  {self.muc_keys[mtc_utils.K_M_l]}  {sw}h  {cp}
         #     """
         # )
 

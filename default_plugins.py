@@ -310,9 +310,14 @@ class DefaultPlugins(BaseConfig):
             #  Slightly catppuccin frappe inspired
             #
             # fg @thm_surface_0 bg @thm_yellow
-            set -g @menus_simple_style_selected "fg=#414559,bg=#e5c890"
-            set -g @menus_simple_style "bg=#414559"        # @thm_surface_0
-            set -g @menus_simple_style_border "bg=#414559" # @thm_surface_0
+            # set -g @menus_simple_style_selected "fg=#414559,bg=#e5c890"
+            # set -g @menus_simple_style "bg=#414559"        # @thm_surface_0
+            # set -g @menus_simple_style_border "bg=#414559" # @thm_surface_0
+
+            set -g @menus_simple_style_selected default
+            set -g @menus_simple_style default
+            set -g @menus_simple_style_border default
+
             set -g @menus_nav_next "#[fg=colour220]-->"
             set -g @menus_nav_prev "#[fg=colour71]<--"
             set -g @menus_nav_home "#[fg=colour84]<=="

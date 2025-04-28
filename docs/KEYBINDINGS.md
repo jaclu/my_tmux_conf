@@ -36,8 +36,8 @@ dependent actions.
 |                     |             | `<p> x`       | Kill pane \*\*                      |
 | `<p> B`             |             |               | Choose paste buffer(-s)             |
 |                     |             | `<p>` C-M-l   | Clear history & screen              |
-| `<p> M-e`           |             |               | Save history to file (with escapes) |
-| `<p> M-h`           |             |               | Save history to file (no escapes)   |
+| `<p> M-E`           |             |               | Save history to file (with escapes) |
+| `<p> M-H`           |             |               | Save history to file (no escapes)   |
 | `<p> s`             |             |               | Set pane size (w x h)               |
 |                     |             |               |                                     |
 | `<p> C-h` `M-Left`  |             |               | Split pane to the left              |
@@ -70,11 +70,11 @@ dependent actions.
 | `<p> X`                     |                     | `<p> &` | Kill window \*\*          |
 | `<p> *`                     |                     |         | Toggle synchronized tabs  |
 | `<p> e`                     |                     | `<p> E` | Spread panes out evenly.  |
-|                             |                     |         |                           |
-| `<p> C-M-h` `<p> C-M-Left`  |                     |         | Split window left         |
-| `<p> C-M-j` `<p> C-M-Down`  |                     |         | Split window down         |
-| `<p> C-M-k` `<p> C-M-Up`    |                     |         | Split window up           |
-| `<p> C-M-l` `<p> C-M-Right` |                     |         | Split window right        |
+|             |                     |         |                           |
+| `<p> M-h`   |                     |         | Split window left         |
+| `<p> M-j`   |                     |         | Split window down         |
+| `<p> M-k`   |                     |         | Split window up           |
+| `<p> M-l`   |                     |         | Split window right        |
 
 ### Session handling (sometimes referred to as clients by tmux man)
 

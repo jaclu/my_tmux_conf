@@ -408,10 +408,10 @@ class IshConsole(LimitedKbdSpecialHandling):
             mtc_utils.K_M_X: f"User{uk_ms_char['M-X']}",
             # iSH console is unable to generate C-M keys
             # so using M-UpperCase equivalents
-            mtc_utils.K_CM_H: f"User{uk_ms_char['M-H']}",
-            mtc_utils.K_CM_J: f"User{uk_ms_char['M-J']}",
-            mtc_utils.K_CM_K: f"User{uk_ms_char['M-K']}",
-            mtc_utils.K_CM_L: f"User{uk_ms_char['M-L']}",
+            mtc_utils.K_M_h: f"User{uk_ms_char['M-h']}",
+            mtc_utils.K_M_j: f"User{uk_ms_char['M-j']}",
+            mtc_utils.K_M_k: f"User{uk_ms_char['M-k']}",
+            mtc_utils.K_M_l: f"User{uk_ms_char['M-l']}",
         }
 
         w = self.tc.write

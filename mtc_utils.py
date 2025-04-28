@@ -145,10 +145,10 @@ K_M_PAR_CLOSE = "M-)"
 K_M_UNDERSCORE = "M-_"
 K_M_P = "M-P"
 K_M_X = "M-X"
-K_CM_H = "C-M-H"
-K_CM_J = "C-M-J"
-K_CM_K = "C-M-K"
-K_CM_L = "C-M-L"
+K_M_h = "M-h"
+K_M_j = "M-j"
+K_M_k = "M-k"
+K_M_l = "M-l"
 
 
 ERROR_INCOMPATIBLE_TMUX_CONF_LIB = 64
