@@ -74,7 +74,7 @@ class T2(SB):  # type: ignore
             set -g @menus_display_commands 'Yes'
             # set -g @menus_display_cmds_cols 95
 
-            set -g @menus_use_hint_overlays no
+            set -g @menus_use_hint_overlays yes
             set -g @menus_show_key_hints no
 
             set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'

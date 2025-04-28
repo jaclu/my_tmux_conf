@@ -1188,7 +1188,7 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.0):
             w(
                 "bind -N 'Split pane down - P+M-Down'    -r  C-j  "
-                f"split-window -v  {cur_path}"
+                f"split-window     {cur_path}"
             )
             w(
                 "bind -N 'Split pane right - P+M-Right' -r  C-l  "
@@ -1207,7 +1207,7 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.0):
             w(
                 "bind -N 'Split pane down - P+C-j'  -r  M-Down   "
-                f"split-window -v  {cur_path}"
+                f"split-window     {cur_path}"
             )
             w(
                 "bind -N 'Split pane right - P+C-l' -r  M-Right  "
