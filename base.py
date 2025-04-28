@@ -435,6 +435,13 @@ class BaseConfig(TmuxConfig):
         """
         )
 
+        # Use tmux-256color if available, otherwise fallback
+        if False:
+            w("if-shell 'infocmp tmux-256color >/dev/null 2>&1' \\")
+            w("    'set -g default-terminal \"tmux-256color\"' \\")
+            w("    'set -g default-terminal \"screen-256color\"'")
+            w()  # spacer
+
         #
         #  If LC_TERMINAL is not passed through, add this to the servers
         #  /etc/ssh/sshd_config:
