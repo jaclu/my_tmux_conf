@@ -1364,7 +1364,8 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.0) and self.monitor_activity:
             w(f"{self.opt_ses} visual-activity off")
 
-        w("# Allow status to grow as needed")
+        w()  # spacer
+        w("# Allow status right/left to grow as needed")
         if self.vers_ok(3.0):
             unlimited = 0
         else:
