@@ -202,14 +202,6 @@ define_tmux_env() {
     unset TMUX_CONF
     unset TMUX_PLUGIN_MANAGER_PATH
 
-    # really old tmux'es < 1.4 complain if TMUX is set,
-    # even if it is using a different socket
-    # unsetting it here invalidates the inner tmux check will try to
-    # unset it past that check instead, once tested on a tmux < 1.4 this
-    # change can be permanented or if need be adopted
-    #unset TMUX
-
-
     select_tmux_bin
     #
     #  To not collide when checking for colliding versions
@@ -264,6 +256,10 @@ define_tmux_env() {
         # ensure socket is not used inside itself
         error_msg "Attempt to use '$TMUX_BIN $conf_file' from within itself"
     fi
+    # really old tmux'es < 1.4 complain if TMUX is set,
+    # even if it is using a different socket
+    # This must be done after the TMUX_OUTER check, since it depends on this variable
+    # being present
     unset TMUX
 }
 
