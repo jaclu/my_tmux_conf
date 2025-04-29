@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+#  Copyright (c) 2022-2025: Jacob.Lundqvist@gmail.com
+#  License: MIT
+#
+#  Part of https://github.com/jaclu/my_tmux_conf
+#
+# The earliest versions didn't have the -V param, so
+# here it is faked via the parent .asdf folder indicating version number
+# in other deploys just echo a static version
+#
+# Install this as tmux in the expect
+# Move the real tmux bin to some other location and run it on the last line
+# and install this as tmux in the expected location.
+#
+# All that it does is capturing calls to `tmux -V` everything else is
+# sent through
+#
+
+d_base="$(dirname "$(dirname "$(realpath "$0")")")"
+
+[ "$1" = "-V" ] && {
+    echo "tmux $(basename "$d_base")"
+    exit 0
+}
+
+"$d_base"/real/tmux "$@"
