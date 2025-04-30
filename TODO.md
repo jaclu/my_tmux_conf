@@ -1,5 +1,11 @@
 # TODO
 
+## 25-04-30 Clear pane shortcut issue
+
+the root bind overrides the prefix bind as is, Consider to use something that can be done
+in t2 without being eaten up by main env, ideally with a basic key for accessibility even
+on limited keyboard scenarios
+
 ## M-S Left/Right temp disabled 25-03-10
 
 they used to be used for split pane, will become next/prev window once I have
