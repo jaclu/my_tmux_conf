@@ -119,7 +119,7 @@ class BaseConfig(TmuxConfig):
     #  interfere with my main environment
     #
     t2_env: str = os.environ.get("T2_ENV", "")
-    prefix_key_T2: str = "C-w"  # prefix for inner dev environment
+    prefix_key_T2: str = "C-b"  # prefix for inner dev environment
 
     # Disables tmux default popup menus, instead relying on the plugin
     # jaclu/tmux-menus
@@ -436,11 +436,10 @@ class BaseConfig(TmuxConfig):
         )
 
         # Use tmux-256color if available, otherwise fallback
-        if False:
-            w("if-shell 'infocmp tmux-256color >/dev/null 2>&1' \\")
-            w("    'set -g default-terminal \"tmux-256color\"' \\")
-            w("    'set -g default-terminal \"screen-256color\"'")
-            w()  # spacer
+        # w("if-shell 'infocmp tmux-256color >/dev/null 2>&1' \\")
+        # w("    'set -g default-terminal \"tmux-256color\"' \\")
+        # w("    'set -g default-terminal \"screen-256color\"'")
+        # w()  # spacer
 
         #
         #  If LC_TERMINAL is not passed through, add this to the servers
@@ -1199,42 +1198,18 @@ class BaseConfig(TmuxConfig):
             return
 
         if self.vers_ok(1.0):
-            w(
-                "bind -N 'Split pane down - P+M-Down'    C-j  "
-                f"split-window       {cur_path}"
-            )
-            w(
-                "bind -N 'Split pane right - P+M-Right'  C-l  "
-                f"split-window  -h   {cur_path}"
-            )
+            w(f"bind -N 'Split pane down - P+M-Down'    C-j  split-window       {cur_path}")
+            w(f"bind -N 'Split pane right - P+M-Right'  C-l  split-window  -h   {cur_path}")
         if self.vers_ok(2.0):
-            w(
-                "bind -N 'Split pane left - P+M-Left'    C-h  "
-                f"split-window  -hb  {cur_path}"
-            )
-            w(
-                "bind -N 'Split pane up - P+M-Up'        C-k  "
-                f"split-window  -vb  {cur_path}"
-            )
+            w(f"bind -N 'Split pane left - P+M-Left'    C-h  split-window  -hb  {cur_path}")
+            w(f"bind -N 'Split pane up - P+M-Up'        C-k  split-window  -vb  {cur_path}")
         w()  # spacer
         if self.vers_ok(1.0):
-            w(
-                "bind -N 'Split pane down - P+C-j'   M-Down   "
-                f"split-window       {cur_path}"
-            )
-            w(
-                "bind -N 'Split pane right - P+C-l'  M-Right  "
-                f"split-window  -h   {cur_path}"
-            )
+            w(f"bind -N 'Split pane down - P+C-j'   M-Down   split-window       {cur_path}")
+            w(f"bind -N 'Split pane right - P+C-l'  M-Right  split-window  -h   {cur_path}")
         if self.vers_ok(2.0):
-            w(
-                "bind -N 'Split pane left - P+C-h'   M-Left   "
-                f"split-window  -hb  {cur_path}"
-            )
-            w(
-                "bind -N 'Split pane up - P+C-k'     M-Up     "
-                f"split-window  -vb  {cur_path}"
-            )
+            w(f"bind -N 'Split pane left - P+C-h'   M-Left   split-window  -hb  {cur_path}")
+            w(f"bind -N 'Split pane up - P+C-k'     M-Up     split-window  -vb  {cur_path}")
         w()  # spacer between sections
 
     def pane_resizing(self):
@@ -1558,15 +1533,18 @@ class BaseConfig(TmuxConfig):
                 bind -N '{
                     self.muc_non_default_value(mtc_utils.K_M_UNDERSCORE)
                 }Switch to last session  - P+_'         -n  {
-                    self.muc_keys[mtc_utils.K_M_UNDERSCORE]}  switch-client -l
+                    self.muc_keys[mtc_utils.K_M_UNDERSCORE]
+                }  switch-client -l
                 bind -N '{
                     self.muc_non_default_value(mtc_utils.K_M_PAR_OPEN)
                 }Select previous session  - P+( C-M-Up' -n  {
-                    self.muc_keys[mtc_utils.K_M_PAR_OPEN]}  switch-client -p
+                    self.muc_keys[mtc_utils.K_M_PAR_OPEN]
+                }  switch-client -p
                 bind -N '{
                     self.muc_non_default_value(mtc_utils.K_M_PAR_CLOSE)
                 }Select next session  - P+) C-M-Down'   -n  {
-                    self.muc_keys[mtc_utils.K_M_PAR_CLOSE]}  switch-client -n
+                    self.muc_keys[mtc_utils.K_M_PAR_CLOSE]
+                }  switch-client -n
                 """
             )
 
