@@ -23,7 +23,7 @@ if [ ! -f "$f_destination" ]; then
     echo "This might need sudo on first deploy."
     echo
     echo "Example:"
-    echo "  echo ~/.local/bin >$f_destination"
+    echo "  echo ~/bin >$f_destination"
     exit 1
 fi
 

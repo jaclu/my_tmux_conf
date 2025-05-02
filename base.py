@@ -963,14 +963,14 @@ class BaseConfig(TmuxConfig):
         #
         if self.vers_ok(1.2):
             note = "Clear history & screen"
-            key = "C-M-l"
+            key = "M-L"
             cmd = "send-keys C-l \\; run-shell 'sleep 0.1' \\; clear-history"
             w(
                 f"""
                 # Defining this both with and without prefix, to make it convenient
                 # in the normal case and still accessible in an inner tmux
                 bind -N "{note}"     {key}  {cmd}
-                bind -N "{note}" -n  {key}  {cmd}
+                # bind -N "{note}" -n  {key}  {cmd}
                 """
             )
 
