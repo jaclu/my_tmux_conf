@@ -136,13 +136,7 @@ class BaseConfig(TmuxConfig):
     #  To compensate for this limitation, enabling this setting allows the
     #  <prefix> + arrow keys to function as navigation keys within tmux
     #  when running from the console on such devices, either locally or remotely.
-    #  If logged in remotely into such a device, it will not be needed
-    #
-    #  This feature only activates when the terminal is detected as a limited
-    #  device console.
-    #
-    #  In all other terminals,  the arrow keys and pane navigation remain
-    #  unchanged.
+    #  Instead of being used for pane navigation.
     #
     #  Note: Enabling this will reassign tmux pane navigation to use
     #  Vim-style keybindings (<prefix> + h/j/k/l) by default,
@@ -1140,31 +1134,35 @@ class BaseConfig(TmuxConfig):
         # indicate the right alternate keys
         if self.vers_ok(1.0):
             w(
-                f"""bind -N "Select pane left - P+Left M-Left"    -r  h  {pane_left}
-                bind -N "Select pane down - P+Down M-Down"    -r  j  {pane_down}
-                bind -N "Select pane up - P+Up M-Up"          -r  k  {pane_up}
-                bind -N "Select pane right - P+Right M-Right" -r  l  {pane_right}
+                f"""# Ghostty has pretty good keyboard defs out of the box,
+                # but doesn't generate correct sequences for M Left/Right !!!
+                bind -N "Select pane left - P+h P+Left"   -n  M-b  {pane_left}
+                bind -N "Select pane right - P+l P+Right" -n  M-f  {pane_right}
 
                 bind -N "Select pane left - P+h P+Left"   -n  M-Left   {pane_left}
                 bind -N "Select pane down - P+j P+Down"   -n  M-Down   {pane_down}
                 bind -N "Select pane up - P+k P+Up"       -n  M-Up     {pane_up}
                 bind -N "Select pane right - P+l P+Right" -n  M-Right  {pane_right}
-
-                # Ghostty has preey good key defs  out of the box, but doesn't
-                # generate M Left/Right !!!
-                bind -N "Select pane left - P+h P+Left"   -n  M-b  {pane_left}
-                bind -N "Select pane right - P+l P+Right" -n  M-f  {pane_right}
                 """
             )
-            if not self.use_prefix_arrow_nav_keys:
+            if self.use_prefix_arrow_nav_keys:
+                w(
+                    f"""
+                    bind -N "Select pane left - P+Left M-Left"    -r  h  {pane_left}
+                    bind -N "Select pane down - P+Down M-Down"    -r  j  {pane_down}
+                    bind -N "Select pane up - P+Up M-Up"          -r  k  {pane_up}
+                    bind -N "Select pane right - P+Right M-Right" -r  l  {pane_right}
+                    """
+                )
+            else:
                 w(
                     f"""# No repeats here, since I so often use arrows directly
                     # after moving to another pane
                     bind -N "Select pane left - P+h M-Left"    Left   {pane_left}
-                        bind -N "Select pane down - P+j M-Down"    Down   {pane_down}
-                        bind -N "Select pane up - P+k M-Up"        Up     {pane_up}
-                        bind -N "Select pane right - P+l M-Right"  Right  {pane_right}
-                        """
+                    bind -N "Select pane down - P+j M-Down"    Down   {pane_down}
+                    bind -N "Select pane up - P+k M-Up"        Up     {pane_up}
+                    bind -N "Select pane right - P+l M-Right"  Right  {pane_right}
+                    """
                 )
 
         if self.vers_ok(2.4):
