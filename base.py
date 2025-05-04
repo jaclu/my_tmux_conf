@@ -763,6 +763,9 @@ class BaseConfig(TmuxConfig):
             if self.vers_ok(2.6):
                 w(f"{self.opt_win} monitor-bell off")
 
+        if self.vers_ok(3.3):
+            w(f"{self.opt_win} popup-border-lines rounded")
+
         if self.vers_ok(2.7):
             w(
                 """
@@ -771,8 +774,6 @@ class BaseConfig(TmuxConfig):
             bind -N "Spread panes out evenly."  e  select-layout -E
             """
             )
-        if self.vers_ok(3.3):
-            w(f"{self.opt_win} popup-border-lines rounded")
 
         if self.vers_ok(1.5):
             s = "-I ?"
@@ -932,14 +933,17 @@ class BaseConfig(TmuxConfig):
                 delay = ""
             w(
                 f"""
-            # Displays that tmux picked up clipboard and (hopefully) sent it
-            # to the terminal
-            set-hook -g pane-set-clipboard "display-message {delay} '{msg}'"
-            """
+                # Displays that tmux picked up clipboard and (hopefully) sent it
+                # to the terminal
+                set-hook -g pane-set-clipboard "display-message {delay} '{msg}'"
+                """
             )
 
         if self.vers_ok(3.5):
-            w(f"{self.opt_pane} allow-set-title off")
+            w(
+                f"""{self.opt_pane} allow-set-title off
+                """
+            )
 
         w(f"bind -N 'Toggle synchronize'  *  {self.opt_win_loc} synchronize-panes")
 
@@ -956,15 +960,10 @@ class BaseConfig(TmuxConfig):
         #  back into history.
         #
         if self.vers_ok(1.2):
-            note = "Clear history & screen"
-            key = "M-L"
             cmd = "send-keys C-l \\; run-shell 'sleep 0.1' \\; clear-history"
             w(
                 f"""
-                # Defining this both with and without prefix, to make it convenient
-                # in the normal case and still accessible in an inner tmux
-                bind -N "{note}"     {key}  {cmd}
-                # bind -N "{note}" -n  {key}  {cmd}
+                bind -N "Clear history & screen"  M-L  {cmd}
                 """
             )
 
@@ -1094,11 +1093,13 @@ class BaseConfig(TmuxConfig):
 
         if self.show_pane_title:
             if self.vers_ok(2.6):
+                w()  # spacer
                 w(
                     'bind -N "Set pane title"  P  command-prompt -p '
                     '"Pane title: " "select-pane -T \\"%%\\""'
                 )
             elif self.vers_ok(2.3) and not self.is_tmate():
+                w()  # spacer
                 w(
                     f"""
                     {self.opt_pane} pane-border-status top
