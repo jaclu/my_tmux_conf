@@ -977,7 +977,6 @@ class BaseConfig(TmuxConfig):
                 bind -N "Chose paste buffer(-s)"  B  choose-buffer
                 """
             )
-        w()  # spacer between sections
 
         #
         #  I have so many pane related settings, so it makes sense to
@@ -1022,8 +1021,7 @@ class BaseConfig(TmuxConfig):
 
         w = self.write
         w(
-            """
-        #
+            """#
         #   ======  Pane frame lines  ======
         #"""
         )
@@ -1108,8 +1106,6 @@ class BaseConfig(TmuxConfig):
                     """
                 )
 
-        w()  # spacer between sections
-
     def pane_navigation(self):
         w = self.write
         w(
@@ -1134,12 +1130,7 @@ class BaseConfig(TmuxConfig):
         # indicate the right alternate keys
         if self.vers_ok(1.0):
             w(
-                f"""# Ghostty has pretty good keyboard defs out of the box,
-                # but doesn't generate correct sequences for M Left/Right !!!
-                bind -N "Select pane left - P+h P+Left"   -n  M-b  {pane_left}
-                bind -N "Select pane right - P+l P+Right" -n  M-f  {pane_right}
-
-                bind -N "Select pane left - P+h P+Left"   -n  M-Left   {pane_left}
+                f"""bind -N "Select pane left - P+h P+Left"   -n  M-Left   {pane_left}
                 bind -N "Select pane down - P+j P+Down"   -n  M-Down   {pane_down}
                 bind -N "Select pane up - P+k P+Up"       -n  M-Up     {pane_up}
                 bind -N "Select pane right - P+l P+Right" -n  M-Right  {pane_right}
@@ -1164,6 +1155,14 @@ class BaseConfig(TmuxConfig):
                     bind -N "Select pane right - P+l M-Right"  Right  {pane_right}
                     """
                 )
+                if mtc_utils.IS_GHOSTTY:
+                    w(
+                        f"""# Ghostty has pretty good keyboard defs out of the box,
+                        # but doesn't generate correct sequences for M Left/Right ...
+                        bind -N "Select pane left - P+h P+Left"   -n  M-b  {pane_left}
+                        bind -N "Select pane right - P+l P+Right" -n  M-f  {pane_right}
+                        """
+                    )
 
         if self.vers_ok(2.4):
             #
@@ -1171,8 +1170,12 @@ class BaseConfig(TmuxConfig):
             #  to be an important feature.
             #  Better to keep them to their normal setting as per above
             #
-            w(f'bind -N "Select pane up"   -T "copy-mode"  M-Up    {pane_up}')
-            w(f'bind -N "Select pane down" -T "copy-mode"  M-Down  {pane_down}')
+            w(
+                f"""# Ignpre the half-page scroll in copy-mode
+                bind -N "Select pane up"   -T "copy-mode"  M-Up    {pane_up}
+                bind -N "Select pane down" -T "copy-mode"  M-Down  {pane_down}
+                """
+            )
 
     def pane_splitting(self):
         #
@@ -1208,7 +1211,6 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(2.0):
             w(f"bind -N 'Split pane left - P+C-h'   M-Left   split-window  -hb  {cur_path}")
             w(f"bind -N 'Split pane up - P+C-k'     M-Up     split-window  -vb  {cur_path}")
-        w()  # spacer between sections
 
     def pane_resizing(self):
         w = self.write
@@ -1255,21 +1257,6 @@ class BaseConfig(TmuxConfig):
             bind -N 'Resize pane 5 right'       -n  M-S-Right  resize-pane -R 5
             """
             )
-        # if self.vers_ok(1.8):
-        #     height_notice = "Pane height"
-        #     if not self.vers_ok(3.3):
-        #         height_notice += " (add 1 for panes next to status bar)"
-        #     w(
-        #         'bind -N "set pane size (w x h)"  s  command-prompt -p '
-        #         f'"Pane width","{height_notice}" '
-        #         '"resize-pane -x %1 -y %2"'
-        #     )
-        # elif self.vers_ok(1.0):
-        #     w(
-        #         'bind -N "Navigate not available warning"  s  '
-        #         'display "set pane size needs 1.8"'
-        #     )
-        w()  # spacer
 
     def mouse_handling(self):
         w = self.write
@@ -1297,7 +1284,7 @@ class BaseConfig(TmuxConfig):
 
         #
         #  If enabled, request mouse input as UTF-8 on UTF-8 terminals
-        #  This often seems to trigger random character output when
+        #  This sometimes seems to trigger random character output when
         #  mouse is moved after tmux session terminates, so better to
         #  disable.
         #

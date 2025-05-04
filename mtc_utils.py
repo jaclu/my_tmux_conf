@@ -131,7 +131,7 @@ else:
 IS_DARWIN = platform.system() == "Darwin"
 IS_ISH = os.path.isdir("/proc/ish")
 IS_TERMUX = os.environ.get("TERMUX_VERSION") is not None
-
+IS_GHOSTTY: bool = os.environ.get("TERM_PROGRAM") == "ghostty"
 #
 #  If the session originated on a "primitive keyboard" console, such as
 #  iSH or Termux, it is indicated in LC_CONSOLE
