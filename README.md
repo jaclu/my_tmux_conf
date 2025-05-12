@@ -84,7 +84,7 @@ into the content method along the rest of your current setup.
 if a session is started using `myt -2` or with the env variable `T2_ENV=1` set,
 it is assumed to be a secondary session typically used for testing stuff.
 This env is generated inside `~/t2` and tmux conf will be at `~/t2/tmux/tmux.conf`
-This alternate session uses `C-w` as prefix.
+This alternate session uses `C-b` as prefix.
 
 This tmux instance will be able to run independent of the main tmux,
 either inside or standalone. Ideal for testing out new configs,
