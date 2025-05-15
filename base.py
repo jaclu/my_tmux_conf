@@ -963,7 +963,7 @@ class BaseConfig(TmuxConfig):
             cmd = "send-keys C-l \\; run-shell 'sleep 0.1' \\; clear-history"
             w(
                 f"""
-                bind -N "Clear history & screen"  M-L  {cmd}
+                bind -N "Clear history & screen"  M-c  {cmd}
                 """
             )
 

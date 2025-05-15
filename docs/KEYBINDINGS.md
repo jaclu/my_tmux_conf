@@ -35,7 +35,7 @@ dependent actions.
 | `<p> P`             |             |               | Set pane title                      |
 |                     |             | `<p> x`       | Kill pane \*\*                      |
 | `<p> B`             |             |               | Choose paste buffer(-s)             |
-| `<p> M-L`           |             |               | Clear history & screen              |
+| `<p> M-c`           |             |               | Clear history & screen              |
 | `<p> M-E`           |             |               | Save history to file (with escapes) |
 | `<p> M-H`           |             |               | Save history to file (no escapes)   |
 | `<p> s`             |             |               | Set pane size (w x h)               |
