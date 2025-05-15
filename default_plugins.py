@@ -274,8 +274,8 @@ class DefaultPlugins(BaseConfig):
             #  a note and make the key not to depend on prefix :)
             #
             """#  Additional dependency: ruby >= 2.3
-            # set -g @jump-key "-N plugin_Lenbok/tmux-jump -n  M-j"
-            set -g @jump-keys-position 'off_left'
+            set -g @jump-key "-N plugin_Lenbok/tmux-jump  u"
+            # set -g @jump-keys-position 'off_left'
             """,
         ]
 
