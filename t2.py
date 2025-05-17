@@ -62,8 +62,6 @@ class T2(SB):  # type: ignore
             "jaclu/tmux-menus",
             min_vers,
             """
-            # set -g @menus_use_cache  No
-
             set -g @menus_trigger Space
 
             set -g @menus_border_type 'rounded'
@@ -84,6 +82,8 @@ class T2(SB):  # type: ignore
             # ensuring both home and ~ expansion works
             set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'
             set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
+            # set -g @menus_use_cache  No
+
 
             set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/t2/tmux/plugins"
             """,
