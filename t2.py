@@ -58,11 +58,8 @@ class T2(SB):  # type: ignore
         else:
             min_vers = 1.8
 
-        return [
-            "jaclu/tmux-menus",
-            min_vers,
-            """
-            set -g @menus_trigger Space
+        conf = """
+           set -g @menus_trigger Space
 
             set -g @menus_border_type 'rounded'
             set -g @menus_simple_style_selected default
@@ -81,13 +78,13 @@ class T2(SB):  # type: ignore
 
             # ensuring both home and ~ expansion works
             set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'
+
             set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
             # set -g @menus_use_cache  No
 
-
             set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/t2/tmux/plugins"
-            """,
-        ]
+            """
+        return ["jaclu/tmux-menus", min_vers, conf]
 
     def local_overrides(self) -> None:
         """
