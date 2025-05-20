@@ -59,31 +59,31 @@ class T2(SB):  # type: ignore
             min_vers = 1.8
 
         conf = """
-           set -g @menus_trigger Space
+        set -g @menus_trigger Space
 
-            set -g @menus_border_type 'rounded'
-            set -g @menus_simple_style_selected default
-            set -g @menus_simple_style default
-            set -g @menus_simple_style_border "fg=green,bg=default"
+        set -g @menus_border_type 'rounded'
+        # set -g @menus_simple_style_selected default
+        # set -g @menus_simple_style default
+        set -g @menus_simple_style_border "fg=green,bg=default"
 
-            set -g @menus_nav_next "#[fg=colour220]-->"
-            set -g @menus_nav_prev "#[fg=colour71]<--"
-            set -g @menus_nav_home "#[fg=colour84]<=="
+        set -g @menus_nav_next "#[fg=colour220]-->"
+        set -g @menus_nav_prev "#[fg=colour71]<--"
+        set -g @menus_nav_home "#[fg=colour84]<=="
 
-            set -g @menus_display_commands 'Yes'
-            # set -g @menus_display_cmds_cols 95
+        set -g @menus_display_commands 'Yes'
+        # set -g @menus_display_cmds_cols 95
 
-            set -g @menus_use_hint_overlays no
-            set -g @menus_show_key_hints no
+        set -g @menus_use_hint_overlays no
+        set -g @menus_show_key_hints no
 
-            # ensuring both home and ~ expansion works
-            set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'
+        # ensuring both home and ~ expansion works
+        set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'
 
-            set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
-            # set -g @menus_use_cache  No
+        set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
+        # set -g @menus_use_cache  No
 
-            set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/t2/tmux/plugins"
-            """
+        set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/t2/tmux/plugins"
+        """
         return ["jaclu/tmux-menus", min_vers, conf]
 
     def local_overrides(self) -> None:
