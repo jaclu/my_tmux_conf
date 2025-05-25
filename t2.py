@@ -52,13 +52,13 @@ class T2(SB):  # type: ignore
     # use_embedded_scripts = False
     # is_limited_host = True
 
-    def plugin_menus(self) -> list:  # 1.8
-        #  Tested down to vers 1.8
+    def plugin_menus(self) -> list:  # 0.8
+        #  Tested down to vers 0.8
         if not self.use_plugin_menus:
             # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Dont use
         else:
-            min_vers = 1.8
+            min_vers = 0.8
 
         conf = """
         set -g @menus_trigger Space
