@@ -96,12 +96,14 @@ class DefaultPlugins(BaseConfig):
     #  actively selected, there is no env checks being done if it should
     #  be used or not
     #
-    use_plugin_1password = False
     use_plugin_battery = False
-    use_plugin_keyboard_type = False
     use_plugin_mullvad = False
-    use_plugin_packet_loss = False
     use_plugin_spotify_info = False
+
+    use_plugin_1password = False
+    use_plugin_gentrify = False
+    use_plugin_keyboard_type = False
+    use_plugin_packet_loss = False
     use_plugin_which_key = False
     use_plugin_yank = False
 
@@ -281,11 +283,11 @@ class DefaultPlugins(BaseConfig):
 
     def plugin_menus(self) -> list:  # 1.8
         #  Tested down to vers 1.8
-        if not self.use_plugin_menus:
+        if self.use_plugin_menus:
+            min_vers = 1.8
+        else:
             # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Dont use
-        else:
-            min_vers = 1.8
 
         return [
             "jaclu/tmux-menus",
@@ -414,10 +416,10 @@ class DefaultPlugins(BaseConfig):
         #
         #  Long startup time on limited hosts...
 
-        if not self.use_plugin_session_wizard:
-            vers_min = -1.0  # Don't use
-        else:
+        if self.use_plugin_session_wizard:
             vers_min = 3.2
+        else:
+            vers_min = -1.0  # Don't use
         return [
             "27medkamal/tmux-session-wizard",
             vers_min,
@@ -430,11 +432,11 @@ class DefaultPlugins(BaseConfig):
         """Suspend tmux from receiving any keyboard commands
         This plugin inserts its display on status-right, so no need to
         manually add a placeholder"""
-        if not self.use_plugin_suspend:
+        if self.use_plugin_suspend:
+            min_vers = 2.4
+        else:
             # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Dont use
-        else:
-            min_vers = 2.4
 
         #  {@mode_indicator_custom_prompt}
         return [
@@ -586,7 +588,6 @@ class DefaultPlugins(BaseConfig):
     # ----------------------------------------------------------
     #
     #  General plugins that makes sense in some conditions
-    #  interacting with battery, music players etc
     #
     # ----------------------------------------------------------
 
@@ -610,6 +611,17 @@ class DefaultPlugins(BaseConfig):
                 # set -g @1password-debug 'on' # default 'off'
                 """,
         ]
+
+    def plugin_gentrify(self) -> list:
+        #
+        # Sounds kind of interesting, but when tried on 25-05-24 seemed
+        # to buggy
+        #
+        if self.use_plugin_gentrify:
+            min_vers = 3.0
+        else:
+            min_vers = -1.0  # Dont use
+        return ["kristopolous/tmux-gentrify", min_vers, ""]
 
     def plugin_keyboard_type(self):  # 1.9
         """Display in status-bar with:  #{keyboard_type}
