@@ -42,6 +42,8 @@ class T2(SB):  # type: ignore
     # if mtc_utils.HOSTNAME == "JacMac":
     #     use_plugin_battery = True
 
+    # use_plugin_gentrify = True
+
     if mtc_utils.HOSTNAME == "JacMac":
         use_plugin_battery = True
 
@@ -61,16 +63,17 @@ class T2(SB):  # type: ignore
         conf = """
         set -g @menus_trigger Space
 
-        set -g @menus_border_type 'rounded'
         # set -g @menus_simple_style_selected default
         # set -g @menus_simple_style default
-        set -g @menus_simple_style_border "fg=green,bg=default"
 
+        # set -g @menus_format_title "'#[align=right]  #{@menu_name} '"
+        set -g @menus_simple_style_border "fg=green,bg=default"
         set -g @menus_nav_next "#[fg=colour220]-->"
         set -g @menus_nav_prev "#[fg=colour71]<--"
         set -g @menus_nav_home "#[fg=colour84]<=="
+        set -g @menus_border_type 'rounded'
 
-        set -g @menus_display_commands 'Yes'
+        set -g @menus_display_commands "Yes"
         # set -g @menus_display_cmds_cols 95
 
         set -g @menus_use_hint_overlays no
