@@ -52,13 +52,13 @@ class T2(SB):  # type: ignore
     # use_embedded_scripts = False
     # is_limited_host = True
 
-    def plugin_menus(self) -> list:  # 0.8
-        #  Tested down to vers 0.8
+    def plugin_menus(self) -> list:  # 1.5
+        #  Tested down to vers 1.5
         if not self.use_plugin_menus:
             # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Dont use
         else:
-            min_vers = 0.8
+            min_vers = 1.5
 
         conf = """
         set -g @menus_trigger Space
@@ -83,7 +83,7 @@ class T2(SB):  # type: ignore
         set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'
 
         set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
-        # set -g @menus_use_cache  No
+        set -g @menus_use_cache  No
 
         set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/t2/tmux/plugins"
         """

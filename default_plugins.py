@@ -281,10 +281,10 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_menus(self) -> list:  # 1.8
-        #  Tested down to vers 1.8
+    def plugin_menus(self) -> list:  # 1.5
+        #  Tested down to vers 1.5
         if self.use_plugin_menus:
-            min_vers = 1.8
+            min_vers = 1.5
         else:
             # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Dont use
