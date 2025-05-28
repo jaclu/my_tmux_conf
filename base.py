@@ -766,6 +766,8 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(3.3):
             w(f"{self.opt_win} popup-border-lines rounded")
 
+        w(f"bind -N 'Toggle synchronize'  *  {self.opt_win_loc} synchronize-panes")
+
         if self.vers_ok(2.7):
             w(
                 """
@@ -955,8 +957,6 @@ class BaseConfig(TmuxConfig):
                 """
             )
 
-        w(f"bind -N 'Toggle synchronize'  *  {self.opt_win_loc} synchronize-panes")
-
         if self.vers_ok(0.9):
             s = 'bind -N "Kill pane in focus"  x  confirm-before'
             if self.vers_ok(1.5):
@@ -995,34 +995,6 @@ class BaseConfig(TmuxConfig):
         self.pane_navigation()
         self.pane_splitting()
         self.pane_resizing()
-
-    def save_history(self):
-        #
-        #  Save history for current pane, prompts for filename
-        #
-        #  Save as text              <prefix> M-H
-        #  Save with escape codes    <prefix> M-E
-        #
-        #  When saved with escape code, less/most fails to display
-        #  cat history-file will display the included colors correctly.
-        #
-        w = self.write
-        s = 'bind -N "Save history to prompted file name (no escapes)"  M-H  command-prompt'
-        if self.vers_ok(1.0):
-            s += ' -p "save history (no escapes) to:"'
-            if self.vers_ok(1.5):
-                s += ' -I "$TMPDIR"/tmux.history'
-            s2 = "%1"
-        else:
-            s2 = "$TMPDIR/tmux.history"
-        w(f'{s} "capture-pane -S - -E - \\; save-buffer {s2} \\; delete-buffer"')
-        if self.vers_ok(1.8):
-            w(
-                'bind -N "Save history to prompted file name (includes escapes)"  '
-                'M-E  command-prompt -p "save history (includes escapes) to:" '
-                '-I "$TMPDIR/tmux-e.history" "capture-pane -S - -E - -e \\; '
-                'save-buffer %1 \\; delete-buffer"'
-            )
 
     def pane_frame_lines(self):
         if not self.vers_ok(1.9):
@@ -1267,6 +1239,34 @@ class BaseConfig(TmuxConfig):
             bind -N 'Resize pane 5 up'          -n  M-S-Up     resize-pane -U 5
             bind -N 'Resize pane 5 right'       -n  M-S-Right  resize-pane -R 10
             """
+            )
+
+    def save_history(self):
+        #
+        #  Save history for current pane, prompts for filename
+        #
+        #  Save as text              <prefix> M-H
+        #  Save with escape codes    <prefix> M-E
+        #
+        #  When saved with escape code, less/most fails to display
+        #  cat history-file will display the included colors correctly.
+        #
+        w = self.write
+        s = 'bind -N "Save history to prompted file name (no escapes)"  M-H  command-prompt'
+        if self.vers_ok(1.0):
+            s += ' -p "save history (no escapes) to:"'
+            if self.vers_ok(1.5):
+                s += ' -I "$TMPDIR"/tmux.history'
+            s2 = "%1"
+        else:
+            s2 = "$TMPDIR/tmux.history"
+        w(f'{s} "capture-pane -S - -E - \\; save-buffer {s2} \\; delete-buffer"')
+        if self.vers_ok(1.8):
+            w(
+                'bind -N "Save history to prompted file name (includes escapes)"  '
+                'M-E  command-prompt -p "save history (includes escapes) to:" '
+                '-I "$TMPDIR/tmux-e.history" "capture-pane -S - -E - -e \\; '
+                'save-buffer %1 \\; delete-buffer"'
             )
 
     def mouse_handling(self):
