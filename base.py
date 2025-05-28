@@ -775,6 +775,16 @@ class BaseConfig(TmuxConfig):
             """
             )
 
+        if self.vers_ok(3.5):
+            w(
+                """
+            bind -N "Main vertical - mirrored" "M-\\#" \
+                select-layout main-horizontal-mirrored
+            bind -N "Main vertical - mirrored" "M-\\$" \
+                select-layout main-vertical-mirrored
+            """
+            )
+
         if self.vers_ok(1.5):
             s = "-I ?"
         else:
@@ -1226,8 +1236,8 @@ class BaseConfig(TmuxConfig):
         # Defaults 1.0 2.8
         # bind-key -r -T prefix       M-Up              resize-pane -U 5
         # bind-key -r -T prefix       M-Down            resize-pane -D 5
-        # bind-key -r -T prefix       M-Left            resize-pane -L 5
-        # bind-key -r -T prefix       M-Right           resize-pane -R 5
+        # bind-key -r -T prefix       M-Left            resize-pane -L 10
+        # bind-key -r -T prefix       M-Right           resize-pane -R 10
 
         if self.vers_ok(1.0):
             w("bind -N 'Resize pane 1 left - C-S-Left'   -r  H  resize-pane -L")
@@ -1252,10 +1262,10 @@ class BaseConfig(TmuxConfig):
             w()
             w(
                 """# For larger changes M-S Arrows scale by 5
-            bind -N 'Resize pane 5 left'        -n  M-S-Left   resize-pane -L 5
+            bind -N 'Resize pane 5 left'        -n  M-S-Left   resize-pane -L 10
             bind -N 'Resize pane 5 down'        -n  M-S-Down   resize-pane -D 5
             bind -N 'Resize pane 5 up'          -n  M-S-Up     resize-pane -U 5
-            bind -N 'Resize pane 5 right'       -n  M-S-Right  resize-pane -R 5
+            bind -N 'Resize pane 5 right'       -n  M-S-Right  resize-pane -R 10
             """
             )
 

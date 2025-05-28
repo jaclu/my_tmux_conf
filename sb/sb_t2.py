@@ -30,13 +30,15 @@ class SB(DefaultPlugins):
         """override statusbar config"""
         fg_clr = "black"
         bg_clr = "yellow"
+        w = self.write
         self.assign_style(__file__)
         super().status_bar_customization(print_header=print_header)
 
         if self.vers_ok("1.9"):
-            self.write(f"set-option -g status-style fg={fg_clr},bg={bg_clr}")
+            w(f"set-option -g status-style fg={fg_clr},bg={bg_clr}")
+            w("set-option -g status-justify centre")
         else:
-            self.write(
+            w(
                 f"""
                 set-option -g status-fg {fg_clr}
                 set-option -g status-bg {bg_clr}

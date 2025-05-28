@@ -79,7 +79,7 @@ class T2(SB):  # type: ignore
         set -g @menus_use_hint_overlays no
         set -g @menus_show_key_hints no
 
-        # ensuring both home and ~ expansion works
+        # ensuring both home and ~ expansion works for single quotes
         set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'
 
         set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
