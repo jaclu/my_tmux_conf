@@ -1031,7 +1031,7 @@ class BaseConfig(TmuxConfig):
             )
 
         #
-        #  Display custom pane borders and title if >= 2.6
+        #  Display custom pane borders and title if >= 2.5 / 2.6 not certain
         #
         if self.vers_ok(2.3) and not self.is_tmate():
             pane_label = ""
@@ -1044,40 +1044,51 @@ class BaseConfig(TmuxConfig):
                 pane_label = " " + pane_label
                 w(f'{self.opt_pane} pane-border-format "{pane_label}"')
 
-            # new windows with just one pane should not display pane border lines
-            w('set-hook -g after-new-window "set-option -w pane-border-status off"')
-
-            #  Display pane border lines when more than one pane is present
-            if self.vers_ok(2.6):  # and not self.vers_ok(2.5)):
-                extra_opt = "-F"
-            else:
-                extra_opt = ""
-            w(
-                f"set-hook -g window-layout-changed '{self.opt_win_loc} {extra_opt} "
-                'pane-border-status "#{?#{==:#{window_panes},1},off,top}"'
-                "'"  # end quote for 'set
+            hook_condition = (
+                "if-shell '[ #{window_zoomed_flag} -eq 1 ] || [ #{window_panes} -eq 1 ]' "
             )
+            pbs_cmd = f"'{self.opt_win_loc} pane-border-status "
+            hook_action = f" {hook_condition} {pbs_cmd} off' {pbs_cmd} top'"
+            disable_borders = f"{self.opt_win_loc} pane-border-status off"
 
-            # Hide frame lines when zoomed
-            w(
-                "set-hook -g after-resize-pane '"
-                'if-shell "[ #{window_zoomed_flag} -eq 1 ]" '
-                f'"{self.opt_win_loc} pane-border-status off" '
-                f'"{self.opt_win_loc} pane-border-status top"'
-                "'"  # end quote for 'if-shell
-            )
+            if self.vers_ok(2.5):
+                #  Display pane border lines when more than one pane is present
 
+                # 2.4 crashes as soon as any of these hooks are triggered on
+                # my MacBook not sure if it is tmux version or asdf tmux bin related
+
+                if not self.vers_ok(2.6):
+                    w(  # needed for 2.5 to avoid label on new ses & win
+                        f"""
+                        set-hook -g after-new-session "{disable_borders}"
+                        set-hook -g after-new-window "{disable_borders}"
+                        """
+                    )
+                # the others dont seem to be needed...
+                # For debugging use
+                # set-hook -g after-split-window "{self._lg("after-split-window")}
+                #   {hook_action}"
+                # set-hook -g after-resize-pane "{self._lg("after-resize-pane")}
+                #   {hook_action}"
+                # set-hook -g after-kill-pane "{self._lg("after-kill-pane")}
+                #   {hook_action}"
+                w(
+                    f"""
+                    set-hook -g window-layout-changed "{hook_action}"
+                    """
+                )
         if self.vers_ok(3.2):
             w(f"{self.opt_pane} pane-border-lines single")
 
         # if self.vers_ok(3.3):
         #     w(f"{self.opt_pane} pane-border-indicators arrows")
 
+        # #{pane_current_command}
         if self.show_pane_title:
             if self.vers_ok(2.6):
                 w()  # spacer
                 w(
-                    'bind -N "Set pane title"  P  command-prompt -p '
+                    'bind -N "Set pane title"  P  command-prompt -I "#T" -p '
                     '"Pane title: " "select-pane -T \\"%%\\""'
                 )
             elif self.vers_ok(2.3) and not self.is_tmate():
@@ -1088,6 +1099,10 @@ class BaseConfig(TmuxConfig):
                     bind  P  display 'Pane title setting needs 2.6'
                     """
                 )
+
+    # def _lg(self, line):
+    #     # debug util, displays triggered hooks to a logfile
+    #     return f"run-shell 'echo {line} >>~/tmp/tmux-menus-dbg.log' \\;"
 
     def pane_navigation(self):
         w = self.write
