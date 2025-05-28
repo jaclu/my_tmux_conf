@@ -613,7 +613,10 @@ class BaseConfig(TmuxConfig):
             show_action = f'\\; display "{self.conf_file} sourced"'
         else:
             show_action = ""
-        w(f'bind -N  "Source {self.conf_file}"  R  source {self.conf_file} {show_action}')
+        w(
+            f'bind -N  "Source {self.conf_file}"  R  source-file '
+            f"{self.conf_file} {show_action}"
+        )
 
         self.auc_display_plugins_used()
         self.auc_kill_tmux_server()
