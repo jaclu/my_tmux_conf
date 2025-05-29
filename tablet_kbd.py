@@ -501,7 +501,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         )
         for key, sequence in auk.items():
             w(f"set -s user-keys[{k2uk[key]}] '{sequence}'")
-            w(f"bind -N 'Send {key}' -n User{k2uk[key]}  send-keys {key}")
+            w(f"bind -N 'Send {key}' -n User{k2uk[key]}  send-keys '{key}'")
 
         # TO DO: reinsert this after M-:
         # {self.tc.opt_server} user-keys[{k2uk['M-"']}]  "\\303\\206"  # M-"
