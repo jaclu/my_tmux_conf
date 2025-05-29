@@ -501,7 +501,7 @@ class IshConsole(LimitedKbdSpecialHandling):
                 #    on tmux < 3.1
                 w(f'bind -N "Enables M-N" -n  User{k2uk[key]}   send-keys    "{key}"')
             elif key == 'M-"':
-                w(f'bind -N "Send M-\\"" -n User{k2uk[key]}     send-keys     {key}')
+                w(f"""bind -N 'Send {key}' -n User{k2uk[key]}     send-keys     '{key}' """)
             else:
                 w(f'bind -N "Send {key}" -n User{k2uk[key]}     send-keys     "{key}"')
         w()  # spacer line
