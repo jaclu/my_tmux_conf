@@ -479,6 +479,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         auk["M-}"] = "\\342\\200\\231"
         auk["M-|"] = "\\302\\273"
         auk["M-:"] = "\\303\\232"
+        auk['M-"'] = "\\303\\206"
         auk["M-<"] = "\\302\\257"
         auk["M->"] = "\\313\\230"
         auk["M-?"] = "\\302\\277"
@@ -488,6 +489,19 @@ class IshConsole(LimitedKbdSpecialHandling):
         # just ignore that S-§ also triggers this feature
         #  self.tc.opt_server  user-keys[61] "\\302\\261"       # M-+
         auk["M-+"] = "\\302\\261"
+
+        if not ms_fn_keys_mapped:
+            # use meta shift numbers as normal m- chars
+            # Meta Shift numbers
+            auk["M-!"] = "\\342\\201\\204"
+            auk["M-#"] = "\\342\\200\\271"
+            auk["M-$"] = "\\342\\200\\272"
+            auk["M-%"] = "\\357\\254\\201"
+            auk["M-^"] = "\\357\\254\\202"
+            auk["M-&"] = "\\342\\200\\241"
+            auk["M-*"] = "\\302\\260"
+            auk["M-("] = "\\302\\267"
+            auk["M-)"] = "\\342\\200\\232"
 
         # argh inside f-strings {/} needs to be contained in variables...
         # curly_open = "{"
@@ -503,34 +517,23 @@ class IshConsole(LimitedKbdSpecialHandling):
         muc_values = set(self.tc.muc_keys.values())
         for key, sequence in auk.items():
             if f"User{k2uk[key]}" in muc_values:
-                # w(f"# used in: self.tc.muc_keys   User{k2uk[key]} {key} ")
-                w(f"# used in:            User{k2uk[key]}             {key} ")
+                # Display muc keys
+                w(f"# used as muc_key     User{k2uk[key]}             {key} ")
                 continue
-
             w(f"set          -s user-keys[{k2uk[key]}] '{sequence}'")
+            if key == "M-N":
+                #    Special case to avoid cutof at second -N
+                #    on tmux < 3.1
+                w(f"bind -N 'Enables M-N' -n  User{k2uk[key]}  send-keys '{key}'")
+                continue
             w(f"bind -N 'Send {key}' -n User{k2uk[key]}  send-keys '{key}'")
-
-        # TO DO: reinsert this after M-:
-        # {self.tc.opt_server} user-keys[{k2uk['M-"']}]  "\\303\\206"  # M-"
+        w()  # spacer line
 
         if any("User" in value for value in self.tc.muc_keys.values()):
             print("---  self.tc.muc_keys  ---")
-            for k, v in self.tc.muc_keys.items():
-                print(f"  key: {k} value: {v}")
+            for k, u in self.tc.muc_keys.items():
+                print(f" userkey: {u}   key: {k}")
             print()
-
-        muc_values = set(self.tc.muc_keys.values())
-        # for key, sequence in k2uk.items():
-        for key_name, user_key in k2uk.items():
-            if f"User{user_key}" in muc_values:
-                w(f"#  {key_name}  User{user_key} - used by: self.tc.muc_keys")
-                continue
-
-            if key_name == "M-N":
-                #    Special case to avoid cutof at second -N
-                #    on tmux < 3.1
-                w(f"bind -N 'Enables M-N' -n  User{user_key}  send-keys {key_name}")
-            w(f"bind -N 'Enables {key_name}' -n  User{user_key}  send-keys '{key_name}'")
 
         if not ms_fn_keys_mapped:
             # use meta shift numbers as normal m- chars
