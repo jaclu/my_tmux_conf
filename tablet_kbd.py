@@ -289,8 +289,7 @@ class LimitedKbdSpecialHandling:
             f"""#
             #  Replacement Backtick key
             #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["backtick"]}]  "{sequence}"
-            """
+            {self.tc.opt_server} user-keys[{self.key_2_uk["backtick"]}]  "{sequence}" """
         )
         w(
             f"bind -N '{modifier} - Send backtick' "
@@ -366,7 +365,7 @@ class IshConsole(LimitedKbdSpecialHandling):
             return False
 
         ms_fn_keys_mapped = False
-        fn_keys_handling = 1
+        fn_keys_handling = 2
         if fn_keys_handling == 1:
             self.fn_keys()
         elif fn_keys_handling == 2:
@@ -385,7 +384,7 @@ class IshConsole(LimitedKbdSpecialHandling):
     def fn_keys(self):
         #
         #  For keybs that already handles M-#
-        #  this just binds them to send F# g
+        #  this just binds them to send F# and swaps M-0 -> F10
         #
         w = self.tc.write
         for i in range(1, 10):
@@ -454,19 +453,18 @@ class IshConsole(LimitedKbdSpecialHandling):
             mtc_utils.K_M_X: f"User{self.key_2_uk['M-X']}",
         }
 
-    def alt_upper_case_mapping(self, ms_fn_keys_mapped):
-        if not ms_fn_keys_mapped:
-            # use meta shift numbers as normal m- chars
-            # Meta Shift numbers
-            self.auk["M-!"] = "\\342\\201\\204"
-            self.auk["M-#"] = "\\342\\200\\271"
-            self.auk["M-$"] = "\\342\\200\\272"
-            self.auk["M-%"] = "\\357\\254\\201"
-            self.auk["M-^"] = "\\357\\254\\202"
-            self.auk["M-&"] = "\\342\\200\\241"
-            self.auk["M-*"] = "\\302\\260"
-            self.auk["M-("] = "\\302\\267"
-            self.auk["M-)"] = "\\342\\200\\232"
+    def alt_upper_case_numbers(self):
+        # use meta shift numbers as normal m- chars
+        # Meta Shift numbers
+        self.auk["M-!"] = "\\342\\201\\204"
+        self.auk["M-#"] = "\\342\\200\\271"
+        self.auk["M-$"] = "\\342\\200\\272"
+        self.auk["M-%"] = "\\357\\254\\201"
+        self.auk["M-^"] = "\\357\\254\\202"
+        self.auk["M-&"] = "\\342\\200\\241"
+        self.auk["M-*"] = "\\302\\260"
+        self.auk["M-("] = "\\302\\267"
+        self.auk["M-)"] = "\\342\\200\\232"
 
     def alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
         """If fn keys are not mapped to ms numbers, use them as regular M- chars"""
@@ -474,7 +472,8 @@ class IshConsole(LimitedKbdSpecialHandling):
         k2uk = self.key_2_uk
         w = self.tc.write
 
-        self.alt_upper_case_mapping(ms_fn_keys_mapped)
+        if not ms_fn_keys_mapped:
+            self.alt_upper_case_numbers()
 
         # argh inside f-strings {/} needs to be contained in variables...
         # curly_open = "{"
