@@ -557,11 +557,11 @@ class IshConsole(LimitedKbdSpecialHandling):
                 if key_name == "M-@" and self.euro_has_been_handled:
                     w(f"#  {key_name}  User{user_key} - used for: Euro")
                     continue  # was used for euro symbol
-                if user_key == 333:
-                    # 'M-"' fails on this takes, ends up as "M-""
-                    w(f"bind -N 'Enables M-\"' -n  User{user_key}  send 'M-\"'")
-                else:
-                    w(f'bind -N "Enables {key_name}" -n  User{user_key}  send "{key_name}"')
+                # if user_key == 333:
+                #     # 'M-"' fails on this takes, ends up as "M-""
+                #     w(f"bind -N 'Enables M-\"' -n  User{user_key}  send 'M-\"'")
+                # else:
+                w(f"bind -N 'Enables {key_name}' -n  User{user_key}  send '{key_name}'")
         w()
 
         #
