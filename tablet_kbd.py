@@ -436,6 +436,8 @@ class IshConsole(LimitedKbdSpecialHandling):
         """If fn keys are not mapped to ms numbers, use them as regular M- chars"""
 
         k2uk = self.key_2_uk
+        w = self.tc.write
+
         self.tc.muc_keys = {
             mtc_utils.K_M_PLUS: f"User{k2uk['M-+']}",
             mtc_utils.K_M_PAR_OPEN: f"User{k2uk['M-(']}",
@@ -487,7 +489,6 @@ class IshConsole(LimitedKbdSpecialHandling):
         #  self.tc.opt_server  user-keys[61] "\\302\\261"       # M-+
         auk["M-+"] = "\\302\\261"
 
-        w = self.tc.write
         # argh inside f-strings {/} needs to be contained in variables...
         # curly_open = "{"
         # curly_close = "}"
@@ -499,7 +500,12 @@ class IshConsole(LimitedKbdSpecialHandling):
         #
         """
         )
+        muc_values = set(self.tc.muc_keys.values())
         for key, sequence in auk.items():
+            if f"User{k2uk[key]}" in muc_values:
+                w(f"#  {key}  User{k2uk[key]} - used by: self.tc.muc_keys")
+                continue
+
             w(f"set          -s user-keys[{k2uk[key]}] '{sequence}'")
             w(f"bind -N 'Send {key}' -n User{k2uk[key]}  send-keys '{key}'")
 
