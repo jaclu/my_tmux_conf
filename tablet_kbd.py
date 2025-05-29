@@ -445,63 +445,64 @@ class IshConsole(LimitedKbdSpecialHandling):
             mtc_utils.K_M_X: f"User{k2uk['M-X']}",
         }
 
-        w = self.tc.write
-        # argh inside f-strings {/} needs to be contained in variables...
-        # curly_open = "{"
-        # curly_close = "}"
-        w(  # not in root 308 310 311 312 316 324
-            f"""
-        #
-        #  iSH console doesn't generate the right keys for alt-S characters
-        #  Here they are interpreted by tmux
-        #
-        {self.tc.opt_server} user-keys[{k2uk["M-A"]}]  "\\303\\205"  # M-A
-        {self.tc.opt_server} user-keys[{k2uk["M-B"]}]  "\\304\\261"  # M-B
-        {self.tc.opt_server} user-keys[{k2uk["M-C"]}]  "\\303\\207"  # M-C
-        {self.tc.opt_server} user-keys[{k2uk["M-D"]}]  "\\303\\216"  # M-D
-        {self.tc.opt_server} user-keys[{k2uk["M-E"]}]  "\\302\\264"  # M-E
-        {self.tc.opt_server} user-keys[{k2uk["M-F"]}]  "\\303\\217"  # M-F
-        {self.tc.opt_server} user-keys[{k2uk["M-G"]}]  "\\313\\235"  # M-G
-        {self.tc.opt_server} user-keys[{k2uk["M-H"]}]  "\\303\\223"  # M-H
-        {self.tc.opt_server} user-keys[{k2uk["M-I"]}]  "\\313\\206"  # M-I
-        {self.tc.opt_server} user-keys[{k2uk["M-J"]}]  "\\303\\224"  # M-J
-        {self.tc.opt_server} user-keys[{k2uk["M-K"]}]  "\\357\\243\\277"  # M-K
-        {self.tc.opt_server} user-keys[{k2uk["M-L"]}]  "\\303\\222"  # M-L
-        {self.tc.opt_server} user-keys[{k2uk["M-M"]}]  "\\303\\202"  # M-M
-        {self.tc.opt_server} user-keys[{k2uk["M-N"]}]  "\\313\\234"  # M-N
-        {self.tc.opt_server} user-keys[{k2uk["M-O"]}]  "\\303\\230"  # M-O
-        {self.tc.opt_server} user-keys[{k2uk["M-P"]}]  "\\342\\210\\217"  # M-P
-        {self.tc.opt_server} user-keys[{k2uk["M-Q"]}]  "\\305\\222"  # M-Q
-        {self.tc.opt_server} user-keys[{k2uk["M-R"]}]  "\\341\\200\\260"  # M-R
-        {self.tc.opt_server} user-keys[{k2uk["M-S"]}]  "\\303\\215"  # M-S
-        {self.tc.opt_server} user-keys[{k2uk["M-T"]}]  "\\313\\207"  # M-T
-        {self.tc.opt_server} user-keys[{k2uk["M-U"]}]  "\\302\\250"  # M-U
-        {self.tc.opt_server} user-keys[{k2uk["M-V"]}]  "\\342\\227\\212"  # M-V
-        {self.tc.opt_server} user-keys[{k2uk["M-W"]}]  "\\342\\200\\236"  # M-W
-        {self.tc.opt_server} user-keys[{k2uk["M-X"]}]  "\\313\\233"  # M-X
-        {self.tc.opt_server} user-keys[{k2uk["M-Y"]}]  "\\303\\201"  # M-Y
-        {self.tc.opt_server} user-keys[{k2uk["M-Z"]}]  "\\302\\270"  # M-Z
-        {self.tc.opt_server} user-keys[{k2uk["M-_"]}]  "\\342\\200\\224"  # M-_
-
+        auk = {}
+        auk["M-A"] = "\\303\\205"
+        auk["M-B"] = "\\304\\261"
+        auk["M-C"] = "\\303\\207"
+        auk["M-D"] = "\\303\\216"
+        auk["M-E"] = "\\302\\264"
+        auk["M-F"] = "\\303\\217"
+        auk["M-G"] = "\\313\\235"
+        auk["M-H"] = "\\303\\223"
+        auk["M-I"] = "\\313\\206"
+        auk["M-J"] = "\\303\\224"
+        auk["M-K"] = "\\357\\243\\277"
+        auk["M-L"] = "\\303\\222"
+        auk["M-M"] = "\\303\\202"
+        auk["M-N"] = "\\313\\234"
+        auk["M-O"] = "\\303\\230"
+        auk["M-P"] = "\\342\\210\\217"
+        auk["M-Q"] = "\\305\\222"
+        auk["M-R"] = "\\341\\200\\260"
+        auk["M-S"] = "\\303\\215"
+        auk["M-T"] = "\\313\\207"
+        auk["M-U"] = "\\302\\250"
+        auk["M-V"] = "\\342\\227\\212"
+        auk["M-W"] = "\\342\\200\\236"
+        auk["M-X"] = "\\313\\233"
+        auk["M-Y"] = "\\303\\201"
+        auk["M-Z"] = "\\302\\270"
+        auk["M-_"] = "\\342\\200\\224"
+        auk["M-{"] = "\\342\\200\\235"
+        auk["M-}"] = "\\342\\200\\231"
+        auk["M-|"] = "\\302\\273"
+        auk["M-:"] = "\\303\\232"
+        auk["M-<"] = "\\302\\257"
+        auk["M->"] = "\\313\\230"
+        auk["M-?"] = "\\302\\277"
 
         # On some keybs with a § there is a glitch in that
         # both S-§ and M-+ generate ±. Since M-+ is used, and S-§ not,
         # just ignore that S-§ also triggers this feature
         #  self.tc.opt_server  user-keys[61] "\\302\\261"       # M-+
-        {self.tc.opt_server} user-keys[{k2uk["M-+"]}]  "\\302\\261"  # M-+
+        auk["M-+"] = "\\302\\261"
 
-        {self.tc.opt_server} user-keys[{k2uk["M-{"]}]  "\\342\\200\\235"  # M-{{
-        {self.tc.opt_server} user-keys[{k2uk["M-}"]}]  "\\342\\200\\231"  # M-}}
-
-        {self.tc.opt_server} user-keys[{k2uk["M-|"]}]  "\\302\\273"  # M-|
-        {self.tc.opt_server} user-keys[{k2uk["M-:"]}]  "\\303\\232"  # M-:
-
-
-        {self.tc.opt_server} user-keys[{k2uk["M-<"]}]  "\\302\\257"  # M-<
-        {self.tc.opt_server} user-keys[{k2uk["M->"]}]  "\\313\\230"  # M->
-        {self.tc.opt_server} user-keys[{k2uk["M-?"]}]  "\\302\\277"  # M-?
+        w = self.tc.write
+        # argh inside f-strings {/} needs to be contained in variables...
+        # curly_open = "{"
+        # curly_close = "}"
+        w(  # not in root 308 310 311 312 316 324
+            """
+        #
+        #  iSH console doesn't generate the right keys for alt-S characters
+        #  Here they are interpreted by tmux
+        #
         """
         )
+        for key, sequence in auk.items():
+            w(f"set -s user-keys[{key}] '{sequence}'")
+            w(f"bind -N 'Send {key}' -n User{k2uk[key]}  send-keys {key}")
+
         # TO DO: reinsert this after M-:
         # {self.tc.opt_server} user-keys[{k2uk['M-"']}]  "\\303\\206"  # M-"
 
@@ -557,10 +558,6 @@ class IshConsole(LimitedKbdSpecialHandling):
                 if key_name == "M-@" and self.euro_has_been_handled:
                     w(f"#  {key_name}  User{user_key} - used for: Euro")
                     continue  # was used for euro symbol
-                # if user_key == 333:
-                #     # 'M-"' fails on this takes, ends up as "M-""
-                #     w(f"bind -N 'Enables M-\"' -n  User{user_key}  send 'M-\"'")
-                # else:
                 w(f"bind -N 'Enables {key_name}' -n  User{user_key}  send '{key_name}'")
         w()
 
