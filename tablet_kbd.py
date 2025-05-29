@@ -498,16 +498,7 @@ class IshConsole(LimitedKbdSpecialHandling):
                 continue
             if key == "M-N" and not self.tc.vers_ok(3.1):
                 #    Special case to avoid cutof at second -N
-                #    on tmux < 3.1
-                # send keys param
-                # send-keys
-                # M-N           M
-                # "M-N"         "M
-                # 'M-N'         'M
-                # "M\-N"
-                # no quotes becomes M
-                # double quotes becomes: "M
-                w(f""" bind -N "Send meta N" -n  User{k2uk[key]}   send-keys    "M\\-N" """)
+                w("# tmux < 3.1 Fails to handle Meta N - so it is skipped")
             elif key == 'M-"':
                 w(f"""bind -N 'Send {key}' -n User{k2uk[key]}     send-keys     '{key}' """)
             elif key in ("M-{", "M-}"):
