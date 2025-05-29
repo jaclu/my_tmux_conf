@@ -500,9 +500,13 @@ class IshConsole(LimitedKbdSpecialHandling):
                 #    Special case to avoid cutof at second -N
                 #    on tmux < 3.1
                 # send keys param
+                # send-keys
+                # M-N           M
+                # "M-N"         "M
+                # 'M-N'
                 # no quotes becomes M
-                # double quotes becomes:
-                w(f'bind -N "Send meta N" -n  User{k2uk[key]}   send-keys    "M-N"')
+                # double quotes becomes: "M
+                w(f""" bind -N "Send meta N" -n  User{k2uk[key]}   send-keys    'M-N' """)
             elif key == 'M-"':
                 w(f"""bind -N 'Send {key}' -n User{k2uk[key]}     send-keys     '{key}' """)
             elif key in ("M-{", "M-}"):
