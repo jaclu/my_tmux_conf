@@ -495,7 +495,10 @@ class IshConsole(LimitedKbdSpecialHandling):
 
         {self.tc.opt_server} user-keys[{k2uk["M-|"]}]  "\\302\\273"  # M-|
         {self.tc.opt_server} user-keys[{k2uk["M-:"]}]  "\\303\\232"  # M-:
+
+        # troubled key: >{k2uk['M-"']}<
         {self.tc.opt_server} user-keys[{k2uk['M-"']}]  "\\303\\206"  # M-"
+
         {self.tc.opt_server} user-keys[{k2uk["M-<"]}]  "\\302\\257"  # M-<
         {self.tc.opt_server} user-keys[{k2uk["M->"]}]  "\\313\\230"  # M->
         {self.tc.opt_server} user-keys[{k2uk["M-?"]}]  "\\302\\277"  # M-?
