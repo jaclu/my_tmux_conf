@@ -559,7 +559,7 @@ class IshConsole(LimitedKbdSpecialHandling):
                     continue  # was used for euro symbol
                 w(
                     f'bind -N "Enables {key_name}" -n  '
-                    f"User{user_key}"
+                    f"""User{user_key}"""
                     f'  send-keys "{key_name}"'
                 )
         w()
