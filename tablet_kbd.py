@@ -307,9 +307,12 @@ class LimitedKbdSpecialHandling:
             #  Replacement Backtick key
             #
             {self.tc.opt_server} user-keys[{self.key_2_uk["backtick"]}]  "{sequence}"
-            bind -N "{modifier} - Send backtick" -n \
-                User{self.key_2_uk["backtick"]}  send-keys "\\`"
+
             """
+        )
+        self.tc.write(
+            f"bind -N '{modifier} - Send backtick' "
+            f"-n User{self.key_2_uk['backtick']}  send-keys '\\`'"
         )
         self.backtick_has_been_handled = True
 
@@ -423,53 +426,48 @@ class IshConsole(LimitedKbdSpecialHandling):
 
     def m_fn_keys(self) -> None:
         w = self.tc.write
-        fn_uk = self.fn_key_2_uk
+        k2uk = self.key_2_uk
 
-        w(
-            f"""
-        #
-        #  This will map M-number to F1 - F10
-        #
-        {self.tc.opt_server} user-keys[{fn_uk[1]}] "\\033\\061"  #  M-1
-        {self.tc.opt_server} user-keys[{fn_uk[2]}] "\\033\\062"  #  M-2
-        {self.tc.opt_server} user-keys[{fn_uk[3]}] "\\033\\063"  #  M-3
-        {self.tc.opt_server} user-keys[{fn_uk[4]}] "\\033\\064"  #  M-4
-        {self.tc.opt_server} user-keys[{fn_uk[5]}] "\\033\\065"  #  M-5
-        {self.tc.opt_server} user-keys[{fn_uk[6]}] "\\033\\066"  #  M-6
-        {self.tc.opt_server} user-keys[{fn_uk[7]}] "\\033\\067"  #  M-7
-        {self.tc.opt_server} user-keys[{fn_uk[8]}] "\\033\\070"  #  M-8
-        {self.tc.opt_server} user-keys[{fn_uk[9]}] "\\033\\071"  #  M-9
-        {self.tc.opt_server} user-keys[{fn_uk[10]}] "\\033\\060" #  M-0
-        """
+        fn_keys = (
+            ("F1", "M-1", "\\033\\061"),
+            ("F2", "M-2", "\\033\\062"),
+            ("F3", "M-3", "\\033\\063"),
+            ("F4", "M-4", "\\033\\064"),
+            ("F5", "M-5", "\\033\\065"),
+            ("F6", "M-6", "\\033\\066"),
+            ("F7", "M-7", "\\033\\067"),
+            ("F8", "M-8", "\\033\\070"),
+            ("F9", "M-9", "\\033\\071"),
+            ("F10", "M-0", "\\033\\060"),
         )
-        for i, key in fn_uk.items():
-            w(f'bind -N "M-{i} -> F{i}"  -n  User{key}  send-keys F{i}')
+        for fn, key, sequence in fn_keys:
+            w(f"{self.tc.opt_server}   user-keys[{k2uk[fn]}]  '{sequence}'")
+            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}     send-keys    '{key}' # {fn}")
+        w()  # spacer line
 
     def ms_fn_keys(self) -> None:
         w = self.tc.write
-        fn_uk = self.fn_key_2_uk
-        w(
-            f"""
-        #
-        #  This will map M-S-number to F1 - F10
-        #
-        {self.tc.opt_server} user-keys[{fn_uk[1]}] "\\342\\201\\204"  #  M-S-1
-        {self.tc.opt_server} user-keys[{fn_uk[3]}] "\\342\\200\\271"  #  M-S-3
-        {self.tc.opt_server} user-keys[{fn_uk[4]}] "\\342\\200\\272"  #  M-S-4
-        {self.tc.opt_server} user-keys[{fn_uk[5]}] "\\357\\254\\201"  #  M-S-5
-        {self.tc.opt_server} user-keys[{fn_uk[6]}] "\\357\\254\\202"  #  M-S-6
-        {self.tc.opt_server} user-keys[{fn_uk[7]}] "\\342\\200\\241"  #  M-S-7
-        {self.tc.opt_server} user-keys[{fn_uk[8]}] "\\302\\260"       #  M-S-8
-        {self.tc.opt_server} user-keys[{fn_uk[9]}] "\\302\\267"       #  M-S-9
-        {self.tc.opt_server} user-keys[{fn_uk[10]}] "\\342\\200\\232"  #  M-S-0"""
-        )
-        if self.euro_has_been_handled:
-            w("# M-S-2 used for euro symbol")
-        else:
-            w(f'{self.tc.opt_server} user-keys[{fn_uk[2]}] "\\342\\202\\254"  #  M-S-2')
+        k2uk = self.key_2_uk
 
-        for i, key in fn_uk.items():
-            w(f'bind -N "M-S-{i} -> F{i}"  -n  User{key}  send-keys F{i}')
+        fn_keys = (
+            ("F1", "M-S-1", "\\342\\201\\204"),
+            ("F2", "M-S-2", "\\342\\200\\271"),
+            ("F3", "M-S-3", "\\342\\200\\272"),
+            ("F4", "M-S-4", "\\357\\254\\201"),
+            ("F5", "M-S-5", "\\357\\254\\202"),
+            ("F6", "M-S-6", "\\342\\200\\241"),
+            ("F7", "M-S-7", "\\342\\200\\241"),
+            ("F8", "M-S-8", "\\302\\260"),
+            ("F9", "M-S-9", "\\302\\267"),
+            ("F10", "M-S-0", "\\342\\200\\232"),
+        )
+        for fn, key, sequence in fn_keys:
+            if key == "M-S-2" and self.euro_has_been_handled:
+                w("# M-S-2 used for euro symbol")
+                continue
+            w(f"{self.tc.opt_server}   user-keys[{k2uk[fn]}]  '{sequence}'")
+            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}     send-keys    '{key}' # {fn}")
+        w()  # spacer line
 
     # ======================================================
     #
@@ -528,7 +526,7 @@ class IshConsole(LimitedKbdSpecialHandling):
             if f"User{k2uk[key]}" in muc_values:
                 # Display muc keys
                 # w(f"# used as muc_key     User{k2uk[key]}                  {key} ")
-                w(f"#                     User{k2uk[key]}                  {key}  muc_key")
+                w(f"#                     User{k2uk[key]}                   {key}  muc_key")
                 continue
             if key == "M-N":
                 #    Special case to avoid cutof at second -N
