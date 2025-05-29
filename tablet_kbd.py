@@ -558,12 +558,10 @@ class IshConsole(LimitedKbdSpecialHandling):
                     w(f"#  {key_name}  User{user_key} - used for: Euro")
                     continue  # was used for euro symbol
                 if user_key == 333:
-                    w(f"# single quote [{key_name}] ")
-                    w(f"# single quote [{key_name}] ")
-                    w(f"""# tripplets  [{key_name}] """)
-                    continue
-
-                w(f'bind -N "Enables {key_name}" -n  User{user_key}  send "{key_name}"')
+                    # 'M-"' fails on this takes, ends up as "M-""
+                    w(f"bind -N 'Enables M-\"' -n  User{user_key}  send 'M-\"'")
+                else:
+                    w(f'bind -N "Enables {key_name}" -n  User{user_key}  send "{key_name}"')
         w()
 
         #
