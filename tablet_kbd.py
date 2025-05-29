@@ -228,7 +228,7 @@ class LimitedKbdSpecialHandling:
             f"""#
             #  Replacement Escape key
             #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["Escape"]}]  {sequence}
+            {self.tc.opt_server} user-keys[{self.key_2_uk["Escape"]}]  "{sequence}"
             bind -N "Send Escape" -n User{self.key_2_uk["Escape"]}  send-keys Escape
             """
         )
@@ -247,7 +247,7 @@ class LimitedKbdSpecialHandling:
             f"""#
             #  Replacement Delete (DC) key
             #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["Delete"]}]  {sequence}
+            {self.tc.opt_server} user-keys[{self.key_2_uk["Delete"]}]  "{sequence}"
             bind -N "Send Delete (DC)" -n User{self.key_2_uk["Delete"]}  send-keys DC
             """
         )
@@ -257,7 +257,7 @@ class LimitedKbdSpecialHandling:
         self.tc.write(
             f"""
             # This keyb sends £ when it should send #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["#"]}] \\302\\243
+            {self.tc.opt_server} user-keys[{self.key_2_uk["#"]}] "\\302\\243"
             bind -N "Send #" -n User{self.key_2_uk["#"]} send-keys  #
             """
         )
@@ -289,7 +289,7 @@ class LimitedKbdSpecialHandling:
             f"""#
             #  Replacement Backtick key
             #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["backtick"]}]  {sequence} """
+            {self.tc.opt_server} user-keys[{self.key_2_uk["backtick"]}]  "{sequence}" """
         )
         w(
             f"bind -N '{modifier} - Send backtick' "
@@ -421,7 +421,7 @@ class IshConsole(LimitedKbdSpecialHandling):
             ("F10", "M-0", "\\033\\060"),
         )
         for fn, key, sequence in fn_keys:
-            w(f"{self.tc.opt_server}   user-keys[{k2uk[fn]}]  {sequence}  #     {key}")
+            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{sequence}"  #     {key}')
             w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  {fn}")
         w()  # spacer line
 
@@ -445,7 +445,7 @@ class IshConsole(LimitedKbdSpecialHandling):
             if key == "M-S-2" and self.euro_has_been_handled:
                 w("# M-S-2 used for euro symbol")
                 continue
-            w(f"{self.tc.opt_server}   user-keys[{k2uk[fn]}]  {sequence}  #     {key}")
+            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{sequence}"  #     {key}')
             w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  {fn}")
         w()  # spacer line
 
@@ -491,7 +491,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         )
         muc_values = set(self.tc.muc_keys.values())
         for key, sequence in self.auk.items():
-            w(f"{self.tc.opt_server}   user-keys[{k2uk[key]}]  {sequence}")
+            w(f'{self.tc.opt_server}   user-keys[{k2uk[key]}]  "{sequence}"')
             if f"User{k2uk[key]}" in muc_values:
                 # Display muc keys
                 w(f"#                     User{k2uk[key]}                   {key}  muc_key")
