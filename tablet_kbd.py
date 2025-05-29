@@ -64,41 +64,7 @@ class LimitedKbdSpecialHandling:
     def __init__(self, tmux_conf_instance):
         if not mtc_utils.LC_KEYBOARD:
             raise ImportWarning("No LC_KEYBOARD defined!")
-        self.tc = tmux_conf_instance
-
-    #
-    #  Specific Keyboards
-    #
-    def keyb_type_1(self):
-        #
-        #  This keyb type already generates Esc on the key above tab
-        #
-        self.euro_fix("\\342\\202\\254")
-
-    def keyb_type_2(self):
-        #
-        #  General settings seems to work for several keyboards
-        #
-        if not self.esc_has_been_handled:
-            self.alternate_escape_key("\\302\\247")
-        # self.euro_fix("\\342\\202\\254")
-
-    def keyb_type_combo_touch(self):
-        #
-        #  Logitech Combo Touch
-        #
-        #
-        self.keyb_type_2()  # Same esc handling
-        self.alternate_backtick_key("\\033", "backtick")
-
-    def pound_sterling_fix(self):
-        self.tc.write(
-            f"""
-            # This keyb sends £ when it should send #
-            {self.tc.opt_server} user-keys[210] "\\302\\243"
-            bind -N "Send #" -n User210 send '#'
-            """
-        )
+        self.tc = tmux_conf_instance  # Primary tmux class, for backreferencing
 
     def config_console_keyb(self) -> bool:
         #
@@ -142,21 +108,43 @@ class LimitedKbdSpecialHandling:
         #     return False
         return True
 
-    def euro_fix(self, sequence):
-        if sequence[:1] != "\\":
-            err_msg = (
-                f"ERROR: TabletKbd:euro_fix({sequence}) must be given in octal notation"
-            )
-            sys.exit(err_msg)
-        if self.euro_has_been_handled:
-            return
-        self.tc.euro_fix(sequence)
-        self.euro_has_been_handled = True
+    # ======================================================
+    #
+    #  Specific Keyboards
+    #
+    # ======================================================
 
-    def alternate_escape_key(self, sequence: str) -> None:
+    def keyb_type_1(self):
+        #
+        #  This keyb type already generates Esc on the key above tab
+        #
+        self.alternate_key_euro("\\342\\202\\254")
+
+    def keyb_type_2(self):
+        #
+        #  General settings seems to work for several keyboards
+        #
+        if not self.esc_has_been_handled:
+            self.alternate_key_escape("\\302\\247")
+        # self.alternate_key_euro("\\342\\202\\254")
+
+    def keyb_type_combo_touch(self):
+        #
+        #  Logitech Combo Touch
+        #
+        self.keyb_type_2()  # Same esc handling
+        self.alternate_backtick_key("\\033", "backtick")
+
+    # ======================================================
+    #
+    #  alternate key handling
+    #
+    # ======================================================
+
+    def alternate_key_escape(self, sequence: str) -> None:
         if sequence[:1] != "\\":
             err_msg = (
-                f"ERROR: TabletKbd:alternate_escape_key({sequence}) "
+                f"ERROR: TabletKbd:alternate_key_escape({sequence}) "
                 "must be given in octal notation"
             )
             sys.exit(err_msg)
@@ -167,10 +155,50 @@ class LimitedKbdSpecialHandling:
             #  Replacement Escape key
             #
             {self.tc.opt_server} user-keys[200]  "{sequence}"
-            bind -N "Send Escape" -n User200  send Escape
+            bind -N "Send Escape" -n User200  send-keys Escape
             """
         )
         self.esc_has_been_handled = True
+
+    def alternate_key_delete(self, sequence: str) -> None:
+        if sequence[:1] != "\\":
+            err_msg = (
+                f"ERROR: TabletKbd:alternate_key_delete({sequence}) "
+                "must be given in octal notation"
+            )
+            sys.exit(err_msg)
+        if self.delete_has_been_handled:
+            return
+        self.tc.write(
+            f"""#
+            #  Replacement Delete (DC) key
+            #
+            {self.tc.opt_server} user-keys[202]  "{sequence}"
+            bind -N "Send Delete (DC)" -n User202  send-keys DC
+            """
+        )
+        self.delete_has_been_handled = True
+
+    def alternate_key_pound_sterling(self):
+        self.tc.write(
+            f"""
+            # This keyb sends £ when it should send #
+            {self.tc.opt_server} user-keys[210] "\\302\\243"
+            bind -N "Send #" -n User210 send-keys '#'
+            """
+        )
+
+    def alternate_key_euro(self, sequence):
+        if sequence[:1] != "\\":
+            err_msg = (
+                f"ERROR: TabletKbd:alternate_key_euro({sequence}) "
+                "must be given in octal notation"
+            )
+            sys.exit(err_msg)
+        if self.euro_has_been_handled:
+            return
+        self.tc.alternate_key_euro(sequence)
+        self.euro_has_been_handled = True
 
     def alternate_backtick_key(self, sequence: str, modifier="") -> None:
         if sequence[:1] != "\\":
@@ -186,39 +214,20 @@ class LimitedKbdSpecialHandling:
             #  Replacement Backtick key
             #
             {self.tc.opt_server} user-keys[201]  "{sequence}"
-            bind -N "{modifier} - Send backtick" -n User201  send "\\`"
+            bind -N "{modifier} - Send backtick" -n User201  send-keys "\\`"
             """
         )
         self.backtick_has_been_handled = True
-
-    def alternate_delete(self, sequence: str) -> None:
-        if sequence[:1] != "\\":
-            err_msg = (
-                f"ERROR: TabletKbd:alternate_delete({sequence}) "
-                "must be given in octal notation"
-            )
-            sys.exit(err_msg)
-        if self.delete_has_been_handled:
-            return
-        self.tc.write(
-            f"""#
-            #  Replacement Delete (DC) key
-            #
-            {self.tc.opt_server} user-keys[202]  "{sequence}"
-            bind -N "Send Delete (DC)" -n User202  send DC
-            """
-        )
-        self.delete_has_been_handled = True
 
 
 class TermuxConsole(LimitedKbdSpecialHandling):
     """Used to adopt the Termux console"""
 
     def keyb_type_1(self):
-        self.alternate_escape_key("\\140")
+        self.alternate_key_escape("\\140")
         self.alternate_backtick_key("\\033\\140", "M-")
-        self.alternate_delete("\\033\\177")
-        self.euro_fix("\\033\\100")  # same as on Darwin
+        self.alternate_key_delete("\\033\\177")
+        self.alternate_key_euro("\\033\\100")  # same as on Darwin
         super().keyb_type_1()
 
 
@@ -243,7 +252,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         #  Weird, but this seems to solve it
         #
         # set -s user-keys[211]  "\\302\\257"
-        # bind -N "Enables M-<" -n User211 send "M-<"
+        # bind -N "Enables M-<" -n User211 send-keys "M-<"
 
         ms_fn_keys_mapped = False
 
@@ -289,14 +298,11 @@ class IshConsole(LimitedKbdSpecialHandling):
         {self.tc.opt_server} user-keys[{uk_func[7]}] "\\033\\067"  #  M-7
         {self.tc.opt_server} user-keys[{uk_func[8]}] "\\033\\070"  #  M-8
         {self.tc.opt_server} user-keys[{uk_func[9]}] "\\033\\071"  #  M-9
-        {self.tc.opt_server} user-keys[{uk_func[0]}] "\\033\\060" #  M-0
+        {self.tc.opt_server} user-keys[{uk_func[10]}] "\\033\\060" #  M-0
         """
         )
         for i, key in uk_func.items():
-            if i == 0:
-                w(f'bind -N "M-{i} -> F10"  -n  User{key}  send-keys F10')
-            else:
-                w(f'bind -N "M-{i} -> F{i}"  -n  User{key}  send-keys F{i}')
+            w(f'bind -N "M-{i} -> F{i}"  -n  User{key}  send-keys F{i}')
 
     def ms_fn_keys(self) -> None:
         uk_func = self.define_fn_user_keys()
@@ -314,7 +320,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         {self.tc.opt_server} user-keys[{uk_func[7]}] "\\342\\200\\241"  #  M-S-7
         {self.tc.opt_server} user-keys[{uk_func[8]}] "\\302\\260"       #  M-S-8
         {self.tc.opt_server} user-keys[{uk_func[9]}] "\\302\\267"       #  M-S-9
-        {self.tc.opt_server} user-keys[{uk_func[0]}] "\\342\\200\\232"  #  M-S-0"""
+        {self.tc.opt_server} user-keys[{uk_func[10]}] "\\342\\200\\232"  #  M-S-0"""
         )
         if self.euro_has_been_handled:
             w("# M-S-2 used for euro symbol")
@@ -322,12 +328,14 @@ class IshConsole(LimitedKbdSpecialHandling):
             w(f'{self.tc.opt_server} user-keys[{uk_func[2]}] "\\342\\202\\254"  #  M-S-2')
 
         for i, key in uk_func.items():
-            if i == 0:
-                w(f'bind -N "M-S-{i} -> F10"  -n  User{key}  send-keys F10')
-            elif i == 2 and self.euro_has_been_handled:
-                continue
-            else:
-                w(f'bind -N "M-S-{i} -> F{i}"  -n  User{key}  send-keys F{i}')
+            w(f'bind -N "M-S-{i} -> F{i}"  -n  User{key}  send-keys F{i}')
+
+    # ======================================================
+    #
+    #  Map specific keys by name/function to specific user-key indexes
+    #  for consistency
+    #
+    # ======================================================
 
     def define_fn_user_keys(self):
         """Defines Userkey Function key mapping"""
@@ -341,7 +349,7 @@ class IshConsole(LimitedKbdSpecialHandling):
             7: 407,
             8: 408,
             9: 409,
-            0: 410,
+            10: 410,
         }
 
     def alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
@@ -415,8 +423,8 @@ class IshConsole(LimitedKbdSpecialHandling):
         w(  # not in root 308 310 311 312 316 324
             f"""
         #
-        #  iSH console doesn't generate the right keys for
-        #  Alt upper case chars, so here they are interpreted for tmux
+        #  iSH console doesn't generate the right keys for alt-S characters
+        #  Here they are interpreted by tmux
         #
         {self.tc.opt_server} user-keys[{uk_ms_char["M-A"]}]  "\\303\\205"  # M-A
         {self.tc.opt_server} user-keys[{uk_ms_char["M-B"]}]  "\\304\\261"  # M-B
@@ -481,8 +489,8 @@ class IshConsole(LimitedKbdSpecialHandling):
             if key_name == "M-N":
                 #    Special case to avoid cutof at second -N
                 #    on tmux < 3.1
-                w(f"bind -N 'Enables M-N' -n  User{user_key}  send {key_name}")
-            w(f"bind -N 'Enables {key_name}' -n  User{user_key}  send '{key_name}'")
+                w(f"bind -N 'Enables M-N' -n  User{user_key}  send-keys {key_name}")
+            w(f"bind -N 'Enables {key_name}' -n  User{user_key}  send-keys '{key_name}'")
 
         if not ms_fn_keys_mapped:
             # use meta shift numbers as normal m- chars
@@ -517,7 +525,10 @@ class IshConsole(LimitedKbdSpecialHandling):
                 if key_name == "M-@" and self.euro_has_been_handled:
                     w(f"#  {key_name}  User{user_key} - used for: Euro")
                     continue  # was used for euro symbol
-                w(f'bind -N "Enables {key_name}" -n  User{user_key}  send "{key_name}"')
+                w(
+                    f'bind -N "Enables {key_name}" -n  User{user_key}  '
+                    f'send-keys "{key_name}"'
+                )
         w()
 
         #
