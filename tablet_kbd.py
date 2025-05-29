@@ -228,7 +228,7 @@ class LimitedKbdSpecialHandling:
             f"""#
             #  Replacement Escape key
             #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["Escape"]}]  "{sequence}"
+            {self.tc.opt_server} user-keys[{self.key_2_uk["Escape"]}]  {sequence}
             bind -N "Send Escape" -n User{self.key_2_uk["Escape"]}  send-keys Escape
             """
         )
@@ -247,7 +247,7 @@ class LimitedKbdSpecialHandling:
             f"""#
             #  Replacement Delete (DC) key
             #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["Delete"]}]  "{sequence}"
+            {self.tc.opt_server} user-keys[{self.key_2_uk["Delete"]}]  {sequence}
             bind -N "Send Delete (DC)" -n User{self.key_2_uk["Delete"]}  send-keys DC
             """
         )
@@ -257,8 +257,8 @@ class LimitedKbdSpecialHandling:
         self.tc.write(
             f"""
             # This keyb sends £ when it should send #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["#"]}] "\\302\\243"
-            bind -N "Send #" -n User{self.key_2_uk["#"]} send-keys '#'
+            {self.tc.opt_server} user-keys[{self.key_2_uk["#"]}] \\302\\243
+            bind -N "Send #" -n User{self.key_2_uk["#"]} send-keys  #
             """
         )
 
@@ -289,11 +289,11 @@ class LimitedKbdSpecialHandling:
             f"""#
             #  Replacement Backtick key
             #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["backtick"]}]  "{sequence}" """
+            {self.tc.opt_server} user-keys[{self.key_2_uk["backtick"]}]  {sequence} """
         )
         w(
             f"bind -N '{modifier} - Send backtick' "
-            f"-n User{self.key_2_uk['backtick']}  send-keys '\\`'"
+            f'-n User{self.key_2_uk["backtick"]}  send-keys "\\`"'
         )
         w()  # Spacer line
         self.backtick_has_been_handled = True
@@ -397,6 +397,13 @@ class IshConsole(LimitedKbdSpecialHandling):
             w(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
         w('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
 
+    # ======================================================
+    #
+    #  Map specific keys by name/function to specific user-key indexes
+    #  for consistency
+    #
+    # ======================================================
+
     def m_fn_keys(self) -> None:
         w = self.tc.write
         k2uk = self.key_2_uk
@@ -442,13 +449,6 @@ class IshConsole(LimitedKbdSpecialHandling):
             w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  {fn}")
         w()  # spacer line
 
-    # ======================================================
-    #
-    #  Map specific keys by name/function to specific user-key indexes
-    #  for consistency
-    #
-    # ======================================================
-
     def define_muc_keys(self):
         self.tc.muc_keys = {
             mtc_utils.K_M_PLUS: f"User{self.key_2_uk['M-+']}",
@@ -481,9 +481,6 @@ class IshConsole(LimitedKbdSpecialHandling):
         if not ms_fn_keys_mapped:
             self.alt_upper_case_numbers()
 
-        # argh inside f-strings {/} needs to be contained in variables...
-        # curly_open = "{"
-        # curly_close = "}"
         w(  # not in root 308 310 311 312 316 324
             """
         #
@@ -494,19 +491,17 @@ class IshConsole(LimitedKbdSpecialHandling):
         )
         muc_values = set(self.tc.muc_keys.values())
         for key, sequence in self.auk.items():
-            # w(f"set          -s user-keys[{k2uk[key]}] '{sequence}'")
-            w(f"{self.tc.opt_server}   user-keys[{k2uk[key]}]  '{sequence}'")
+            w(f"{self.tc.opt_server}   user-keys[{k2uk[key]}]  {sequence}")
             if f"User{k2uk[key]}" in muc_values:
                 # Display muc keys
-                # w(f"# used as muc_key     User{k2uk[key]}                  {key} ")
                 w(f"#                     User{k2uk[key]}                   {key}  muc_key")
                 continue
             if key == "M-N":
                 #    Special case to avoid cutof at second -N
                 #    on tmux < 3.1
-                w(f"bind -N 'Enables M-N' -n  User{k2uk[key]}   send-keys    '{key}'")
+                w(f"bind -N 'Enables M-N' -n  User{k2uk[key]}   send-keys    {key}")
                 continue
-            w(f"bind -N 'Send {key}' -n User{k2uk[key]}     send-keys    '{key}'")
+            w(f"bind -N 'Send {key}' -n User{k2uk[key]}     send-keys     {key}")
         w()  # spacer line
 
         if any("User" in value for value in self.tc.muc_keys.values()):
