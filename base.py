@@ -306,7 +306,7 @@ class BaseConfig(TmuxConfig):
         if not self.tablet_keyb:
             # Tablet keyb configs handle their own euro rempaping
             eur_sequence = "\\033\\100"  # Dawin keyboards, is pc different?
-            self.euro_fix(eur_sequence)
+            self.alternate_key_euro(eur_sequence)
         w()  # Spacer after this local override section
 
     def content(self) -> None:
@@ -1488,15 +1488,6 @@ class BaseConfig(TmuxConfig):
         if os.getenv("USER") in ("jaclu", "u0_a194"):
             self.username_template = ""
 
-            #
-            #  Actions bound to Alt uppercase keys. The iSH console doesn't
-            #  generate the correct sequences, so must be remapped via user-keys
-            #  Further you need to bind those user keys to the intended action.
-            #  To avoid having to repeat code I use special methods handling such
-            #  keys, for terminals relaying on user-keys, they can be bound to
-            #  the intended action fairly simply.
-            #
-
     #
     #  Handling of muc_keys - keys limited keyboards might need to override
     #  with user keys
@@ -1905,18 +1896,18 @@ timer_end() {{
         print(f"vers found: {lib_vers_found}   needs: {TMUX_CONF_NEEDED}")
         sys.exit(mtc_utils.ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
 
-    def euro_fix(self, sequence: str):
+    def alternate_key_euro(self, sequence: str):
         """Some keybs fail to render the Euro sign for M-S-2
         Only do this if local currency is EUR"""
-        # print(f"><> euro_fix({sequence})")
         if not self.vers_ok(2.6):
+            print("ERROR: alternate_key_euro({sequence}) - called for tmux < 2.6")
             return  # user keys not yet available
-
-        w = self.write
         if sequence[:1] != "\\":
             print()
-            print(f"ERROR: euro_fix({sequence}) must be given in octal notation")
+            print(f"ERROR: alternate_key_euro({sequence}) must be given in octal notation")
             sys.exit(mtc_utils.ERROR_USER_KEY_NOT_OCTAL)
+
+        w = self.write
         currency = mtc_utils.get_currency()
         if currency == "EUR":
             # print("><> Wiill write euro workaround")
@@ -1932,7 +1923,10 @@ timer_end() {{
                 # located, so no EUR fix applied. This node reports: {currency}."""
             )
         else:
-            w("# No default currency could be retrieved for this node")
+            w(
+                "# No default currency could be retrieved for this node - "
+                "alternate_key_euro() ignored"
+            )
 
 
 if __name__ == "__main__":
