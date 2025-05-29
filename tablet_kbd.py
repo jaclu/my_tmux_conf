@@ -527,7 +527,8 @@ class IshConsole(LimitedKbdSpecialHandling):
             w(f"{self.tc.opt_server}   user-keys[{k2uk[key]}]  '{sequence}'")
             if f"User{k2uk[key]}" in muc_values:
                 # Display muc keys
-                w(f"# used as muc_key     User{k2uk[key]}               {key} ")
+                # w(f"# used as muc_key     User{k2uk[key]}                  {key} ")
+                w(f"#                     User{k2uk[key]}                  {key}  muc_key")
                 continue
             if key == "M-N":
                 #    Special case to avoid cutof at second -N
