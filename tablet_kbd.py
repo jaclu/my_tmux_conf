@@ -275,6 +275,8 @@ class LimitedKbdSpecialHandling:
         self.euro_has_been_handled = True
 
     def alternate_backtick_key(self, sequence: str, modifier="") -> None:
+        w = self.tc.write
+
         if sequence[:1] != "\\":
             err_msg = (
                 f"ERROR: TabletKbd:alternate_backtick_key({sequence}) "
@@ -283,18 +285,18 @@ class LimitedKbdSpecialHandling:
             sys.exit(err_msg)
         if self.backtick_has_been_handled:
             return
-        self.tc.write(
+        w(
             f"""#
             #  Replacement Backtick key
             #
             {self.tc.opt_server} user-keys[{self.key_2_uk["backtick"]}]  "{sequence}"
-
             """
         )
-        self.tc.write(
+        w(
             f"bind -N '{modifier} - Send backtick' "
             f"-n User{self.key_2_uk['backtick']}  send-keys '\\`'"
         )
+        w()  # Spacer line
         self.backtick_has_been_handled = True
 
 
