@@ -527,14 +527,14 @@ class IshConsole(LimitedKbdSpecialHandling):
             w(f"{self.tc.opt_server}   user-keys[{k2uk[key]}]  '{sequence}'")
             if f"User{k2uk[key]}" in muc_values:
                 # Display muc keys
-                w(f"# used as muc_key     User{k2uk[key]}             {key} ")
+                w(f"# used as muc_key     User{k2uk[key]}               {key} ")
                 continue
             if key == "M-N":
                 #    Special case to avoid cutof at second -N
                 #    on tmux < 3.1
-                w(f"bind -N 'Enables M-N' -n  User{k2uk[key]}  send-keys '{key}'")
+                w(f"bind -N 'Enables M-N' -n  User{k2uk[key]}   send-keys    '{key}'")
                 continue
-            w(f"bind -N 'Send {key}' -n User{k2uk[key]}     send-keys  '{key}'")
+            w(f"bind -N 'Send {key}' -n User{k2uk[key]}     send-keys    '{key}'")
         w()  # spacer line
 
         if any("User" in value for value in self.tc.muc_keys.values()):
