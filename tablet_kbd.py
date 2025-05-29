@@ -496,14 +496,14 @@ class IshConsole(LimitedKbdSpecialHandling):
         {self.tc.opt_server} user-keys[{k2uk["M-|"]}]  "\\302\\273"  # M-|
         {self.tc.opt_server} user-keys[{k2uk["M-:"]}]  "\\303\\232"  # M-:
 
-        # troubled key: >{k2uk['M-"']}<
-        {self.tc.opt_server} user-keys[{k2uk['M-"']}]  "\\303\\206"  # M-"
 
         {self.tc.opt_server} user-keys[{k2uk["M-<"]}]  "\\302\\257"  # M-<
         {self.tc.opt_server} user-keys[{k2uk["M->"]}]  "\\313\\230"  # M->
         {self.tc.opt_server} user-keys[{k2uk["M-?"]}]  "\\302\\277"  # M-?
         """
         )
+        # TO DO: reinsert this after M-:
+        # {self.tc.opt_server} user-keys[{k2uk['M-"']}]  "\\303\\206"  # M-"
 
         if any("User" in value for value in self.tc.muc_keys.values()):
             print("---  self.tc.muc_keys  ---")
@@ -557,9 +557,12 @@ class IshConsole(LimitedKbdSpecialHandling):
                 if key_name == "M-@" and self.euro_has_been_handled:
                     w(f"#  {key_name}  User{user_key} - used for: Euro")
                     continue  # was used for euro symbol
-                w(f"# single quote {key_name}")
-                w(f"# single quote {key_name}")
-                w(f"""# tripplets    {key_name}""")
+                if user_key == 333:
+                    w(f"# single quote {key_name}")
+                    w(f"# single quote {key_name}")
+                    w(f"""# tripplets    {key_name}""")
+                    continue
+
                 w(f'bind -N "Enables {key_name}" -n  User{user_key}  send "{key_name}"')
         w()
 
