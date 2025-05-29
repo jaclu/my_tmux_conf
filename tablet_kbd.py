@@ -503,10 +503,11 @@ class IshConsole(LimitedKbdSpecialHandling):
                 # send-keys
                 # M-N           M
                 # "M-N"         "M
-                # 'M-N'
+                # 'M-N'         'M
+                # "M\-N"
                 # no quotes becomes M
                 # double quotes becomes: "M
-                w(f""" bind -N "Send meta N" -n  User{k2uk[key]}   send-keys    'M-N' """)
+                w(f""" bind -N "Send meta N" -n  User{k2uk[key]}   send-keys    "M\\-N" """)
             elif key == 'M-"':
                 w(f"""bind -N 'Send {key}' -n User{k2uk[key]}     send-keys     '{key}' """)
             elif key in ("M-{", "M-}"):
