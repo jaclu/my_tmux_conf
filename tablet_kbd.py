@@ -100,7 +100,7 @@ class LimitedKbdSpecialHandling:
         "M-}": 330,
         "M-|": 331,
         "M-:": 332,
-        'M-\\"': 333,
+        'M-"': 333,
         "M-<": 334,
         "M->": 335,
         "M-?": 336,
@@ -558,9 +558,9 @@ class IshConsole(LimitedKbdSpecialHandling):
                     w(f"#  {key_name}  User{user_key} - used for: Euro")
                     continue  # was used for euro symbol
                 if user_key == 333:
-                    w(f"# single quote {key_name}")
-                    w(f"# single quote {key_name}")
-                    w(f"""# tripplets    {key_name}""")
+                    w(f"# single quote [{key_name}] ")
+                    w(f"# single quote [{key_name}] ")
+                    w(f"""# tripplets  [{key_name}] """)
                     continue
 
                 w(f'bind -N "Enables {key_name}" -n  User{user_key}  send "{key_name}"')
