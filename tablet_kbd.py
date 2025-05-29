@@ -499,9 +499,9 @@ class IshConsole(LimitedKbdSpecialHandling):
             if key == "M-N":
                 #    Special case to avoid cutof at second -N
                 #    on tmux < 3.1
-                w(f"bind -N 'Enables M-N' -n  User{k2uk[key]}   send-keys    {key}")
+                w(f"bind -N 'Enables M-N' -n  User{k2uk[key]}   send-keys    \"{key}\"")
                 continue
-            w(f"bind -N 'Send {key}' -n User{k2uk[key]}     send-keys     {key}")
+            w(f"bind -N 'Send {key}' -n User{k2uk[key]}     send-keys     \"{key}\"")
         w()  # spacer line
 
         if any("User" in value for value in self.tc.muc_keys.values()):
