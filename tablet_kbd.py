@@ -43,17 +43,7 @@ KBD_BLUETOOTH = "Bluetooth Keyboard"  # Pad5 - sadly generic name
 
 
 class LimitedKbdSpecialHandling:
-    """Groupings of user-keys
-
-    < 200 Handled by base.py
-    200     Escape
-    201     alternate backtick
-    202     alternate delete
-    210-219 Specific Keyboard bindings
-    300-336  Alt Upper case
-
-    400-429 Function keys (only using up to 410)
-    """
+    """Groupings of user-keys"""
 
     # ensures that some settings ate not overridden via inheritance
     esc_has_been_handled = False
@@ -61,103 +51,94 @@ class LimitedKbdSpecialHandling:
     backtick_has_been_handled = False
     delete_has_been_handled = False
 
-    # To ensure no collisions in user-keys indexes, always use the same source
-    key_2_uk = {
-        "Escape": 200,
-        "backtick": 201,
-        "Delete": 202,
-        "#": 203,
-        # Keyboard specific reserved range 210-299
-        "M-A": 301,
-        "M-B": 302,
-        "M-C": 303,
-        "M-D": 304,
-        "M-E": 305,
-        "M-F": 306,
-        "M-G": 307,
-        "M-H": 308,  # -  used in  auc_split_entire_window()
-        "M-I": 309,  # -  used in  auc_split_entire_window()
-        "M-J": 310,  # -  used in  auc_split_entire_window()
-        "M-K": 311,  # -  used in  auc_split_entire_window()
-        "M-L": 312,  # -  used in  auc_split_entire_window()
-        "M-M": 313,
-        "M-N": 314,
-        "M-O": 315,
-        "M-P": 316,
-        "M-Q": 317,
-        "M-R": 318,
-        "M-S": 319,
-        "M-T": 320,
-        "M-U": 321,
-        "M-V": 322,
-        "M-W": 323,
-        "M-X": 324,
-        "M-Y": 325,
-        "M-Z": 326,
-        "M-_": 327,  # - used in  auc_meta_ses_handling
-        "M-+": 328,  # - used in  auc_meta_ses_handling()
-        "M-{": 329,
-        "M-}": 330,
-        "M-|": 331,
-        "M-:": 332,
-        'M-"': 333,
-        "M-<": 334,
-        "M->": 335,
-        "M-?": 336,
-        # 350-359 Meta Shift Numbers(when not used for function keys)
-        "M-!": 350,
-        "M-@": 351,
-        "M-#": 352,
-        "M-$": 353,
-        "M-%": 354,
-        "M-^": 355,
-        "M-&": 356,
-        "M-*": 357,
-        "M-(": 358,
-        "M-)": 359,
-        # Function keys - listed without modifiers here, but could be
-        # defined with modifiers
-        "F1": 401,
-        "F2": 402,
-        "F3": 403,
-        "F4": 404,
-        "F5": 405,
-        "F6": 406,
-        "F7": 407,
-        "F8": 408,
-        "F9": 409,
-        "F10": 410,
-    }
-    fn_key_2_uk = {
-        # Pick up the userkey indexes
-        1: key_2_uk["F1"],
-        2: key_2_uk["F2"],
-        3: key_2_uk["F3"],
-        4: key_2_uk["F4"],
-        5: key_2_uk["F5"],
-        6: key_2_uk["F6"],
-        7: key_2_uk["F7"],
-        8: key_2_uk["F8"],
-        9: key_2_uk["F9"],
-        10: key_2_uk["F10"],
-    }
-
     def __init__(self, tmux_conf_instance):
         """Defines Userkey Function key mapping"""
         if not mtc_utils.LC_KEYBOARD:
             raise ImportWarning("No LC_KEYBOARD defined!")
         self.tc = tmux_conf_instance  # Primary tmux class, for backreferencing
 
-        #     2: key_2_uk["F2"],
-        #     3: key_2_uk["F3"],
-        #     4: self.key_2_uk["F4"],
-        #     5: self.key_2_uk["F5"],
-        #     6: self.key_2_uk["F6"],
-        #     7: self.key_2_uk["F7"],
-        #     8: self.key_2_uk["F8"],
-        #     9: self.key_2_uk["F9"],
-        #     10: self.key_2_uk["F10"],
-        # }
+        # To ensure no collisions in user-keys indexes, always use the same source
+        self.key_2_uk = {
+            # < 200 Handled by base.py
+            "Escape": 200,
+            "backtick": 201,
+            "Delete": 202,
+            "#": 203,
+            # Keyboard specific reserved range 210-299
+            # Alt upper case chars
+            "M-A": 301,
+            "M-B": 302,
+            "M-C": 303,
+            "M-D": 304,
+            "M-E": 305,
+            "M-F": 306,
+            "M-G": 307,
+            "M-H": 308,  # -  used in  auc_split_entire_window()
+            "M-I": 309,  # -  used in  auc_split_entire_window()
+            "M-J": 310,  # -  used in  auc_split_entire_window()
+            "M-K": 311,  # -  used in  auc_split_entire_window()
+            "M-L": 312,  # -  used in  auc_split_entire_window()
+            "M-M": 313,
+            "M-N": 314,
+            "M-O": 315,
+            "M-P": 316,
+            "M-Q": 317,
+            "M-R": 318,
+            "M-S": 319,
+            "M-T": 320,
+            "M-U": 321,
+            "M-V": 322,
+            "M-W": 323,
+            "M-X": 324,
+            "M-Y": 325,
+            "M-Z": 326,
+            "M-_": 327,  # - used in  auc_meta_ses_handling
+            "M-+": 328,  # - used in  auc_meta_ses_handling()
+            "M-{": 329,
+            "M-}": 330,
+            "M-|": 331,
+            "M-:": 332,
+            'M-"': 333,
+            "M-<": 334,
+            "M->": 335,
+            "M-?": 336,
+            # 350-359 Meta Shift Numbers(when not used for function keys)
+            "M-!": 350,
+            "M-@": 351,
+            "M-#": 352,
+            "M-$": 353,
+            "M-%": 354,
+            "M-^": 355,
+            "M-&": 356,
+            "M-*": 357,
+            "M-(": 358,
+            "M-)": 359,
+            # Function keys - listed without modifiers here, but could be
+            # defined with modifiers
+            "F1": 401,
+            "F2": 402,
+            "F3": 403,
+            "F4": 404,
+            "F5": 405,
+            "F6": 406,
+            "F7": 407,
+            "F8": 408,
+            "F9": 409,
+            "F10": 410,
+        }
+        self.fn_key_2_uk = {
+            # Pick up the userkey indexes
+            1: self.key_2_uk["F1"],
+            2: self.key_2_uk["F2"],
+            3: self.key_2_uk["F3"],
+            4: self.key_2_uk["F4"],
+            5: self.key_2_uk["F5"],
+            6: self.key_2_uk["F6"],
+            7: self.key_2_uk["F7"],
+            8: self.key_2_uk["F8"],
+            9: self.key_2_uk["F9"],
+            10: self.key_2_uk["F10"],
+        }
 
     def config_console_keyb(self) -> bool:
         #
@@ -336,6 +317,7 @@ class IshConsole(LimitedKbdSpecialHandling):
     def __init__(self, tmux_conf_instance):
         super().__init__(tmux_conf_instance)
         self.auk = {
+            # iSH Console can not generate Alt Upper Case characters, so they are mapped
             "M-A": "\\303\\205",
             "M-B": "\\304\\261",
             "M-C": "\\303\\207",
@@ -365,8 +347,7 @@ class IshConsole(LimitedKbdSpecialHandling):
             "M-_": "\\342\\200\\224",
             # On some keybs with a § there is a glitch in that
             # both S-§ and M-+ generate ±. Since M-+ is used, and S-§ not,
-            # just ignore that S-§ also triggers this feature
-            #  self.tc.opt_server  user-keys[61] "\\302\\261"       # M-+
+            # just ignore that S-§ ...
             "M-+": "\\302\\261",
             "M-{": "\\342\\200\\235",
             "M-}": "\\342\\200\\231",
@@ -382,23 +363,8 @@ class IshConsole(LimitedKbdSpecialHandling):
         if not super().config_console_keyb():
             return False
 
-        #
-        #  This does general iSH mapping, not focusing on keyboard specific
-        #  customization needs
-        #
-
-        #
-        #  Some keybs have issues with M-<
-        #  the initial binding for this char
-        #  instead triggers it to send this sequence
-        #  Weird, but this seems to solve it
-        #
-        # set -s user-keys[211]  "\\302\\257"
-        # bind -N "Enables M-<" -n User211 send-keys "M-<"
-
         ms_fn_keys_mapped = False
-
-        fn_keys_handling = 2
+        fn_keys_handling = 1
         if fn_keys_handling == 1:
             self.fn_keys()
         elif fn_keys_handling == 2:
@@ -417,7 +383,7 @@ class IshConsole(LimitedKbdSpecialHandling):
     def fn_keys(self):
         #
         #  For keybs that already handles M-#
-        #  this just binds them to send F#
+        #  this just binds them to send F# g
         #
         w = self.tc.write
         for i in range(1, 10):
@@ -442,7 +408,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         )
         for fn, key, sequence in fn_keys:
             w(f"{self.tc.opt_server}   user-keys[{k2uk[fn]}]  '{sequence}'")
-            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  '{key}' # {fn}")
+            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  '{key}'  #  {fn}")
         w()  # spacer line
 
     def ms_fn_keys(self) -> None:
@@ -466,7 +432,7 @@ class IshConsole(LimitedKbdSpecialHandling):
                 w("# M-S-2 used for euro symbol")
                 continue
             w(f"{self.tc.opt_server}   user-keys[{k2uk[fn]}]  '{sequence}'")
-            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  '{key}' # {fn}")
+            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  '{key}'  #  {fn}")
         w()  # spacer line
 
     # ======================================================
