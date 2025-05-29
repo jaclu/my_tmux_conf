@@ -51,7 +51,7 @@ class LimitedKbdSpecialHandling:
     202     alternate delete
     210-219 Specific Keyboard bindings
     300-336  Alt Upper case
-    350-359 Meta Shift Numbers(when not used for function keys)
+
     400-429 Function keys (only using up to 410)
     """
 
@@ -61,10 +61,103 @@ class LimitedKbdSpecialHandling:
     backtick_has_been_handled = False
     delete_has_been_handled = False
 
+    # To ensure no collisions in user-keys indexes, always use the same source
+    key_2_uk = {
+        "Escape": 200,
+        "backtick": 201,
+        "Delete": 202,
+        "#": 203,
+        # Keyboard specific reserved range 210-299
+        "M-A": 301,
+        "M-B": 302,
+        "M-C": 303,
+        "M-D": 304,
+        "M-E": 305,
+        "M-F": 306,
+        "M-G": 307,
+        "M-H": 308,  # -  used in  auc_split_entire_window()
+        "M-I": 309,  # -  used in  auc_split_entire_window()
+        "M-J": 310,  # -  used in  auc_split_entire_window()
+        "M-K": 311,  # -  used in  auc_split_entire_window()
+        "M-L": 312,  # -  used in  auc_split_entire_window()
+        "M-M": 313,
+        "M-N": 314,
+        "M-O": 315,
+        "M-P": 316,
+        "M-Q": 317,
+        "M-R": 318,
+        "M-S": 319,
+        "M-T": 320,
+        "M-U": 321,
+        "M-V": 322,
+        "M-W": 323,
+        "M-X": 324,
+        "M-Y": 325,
+        "M-Z": 326,
+        "M-_": 327,  # - used in  auc_meta_ses_handling
+        "M-+": 328,  # - used in  auc_meta_ses_handling()
+        "M-{": 329,
+        "M-}": 330,
+        "M-|": 331,
+        "M-:": 332,
+        'M-"': 333,
+        "M-<": 334,
+        "M->": 335,
+        "M-?": 336,
+        # 350-359 Meta Shift Numbers(when not used for function keys)
+        "M-!": 350,
+        "M-@": 351,
+        "M-#": 352,
+        "M-$": 353,
+        "M-%": 354,
+        "M-^": 355,
+        "M-&": 356,
+        "M-*": 357,
+        "M-(": 358,
+        "M-)": 359,
+        # Function keys - listed without modifiers here, but could be
+        # defined with modifiers
+        "F1": 401,
+        "F2": 402,
+        "F3": 403,
+        "F4": 404,
+        "F5": 405,
+        "F6": 406,
+        "F7": 407,
+        "F8": 408,
+        "F9": 409,
+        "F10": 410,
+    }
+    fn_key_2_uk = {
+        #
+        1: key_2_uk["F1"],
+        2: key_2_uk["F2"],
+        3: key_2_uk["F3"],
+        4: key_2_uk["F4"],
+        5: key_2_uk["F5"],
+        6: key_2_uk["F6"],
+        7: key_2_uk["F7"],
+        8: key_2_uk["F8"],
+        9: key_2_uk["F9"],
+        10: key_2_uk["F10"],
+    }
+
     def __init__(self, tmux_conf_instance):
+        """Defines Userkey Function key mapping"""
         if not mtc_utils.LC_KEYBOARD:
             raise ImportWarning("No LC_KEYBOARD defined!")
         self.tc = tmux_conf_instance  # Primary tmux class, for backreferencing
+
+        #     2: key_2_uk["F2"],
+        #     3: key_2_uk["F3"],
+        #     4: self.key_2_uk["F4"],
+        #     5: self.key_2_uk["F5"],
+        #     6: self.key_2_uk["F6"],
+        #     7: self.key_2_uk["F7"],
+        #     8: self.key_2_uk["F8"],
+        #     9: self.key_2_uk["F9"],
+        #     10: self.key_2_uk["F10"],
+        # }
 
     def config_console_keyb(self) -> bool:
         #
@@ -154,8 +247,8 @@ class LimitedKbdSpecialHandling:
             f"""#
             #  Replacement Escape key
             #
-            {self.tc.opt_server} user-keys[200]  "{sequence}"
-            bind -N "Send Escape" -n User200  send-keys Escape
+            {self.tc.opt_server} user-keys[{self.key_2_uk["Escape"]}]  "{sequence}"
+            bind -N "Send Escape" -n User{self.key_2_uk["Escape"]}  send-keys Escape
             """
         )
         self.esc_has_been_handled = True
@@ -173,18 +266,18 @@ class LimitedKbdSpecialHandling:
             f"""#
             #  Replacement Delete (DC) key
             #
-            {self.tc.opt_server} user-keys[202]  "{sequence}"
-            bind -N "Send Delete (DC)" -n User202  send-keys DC
+            {self.tc.opt_server} user-keys[{self.key_2_uk["Delete"]}]  "{sequence}"
+            bind -N "Send Delete (DC)" -n User{self.key_2_uk["Delete"]}  send-keys DC
             """
         )
         self.delete_has_been_handled = True
 
-    def alternate_key_pound_sterling(self):
+    def alternate_key_hash(self):
         self.tc.write(
             f"""
             # This keyb sends £ when it should send #
-            {self.tc.opt_server} user-keys[210] "\\302\\243"
-            bind -N "Send #" -n User210 send-keys '#'
+            {self.tc.opt_server} user-keys[{self.key_2_uk["#"]}] "\\302\\243"
+            bind -N "Send #" -n User{self.key_2_uk["#"]} send-keys '#'
             """
         )
 
@@ -213,8 +306,9 @@ class LimitedKbdSpecialHandling:
             f"""#
             #  Replacement Backtick key
             #
-            {self.tc.opt_server} user-keys[201]  "{sequence}"
-            bind -N "{modifier} - Send backtick" -n User201  send-keys "\\`"
+            {self.tc.opt_server} user-keys[{self.key_2_uk["backtick"]}]  "{sequence}"
+            bind -N "{modifier} - Send backtick" -n \
+                User{self.key_2_uk["backtick"]}  send-keys "\\`"
             """
         )
         self.backtick_has_been_handled = True
@@ -282,52 +376,53 @@ class IshConsole(LimitedKbdSpecialHandling):
         w('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
 
     def m_fn_keys(self) -> None:
-        uk_func = self.define_fn_user_keys()
         w = self.tc.write
+        fn_uk = self.fn_key_2_uk
+
         w(
             f"""
         #
         #  This will map M-number to F1 - F10
         #
-        {self.tc.opt_server} user-keys[{uk_func[1]}] "\\033\\061"  #  M-1
-        {self.tc.opt_server} user-keys[{uk_func[2]}] "\\033\\062"  #  M-2
-        {self.tc.opt_server} user-keys[{uk_func[3]}] "\\033\\063"  #  M-3
-        {self.tc.opt_server} user-keys[{uk_func[4]}] "\\033\\064"  #  M-4
-        {self.tc.opt_server} user-keys[{uk_func[5]}] "\\033\\065"  #  M-5
-        {self.tc.opt_server} user-keys[{uk_func[6]}] "\\033\\066"  #  M-6
-        {self.tc.opt_server} user-keys[{uk_func[7]}] "\\033\\067"  #  M-7
-        {self.tc.opt_server} user-keys[{uk_func[8]}] "\\033\\070"  #  M-8
-        {self.tc.opt_server} user-keys[{uk_func[9]}] "\\033\\071"  #  M-9
-        {self.tc.opt_server} user-keys[{uk_func[10]}] "\\033\\060" #  M-0
+        {self.tc.opt_server} user-keys[{fn_uk[1]}] "\\033\\061"  #  M-1
+        {self.tc.opt_server} user-keys[{fn_uk[2]}] "\\033\\062"  #  M-2
+        {self.tc.opt_server} user-keys[{fn_uk[3]}] "\\033\\063"  #  M-3
+        {self.tc.opt_server} user-keys[{fn_uk[4]}] "\\033\\064"  #  M-4
+        {self.tc.opt_server} user-keys[{fn_uk[5]}] "\\033\\065"  #  M-5
+        {self.tc.opt_server} user-keys[{fn_uk[6]}] "\\033\\066"  #  M-6
+        {self.tc.opt_server} user-keys[{fn_uk[7]}] "\\033\\067"  #  M-7
+        {self.tc.opt_server} user-keys[{fn_uk[8]}] "\\033\\070"  #  M-8
+        {self.tc.opt_server} user-keys[{fn_uk[9]}] "\\033\\071"  #  M-9
+        {self.tc.opt_server} user-keys[{fn_uk[10]}] "\\033\\060" #  M-0
         """
         )
-        for i, key in uk_func.items():
+        for i, key in fn_uk.items():
             w(f'bind -N "M-{i} -> F{i}"  -n  User{key}  send-keys F{i}')
 
     def ms_fn_keys(self) -> None:
-        uk_func = self.define_fn_user_keys()
         w = self.tc.write
+        fn_uk = self.fn_key_2_uk
         w(
             f"""
         #
         #  This will map M-S-number to F1 - F10
         #
-        {self.tc.opt_server} user-keys[{uk_func[1]}] "\\342\\201\\204"  #  M-S-1
-        {self.tc.opt_server} user-keys[{uk_func[3]}] "\\342\\200\\271"  #  M-S-3
-        {self.tc.opt_server} user-keys[{uk_func[4]}] "\\342\\200\\272"  #  M-S-4
-        {self.tc.opt_server} user-keys[{uk_func[5]}] "\\357\\254\\201"  #  M-S-5
-        {self.tc.opt_server} user-keys[{uk_func[6]}] "\\357\\254\\202"  #  M-S-6
-        {self.tc.opt_server} user-keys[{uk_func[7]}] "\\342\\200\\241"  #  M-S-7
-        {self.tc.opt_server} user-keys[{uk_func[8]}] "\\302\\260"       #  M-S-8
-        {self.tc.opt_server} user-keys[{uk_func[9]}] "\\302\\267"       #  M-S-9
-        {self.tc.opt_server} user-keys[{uk_func[10]}] "\\342\\200\\232"  #  M-S-0"""
+        {self.tc.opt_server} user-keys[{fn_uk[1]}] "\\342\\201\\204"  #  M-S-1
+        {self.tc.opt_server} user-keys[{fn_uk[3]}] "\\342\\200\\271"  #  M-S-3
+        {self.tc.opt_server} user-keys[{fn_uk[4]}] "\\342\\200\\272"  #  M-S-4
+        {self.tc.opt_server} user-keys[{fn_uk[5]}] "\\357\\254\\201"  #  M-S-5
+        {self.tc.opt_server} user-keys[{fn_uk[6]}] "\\357\\254\\202"  #  M-S-6
+        {self.tc.opt_server} user-keys[{fn_uk[7]}] "\\342\\200\\241"  #  M-S-7
+        {self.tc.opt_server} user-keys[{fn_uk[8]}] "\\302\\260"       #  M-S-8
+        {self.tc.opt_server} user-keys[{fn_uk[9]}] "\\302\\267"       #  M-S-9
+        {self.tc.opt_server} user-keys[{fn_uk[10]}] "\\342\\200\\232"  #  M-S-0"""
         )
         if self.euro_has_been_handled:
             w("# M-S-2 used for euro symbol")
         else:
-            w(f'{self.tc.opt_server} user-keys[{uk_func[2]}] "\\342\\202\\254"  #  M-S-2')
+            w(f'{self.tc.opt_server} user-keys[{fn_uk[2]}] "\\342\\202\\254"  #  M-S-2')
 
-        for i, key in uk_func.items():
+        for i, key in fn_uk.items():
             w(f'bind -N "M-S-{i} -> F{i}"  -n  User{key}  send-keys F{i}')
 
     # ======================================================
@@ -337,83 +432,17 @@ class IshConsole(LimitedKbdSpecialHandling):
     #
     # ======================================================
 
-    def define_fn_user_keys(self):
-        """Defines Userkey Function key mapping"""
-        return {
-            1: 401,
-            2: 402,
-            3: 403,
-            4: 404,
-            5: 405,
-            6: 406,
-            7: 407,
-            8: 408,
-            9: 409,
-            10: 410,
-        }
-
     def alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
         """If fn keys are not mapped to ms numbers, use them as regular M- chars"""
-        uk_ms_char = {
-            "M-A": 301,
-            "M-B": 302,
-            "M-C": 303,
-            "M-D": 304,
-            "M-E": 305,
-            "M-F": 306,
-            "M-G": 307,
-            "M-H": 308,  # -  used in  auc_split_entire_window()
-            "M-I": 309,  # -  used in  auc_split_entire_window()
-            "M-J": 310,  # -  used in  auc_split_entire_window()
-            "M-K": 311,  # -  used in  auc_split_entire_window()
-            "M-L": 312,  # -  used in  auc_split_entire_window()
-            "M-M": 313,
-            "M-N": 314,
-            "M-O": 315,
-            "M-P": 316,
-            "M-Q": 317,
-            "M-R": 318,
-            "M-S": 319,
-            "M-T": 320,
-            "M-U": 321,
-            "M-V": 322,
-            "M-W": 323,
-            "M-X": 324,
-            "M-Y": 325,
-            "M-Z": 326,
-            "M-_": 327,  # - used in  auc_meta_ses_handling
-            "M-+": 328,  # - used in  auc_meta_ses_handling()
-            "M-{": 329,
-            "M-}": 330,
-            "M-|": 331,
-            "M-:": 332,
-            'M-"': 333,
-            "M-<": 334,
-            "M->": 335,
-            "M-?": 336,
-        }
 
-        #  Collides with meta-shift F1 - F10 remapping
-        uk_ms_numb = {
-            "M-!": 350,
-            "M-@": 351,
-            "M-#": 352,
-            "M-$": 353,
-            "M-%": 354,
-            "M-^": 355,
-            "M-&": 356,
-            "M-*": 357,
-            "M-(": 358,
-            "M-)": 359,
-        }
-
+        k2uk = self.key_2_uk
         self.tc.muc_keys = {
-            mtc_utils.K_M_PLUS: f"User{uk_ms_char['M-+']}",
-            mtc_utils.K_M_PAR_OPEN: f"User{uk_ms_numb['M-(']}",
-            mtc_utils.K_M_PAR_CLOSE: f"User{uk_ms_numb['M-)']}",
-            mtc_utils.K_M_UNDERSCORE: f"User{uk_ms_char['M-_']}",
-            mtc_utils.K_M_P: f"User{uk_ms_char['M-P']}",
-            mtc_utils.K_M_X: f"User{uk_ms_char['M-X']}",
+            mtc_utils.K_M_PLUS: f"User{k2uk['M-+']}",
+            mtc_utils.K_M_PAR_OPEN: f"User{k2uk['M-(']}",
+            mtc_utils.K_M_PAR_CLOSE: f"User{k2uk['M-)']}",
+            mtc_utils.K_M_UNDERSCORE: f"User{k2uk['M-_']}",
+            mtc_utils.K_M_P: f"User{k2uk['M-P']}",
+            mtc_utils.K_M_X: f"User{k2uk['M-X']}",
         }
 
         w = self.tc.write
@@ -426,50 +455,50 @@ class IshConsole(LimitedKbdSpecialHandling):
         #  iSH console doesn't generate the right keys for alt-S characters
         #  Here they are interpreted by tmux
         #
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-A"]}]  "\\303\\205"  # M-A
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-B"]}]  "\\304\\261"  # M-B
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-C"]}]  "\\303\\207"  # M-C
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-D"]}]  "\\303\\216"  # M-D
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-E"]}]  "\\302\\264"  # M-E
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-F"]}]  "\\303\\217"  # M-F
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-G"]}]  "\\313\\235"  # M-G
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-H"]}]  "\\303\\223"  # M-H
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-I"]}]  "\\313\\206"  # M-I
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-J"]}]  "\\303\\224"  # M-J
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-K"]}]  "\\357\\243\\277"  # M-K
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-L"]}]  "\\303\\222"  # M-L
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-M"]}]  "\\303\\202"  # M-M
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-N"]}]  "\\313\\234"  # M-N
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-O"]}]  "\\303\\230"  # M-O
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-P"]}]  "\\342\\210\\217"  # M-P
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-Q"]}]  "\\305\\222"  # M-Q
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-R"]}]  "\\341\\200\\260"  # M-R
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-S"]}]  "\\303\\215"  # M-S
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-T"]}]  "\\313\\207"  # M-T
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-U"]}]  "\\302\\250"  # M-U
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-V"]}]  "\\342\\227\\212"  # M-V
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-W"]}]  "\\342\\200\\236"  # M-W
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-X"]}]  "\\313\\233"  # M-X
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-Y"]}]  "\\303\\201"  # M-Y
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-Z"]}]  "\\302\\270"  # M-Z
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-_"]}]  "\\342\\200\\224"  # M-_
+        {self.tc.opt_server} user-keys[{k2uk["M-A"]}]  "\\303\\205"  # M-A
+        {self.tc.opt_server} user-keys[{k2uk["M-B"]}]  "\\304\\261"  # M-B
+        {self.tc.opt_server} user-keys[{k2uk["M-C"]}]  "\\303\\207"  # M-C
+        {self.tc.opt_server} user-keys[{k2uk["M-D"]}]  "\\303\\216"  # M-D
+        {self.tc.opt_server} user-keys[{k2uk["M-E"]}]  "\\302\\264"  # M-E
+        {self.tc.opt_server} user-keys[{k2uk["M-F"]}]  "\\303\\217"  # M-F
+        {self.tc.opt_server} user-keys[{k2uk["M-G"]}]  "\\313\\235"  # M-G
+        {self.tc.opt_server} user-keys[{k2uk["M-H"]}]  "\\303\\223"  # M-H
+        {self.tc.opt_server} user-keys[{k2uk["M-I"]}]  "\\313\\206"  # M-I
+        {self.tc.opt_server} user-keys[{k2uk["M-J"]}]  "\\303\\224"  # M-J
+        {self.tc.opt_server} user-keys[{k2uk["M-K"]}]  "\\357\\243\\277"  # M-K
+        {self.tc.opt_server} user-keys[{k2uk["M-L"]}]  "\\303\\222"  # M-L
+        {self.tc.opt_server} user-keys[{k2uk["M-M"]}]  "\\303\\202"  # M-M
+        {self.tc.opt_server} user-keys[{k2uk["M-N"]}]  "\\313\\234"  # M-N
+        {self.tc.opt_server} user-keys[{k2uk["M-O"]}]  "\\303\\230"  # M-O
+        {self.tc.opt_server} user-keys[{k2uk["M-P"]}]  "\\342\\210\\217"  # M-P
+        {self.tc.opt_server} user-keys[{k2uk["M-Q"]}]  "\\305\\222"  # M-Q
+        {self.tc.opt_server} user-keys[{k2uk["M-R"]}]  "\\341\\200\\260"  # M-R
+        {self.tc.opt_server} user-keys[{k2uk["M-S"]}]  "\\303\\215"  # M-S
+        {self.tc.opt_server} user-keys[{k2uk["M-T"]}]  "\\313\\207"  # M-T
+        {self.tc.opt_server} user-keys[{k2uk["M-U"]}]  "\\302\\250"  # M-U
+        {self.tc.opt_server} user-keys[{k2uk["M-V"]}]  "\\342\\227\\212"  # M-V
+        {self.tc.opt_server} user-keys[{k2uk["M-W"]}]  "\\342\\200\\236"  # M-W
+        {self.tc.opt_server} user-keys[{k2uk["M-X"]}]  "\\313\\233"  # M-X
+        {self.tc.opt_server} user-keys[{k2uk["M-Y"]}]  "\\303\\201"  # M-Y
+        {self.tc.opt_server} user-keys[{k2uk["M-Z"]}]  "\\302\\270"  # M-Z
+        {self.tc.opt_server} user-keys[{k2uk["M-_"]}]  "\\342\\200\\224"  # M-_
 
 
         # On some keybs with a § there is a glitch in that
         # both S-§ and M-+ generate ±. Since M-+ is used, and S-§ not,
         # just ignore that S-§ also triggers this feature
         #  self.tc.opt_server  user-keys[61] "\\302\\261"       # M-+
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-+"]}]  "\\302\\261"  # M-+
+        {self.tc.opt_server} user-keys[{k2uk["M-+"]}]  "\\302\\261"  # M-+
 
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-{"]}]  "\\342\\200\\235"  # M-{{
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-}"]}]  "\\342\\200\\231"  # M-}}
+        {self.tc.opt_server} user-keys[{k2uk["M-{"]}]  "\\342\\200\\235"  # M-{{
+        {self.tc.opt_server} user-keys[{k2uk["M-}"]}]  "\\342\\200\\231"  # M-}}
 
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-|"]}]  "\\302\\273"  # M-|
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-:"]}]  "\\303\\232"  # M-:
-        {self.tc.opt_server} user-keys[{uk_ms_char['M-"']}]  "\\303\\206"  # M-"
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-<"]}]  "\\302\\257"  # M-<
-        {self.tc.opt_server} user-keys[{uk_ms_char["M->"]}]  "\\313\\230"  # M->
-        {self.tc.opt_server} user-keys[{uk_ms_char["M-?"]}]  "\\302\\277"  # M-?
+        {self.tc.opt_server} user-keys[{k2uk["M-|"]}]  "\\302\\273"  # M-|
+        {self.tc.opt_server} user-keys[{k2uk["M-:"]}]  "\\303\\232"  # M-:
+        {self.tc.opt_server} user-keys[{k2uk['M-"']}]  "\\303\\206"  # M-"
+        {self.tc.opt_server} user-keys[{k2uk["M-<"]}]  "\\302\\257"  # M-<
+        {self.tc.opt_server} user-keys[{k2uk["M->"]}]  "\\313\\230"  # M->
+        {self.tc.opt_server} user-keys[{k2uk["M-?"]}]  "\\302\\277"  # M-?
         """
         )
 
@@ -480,8 +509,8 @@ class IshConsole(LimitedKbdSpecialHandling):
             print()
 
         muc_values = set(self.tc.muc_keys.values())
-        # for key, sequence in uk_ms_char.items():
-        for key_name, user_key in uk_ms_char.items():
+        # for key, sequence in k2uk.items():
+        for key_name, user_key in k2uk.items():
             if f"User{user_key}" in muc_values:
                 w(f"#  {key_name}  User{user_key} - used by: self.tc.muc_keys")
                 continue
@@ -497,15 +526,15 @@ class IshConsole(LimitedKbdSpecialHandling):
             w(
                 f"""
             # Meta Shift numbers
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-!"]}]  "\\342\\201\\204"  # M-!
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-#"]}]  "\\342\\200\\271"  # M-#
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-$"]}]  "\\342\\200\\272"  # M-$
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-%"]}]  "\\357\\254\\201"  # M-%
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-^"]}]  "\\357\\254\\202"  # M-^
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-&"]}]  "\\342\\200\\241"  # M-&
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-*"]}]  "\\302\\260"      # M-*
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-("]}]  "\\302\\267"      # M-(
-            {self.tc.opt_server} user-keys[{uk_ms_numb["M-)"]}]  "\\342\\200\\232"  # M-)
+            {self.tc.opt_server} user-keys[{k2uk["M-!"]}]  "\\342\\201\\204"  # M-!
+            {self.tc.opt_server} user-keys[{k2uk["M-#"]}]  "\\342\\200\\271"  # M-#
+            {self.tc.opt_server} user-keys[{k2uk["M-$"]}]  "\\342\\200\\272"  # M-$
+            {self.tc.opt_server} user-keys[{k2uk["M-%"]}]  "\\357\\254\\201"  # M-%
+            {self.tc.opt_server} user-keys[{k2uk["M-^"]}]  "\\357\\254\\202"  # M-^
+            {self.tc.opt_server} user-keys[{k2uk["M-&"]}]  "\\342\\200\\241"  # M-&
+            {self.tc.opt_server} user-keys[{k2uk["M-*"]}]  "\\302\\260"      # M-*
+            {self.tc.opt_server} user-keys[{k2uk["M-("]}]  "\\302\\267"      # M-(
+            {self.tc.opt_server} user-keys[{k2uk["M-)"]}]  "\\342\\200\\232"  # M-)
             """
             )
 
@@ -514,11 +543,11 @@ class IshConsole(LimitedKbdSpecialHandling):
             #     w("# M-@ used for euro symbol")
             # else:
             #     w(
-            #         f"{self.tc.opt_server} user-keys[{uk_ms_numb['M-@']}]"
+            #         f"{self.tc.opt_server} user-keys[{k2uk['M-@']}]"
             #         '  "\\342\\202\\254"  # M-@'
             #     )
 
-            for key_name, user_key in uk_ms_numb.items():
+            for key_name, user_key in k2uk.items():
                 if f"User{user_key}" in muc_values:
                     w(f"#  {key_name}  User{user_key} - used by: self.tc.muc_keys")
                     continue  # - used in  auc_meta_ses_handling()
