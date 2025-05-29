@@ -415,7 +415,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         )
         for fn, key, sequence in fn_keys:
             w(f"{self.tc.opt_server}   user-keys[{k2uk[fn]}]  {sequence}  #  {key}")
-            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  '{fn}'")
+            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys      {fn}")
         w()  # spacer line
 
     def ms_fn_keys(self) -> None:
@@ -439,7 +439,7 @@ class IshConsole(LimitedKbdSpecialHandling):
                 w("# M-S-2 used for euro symbol")
                 continue
             w(f"{self.tc.opt_server}   user-keys[{k2uk[fn]}]  {sequence}  #  {key}")
-            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  '{fn}'")
+            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys      {fn}")
         w()  # spacer line
 
     # ======================================================
