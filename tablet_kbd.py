@@ -558,9 +558,9 @@ class IshConsole(LimitedKbdSpecialHandling):
                     w(f"#  {key_name}  User{user_key} - used for: Euro")
                     continue  # was used for euro symbol
                 w(
-                    f'bind -N "Enables {key_name}" -n  '
-                    f"""User{user_key}"""
-                    f'  send-keys "{key_name}"'
+                    f'bind -N "Enables '
+                    f"""{key_name}"""  # special handling
+                    f'" -n  "User{user_key}  " send-keys "{key_name}"'
                 )
         w()
 
