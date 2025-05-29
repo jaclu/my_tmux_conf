@@ -496,10 +496,10 @@ class IshConsole(LimitedKbdSpecialHandling):
                 # Display muc keys
                 w(f"#                     User{k2uk[key]}                   {key}  muc_key")
                 continue
-            if key == "M-N":
+            if key == "M-N" and not self.tc.vers_ok(3.1):
                 #    Special case to avoid cutof at second -N
                 #    on tmux < 3.1
-                w(f'bind -N "Enables M N" -n  User{k2uk[key]}   send-keys    "{key}"')
+                w(f'bind -N "Send meta N" -n  User{k2uk[key]}   send-keys    M-N')
             elif key == 'M-"':
                 w(f"""bind -N 'Send {key}' -n User{k2uk[key]}     send-keys     '{key}' """)
             elif key in ("M-{", "M-}"):
