@@ -500,8 +500,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         """
         )
         for key, sequence in auk.items():
-            w(f"set -s user-keys[{k2uk[key]}] '{sequence}'")
-        for key in auk.keys():
+            w(f"set            -s user-keys[{k2uk[key]}] '{sequence}'")
             w(f"bind -N 'Send {key}' -n User{k2uk[key]}  send-keys '{key}'")
 
         # TO DO: reinsert this after M-:
