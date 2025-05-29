@@ -129,7 +129,7 @@ class LimitedKbdSpecialHandling:
         "F10": 410,
     }
     fn_key_2_uk = {
-        #
+        # Pick up the userkey indexes
         1: key_2_uk["F1"],
         2: key_2_uk["F2"],
         3: key_2_uk["F3"],
@@ -330,6 +330,51 @@ class IshConsole(LimitedKbdSpecialHandling):
     This redefines the rather limited keyboard in order to make it more useful.
     """
 
+    def __init__(self, tmux_conf_instance):
+        super().__init__(tmux_conf_instance)
+        self.auk = {
+            "M-A": "\\303\\205",
+            "M-B": "\\304\\261",
+            "M-C": "\\303\\207",
+            "M-D": "\\303\\216",
+            "M-E": "\\302\\264",
+            "M-F": "\\303\\217",
+            "M-G": "\\313\\235",
+            "M-H": "\\303\\223",
+            "M-I": "\\313\\206",
+            "M-J": "\\303\\224",
+            "M-K": "\\357\\243\\277",
+            "M-L": "\\303\\222",
+            "M-M": "\\303\\202",
+            "M-N": "\\313\\234",
+            "M-O": "\\303\\230",
+            "M-P": "\\342\\210\\217",
+            "M-Q": "\\305\\222",
+            "M-R": "\\341\\200\\260",
+            "M-S": "\\303\\215",
+            "M-T": "\\313\\207",
+            "M-U": "\\302\\250",
+            "M-V": "\\342\\227\\212",
+            "M-W": "\\342\\200\\236",
+            "M-X": "\\313\\233",
+            "M-Y": "\\303\\201",
+            "M-Z": "\\302\\270",
+            "M-_": "\\342\\200\\224",
+            # On some keybs with a § there is a glitch in that
+            # both S-§ and M-+ generate ±. Since M-+ is used, and S-§ not,
+            # just ignore that S-§ also triggers this feature
+            #  self.tc.opt_server  user-keys[61] "\\302\\261"       # M-+
+            "M-+": "\\302\\261",
+            "M-{": "\\342\\200\\235",
+            "M-}": "\\342\\200\\231",
+            "M-|": "\\302\\273",
+            "M-:": "\\303\\232",
+            'M-"': "\\303\\206",
+            "M-<": "\\302\\257",
+            "M->": "\\313\\230",
+            "M-?": "\\302\\277",
+        }
+
     def config_console_keyb(self):
         if not super().config_console_keyb():
             return False
@@ -359,6 +404,7 @@ class IshConsole(LimitedKbdSpecialHandling):
             ms_fn_keys_mapped = True
             self.ms_fn_keys()
 
+        self.define_muc_keys()
         self.alt_upper_case(ms_fn_keys_mapped)
 
         # use <prefix> arrows as PageUp/Dn Home/End
@@ -432,76 +478,37 @@ class IshConsole(LimitedKbdSpecialHandling):
     #
     # ======================================================
 
+    def define_muc_keys(self):
+        self.tc.muc_keys = {
+            mtc_utils.K_M_PLUS: f"User{self.key_2_uk['M-+']}",
+            mtc_utils.K_M_PAR_OPEN: f"User{self.key_2_uk['M-(']}",
+            mtc_utils.K_M_PAR_CLOSE: f"User{self.key_2_uk['M-)']}",
+            mtc_utils.K_M_UNDERSCORE: f"User{self.key_2_uk['M-_']}",
+            mtc_utils.K_M_P: f"User{self.key_2_uk['M-P']}",
+            mtc_utils.K_M_X: f"User{self.key_2_uk['M-X']}",
+        }
+
+    def alt_upper_case_mapping(self, ms_fn_keys_mapped):
+        if not ms_fn_keys_mapped:
+            # use meta shift numbers as normal m- chars
+            # Meta Shift numbers
+            self.auk["M-!"] = "\\342\\201\\204"
+            self.auk["M-#"] = "\\342\\200\\271"
+            self.auk["M-$"] = "\\342\\200\\272"
+            self.auk["M-%"] = "\\357\\254\\201"
+            self.auk["M-^"] = "\\357\\254\\202"
+            self.auk["M-&"] = "\\342\\200\\241"
+            self.auk["M-*"] = "\\302\\260"
+            self.auk["M-("] = "\\302\\267"
+            self.auk["M-)"] = "\\342\\200\\232"
+
     def alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
         """If fn keys are not mapped to ms numbers, use them as regular M- chars"""
 
         k2uk = self.key_2_uk
         w = self.tc.write
 
-        self.tc.muc_keys = {
-            mtc_utils.K_M_PLUS: f"User{k2uk['M-+']}",
-            mtc_utils.K_M_PAR_OPEN: f"User{k2uk['M-(']}",
-            mtc_utils.K_M_PAR_CLOSE: f"User{k2uk['M-)']}",
-            mtc_utils.K_M_UNDERSCORE: f"User{k2uk['M-_']}",
-            mtc_utils.K_M_P: f"User{k2uk['M-P']}",
-            mtc_utils.K_M_X: f"User{k2uk['M-X']}",
-        }
-
-        auk = {}
-        auk["M-A"] = "\\303\\205"
-        auk["M-B"] = "\\304\\261"
-        auk["M-C"] = "\\303\\207"
-        auk["M-D"] = "\\303\\216"
-        auk["M-E"] = "\\302\\264"
-        auk["M-F"] = "\\303\\217"
-        auk["M-G"] = "\\313\\235"
-        auk["M-H"] = "\\303\\223"
-        auk["M-I"] = "\\313\\206"
-        auk["M-J"] = "\\303\\224"
-        auk["M-K"] = "\\357\\243\\277"
-        auk["M-L"] = "\\303\\222"
-        auk["M-M"] = "\\303\\202"
-        auk["M-N"] = "\\313\\234"
-        auk["M-O"] = "\\303\\230"
-        auk["M-P"] = "\\342\\210\\217"
-        auk["M-Q"] = "\\305\\222"
-        auk["M-R"] = "\\341\\200\\260"
-        auk["M-S"] = "\\303\\215"
-        auk["M-T"] = "\\313\\207"
-        auk["M-U"] = "\\302\\250"
-        auk["M-V"] = "\\342\\227\\212"
-        auk["M-W"] = "\\342\\200\\236"
-        auk["M-X"] = "\\313\\233"
-        auk["M-Y"] = "\\303\\201"
-        auk["M-Z"] = "\\302\\270"
-        auk["M-_"] = "\\342\\200\\224"
-        auk["M-{"] = "\\342\\200\\235"
-        auk["M-}"] = "\\342\\200\\231"
-        auk["M-|"] = "\\302\\273"
-        auk["M-:"] = "\\303\\232"
-        auk['M-"'] = "\\303\\206"
-        auk["M-<"] = "\\302\\257"
-        auk["M->"] = "\\313\\230"
-        auk["M-?"] = "\\302\\277"
-
-        # On some keybs with a § there is a glitch in that
-        # both S-§ and M-+ generate ±. Since M-+ is used, and S-§ not,
-        # just ignore that S-§ also triggers this feature
-        #  self.tc.opt_server  user-keys[61] "\\302\\261"       # M-+
-        auk["M-+"] = "\\302\\261"
-
-        if not ms_fn_keys_mapped:
-            # use meta shift numbers as normal m- chars
-            # Meta Shift numbers
-            auk["M-!"] = "\\342\\201\\204"
-            auk["M-#"] = "\\342\\200\\271"
-            auk["M-$"] = "\\342\\200\\272"
-            auk["M-%"] = "\\357\\254\\201"
-            auk["M-^"] = "\\357\\254\\202"
-            auk["M-&"] = "\\342\\200\\241"
-            auk["M-*"] = "\\302\\260"
-            auk["M-("] = "\\302\\267"
-            auk["M-)"] = "\\342\\200\\232"
+        self.alt_upper_case_mapping(ms_fn_keys_mapped)
 
         # argh inside f-strings {/} needs to be contained in variables...
         # curly_open = "{"
@@ -515,12 +522,13 @@ class IshConsole(LimitedKbdSpecialHandling):
         """
         )
         muc_values = set(self.tc.muc_keys.values())
-        for key, sequence in auk.items():
+        for key, sequence in self.auk.items():
+            # w(f"set          -s user-keys[{k2uk[key]}] '{sequence}'")
+            w(f"{self.tc.opt_server} user-keys[{k2uk[key]}] '{sequence}'")
             if f"User{k2uk[key]}" in muc_values:
                 # Display muc keys
                 w(f"# used as muc_key     User{k2uk[key]}             {key} ")
                 continue
-            w(f"set          -s user-keys[{k2uk[key]}] '{sequence}'")
             if key == "M-N":
                 #    Special case to avoid cutof at second -N
                 #    on tmux < 3.1
@@ -534,50 +542,6 @@ class IshConsole(LimitedKbdSpecialHandling):
             for k, u in self.tc.muc_keys.items():
                 print(f" userkey: {u}   key: {k}")
             print()
-
-        if not ms_fn_keys_mapped:
-            # use meta shift numbers as normal m- chars
-            w(
-                f"""
-            # Meta Shift numbers
-            {self.tc.opt_server} user-keys[{k2uk["M-!"]}]  "\\342\\201\\204"  # M-!
-            {self.tc.opt_server} user-keys[{k2uk["M-#"]}]  "\\342\\200\\271"  # M-#
-            {self.tc.opt_server} user-keys[{k2uk["M-$"]}]  "\\342\\200\\272"  # M-$
-            {self.tc.opt_server} user-keys[{k2uk["M-%"]}]  "\\357\\254\\201"  # M-%
-            {self.tc.opt_server} user-keys[{k2uk["M-^"]}]  "\\357\\254\\202"  # M-^
-            {self.tc.opt_server} user-keys[{k2uk["M-&"]}]  "\\342\\200\\241"  # M-&
-            {self.tc.opt_server} user-keys[{k2uk["M-*"]}]  "\\302\\260"      # M-*
-            {self.tc.opt_server} user-keys[{k2uk["M-("]}]  "\\302\\267"      # M-(
-            {self.tc.opt_server} user-keys[{k2uk["M-)"]}]  "\\342\\200\\232"  # M-)
-            """
-            )
-
-            # when euro is used this seems unneeded, check with it disabled...
-            # if self.euro_has_been_handled:
-            #     w("# M-@ used for euro symbol")
-            # else:
-            #     w(
-            #         f"{self.tc.opt_server} user-keys[{k2uk['M-@']}]"
-            #         '  "\\342\\202\\254"  # M-@'
-            #     )
-
-            for key_name, user_key in k2uk.items():
-                if f"User{user_key}" in muc_values:
-                    w(f"#  {key_name}  User{user_key} - used by: self.tc.muc_keys")
-                    continue  # - used in  auc_meta_ses_handling()
-                if key_name == "M-@" and self.euro_has_been_handled:
-                    w(f"#  {key_name}  User{user_key} - used for: Euro")
-                    continue  # was used for euro symbol
-                w(f"bind -N 'Enables {key_name}' -n  User{user_key}  send '{key_name}'")
-        w()
-
-        #
-        #  AAARRGH
-        #  User-keys aren't parsed by tmux if they are bound to
-        #  send-keys. If the resulting key has an action,
-        #  we need to override and bind the user-key to this action.
-        #  this is handled by the auc_ methods
-        #
 
 
 def special_consoles_config(tmux_conf_instance):
