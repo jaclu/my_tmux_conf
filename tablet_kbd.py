@@ -557,6 +557,9 @@ class IshConsole(LimitedKbdSpecialHandling):
                 if key_name == "M-@" and self.euro_has_been_handled:
                     w(f"#  {key_name}  User{user_key} - used for: Euro")
                     continue  # was used for euro symbol
+                w(f"# single quote {key_name}")
+                w(f"# single quote {key_name}")
+                w(f"""# tripplets    {key_name}""")
                 w(f'bind -N "Enables {key_name}" -n  User{user_key}  send "{key_name}"')
         w()
 
