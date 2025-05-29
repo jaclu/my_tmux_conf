@@ -504,7 +504,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         for key, sequence in auk.items():
             if f"User{k2uk[key]}" in muc_values:
                 # w(f"# used in: self.tc.muc_keys   User{k2uk[key]} {key} ")
-                w(f"# used in:              User{k2uk[key]}             {key} ")
+                w(f"# used in:            User{k2uk[key]}             {key} ")
                 continue
 
             w(f"set          -s user-keys[{k2uk[key]}] '{sequence}'")
