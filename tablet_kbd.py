@@ -35,7 +35,7 @@ import mtc_utils
 #  otherwise just the deviced product name.
 #  They are defined in the env based on hostname in ~/.common_rc
 #
-KBD_LOGITECH_COMBO_TOUCH = "Logitech Combo Touch" # JacPad
+KBD_LOGITECH_COMBO_TOUCH = "Logitech Combo Touch"  # JacPad
 KBD_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
 KBD_YOOZON3 = "Yoozon 3"  # same as brydge
 KBD_OMNITYPE = "Omnitype Keyboard"
