@@ -10,7 +10,6 @@
 #  In such cases a warning is displayed and a pause of 5 seconds is done,
 #  after which attach is attempted without replacing the tmux conf.
 #
-#
 #  This needs the python module tmux_conf, and by default it will create
 #  its own venv installing this if not found, or of an incompatible version.
 #
