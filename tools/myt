@@ -16,7 +16,6 @@
 #  If you don't need to use a venv for the python that compiles your tmux conf,
 #  do: touch $HOME/.myt_skip_venv
 #
-#
 
 #---------------------------------------------------------------
 #
