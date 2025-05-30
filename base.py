@@ -857,7 +857,10 @@ class BaseConfig(TmuxConfig):
                 bind -N 'Split window left'   M-h  split-window  -fhb  {cp}
                 bind -N 'Split window down'   M-j  split-window  -fv   {cp}
                 bind -N 'Split window up'     M-k  split-window  -fvb  {cp}
-                bind -N 'Split window right'  M-l  split-window  -fh   {cp}
+
+                # Temp disabled until i get this out of my muscle memory
+                # for clearing screen and history
+                # bind -N 'Split window right'  M-l  split-window  -fh   {cp}
                 """
             )
 
