@@ -259,7 +259,7 @@ class DefaultPlugins(BaseConfig):
     def plugin_jump(self) -> list:  # 2.4
         """Jump to word(-s) on the screen that you want to copy,
         without having to use the mouse.
-        Default trigger: <prefix> j
+        Default trigger: <prefix> u
         """
         if not self.use_plugin_jump or mtc_utils.IS_ISH or mtc_utils.IS_TERMUX:
             # it seems Termux fails to handle ttys
@@ -283,6 +283,7 @@ class DefaultPlugins(BaseConfig):
 
     def plugin_menus(self) -> list:  # 1.5
         #  Tested down to vers 1.5
+        #  Default trigger: <prefix> Space
         if self.use_plugin_menus:
             min_vers = 1.5
         else:
@@ -344,7 +345,9 @@ class DefaultPlugins(BaseConfig):
         ]
 
     def plugin_power_zoom(self) -> list:  # 2.0
-        """Zooms to separate Window, to allow for adding support panes"""
+        """Zooms to separate Window, to allow for adding support panes
+        Default trigger: <prefix> Z
+        """
         if not self.use_plugin_power_zoom or self.is_tmate():
             vers_min = -1.0  # Dont use
         else:
@@ -431,7 +434,9 @@ class DefaultPlugins(BaseConfig):
     def plugin_suspend(self) -> list:  # 2.4
         """Suspend tmux from receiving any keyboard commands
         This plugin inserts its display on status-right, so no need to
-        manually add a placeholder"""
+        manually add a placeholder
+        Default Trigger: -n M-Z
+        """
         if self.use_plugin_suspend:
             min_vers = 2.4
         else:
@@ -701,7 +706,9 @@ class DefaultPlugins(BaseConfig):
         return ["alexwforsythe/tmux-which-key", min_vers, ""]
 
     def plugin_yank(self) -> list:  # 1.8
-        """copies text from the command line to the clipboard."""
+        """copies text from the command line to the clipboard.
+        Default rigger: <prefix> y
+        """
         if self.use_plugin_yank:
             min_vers = 1.8
         else:
