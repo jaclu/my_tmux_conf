@@ -44,9 +44,18 @@ update_if_changed() {
     fi
     if ! diff -q "$CURRENT_DIR"/tools/"$item" "$dest/$item" >/dev/null 2>&1; then
         cp -av "$CURRENT_DIR"/tools/"$item" "$dest/$item"
+        files_changed=true
     fi
 }
+
+files_changed=false
 
 update_if_changed myt
 update_if_changed rt
 update_if_changed osc_52_send
+
+if [ "$files_changed" = true ]; then
+    exit 2 # indicating file change
+else
+    exit 0 # no changes
+fi
