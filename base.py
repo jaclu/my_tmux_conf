@@ -1352,7 +1352,7 @@ class BaseConfig(TmuxConfig):
         else:
             w(f"{self.opt_ses} display-time 4000")
         if self.vers_ok(1.0):
-            w(f"{self.opt_ses} status-justify left")
+            w(f"{self.opt_ses} status-justify centre")
         if self.vers_ok(1.0) and self.monitor_activity:
             w(f"{self.opt_ses} visual-activity off")
 

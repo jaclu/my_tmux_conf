@@ -36,7 +36,7 @@ class SB(DefaultPlugins):
 
         if self.vers_ok("1.9"):
             w(f"set-option -g status-style fg={fg_clr},bg={bg_clr}")
-            w("set-option -g status-justify centre")
+            # w("set-option -g status-justify centre")
         else:
             w(
                 f"""
