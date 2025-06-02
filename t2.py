@@ -67,7 +67,7 @@ class T2(SB):  # type: ignore
         # set -g @menus_simple_style_selected default
         # set -g @menus_simple_style default
 
-        # set -g @menus_format_title "'#[align=right]  #{@menu_name} '"
+        set -g @menus_format_title "'#[fg=yellow,align=left] #{@menu_name} '"
         set -g @menus_simple_style_border "fg=green,bg=default"
         set -g @menus_nav_next "#[fg=colour220]-->"
         set -g @menus_nav_prev "#[fg=colour71]<--"
