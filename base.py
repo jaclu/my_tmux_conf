@@ -1134,10 +1134,10 @@ class BaseConfig(TmuxConfig):
         # indicate the right alternate keys
         if self.vers_ok(1.0):
             w(
-                f"""bind -N "Select pane left - P+h P+Left"   -n  M-Left   {pane_left}
-                bind -N "Select pane down - P+j P+Down"   -n  M-Down   {pane_down}
-                bind -N "Select pane up - P+k P+Up"       -n  M-Up     {pane_up}
-                bind -N "Select pane right - P+l P+Right" -n  M-Right  {pane_right}
+                f"""bind -N "Select pane left - P+Left"   -n  M-Left   {pane_left}
+                bind -N "Select pane down - P+Down"   -n  M-Down   {pane_down}
+                bind -N "Select pane up - P+Up"       -n  M-Up     {pane_up}
+                bind -N "Select pane right - P+Right" -n  M-Right  {pane_right}
                 """
             )
             if self.use_prefix_arrow_nav_keys:
@@ -1153,18 +1153,18 @@ class BaseConfig(TmuxConfig):
                 w(
                     f"""# No repeats here, since I so often use arrows directly
                     # after moving to another pane
-                    bind -N "Select pane left - P+h M-Left"    Left   {pane_left}
-                    bind -N "Select pane down - P+j M-Down"    Down   {pane_down}
-                    bind -N "Select pane up - P+k M-Up"        Up     {pane_up}
-                    bind -N "Select pane right - P+l M-Right"  Right  {pane_right}
+                    bind -N "Select pane left - M-Left"    Left   {pane_left}
+                    bind -N "Select pane down - M-Down"    Down   {pane_down}
+                    bind -N "Select pane up - M-Up"        Up     {pane_up}
+                    bind -N "Select pane right - M-Right"  Right  {pane_right}
                     """
                 )
                 if mtc_utils.IS_GHOSTTY:
                     w(
                         f"""# Ghostty has pretty good keyboard defs out of the box,
                         # but doesn't generate correct sequences for M Left/Right ...
-                        bind -N "Select pane left - P+h P+Left"   -n  M-b  {pane_left}
-                        bind -N "Select pane right - P+l P+Right" -n  M-f  {pane_right}
+                        bind -N "Select pane left - P+Left"   -n  M-b  {pane_left}
+                        bind -N "Select pane right - P+Right" -n  M-f  {pane_right}
                         """
                     )
 
