@@ -1054,9 +1054,9 @@ class BaseConfig(TmuxConfig):
                 "if-shell '[ #{window_zoomed_flag} -eq 1 ] || [ #{window_panes} -eq 1 ]' "
             )
 
-            pbs_cmd = f"'{self.opt_ses} pane-border-status "
+            pbs_cmd = f"'{self.opt_win_loc} pane-border-status "
             hook_action = f" {hook_condition} {pbs_cmd} off' {pbs_cmd} top'"
-            disable_borders = f"{self.opt_ses} pane-border-status off"
+            disable_borders = f"{self.opt_win_loc} pane-border-status off"
 
             if self.vers_ok(2.5):
                 #  Display pane border lines when more than one pane is present
@@ -1120,12 +1120,7 @@ class BaseConfig(TmuxConfig):
                 )
             elif self.vers_ok(2.3) and not self.is_tmate():
                 w()  # spacer
-                w(
-                    f"""
-                    {self.opt_pane} pane-border-status top
-                    bind  P  display 'Pane title setting needs 2.6'
-                    """
-                )
+                w("bind  P  display 'Pane title setting needs 2.6'")
 
     # def _lg(self, line):
     #     # debug util, displays triggered hooks to a logfile
