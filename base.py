@@ -1053,9 +1053,10 @@ class BaseConfig(TmuxConfig):
             hook_condition = (
                 "if-shell '[ #{window_zoomed_flag} -eq 1 ] || [ #{window_panes} -eq 1 ]' "
             )
-            pbs_cmd = f"'{self.opt_win_loc} pane-border-status "
+
+            pbs_cmd = f"'{self.opt_ses} pane-border-status "
             hook_action = f" {hook_condition} {pbs_cmd} off' {pbs_cmd} top'"
-            disable_borders = f"{self.opt_win_loc} pane-border-status off"
+            disable_borders = f"{self.opt_ses} pane-border-status off"
 
             if self.vers_ok(2.5):
                 #  Display pane border lines when more than one pane is present
@@ -1093,6 +1094,26 @@ class BaseConfig(TmuxConfig):
         if self.show_pane_title:
             if self.vers_ok(2.6):
                 w()  # spacer
+
+                if self.vers_ok(2.7):
+                    # In 2.6 select pane can't be assigned via '#D', would need to do:
+                    #   $TMUX_BIN select-pane -T $($TMUX_BIN display -p '#{pane_id}')
+                    # not worth the effort for such a corner case
+
+                    #
+                    #  Set initial pane title to pane_id (#D)
+                    #
+                    w(
+                        """
+                    # For first pane in first window
+                    set-hook -g after-new-session "select-pane -T '#D'"
+                    # For first pane in new window
+                    set-hook -g after-new-window "select-pane -T '#D'"
+                    # For additional panes in same window
+                    set-hook -g after-split-window "select-pane -T '#D'"
+                    """
+                    )
+
                 w(
                     'bind -N "Set pane title"  P  command-prompt -I "#T" -p '
                     '"Pane title: " "select-pane -T \\"%%\\""'
