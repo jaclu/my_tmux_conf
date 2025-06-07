@@ -46,6 +46,7 @@
 
 import os
 import re
+import shutil
 import sys
 
 import __main__
@@ -477,6 +478,20 @@ class BaseConfig(TmuxConfig):
         #
         if not self.vers_ok(2.4):
             w(f"{self.opt_win} xterm-keys on")
+
+        if shutil.which("yazi"):
+            w(
+                """
+            #
+            # From: https://yazi-rs.github.io/docs/image-preview/#tmux
+            # To enable Yazi's image preview to work correctly in tmux,
+            # add the following 3 options
+            #
+            set -g allow-passthrough on
+            set -ga update-environment TERM
+            set -ga update-environment TERM_PROGRAM
+            """
+            )
 
         #
         #  Support for CSI u  extended keys
