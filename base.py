@@ -487,11 +487,12 @@ class BaseConfig(TmuxConfig):
             # To enable Yazi's image preview to work correctly in tmux,
             # add the following 3 options
             #
-            set -g allow-passthrough on
             set -ga update-environment TERM
-            set -ga update-environment TERM_PROGRAM
-            """
+            set -ga update-environment TERM_PROGRAM"""
             )
+            if self.vers_ok(3.3):
+                w("set -g allow-passthrough on")
+            w()  # spacer line
 
         #
         #  Support for CSI u  extended keys
