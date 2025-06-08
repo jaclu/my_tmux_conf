@@ -449,18 +449,18 @@ class BaseConfig(TmuxConfig):
             else:
                 w(f"{self.opt_server} default-terminal tmux-256color")
 
-        #
-        #  Making OSC 52 work on mosh connections.
-        #  For this to work the term name used must match, hence * :)
-        #  from: https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
-        #
-        if self.vers_ok(1.0) and not os.getenv("TMUX_NO_CLIPBOARD"):
-            w(
-                f"""
-            # Ms modifies OSC52 clipboard handling to work with mosh
-            {self.opt_server} -a terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
-            """
-            )
+            #
+            #  Making OSC 52 work on mosh connections.
+            #  For this to work the term name used must match, hence * :)
+            #  from: https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
+            #
+            if not os.getenv("TMUX_NO_CLIPBOARD"):
+                w(
+                    f"""
+                # Ms modifies OSC52 clipboard handling to work with mosh
+                {self.opt_server} -a terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
+                    """
+                )
 
         if self.vers_ok(1.9):
             #  Enable focus events for terminals that support them to be passed
@@ -479,6 +479,8 @@ class BaseConfig(TmuxConfig):
         if not self.vers_ok(2.4):
             w(f"{self.opt_win} xterm-keys on")
 
+        self.true_color()
+
         if shutil.which("yazi"):
             w(
                 """
@@ -494,6 +496,8 @@ class BaseConfig(TmuxConfig):
                 w("set -g allow-passthrough on")
             w()  # spacer line
 
+    def true_color(self):
+        w = self.write
         #
         #  Support for CSI u  extended keys
         #
