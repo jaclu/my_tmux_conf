@@ -494,7 +494,7 @@ class BaseConfig(TmuxConfig):
             )
             if self.vers_ok(3.3):
                 w("set -g allow-passthrough on")
-            w()  # spacer line
+        w()  # spacer between sections
 
     def true_color(self):
         w = self.write
@@ -521,7 +521,6 @@ class BaseConfig(TmuxConfig):
                     #  RGB not supported until 2.7
                     self.color_tag_24bit = "Tc"
                 w(f"{self.opt_server} -a terminal-overrides ',*:{self.color_tag_24bit}'")
-        w()  # spacer between sections
 
     # pylint: disable=too-many-branches,too-many-statements
     def general_environment(self):
