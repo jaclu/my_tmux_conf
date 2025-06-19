@@ -208,6 +208,7 @@ class LimitedKbdSpecialHandling:
         # `     033 060 (C-M Esc)
         self.alternate_key_escape("\\302\\247")
         self.alternate_key_tilde("\\302\\261")
+        mtc_utils.K_M_PLUS = ""  # colides with this tilde
         if define_backtick:
             self.alternate_key_backtick("\\033\\060")
         # self.alternate_key_euro("\\342\\202\\254")

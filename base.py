@@ -1559,7 +1559,7 @@ class BaseConfig(TmuxConfig):
         w()
         w("# auc_meta_ses_handling()")
 
-        if self.vers_ok(1.0):
+        if self.vers_ok(1.0) and mtc_utils.K_M_PLUS:
             s = (
                 f'bind -N "{
                     self.muc_non_default_value(mtc_utils.K_M_PLUS)
