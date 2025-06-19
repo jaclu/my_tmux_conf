@@ -45,12 +45,6 @@ KBD_BLUETOOTH = "Bluetooth Keyboard"  # Pad5 - sadly generic name
 class LimitedKbdSpecialHandling:
     """Groupings of user-keys"""
 
-    # ensures that some settings ate not overridden via inheritance
-    esc_has_been_handled = False
-    euro_has_been_handled = False
-    backtick_has_been_handled = False
-    delete_has_been_handled = False
-
     def __init__(self, tmux_conf_instance):
         """Defines Userkey Function key mapping"""
         if not mtc_utils.LC_KEYBOARD:
@@ -61,9 +55,10 @@ class LimitedKbdSpecialHandling:
         self.key_2_uk = {
             # < 200 Handled by base.py
             "Escape": 200,
-            "backtick": 201,
-            "Delete": 202,
-            "#": 203,
+            "~": 201,
+            "backtick": 202,
+            "Delete": 203,
+            "#": 204,
             # Keyboard specific reserved range 210-299
             # Alt upper case chars
             "M-A": 301,
@@ -140,6 +135,15 @@ class LimitedKbdSpecialHandling:
             10: self.key_2_uk["F10"],
         }
 
+        # ensures that some settings ate not overridden via inheritance
+        self.has_been_handled = {
+            "Escape": False,
+            "tilde": False,
+            "backtick": False,
+            "Euro": False,
+            "delete": False,
+        }
+
     def config_console_keyb(self) -> bool:
         #
         #  Only use this if the following conditions are met:
@@ -194,20 +198,26 @@ class LimitedKbdSpecialHandling:
         #
         self.alternate_key_euro("\\342\\202\\254")
 
-    def keyb_type_2(self):
+    def keyb_type_2(self, define_backtick=True):
         #
         #  General settings seems to work for several keyboards
         #
-        if not self.esc_has_been_handled:
-            self.alternate_key_escape("\\302\\247")
+        # JacPad iSH KBD_BRYDGE_10_2_MAX
+        # <Esc> 302 247   §
+        # ~     302 261 (Shift Esc) +/- char
+        # `     033 060 (C-M Esc)
+        self.alternate_key_escape("\\302\\247")
+        self.alternate_key_tilde("\\302\\261")
+        if define_backtick:
+            self.alternate_key_backtick("\\033\\060")
         # self.alternate_key_euro("\\342\\202\\254")
 
     def keyb_type_combo_touch(self):
         #
         #  Logitech Combo Touch
         #
-        self.keyb_type_2()  # Same esc handling
-        self.alternate_backtick_key("\\033", "backtick")
+        self.keyb_type_2(define_backtick=False)  # Same esc handling
+        self.alternate_key_backtick("\\033")
 
     # ======================================================
     #
@@ -215,45 +225,48 @@ class LimitedKbdSpecialHandling:
     #
     # ======================================================
 
-    def alternate_key_escape(self, sequence: str) -> None:
+    def alt_key_param_check(self, sequence, key):
         if sequence[:1] != "\\":
             err_msg = (
-                f"ERROR: TabletKbd:alternate_key_escape({sequence}) "
+                f"ERROR: TabletKbd:alt_key_param_check({sequence}, {key}) "
                 "must be given in octal notation"
             )
             sys.exit(err_msg)
-        if self.esc_has_been_handled:
-            return
+        if self.has_been_handled[key]:
+            sys.exit(f"Alternate {key} key has already been defined")
+
+    def alt_key_define(self, sequence, key):
+        self.alt_key_param_check(sequence, key)
+        if key == "backtick":
+            send_str = "\\`"
+        elif key == "delete":
+            send_str = "DC"
+        else:
+            send_str = key
+
         self.tc.write(
             f"""#
-            #  Replacement Escape key
+            #  Replacement {key} key
             #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["Escape"]}]  "{sequence}"
-            bind -N "Send Escape" -n User{self.key_2_uk["Escape"]}  send-keys Escape
+            {self.tc.opt_server} user-keys[{self.key_2_uk[key]}]  "{sequence}"
+            bind -N "Send key" -n User{self.key_2_uk[key]}  send-keys {send_str}
             """
         )
-        self.esc_has_been_handled = True
+        self.has_been_handled[key] = True
+
+    def alternate_key_escape(self, sequence: str) -> None:
+        self.alt_key_define(sequence, "Escape")
+
+    def alternate_key_tilde(self, sequence: str) -> None:  # modifier=""
+        self.alt_key_define(sequence, "~")
+
+    def alternate_key_backtick(self, sequence: str) -> None:  # modifier=""
+        self.alt_key_define(sequence, "backtick")
 
     def alternate_key_delete(self, sequence: str) -> None:
-        if sequence[:1] != "\\":
-            err_msg = (
-                f"ERROR: TabletKbd:alternate_key_delete({sequence}) "
-                "must be given in octal notation"
-            )
-            sys.exit(err_msg)
-        if self.delete_has_been_handled:
-            return
-        self.tc.write(
-            f"""#
-            #  Replacement Delete (DC) key
-            #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["Delete"]}]  "{sequence}"
-            bind -N "Send Delete (DC)" -n User{self.key_2_uk["Delete"]}  send-keys DC
-            """
-        )
-        self.delete_has_been_handled = True
+        self.alt_key_define(sequence, "delete")
 
-    def alternate_key_hash(self):
+    def hash_not_pound(self):
         self.tc.write(
             f"""
             # This keyb sends £ when it should send #
@@ -263,40 +276,10 @@ class LimitedKbdSpecialHandling:
         )
 
     def alternate_key_euro(self, sequence):
-        if sequence[:1] != "\\":
-            err_msg = (
-                f"ERROR: TabletKbd:alternate_key_euro({sequence}) "
-                "must be given in octal notation"
-            )
-            sys.exit(err_msg)
-        if self.euro_has_been_handled:
-            return
+        key = "Euro"
+        self.alt_key_param_check(sequence, key)
         self.tc.alternate_key_euro(sequence)
-        self.euro_has_been_handled = True
-
-    def alternate_backtick_key(self, sequence: str, modifier="") -> None:
-        w = self.tc.write
-
-        if sequence[:1] != "\\":
-            err_msg = (
-                f"ERROR: TabletKbd:alternate_backtick_key({sequence}) "
-                "must be given in octal notation"
-            )
-            sys.exit(err_msg)
-        if self.backtick_has_been_handled:
-            return
-        w(
-            f"""#
-            #  Replacement Backtick key
-            #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["backtick"]}]  "{sequence}" """
-        )
-        w(
-            f"bind -N '{modifier} - Send backtick' "
-            f'-n User{self.key_2_uk["backtick"]}  send-keys "\\`"'
-        )
-        w()  # Spacer line
-        self.backtick_has_been_handled = True
+        self.has_been_handled[key] = True
 
 
 class TermuxConsole(LimitedKbdSpecialHandling):
@@ -304,7 +287,7 @@ class TermuxConsole(LimitedKbdSpecialHandling):
 
     def keyb_type_1(self):
         self.alternate_key_escape("\\140")
-        # self.alternate_backtick_key("\\033\\140", "M-")
+        # self.alternate_key_backtick("\\033\\140", "M-")
         self.alternate_key_delete("\\033\\177")
         self.alternate_key_euro("\\033\\100")  # same as on Darwin
         super().keyb_type_1()
@@ -442,7 +425,7 @@ class IshConsole(LimitedKbdSpecialHandling):
             ("F10", "M-S-0", "\\342\\200\\232"),
         )
         for fn, key, sequence in fn_keys:
-            if key == "M-S-2" and self.euro_has_been_handled:
+            if key == "M-S-2" and self.has_been_handled["euro"]:
                 w("# M-S-2 used for euro symbol")
                 continue
             w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{sequence}"  #     {key}')
