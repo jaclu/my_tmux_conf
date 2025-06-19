@@ -143,6 +143,7 @@ class LimitedKbdSpecialHandling:
             "Euro": False,
             "delete": False,
         }
+        self.sequence_used = []
 
     def config_console_keyb(self) -> bool:
         #
@@ -253,6 +254,7 @@ class LimitedKbdSpecialHandling:
             bind -N "Send key" -n User{self.key_2_uk[key]}  send-keys {send_str}
             """
         )
+        self.sequence_used.append(sequence)
         self.has_been_handled[key] = True
 
     def alternate_key_escape(self, sequence: str) -> None:
@@ -268,18 +270,21 @@ class LimitedKbdSpecialHandling:
         self.alt_key_define(sequence, "delete")
 
     def hash_not_pound(self):
+        sequence = "\\302\\243"
         self.tc.write(
             f"""
             # This keyb sends £ when it should send #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["#"]}] "\\302\\243"
+            {self.tc.opt_server} user-keys[{self.key_2_uk["#"]}] "{sequence}"
             bind -N "Send #" -n User{self.key_2_uk["#"]} send-keys  #
             """
         )
+        self.sequence_used.append(sequence)
 
     def alternate_key_euro(self, sequence):
         key = "Euro"
         self.alt_key_param_check(sequence, key)
         self.tc.alternate_key_euro(sequence)
+        self.sequence_used.append(sequence)
         self.has_been_handled[key] = True
 
 
@@ -475,6 +480,9 @@ class IshConsole(LimitedKbdSpecialHandling):
         )
         muc_values = set(self.tc.muc_keys.values())
         for key, sequence in self.auk.items():
+            if sequence in self.sequence_used:
+                w(f"# sequence already defined: {key} {sequence}")
+                continue
             w(f'{self.tc.opt_server}   user-keys[{k2uk[key]}]  "{sequence}"')
             if f"User{k2uk[key]}" in muc_values:
                 # Display muc keys
