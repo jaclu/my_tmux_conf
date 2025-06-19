@@ -138,7 +138,7 @@ class LimitedKbdSpecialHandling:
         # ensures that some settings ate not overridden via inheritance
         self.has_been_handled = {
             "Escape": False,
-            "tilde": False,
+            "~": False,
             "backtick": False,
             "Euro": False,
             "delete": False,
