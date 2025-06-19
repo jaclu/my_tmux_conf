@@ -481,7 +481,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         muc_values = set(self.tc.muc_keys.values())
         for key, sequence in self.auk.items():
             if sequence in self.sequence_used:
-                w(f"# --- already defined: {k2uk[key]} {key} {sequence}")
+                w(f'# --- already defined:    {k2uk[key]}   "{sequence}"      {key}')
                 continue
             w(f'{self.tc.opt_server}   user-keys[{k2uk[key]}]  "{sequence}"')
             if f"User{k2uk[key]}" in muc_values:
