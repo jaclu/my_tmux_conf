@@ -199,7 +199,7 @@ class LimitedKbdSpecialHandling:
         #
         self.alternate_key_euro("\\342\\202\\254")
 
-    def keyb_type_2(self, define_backtick=True):
+    def keyb_type_2(self):  # , define_backtick=True):
         #
         #  General settings seems to work for several keyboards
         #
@@ -209,15 +209,15 @@ class LimitedKbdSpecialHandling:
         # `     033 060 (C-M Esc)
         self.alternate_key_escape("\\302\\247")
         self.alternate_key_tilde("\\302\\261")
-        if define_backtick:
-            self.alternate_key_backtick("\\033\\060")
+        # if define_backtick:
+        #     self.alternate_key_backtick("\\033\\060")
         # self.alternate_key_euro("\\342\\202\\254")
 
     def keyb_type_combo_touch(self):
         #
         #  Logitech Combo Touch
         #
-        self.keyb_type_2(define_backtick=False)  # Same esc handling
+        self.keyb_type_2()  # Same esc handling
         self.alternate_key_backtick("\\033")
 
     # ======================================================
@@ -480,7 +480,9 @@ class IshConsole(LimitedKbdSpecialHandling):
         muc_values = set(self.tc.muc_keys.values())
         for key, sequence in self.auk.items():
             if sequence in self.sequence_used:
-                w(f'# --- already defined:    {k2uk[key]}   "{sequence}"      {key}')
+                # w(f'# --- already defined:    {k2uk[key]}   "{sequence}"      {key}')
+                # w(f'# ---  sequence in use:   {k2uk[key]}   "{sequence}"      {key}')
+                w(f"#                     User{k2uk[key]}                   {key}  alt key")
                 continue
             w(f'{self.tc.opt_server}   user-keys[{k2uk[key]}]  "{sequence}"')
             if f"User{k2uk[key]}" in muc_values:
