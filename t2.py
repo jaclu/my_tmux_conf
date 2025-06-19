@@ -51,6 +51,11 @@ class T2(SB):  # type: ignore
     # use_embedded_scripts = False
     # is_limited_host = True
 
+    # use_plugin_extrakto = False
+    # use_plugin_resurrect = False
+    # use_plugin_session_wizard = False
+    # use_plugin_suspend = False
+
     def plugin_menus(self) -> list:  # 1.5
         #  Tested down to vers 1.5
         if not self.use_plugin_menus:
