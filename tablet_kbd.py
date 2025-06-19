@@ -251,7 +251,7 @@ class LimitedKbdSpecialHandling:
             #  Replacement {key} key
             #
             {self.tc.opt_server} user-keys[{self.key_2_uk[key]}]  "{sequence}"
-            bind -N "Send key" -n User{self.key_2_uk[key]}  send-keys {send_str}
+            bind -N "Send key" -n User{self.key_2_uk[key]}  send-keys '{send_str}'
             """
         )
         self.sequence_used.append(sequence)
@@ -481,7 +481,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         muc_values = set(self.tc.muc_keys.values())
         for key, sequence in self.auk.items():
             if sequence in self.sequence_used:
-                w(f"# sequence already defined: {key} {sequence}")
+                w(f"# --- already defined: {k2uk[key]} {key} {sequence}")
                 continue
             w(f'{self.tc.opt_server}   user-keys[{k2uk[key]}]  "{sequence}"')
             if f"User{k2uk[key]}" in muc_values:
