@@ -8,6 +8,7 @@ For actions not available without the M-key, use tmux-menus
 
 ### General environment
 
+- Popup lazygit : Prefix y
 - Navigate ses/win/pan : Prefix N
 
 ### Pane

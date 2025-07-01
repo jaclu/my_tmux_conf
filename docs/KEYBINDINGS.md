@@ -15,20 +15,21 @@ dependent actions.
 
 ## Key bindings
 
-| Note  | Description                         |
-| ----- | ----------------------------------- |
-| `<p>` | Prefix key                          |
-| \*\*  | Rebound with: detach-on-destroy off |
+| Note  | Description                           |
+| ----- | ------------------------------------- |
+| `<p>` | Prefix key                            |
+| \*    | when use_prefix_arrow_nav_keys is set |
+| \*\*  | Rebound with: detach-on-destroy off   |
 
 ### Pane handling
 
 | Key                 | No Prefix   | Default       | Description                         |
 | ------------------- | ----------- | ------------- | ----------------------------------- |
 |                     |             | `<p> ;`       | Previously active pane              |
-| `<p> h`             | `M-Left`    | `<p> Left`    | Select pane to the left             |
-| `<p> j`             | `M-Down`    | `<p> Down`    | Select pane below                   |
-| `<p> k`             | `M-Up`      | `<p> Up`      | Select pane above                   |
-| `<p> l`             | `M-Right`   | `<p> Right`   | Select pane to the right            |
+| `<p> h`\*           | `M-Left`    | `<p> Left`    | Select pane to the left             |
+| `<p> j`\*           | `M-Down`    | `<p> Down`    | Select pane below                   |
+| `<p> k`\*           | `M-Up`      | `<p> Up`      | Select pane above                   |
+| `<p> l`\*           | `M-Right`   | `<p> Right`   | Select pane to the right            |
 |                     |             | `<p> {`       | Swap pane backwards                 |
 |                     |             | `<p> }`       | Swap pane forwards                  |
 |                     |             |               |                                     |
@@ -95,6 +96,7 @@ dependent actions.
 |           | `C-v`   | Page Down                |
 |           | `M-v`   | Page Up                  |
 |           |         |                          |
+| `<p> y`   |         | Popup lazygit            |
 | `<p> N`   |         | Navigate ses/win/pane    |
 | `<p> O`   |         | Scratchpad popup session |
 | `<p> M-P` |         | List all plugins defined |

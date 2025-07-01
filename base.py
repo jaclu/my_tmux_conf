@@ -612,20 +612,29 @@ class BaseConfig(TmuxConfig):
                 'display "Navigate needs 2.7"'
             )
 
-        scrpad_min_vers = 3.2
-        scrpad_key = "O"  # P being taken this is pOpup :)
-        if self.vers_ok(scrpad_min_vers):
-            display_popup = "display-popup -h 70% -w 70% -E "
+        popup_min_vers = 3.2
+        key_lazygit = "y"
+        key_scrpad = "O"  # P being taken this is pOpup :)
+        if self.vers_ok(popup_min_vers):
+            lazygit = "display-popup -d '#{pane_current_path}' " \
+                "-w 80% -h 80% " \
+                "-E 'lazygit'"
+            display_popup = "display-popup -w 70% -h 70% -E"
             if self.vers_ok(3.3):
-                display_popup += '-T "#[align=centre] pOpup Scratchpad Session " '
+                display_popup += ' -T "#[align=centre] pOpup Scratchpad Session " '
             w(
-                f'bind -N "pOpup scratchpad session"  {scrpad_key}  '
+                f'bind -N "pOpup scratchpad session"  {key_scrpad}  '
                 f'{display_popup} "$TMUX_BIN -u new-session -ADs scratch"'
             )
+            w(f'bind -N "popup lazygit"  {key_lazygit}  {lazygit}')
         elif self.vers_ok(1.0):
             w(
-                f'bind -N "pOpup not available warning"  {scrpad_key}  '
-                f'display "pOpup scratchpad session needs {scrpad_min_vers}"'
+                f'bind -N "lazygit popup not available waening"  {key_lazygit}  '
+                f'display "lazygit popup needs tmux {popup_min_vers}"'
+            )
+            w(
+                f'bind -N "pOpup scratchpad not available warning"  {key_scrpad}  '
+                f'display "pOpup scratchpad session needs tmux {popup_min_vers}"'
             )
 
         if self.vers_ok(1.0):
@@ -686,7 +695,7 @@ class BaseConfig(TmuxConfig):
         # However using this on iSH confuses remote tmux sessions utterly
         #
         if not mtc_utils.IS_ISH:
-            if self.vers_ok(1.0):
+            if self.vers_ok(2.0):  # was 1.0
                 # prevents /usr/libexec/path_helper from messing up PATH
                 w(f'{self.opt_ses} default-command "${{SHELL}}"')
             else:
