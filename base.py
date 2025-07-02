@@ -624,7 +624,7 @@ class BaseConfig(TmuxConfig):
             dp_ipython = "display-popup -E ipython"
             dp_lazygit = "display-popup -d '#{pane_current_path}' " \
                 "-w 80% -h 80% " \
-                "-E 'lazygit'"
+                "-E lazygit"
             dp_scrpad = "display-popup -w 70% -h 70% -E"
             if self.vers_ok(3.3):
                 dp_scrpad += ' -T "#[align=centre] pOpup Scratchpad Session " '
