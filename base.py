@@ -641,7 +641,7 @@ class BaseConfig(TmuxConfig):
                 w(f'bind -N "popup lazygit"  {key_lazygit}  {dp_lazygit}')
             else:
                 w(
-                    f'bind -N "lazygit not available msg"  {key_ipython}  '
+                    f'bind -N "lazygit not available msg"  {key_lazygit}  '
                     f'display-message "lazygit not available"'
                 )
             w(
