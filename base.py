@@ -629,6 +629,7 @@ class BaseConfig(TmuxConfig):
 
             if self.vers_ok(3.3):
                 dp_scrpad += ' -T "#[align=centre] pOpup Scratchpad Session " '
+                w(f"{self.opt_win} popup-border-lines rounded")
 
             if shutil.which("ipython"):
                 w(f'bind -N "popup ipython"  {key_ipython}  {dp_ipython}')
@@ -822,9 +823,6 @@ class BaseConfig(TmuxConfig):
             w(f"{self.opt_win} monitor-activity off")
             if self.vers_ok(2.6):
                 w(f"{self.opt_win} monitor-bell off")
-
-        if self.vers_ok(3.3):
-            w(f"{self.opt_win} popup-border-lines rounded")
 
         w(f"bind -N 'Toggle synchronize'  *  {self.opt_win_loc} synchronize-panes")
 
