@@ -597,10 +597,10 @@ class BaseConfig(TmuxConfig):
             )
 
         if self.vers_ok(2.8):
+            w("# All keys not nound will display this warning")
             w(
-                """# All keys not nound will display this warning
-                bind -N "Key not bound"  Any  display "This key is not bound to any action"
-                """
+                'bind -N "Key not bound"  Any  display-message '
+                '"This key is not bound to any action"'
             )
 
         nav_key = "N"
@@ -609,7 +609,7 @@ class BaseConfig(TmuxConfig):
         elif self.vers_ok(1.0):
             w(
                 f'bind -N "Navigate ses/win/pane not available warning"  {nav_key}  '
-                'display "Navigate needs 2.7"'
+                'display-message "Navigate needs 2.7"'
             )
 
         w("""
@@ -635,14 +635,14 @@ class BaseConfig(TmuxConfig):
             else:
                 w(
                     f'bind -N "ipython not available msg"  {key_ipython}  '
-                    f'display "ipython not available"'
+                    f'display-message "ipython not available"'
                 )
             if shutil.which("lazygit"):
                 w(f'bind -N "popup lazygit"  {key_lazygit}  {dp_lazygit}')
             else:
                 w(
                     f'bind -N "lazygit not available msg"  {key_ipython}  '
-                    f'display "lazygit not available"'
+                    f'display-message "lazygit not available"'
                 )
             w(
                 f'bind -N "pOpup scratchpad session"  {key_scrpad}  '
@@ -654,20 +654,20 @@ class BaseConfig(TmuxConfig):
             #
             w(
                 f'bind -N "ipython popup not available msg"  {key_ipython}  '
-                f'display "ipython popup needs tmux {popup_min_vers}"'
+                f'display-message "ipython popup needs tmux {popup_min_vers}"'
             )
             w(
                 f'bind -N "lazygit popup not available msg"  {key_lazygit}  '
-                f'display "lazygit popup needs tmux {popup_min_vers}"'
+                f'display-message "lazygit popup needs tmux {popup_min_vers}"'
             )
             w(
                 f'bind -N "pOpup scratchpad not available msg"  {key_scrpad}  '
-                f'display "pOpup scratchpad session needs tmux {popup_min_vers}"'
+                f'display-message "pOpup scratchpad session needs tmux {popup_min_vers}"'
             )
         w()  # spacer
 
         if self.vers_ok(1.0):
-            show_action = f'\\; display "{self.conf_file} sourced"'
+            show_action = f'\\; display-message "{self.conf_file} sourced"'
         else:
             show_action = ""
         w(
@@ -893,10 +893,14 @@ class BaseConfig(TmuxConfig):
         elif self.vers_ok(1.4):
             w(
                 """
-            # temp disabled until I stop using this for split pane
-            bind -n C-M-Left display "Soon win navigation - For new pane use: <P> M-Left"
-            bind -n C-M-Right display "Soon win navigation - For new pane use: <P> M-Right"
-            """
+            # temp disabled until I stop using this for split pane""")
+            w(
+                'bind -n C-M-Left display-message '
+                '"Soon win navigation - For new pane use: <P> M-Left"'
+            )
+            w(
+                'bind -n C-M-Right display-message '
+                '"Soon win navigation - For new pane use: <P> M-Right"'
             )
 
         #
@@ -914,10 +918,7 @@ class BaseConfig(TmuxConfig):
                 bind -N 'Split window left'   M-h  split-window  -fhb  {cp}
                 bind -N 'Split window down'   M-j  split-window  -fv   {cp}
                 bind -N 'Split window up'     M-k  split-window  -fvb  {cp}
-
-                # Temp disabled until i get this out of my muscle memory
-                # for clearing screen and history
-                # bind -N 'Split window right'  M-l  split-window  -fh   {cp}
+                bind -N 'Split window right'  M-l  split-window  -fh   {cp}
                 """
             )
 
@@ -1154,7 +1155,8 @@ class BaseConfig(TmuxConfig):
 
                 if self.vers_ok(2.7):
                     # In 2.6 select pane can't be assigned via '#D', would need to do:
-                    #   $TMUX_BIN select-pane -T $($TMUX_BIN display -p '#{pane_id}')
+                    #   $TMUX_BIN select-pane -T $($TMUX_BIN display-message \
+                    #       -p '#{pane_id}')
                     # not worth the effort for such a corner case
 
                     #
@@ -1177,7 +1179,7 @@ class BaseConfig(TmuxConfig):
                 )
             elif self.vers_ok(2.3) and not self.is_tmate():
                 w()  # spacer
-                w("bind  P  display 'Pane title setting needs 2.6'")
+                w("bind  P  display-message 'Pane title setting needs 2.6'")
 
     # def _lg(self, line):
     #     # debug util, displays triggered hooks to a logfile
@@ -1385,7 +1387,7 @@ class BaseConfig(TmuxConfig):
             if self.vers_ok(1.5):
                 w(f"{self.opt_ses} mouse-select-window on")
                 w(f"{self.opt_ses} mouse-resize-pane on")
-            w('bind  M  display "mouse toggle needs 2.1"')
+            w('bind  M  display-message "mouse toggle needs 2.1"')
 
         #
         #  If enabled, request mouse input as UTF-8 on UTF-8 terminals
@@ -1726,7 +1728,7 @@ class BaseConfig(TmuxConfig):
         new_state="on"
     fi
     $TMUX_BIN {self.opt_ses} mouse $new_state
-    $TMUX_BIN display "mouse: $new_state"
+    $TMUX_BIN display-message "mouse: $new_state"
 }}"""
         ]
         self.es.create(self._fnc_toggle_mouse, toggle_mouse_sh)
@@ -1826,7 +1828,7 @@ class BaseConfig(TmuxConfig):
     #  Remove potentially broken tpm install
     rm -rf "{tpm_location}"
 
-    $TMUX_BIN display "Cloning {self.plugin_handler} into {tpm_location} ..."
+    $TMUX_BIN display-message "Cloning {self.plugin_handler} into {tpm_location} ..."
     git clone https://github.com/{self.plugin_handler} "{tpm_location}"
     if [ "$?" -ne 0 ]; then
         echo "Failed to clone tmux plugin handler:"
@@ -1834,7 +1836,7 @@ class BaseConfig(TmuxConfig):
         exit 11
     fi
 
-    $TMUX_BIN display "Running cloned tpm..."
+    $TMUX_BIN display-message "Running cloned tpm..."
     {tpm_env}"{tpm_app}"
     if [ "$?" -ne 0 ]; then
         echo "Failed to run: {tpm_app}"
@@ -1846,7 +1848,7 @@ class BaseConfig(TmuxConfig):
     #  Otherwise installing missing plugins is delegated to tpm.
     #  Default trigger is: <prefix> I
     #
-    $TMUX_BIN display "Installing all plugins..."
+    $TMUX_BIN display-message "Installing all plugins..."
     {tpm_env}"{tpm_location}/bindings/install_plugins"
     if [ "$?" -ne 0 ]; then
         echo "Failed to run: {tpm_location}/bindings/install_plugins"
@@ -1855,7 +1857,7 @@ class BaseConfig(TmuxConfig):
 
     timer_end "installing plugins"
     # {self.es.call_script(self._fnc_tpm_indicator)} clear
-    $TMUX_BIN display "Plugin setup completed"
+    $TMUX_BIN display-message "Plugin setup completed"
 }}
 
 #
@@ -1893,7 +1895,7 @@ timer_end() {{
         """Changes state for tpm_initializing with params: set clear"""
         purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
         # self.sb_purge_tpm_running = f"$TMUX_BIN {self.opt_ses} -q status-right "
-        # \\"$($TMUX_BIN display -p '#{{status-right}}' | sed 's/{purge_seq}//')\\"
+        # \\"$($TMUX_BIN display-message -p '#{{status-right}}' | sed 's/{purge_seq}//')\\"
 
         clear_tpm_init_sh = [
             f"""
@@ -1902,12 +1904,12 @@ timer_end() {{
       "set") task="set" ;;
       "clear") task="clear" ;;
       *)
-        $TMUX_BIN display -p "{self._fnc_tpm_indicator}($1) bad param"
+        $TMUX_BIN display-message -p "{self._fnc_tpm_indicator}($1) bad param"
         exit 1
     esac
 
-    sb_r_now="$($TMUX_BIN display -p '#{{status-right}}')"
-    if [ -n "$($TMUX_BIN display -p '#{{{self.tpm_working_incicator}}}')" ]; then
+    sb_r_now="$($TMUX_BIN display-message -p '#{{status-right}}')"
+    if [ -n "$($TMUX_BIN display-message -p '#{{{self.tpm_working_incicator}}}')" ]; then
         tpm_running=1
     else
         tpm_running=0
