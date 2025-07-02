@@ -634,14 +634,14 @@ class BaseConfig(TmuxConfig):
             else:
                 w(
                     f'bind -N "ipython not available msg"  {key_ipython}  '
-                    f'display "ipython not available'
+                    f'display "ipython not available"'
                 )
             if shutil.which("lazygit"):
                 w(f'bind -N "popup lazygit"  {key_lazygit}  {dp_lazygit}')
             else:
                 w(
                     f'bind -N "lazygit not available msg"  {key_ipython}  '
-                    f'display "lazygit not available'
+                    f'display "lazygit not available"'
                 )
             w(
                 f'bind -N "pOpup scratchpad session"  {key_scrpad}  '
