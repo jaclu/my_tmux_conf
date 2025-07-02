@@ -8,7 +8,8 @@ For actions not available without the M-key, use tmux-menus
 
 ### General environment
 
-- Popup lazygit : Prefix y
+- Popup ipython (if installed) : Prefix i
+- Popup lazygit (if installed) : Prefix y
 - Navigate ses/win/pan : Prefix N
 
 ### Pane

@@ -96,6 +96,7 @@ dependent actions.
 |           | `C-v`   | Page Down                |
 |           | `M-v`   | Page Up                  |
 |           |         |                          |
+| `<p> i`   |         | Popup ipython            |
 | `<p> y`   |         | Popup lazygit            |
 | `<p> N`   |         | Navigate ses/win/pane    |
 | `<p> O`   |         | Scratchpad popup session |
