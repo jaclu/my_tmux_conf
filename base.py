@@ -612,30 +612,58 @@ class BaseConfig(TmuxConfig):
                 'display "Navigate needs 2.7"'
             )
 
+        w("""
+        #
+        # bindings for display-popup
+        #""")
         popup_min_vers = 3.2
+        key_ipython = "i"
         key_lazygit = "y"
         key_scrpad = "O"  # P being taken this is pOpup :)
         if self.vers_ok(popup_min_vers):
-            lazygit = "display-popup -d '#{pane_current_path}' " \
+            dp_ipython = "display-popup -E ipython"
+            dp_lazygit = "display-popup -d '#{pane_current_path}' " \
                 "-w 80% -h 80% " \
                 "-E 'lazygit'"
-            display_popup = "display-popup -w 70% -h 70% -E"
+            dp_scrpad = "display-popup -w 70% -h 70% -E"
             if self.vers_ok(3.3):
-                display_popup += ' -T "#[align=centre] pOpup Scratchpad Session " '
+                dp_scrpad += ' -T "#[align=centre] pOpup Scratchpad Session " '
+
+            if shutil.which("ipython"):
+                w(f'bind -N "popup ipython"  {key_ipython}  {dp_ipython}')
+            else:
+                w(
+                    f'bind -N "ipython not available msg"  {key_ipython}  '
+                    f'display "ipython not available'
+                )
+            if shutil.which("lazygit"):
+                w(f'bind -N "popup lazygit"  {key_lazygit}  {dp_lazygit}')
+            else:
+                w(
+                    f'bind -N "lazygit not available msg"  {key_ipython}  '
+                    f'display "lazygit not available'
+                )
             w(
                 f'bind -N "pOpup scratchpad session"  {key_scrpad}  '
-                f'{display_popup} "$TMUX_BIN -u new-session -ADs scratch"'
+                f'{dp_scrpad} "$TMUX_BIN -u new-session -ADs scratch"'
             )
-            w(f'bind -N "popup lazygit"  {key_lazygit}  {lazygit}')
         elif self.vers_ok(1.0):
+            #
+            # Indicate feature not available
+            #
             w(
-                f'bind -N "lazygit popup not available waening"  {key_lazygit}  '
+                f'bind -N "ipython popup not available msg"  {key_ipython}  '
+                f'display "ipython popup needs tmux {popup_min_vers}"'
+            )
+            w(
+                f'bind -N "lazygit popup not available msg"  {key_lazygit}  '
                 f'display "lazygit popup needs tmux {popup_min_vers}"'
             )
             w(
-                f'bind -N "pOpup scratchpad not available warning"  {key_scrpad}  '
+                f'bind -N "pOpup scratchpad not available msg"  {key_scrpad}  '
                 f'display "pOpup scratchpad session needs tmux {popup_min_vers}"'
             )
+        w()  # spacer
 
         if self.vers_ok(1.0):
             show_action = f'\\; display "{self.conf_file} sourced"'
