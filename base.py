@@ -395,7 +395,7 @@ class BaseConfig(TmuxConfig):
                 #  Remove the default popup menus"""
             )
             if "tmux-menus" in self.plugins.installed(short_name=True):
-                w("#  Instead using the plugin jaclu/tmux-menus - <prefix> \\")
+                w("#  Instead using the plugin jaclu/tmux-menus - <prefix> <space>")
             w("#")
             if self.vers_ok(3.0):
                 w(
