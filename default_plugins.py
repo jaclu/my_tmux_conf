@@ -657,12 +657,12 @@ class DefaultPlugins(BaseConfig):
             min_vers = 1.9
         else:
             min_vers = -1.0  # Don't use
-
+            # 1.1.1.1 - stopped responding 250715
         return [
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            set -g @packet-loss-ping_host "1.1.1.1"
+            set -g @packet-loss-ping_host "8.8.8.8"
             set -g @packet-loss-ping_count     6
             set -g @packet-loss-history_size   6
             set -g @packet-loss-level_alert 18 # 4-26 6-18 7-15
