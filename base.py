@@ -624,9 +624,7 @@ class BaseConfig(TmuxConfig):
         key_scrpad = "O"  # P being taken this is pOpup :)
         if self.vers_ok(popup_min_vers):
             dp_ipython = "display-popup -E ipython"
-            dp_lazygit = (
-                "display-popup -d '#{pane_current_path}' " "-w 80% -h 80% " "-E lazygit"
-            )
+            dp_lazygit = "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E lazygit"
             dp_scrpad = "display-popup -w 70% -h 70% -E"
 
             if self.vers_ok(3.3):
