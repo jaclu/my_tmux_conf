@@ -612,19 +612,21 @@ class BaseConfig(TmuxConfig):
                 'display-message "Navigate needs 2.7"'
             )
 
-        w("""
+        w(
+            """
         #
         # bindings for display-popup
-        #""")
+        #"""
+        )
         popup_min_vers = 3.2
         key_ipython = "i"
         key_lazygit = "y"
         key_scrpad = "O"  # P being taken this is pOpup :)
         if self.vers_ok(popup_min_vers):
             dp_ipython = "display-popup -E ipython"
-            dp_lazygit = "display-popup -d '#{pane_current_path}' " \
-                "-w 80% -h 80% " \
-                "-E lazygit"
+            dp_lazygit = (
+                "display-popup -d '#{pane_current_path}' " "-w 80% -h 80% " "-E lazygit"
+            )
             dp_scrpad = "display-popup -w 70% -h 70% -E"
 
             if self.vers_ok(3.3):
@@ -891,13 +893,14 @@ class BaseConfig(TmuxConfig):
         elif self.vers_ok(1.4):
             w(
                 """
-            # temp disabled until I stop using this for split pane""")
+            # temp disabled until I stop using this for split pane"""
+            )
             w(
-                'bind -n C-M-Left display-message '
+                "bind -n C-M-Left display-message "
                 '"Soon win navigation - For new pane use: <P> M-Left"'
             )
             w(
-                'bind -n C-M-Right display-message '
+                "bind -n C-M-Right display-message "
                 '"Soon win navigation - For new pane use: <P> M-Right"'
             )
 
