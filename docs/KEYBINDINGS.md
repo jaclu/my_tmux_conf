@@ -36,7 +36,7 @@ dependent actions.
 | `<p> P`             |             |               | Set pane title                      |
 |                     |             | `<p> x`       | Kill pane \*\*                      |
 | `<p> B`             |             |               | Choose paste buffer(-s)             |
-| `<p> M-c`           |             |               | Clear history & screen              |
+| `<p> M-l`           |             |               | Clear history & screen              |
 | `<p> M-E`           |             |               | Save history to file (with escapes) |
 | `<p> M-H`           |             |               | Save history to file (no escapes)   |
 | `<p> s`             |             |               | Set pane size (w x h)               |
@@ -72,6 +72,10 @@ dependent actions.
 | `<p> *`                     |                     |         | Toggle synchronized tabs  |
 | `<p> e`                     |                     | `<p> E` | Spread panes out evenly.  |
 |                             |                     |         |                           |
+| `<p> M-H`                   |                     |         | Split window left         |
+| `<p> M-J`                   |                     |         | Split window down         |
+| `<p> M-K`                   |                     |         | Split window up           |
+| `<p> M-L`                   |                     |         | Split window right        |
 
 ### Session handling (sometimes referred to as clients by tmux man)
 
