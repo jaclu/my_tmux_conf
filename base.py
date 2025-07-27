@@ -914,10 +914,10 @@ class BaseConfig(TmuxConfig):
             w(
                 f"""
                 # Split entire window
-                bind -N 'Split window left'   M-h  split-window  -fhb  {cp}
-                bind -N 'Split window down'   M-j  split-window  -fv   {cp}
-                bind -N 'Split window up'     M-k  split-window  -fvb  {cp}
-                bind -N 'Split window right'  M-l  split-window  -fh   {cp}
+                bind -N 'Split window left'   M-H  split-window  -fhb  {cp}
+                bind -N 'Split window down'   M-J  split-window  -fv   {cp}
+                bind -N 'Split window up'     M-K  split-window  -fvb  {cp}
+                bind -N 'Split window right'  M-L  split-window  -fh   {cp}
                 """
             )
 

@@ -72,10 +72,6 @@ dependent actions.
 | `<p> *`                     |                     |         | Toggle synchronized tabs  |
 | `<p> e`                     |                     | `<p> E` | Spread panes out evenly.  |
 |                             |                     |         |                           |
-| `<p> M-h`                   |                     |         | Split window left         |
-| `<p> M-j`                   |                     |         | Split window down         |
-| `<p> M-k`                   |                     |         | Split window up           |
-| `<p> M-l`                   |                     |         | Split window right        |
 
 ### Session handling (sometimes referred to as clients by tmux man)
 
