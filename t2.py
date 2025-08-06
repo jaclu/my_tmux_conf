@@ -80,11 +80,15 @@ class T2(SB):  # type: ignore
         set -g @menus_use_hint_overlays no
         set -g @menus_show_key_hints no
 
-        # ensuring both home and ~ expansion works for single quotes
-        set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'
 
         set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
         # set -g @menus_use_cache  No
+        set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'
+
+        # set -g @menus_main_menu '~/tmp/alt_menu/alt_main.sh'
+        # set -g @menus_main_menu "~/my_tmux_menus/main.sh"
+
+        #set -g @menus_main_menu '~/git_repos/mine/tmux-menus/custom_items/_index.sh'
 
         set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/t2/tmux/plugins"
         """
