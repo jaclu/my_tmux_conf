@@ -51,10 +51,17 @@ class T2(SB):  # type: ignore
     # use_embedded_scripts = False
     # is_limited_host = True
 
-    # use_plugin_extrakto = False
-    # use_plugin_resurrect = False
-    # use_plugin_session_wizard = False
-    # use_plugin_suspend = False
+    # use_plugin_battery = False
+    use_plugin_extrakto = False
+    use_plugin_jump = False
+    # use_plugin_menus = False
+    # use_plugin_mouse_swipe = False
+    # use_plugin_power_zoom = False
+    use_plugin_resurrect = False
+    use_plugin_session_wizard = False
+    use_plugin_suspend = False
+
+    # use_plugin_packet_loss = True
 
     def plugin_menus(self) -> list:  # 1.5
         #  Tested down to vers 1.5
@@ -127,7 +134,9 @@ class T2(SB):  # type: ignore
                 # tmux-packet-loss - overrides
                 #
                 # Use a different host vs the outer tmux
-                set -g @packet-loss-ping_host "8.8.4.4"
+                set -g @packet-loss-ping_host "10.42.49.128"
+
+                # set -g @packet-loss-log_file "" # Use this to disable logging
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
                 set -g @packet-loss-run_disconnected No
             """
