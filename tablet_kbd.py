@@ -440,8 +440,8 @@ class IshConsole(LimitedKbdSpecialHandling):
     def define_muc_keys(self):
         self.tc.muc_keys = {
             mtc_utils.K_M_PLUS: f"User{self.key_2_uk['M-+']}",
-            mtc_utils.K_M_PAR_OPEN: f"User{self.key_2_uk['M-(']}",
-            mtc_utils.K_M_PAR_CLOSE: f"User{self.key_2_uk['M-)']}",
+            # mtc_utils.K_M_PAR_OPEN: f"User{self.key_2_uk['M-(']}",
+            # mtc_utils.K_M_PAR_CLOSE: f"User{self.key_2_uk['M-)']}",
             mtc_utils.K_M_UNDERSCORE: f"User{self.key_2_uk['M-_']}",
             mtc_utils.K_M_P: f"User{self.key_2_uk['M-P']}",
             mtc_utils.K_M_X: f"User{self.key_2_uk['M-X']}",
@@ -457,8 +457,8 @@ class IshConsole(LimitedKbdSpecialHandling):
         self.auk["M-^"] = "\\357\\254\\202"
         self.auk["M-&"] = "\\342\\200\\241"
         self.auk["M-*"] = "\\302\\260"
-        self.auk["M-("] = "\\302\\267"
-        self.auk["M-)"] = "\\342\\200\\232"
+        # self.auk["M-("] = "\\302\\267"
+        # self.auk["M-)"] = "\\342\\200\\232"
 
     def alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
         """If fn keys are not mapped to ms numbers, use them as regular M- chars"""

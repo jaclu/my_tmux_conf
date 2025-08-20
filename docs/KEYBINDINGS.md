@@ -82,8 +82,8 @@ dependent actions.
 | Key       | No Prefix        | Default | Description                |
 | --------- | ---------------- | ------- | -------------------------- |
 | `<p> _`   | `M-_`            |         | Previously current session |
-|           | `M-)` `C-M-Down` | `<p> )` | Next session in order      |
-|           | `M-(` `C-M-Up`   | `<p> (` | Previous session in order  |
+|           | `C-M-Down`       | `<p> )` | Next session in order      |
+|           | `C-M-Up`         | `<p> (` | Previous session in order  |
 |           |                  |         |                            |
 | `<p> S`   |                  | `<p> $` | Rename session             |
 | `<p> M-x` |                  |         | Kill session               |

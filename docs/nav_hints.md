@@ -78,4 +78,4 @@ For actions not available without the M-key, use tmux-menus
 
 ### (Arrows) Session
 
-- session next-prev : M () | C-M Up/Down
+- session next-prev : C-M Up/Down

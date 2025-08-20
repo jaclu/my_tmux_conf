@@ -140,8 +140,8 @@ LC_CONSOLE = os.getenv("LC_CONSOLE") or ""
 
 # muc keys and default values
 K_M_PLUS = "M-+"
-K_M_PAR_OPEN = "M-("
-K_M_PAR_CLOSE = "M-)"
+# K_M_PAR_OPEN = "M-("
+# K_M_PAR_CLOSE = "M-)"
 K_M_UNDERSCORE = "M-_"
 K_M_P = "M-P"
 K_M_X = "M-X"
