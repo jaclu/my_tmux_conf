@@ -1194,9 +1194,13 @@ class BaseConfig(TmuxConfig):
         """
         )
 
-        # Really nice feature when you are on a small screen, toggle between
-        # two panes in zoomed mode
-        w("bind -N 'Switch to last pane and zoom it'  C-z  'last-pane ; resize-pane -Z'")
+        if self.vers_ok(1.8):
+            # Really nice feature when you are on a small screen,
+            # toggle between last pane in zoomed mode
+            w(
+                "bind -N 'Switch to last pane and zoom it'  C-z  "
+                "last-pane \\; resize-pane -Z"
+            )
 
         if self.vers_ok(1.2):
             pane_left = "select-pane -L"
