@@ -486,7 +486,7 @@ class DefaultPlugins(BaseConfig):
     # ==========================================================
     #
     #  Optional pluguins, disablesd by default
-    #  Since thye need to be enabled to be used, here there are
+    #  Since they need to be enabled to be used, here there are
     #  no env checks deciding if they will be enabled
     #
     # ==========================================================
@@ -620,7 +620,7 @@ class DefaultPlugins(BaseConfig):
     def plugin_gentrify(self) -> list:
         #
         # Sounds kind of interesting, but when tried on 25-05-24 seemed
-        # to buggy
+        # too buggy
         #
         if self.use_plugin_gentrify:
             min_vers = 3.0
