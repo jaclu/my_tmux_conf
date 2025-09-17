@@ -175,7 +175,7 @@ class BaseConfig(TmuxConfig):
         # environment: Environment = Environment.normal,
     ) -> None:
         # Indicates if this tmux is run on the iSH console
-
+        print(f"><> BaseConfig.__init__() - conf_file [{conf_file}]")
         self.style = None
         self.check_libs_compatible()
         super().__init__(
@@ -673,7 +673,7 @@ class BaseConfig(TmuxConfig):
             show_action = ""
         w(
             f'bind -N  "Source {self.conf_file}"  R  source-file '
-            f"{self.conf_file} {show_action}"
+            f'"{self.conf_file}" {show_action}'
         )
 
         self.auc_display_plugins_used()
@@ -1668,7 +1668,7 @@ class BaseConfig(TmuxConfig):
             '$TMUX_BIN display-message \\"Generating plugin list\\" \\; '
             # 1st load venv if used
             f"[ -d {repo_dir}/.venv ] && . {repo_dir}/.venv/bin/activate \\; "
-            f"{__main__.__file__} -t {self.tmux_bin} -p2 {self.conf_file}"
+            f"{__main__.__file__} -t {self.tmux_bin} -p2 '{self.conf_file}'"
             '"'
         )
 
@@ -1814,6 +1814,8 @@ class BaseConfig(TmuxConfig):
             # region _fnc_activate_tpm
             f"""
 {self._fnc_activate_tpm}() {{
+    export XDG_CONFIG_HOME="{tpm_env}"
+
     timer_start
     {self.es.call_script(self._fnc_tpm_indicator)} set
 
@@ -1821,9 +1823,11 @@ class BaseConfig(TmuxConfig):
     #  Initialize already installed tpm if found
     #  override in base.py
     #
-    if [ -x "{tpm_app}" ]; then
+    echo "XDG_CONFIG_HOME[$XDG_CONFIG_HOME]" >> /Users/jaclu/tmp/tmux-menus-dbg.log
 
-        {tpm_env}{tpm_app}
+    if [ -x "{tpm_app}" ]; then
+        echo "><> will run: '{tpm_app}'" >> /Users/jaclu/tmp/tmux-menus-dbg.log
+        "{tpm_app}"
 
         timer_end "Completed tpm"
         {self.es.call_script(self._fnc_tpm_indicator)} clear
@@ -1845,7 +1849,7 @@ class BaseConfig(TmuxConfig):
     fi
 
     $TMUX_BIN display-message "Running cloned tpm..."
-    {tpm_env}"{tpm_app}"
+    "{tpm_app}"
     if [ "$?" -ne 0 ]; then
         echo "Failed to run: {tpm_app}"
         exit 12
@@ -1857,14 +1861,14 @@ class BaseConfig(TmuxConfig):
     #  Default trigger is: <prefix> I
     #
     $TMUX_BIN display-message "Installing all plugins..."
-    {tpm_env}"{tpm_location}/bindings/install_plugins"
+    "{tpm_location}/bindings/install_plugins"
     if [ "$?" -ne 0 ]; then
         echo "Failed to run: {tpm_location}/bindings/install_plugins"
         exit 13
     fi
 
     timer_end "installing plugins"
-    # {self.es.call_script(self._fnc_tpm_indicator)} clear
+    {self.es.call_script(self._fnc_tpm_indicator)} clear
     $TMUX_BIN display-message "Plugin setup completed"
 }}
 
@@ -1908,6 +1912,7 @@ timer_end() {{
         clear_tpm_init_sh = [
             f"""
 {self._fnc_tpm_indicator}() {{
+    echo "><> {self._fnc_tpm_indicator}($1)" >> /Users/jaclu/tmp/tmux-menus-dbg.log
     case "$1" in
       "set") task="set" ;;
       "clear") task="clear" ;;

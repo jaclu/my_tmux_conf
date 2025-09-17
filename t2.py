@@ -33,6 +33,9 @@ else:
     from sb.sb_t2 import SB  # type: ignore
 
 
+print("><> t2.py ")
+
+
 # Pylance complains about the base class here, the above condition confuses it
 # pylint: disable=too-many-ancestors
 class T2(SB):  # type: ignore
@@ -71,7 +74,8 @@ class T2(SB):  # type: ignore
         else:
             min_vers = 1.5
 
-        conf = """
+        conf = (
+            """
         set -g @menus_trigger Space
 
         set -g @menus_format_title "'#[fg=yellow,align=left] #{@menu_name} '"
@@ -90,15 +94,22 @@ class T2(SB):  # type: ignore
 
         set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
         # set -g @menus_use_cache  No
-        set -g @menus_config_file '$HOME/t2/tmux/tmux.conf'
+        set -g @menus_config_file "$TMUX_CONF"
 
         # set -g @menus_main_menu '~/tmp/alt_menu/alt_main.sh'
         # set -g @menus_main_menu "~/my_tmux_menus/main.sh"
-
-        #set -g @menus_main_menu '~/git_repos/mine/tmux-menus/custom_items/_index.sh'
-
-        set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/t2/tmux/plugins"
+        # set -g @menus_main_menu '~/git_repos/mine/tmux-menus/custom_items/_index.sh'
         """
+            f"""
+        # Hint needed for menus to find the right plugin path
+        set-environment -g TMUX_PLUGIN_MANAGER_PATH  "{self.plugins.get_env()[0]}"
+        """
+        )
+        print(f"><> plugin_menus() {self.plugins.get_env()}")
+        # conf += (
+        #     f'set-environment -g TMUX_PLUGIN_MANAGER_PATH  "{self.plugins.get_env()[0]}"'
+        # )
+        # "$HOME/t2/tmux/plugins"
         return ["jaclu/tmux-menus", min_vers, conf]
 
     def local_overrides(self) -> None:
