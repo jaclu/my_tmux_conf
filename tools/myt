@@ -576,8 +576,8 @@ tmux_2() {
         profile="$my_tmux_conf_location/t2.py"
     fi
 
-    # d_t2="$HOME/t2"
-    d_t2="$HOME/hupp t2" # for testing path with space
+    d_t2="$HOME/t2"
+    # d_t2="$HOME/hupp t2" # for testing path with space
     mkdir -p "$d_t2"
 
     # shellcheck disable=SC2154
