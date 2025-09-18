@@ -1827,6 +1827,11 @@ class BaseConfig(TmuxConfig):
 
     if [ -x "{tpm_app}" ]; then
         "{tpm_app}"
+        if [ "$?" -ne 0 ]; then
+            echo "Failed to clone tmux plugin handler:"
+            echo "  https://github.com/{self.plugin_handler}"
+            exit 20
+        fi
 
         timer_end "Completed tpm"
         {self.es.call_script(self._fnc_tpm_indicator)} clear
@@ -1844,14 +1849,14 @@ class BaseConfig(TmuxConfig):
     if [ "$?" -ne 0 ]; then
         echo "Failed to clone tmux plugin handler:"
         echo "  https://github.com/{self.plugin_handler}"
-        exit 11
+        exit 21
     fi
 
     $TMUX_BIN display-message "Running cloned tpm..."
     "{tpm_app}"
     if [ "$?" -ne 0 ]; then
         echo "Failed to run: {tpm_app}"
-        exit 12
+        exit 22
     fi
 
     #
@@ -1863,7 +1868,7 @@ class BaseConfig(TmuxConfig):
     "{tpm_location}/bindings/install_plugins"
     if [ "$?" -ne 0 ]; then
         echo "Failed to run: {tpm_location}/bindings/install_plugins"
-        exit 13
+        exit 23
     fi
 
     timer_end "installing plugins"
