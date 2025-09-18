@@ -47,7 +47,7 @@ For actions not available without the M-key, use tmux-menus
 - entire screen (window) split : Prefix M-HJKL
 - Clear screen and history: Prefix M-l
 - save history with escapes : Prefix M-E
-- save history no escapes : Prefix M-H
+- save history no escapes : Prefix M-h
 
 ### (M-) Window
 

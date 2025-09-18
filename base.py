@@ -1356,7 +1356,7 @@ class BaseConfig(TmuxConfig):
         #  cat history-file will display the included colors correctly.
         #
         w = self.write
-        s = 'bind -N "Save history to prompted file name (no escapes)"  M-H  command-prompt'
+        s = 'bind -N "Save history to prompted file name (no escapes)"  M-h  command-prompt'
         if self.vers_ok(1.0):
             s += ' -p "save history (no escapes) to:"'
             if self.vers_ok(1.5):
@@ -1909,7 +1909,8 @@ timer_end() {{
 
     def mkscript_tpm_indicator(self):
         """Changes state for tpm_initializing with params: set clear"""
-        purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
+        purge_seq = self.tpm_initializing.replace(
+            "[", "\\[").replace("]", "\\]")
         # self.sb_purge_tpm_running = f"$TMUX_BIN {self.opt_ses} -q status-right "
         # \\"$($TMUX_BIN display-message -p '#{{status-right}}' | sed 's/{purge_seq}//')\\"
 
@@ -1995,11 +1996,13 @@ timer_end() {{
         """Some keybs fail to render the Euro sign for M-S-2
         Only do this if local currency is EUR"""
         if not self.vers_ok(2.6):
-            print("ERROR: alternate_key_euro({sequence}) - called for tmux < 2.6")
+            print(
+                "ERROR: alternate_key_euro({sequence}) - called for tmux < 2.6")
             return  # user keys not yet available
         if sequence[:1] != "\\":
             print()
-            print(f"ERROR: alternate_key_euro({sequence}) must be given in octal notation")
+            print(
+                f"ERROR: alternate_key_euro({sequence}) must be given in octal notation")
             sys.exit(mtc_utils.ERROR_USER_KEY_NOT_OCTAL)
 
         w = self.write

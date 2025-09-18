@@ -38,7 +38,7 @@ dependent actions.
 | `<p> B`             |             |               | Choose paste buffer(-s)             |
 | `<p> M-l`           |             |               | Clear history & screen              |
 | `<p> M-E`           |             |               | Save history to file (with escapes) |
-| `<p> M-H`           |             |               | Save history to file (no escapes)   |
+| `<p> M-h`           |             |               | Save history to file (no escapes)   |
 | `<p> s`             |             |               | Set pane size (w x h)               |
 |                     |             |               |                                     |
 | `<p> C-h` `M-Left`  |             |               | Split pane to the left              |
