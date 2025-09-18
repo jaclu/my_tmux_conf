@@ -195,7 +195,7 @@ asdf_scan() {
 }
 
 define_tmux_env() {
-    log_it "><> define_tmux_env() - requires d_t2 [$d_t2]"
+    # log_it "><> define_tmux_env() - requires d_t2 [$d_t2]"
 
     # First clear some env variables potentially set by an outer tmux
     unset TMUX_BIN
@@ -376,7 +376,7 @@ ensure_cfg_file_present() {
 }
 
 start_tmux() {
-    log_it "><> start_tmux()"
+    # log_it "><> start_tmux()"
     if [ -z "$profile" ] && ! find_host_profile; then
         log_it "*** Warning: no profile found"
         sleep 3
@@ -568,7 +568,7 @@ find_host_profile() {
 }
 
 tmux_2() {
-    log_it "><> tmux_2() - defines d_t2"
+    # log_it "><> tmux_2() - defines d_t2"
     #
     #  Inner tmux server, uses a separate config and prefix
     #
@@ -576,8 +576,8 @@ tmux_2() {
         profile="$my_tmux_conf_location/t2.py"
     fi
 
-    d_t2="$HOME/t2"
-    # d_t2="$HOME/hupp t2" # for testing path with space
+    # d_t2="$HOME/t2"
+    d_t2="$HOME/hupp t2" # for testing path with space
     mkdir -p "$d_t2"
 
     # shellcheck disable=SC2154

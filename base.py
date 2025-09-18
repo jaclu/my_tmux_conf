@@ -175,7 +175,7 @@ class BaseConfig(TmuxConfig):
         # environment: Environment = Environment.normal,
     ) -> None:
         # Indicates if this tmux is run on the iSH console
-        print(f"><> BaseConfig.__init__() - conf_file [{conf_file}]")
+        # print(f"><> BaseConfig.__init__() - conf_file [{conf_file}]")
         self.style = None
         self.check_libs_compatible()
         super().__init__(
@@ -1823,10 +1823,9 @@ class BaseConfig(TmuxConfig):
     #  Initialize already installed tpm if found
     #  override in base.py
     #
-    echo "XDG_CONFIG_HOME[$XDG_CONFIG_HOME]" >> /Users/jaclu/tmp/tmux-menus-dbg.log
+    # echo "XDG_CONFIG_HOME[$XDG_CONFIG_HOME]" >> /Users/jaclu/tmp/tmux-menus-dbg.log
 
     if [ -x "{tpm_app}" ]; then
-        echo "><> will run: '{tpm_app}'" >> /Users/jaclu/tmp/tmux-menus-dbg.log
         "{tpm_app}"
 
         timer_end "Completed tpm"
@@ -1912,7 +1911,7 @@ timer_end() {{
         clear_tpm_init_sh = [
             f"""
 {self._fnc_tpm_indicator}() {{
-    echo "><> {self._fnc_tpm_indicator}($1)" >> /Users/jaclu/tmp/tmux-menus-dbg.log
+    # echo "><> {self._fnc_tpm_indicator}($1)" >> /Users/jaclu/tmp/tmux-menus-dbg.log
     case "$1" in
       "set") task="set" ;;
       "clear") task="clear" ;;

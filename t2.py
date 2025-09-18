@@ -32,8 +32,7 @@ if mtc_utils.HOSTNAME == "ish-hetz1":
 else:
     from sb.sb_t2 import SB  # type: ignore
 
-
-print("><> t2.py ")
+# print("><> t2.py ")
 
 
 # Pylance complains about the base class here, the above condition confuses it
@@ -105,7 +104,7 @@ class T2(SB):  # type: ignore
         set-environment -g TMUX_PLUGIN_MANAGER_PATH  "{self.plugins.get_env()[0]}"
         """
         )
-        print(f"><> plugin_menus() {self.plugins.get_env()}")
+        # print(f"><> plugin_menus() {self.plugins.get_env()}")
         # conf += (
         #     f'set-environment -g TMUX_PLUGIN_MANAGER_PATH  "{self.plugins.get_env()[0]}"'
         # )
