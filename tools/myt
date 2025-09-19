@@ -379,7 +379,7 @@ start_tmux() {
     # log_it "><> start_tmux()"
     if [ -z "$profile" ] && ! find_host_profile; then
         log_it "*** Warning: no profile found"
-        sleep 3
+        sleep 0.5
         profile="$my_tmux_conf_location/default_plugins.py"
     fi
 
