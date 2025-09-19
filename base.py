@@ -850,7 +850,7 @@ class BaseConfig(TmuxConfig):
         # else:
         #     s = ""
         cmd_new_win_named = (
-            f'command-prompt -p "Name of new window: "'
+            f'command-prompt -I ? -p "Name of new window: "'
             ' "'  # wrap cmd in "
             f"new-window -n '%%' {self.current_path_directive}"
             '"'  # wrap cmd in "
