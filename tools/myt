@@ -378,8 +378,8 @@ ensure_cfg_file_present() {
 start_tmux() {
     # log_it "><> start_tmux()"
     if [ -z "$profile" ] && ! find_host_profile; then
-        log_it "*** Warning: no profile found"
-        sleep 0.5
+        log_it "***  Warning: no profile found  ***"
+        sleep 1
         profile="$my_tmux_conf_location/default_plugins.py"
     fi
 

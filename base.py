@@ -1909,8 +1909,7 @@ timer_end() {{
 
     def mkscript_tpm_indicator(self):
         """Changes state for tpm_initializing with params: set clear"""
-        purge_seq = self.tpm_initializing.replace(
-            "[", "\\[").replace("]", "\\]")
+        purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
         # self.sb_purge_tpm_running = f"$TMUX_BIN {self.opt_ses} -q status-right "
         # \\"$($TMUX_BIN display-message -p '#{{status-right}}' | sed 's/{purge_seq}//')\\"
 
@@ -1996,13 +1995,11 @@ timer_end() {{
         """Some keybs fail to render the Euro sign for M-S-2
         Only do this if local currency is EUR"""
         if not self.vers_ok(2.6):
-            print(
-                "ERROR: alternate_key_euro({sequence}) - called for tmux < 2.6")
+            print("ERROR: alternate_key_euro({sequence}) - called for tmux < 2.6")
             return  # user keys not yet available
         if sequence[:1] != "\\":
             print()
-            print(
-                f"ERROR: alternate_key_euro({sequence}) must be given in octal notation")
+            print(f"ERROR: alternate_key_euro({sequence}) must be given in octal notation")
             sys.exit(mtc_utils.ERROR_USER_KEY_NOT_OCTAL)
 
         w = self.write
