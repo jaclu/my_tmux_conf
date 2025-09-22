@@ -159,7 +159,7 @@ class LimitedKbdSpecialHandling:
             self.tc.write(msg)
             return False
 
-        print(f"===>  Keyboard: {mtc_utils.LC_KEYBOARD}")
+        print(f"===>  {self.__class__.__name__}  -  kbd: {mtc_utils.LC_KEYBOARD}")
         self.tc.write(
             f"""
             #======================================================
