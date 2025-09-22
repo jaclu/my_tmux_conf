@@ -67,7 +67,7 @@ error_msg() {
 }
 
 run_cmd() {
-    log_it "run_cmd($*)"
+    # log_it "run_cmd($*)"
     # Used to run a command, log output and report exit code of operation
     _c="$(eval "$1" 2>&1)"
     ex_code="$?"
@@ -468,7 +468,7 @@ get_location_my_tmux_conf() {
 }
 
 create_tmux_conf() {
-    log_it "create_tmux_conf() - conf_file [$conf_file]"
+    # log_it "create_tmux_conf() - conf_file [$conf_file]"
     #
     #  Generate a new tmux conf file
     #
