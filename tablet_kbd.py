@@ -159,7 +159,7 @@ class LimitedKbdSpecialHandling:
             self.tc.write(msg)
             return False
 
-        print(f"This originated on a console - using keyboard: {mtc_utils.LC_KEYBOARD}")
+        print(f"===>  Keyboard: {mtc_utils.LC_KEYBOARD}")
         self.tc.write(
             f"""
             #======================================================
