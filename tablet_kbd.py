@@ -146,10 +146,6 @@ class LimitedKbdSpecialHandling:
         }
         self.sequence_used = []
 
-    def write(self, cmd: str | list[str] | list[list[str]] = "", eol: str = "\n"):
-        # Sends the wtite back to the main tmux-conf handler
-        self.tc.write(cmd, eol)
-
     def config_console_keyb(self) -> bool:
         #
         #  Only use this if the following conditions are met:
@@ -170,8 +166,7 @@ class LimitedKbdSpecialHandling:
             #
             #  Remap keys for limited console
             #
-            #  Console  type: {self.__class__.__name__}
-            #  keyboard type: {mtc_utils.LC_KEYBOARD}
+            #  {self.__class__.__name__}  -  kbd: {mtc_utils.LC_KEYBOARD}
             #
             #======================================================
             """
