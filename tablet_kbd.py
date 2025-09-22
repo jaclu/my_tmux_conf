@@ -160,11 +160,11 @@ class LimitedKbdSpecialHandling:
             msg = """WARNING: tmux < 2.6 does not support user-keys, thus handling
             keyboard adaptions not supported on this version"""
             print(msg)
-            self.write(msg)
+            self.tc.write(msg)
             return False
 
         print(f"This originated on a console - using keyboard: {mtc_utils.LC_KEYBOARD}")
-        self.write(
+        self.tc.write(
             f"""
             #======================================================
             #
@@ -190,7 +190,7 @@ class LimitedKbdSpecialHandling:
             self.keyb_type_touch()
         else:
             msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
-            self.write(msg)
+            self.tc.write(msg)
             print(msg)
             return False
         return True
@@ -232,8 +232,8 @@ class LimitedKbdSpecialHandling:
         #
         #  Built in touch-keyb
         #
-        self.write("# No adoptions available for Touch Keyboard")
-        self.write()  # spacer line
+        self.tc.write("# No adoptions available for Touch Keyboard")
+        self.tc.write()  # spacer line
         # self.tc.use_prefix_arrow_nav_keys = True
 
     # ======================================================
@@ -261,7 +261,7 @@ class LimitedKbdSpecialHandling:
         else:
             send_str = key
 
-        self.write(
+        self.tc.write(
             f"""#
             #  Replacement {key} key
             #
@@ -286,7 +286,7 @@ class LimitedKbdSpecialHandling:
 
     def hash_not_pound(self):
         sequence = "\\302\\243"
-        self.write(
+        self.tc.write(
             f"""
             # This keyb sends £ when it should send #
             {self.tc.opt_server} user-keys[{self.key_2_uk["#"]}] "{sequence}"
@@ -372,7 +372,7 @@ class IshConsole(LimitedKbdSpecialHandling):
             # No kbd remapping supported for touch kbd
             return True
 
-        self.write(
+        self.tc.write(
             """
         #
         #  Map Function keys
@@ -401,8 +401,8 @@ class IshConsole(LimitedKbdSpecialHandling):
         #  this just binds them to send F# and swaps M-0 -> F10
         #
         for i in range(1, 10):
-            self.write(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
-        self.write('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
+            self.tc.write(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
+        self.tc.write('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
 
     # ======================================================
     #
@@ -412,7 +412,7 @@ class IshConsole(LimitedKbdSpecialHandling):
     # ======================================================
 
     def m_fn_keys(self) -> None:
-        w = self.write
+        w = self.tc.write
         k2uk = self.key_2_uk
 
         fn_keys = (
@@ -433,7 +433,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         w()  # spacer line
 
     def ms_fn_keys(self) -> None:
-        w = self.write
+        w = self.tc.write
         k2uk = self.key_2_uk
 
         fn_keys = (
@@ -483,7 +483,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         """If fn keys are not mapped to ms numbers, use them as regular M- chars"""
 
         k2uk = self.key_2_uk
-        w = self.write
+        w = self.tc.write
 
         if not ms_fn_keys_mapped:
             self.alt_upper_case_numbers()
