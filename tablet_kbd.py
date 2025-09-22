@@ -169,8 +169,8 @@ class LimitedKbdSpecialHandling:
             #======================================================
             #
             #  Remap keys for limited console
-            #  Console type: {self.__class__.__name__}
-            #  using keyboard: {mtc_utils.LC_KEYBOARD}
+            #  Console  type: {self.__class__.__name__}
+            #  keyboard type: {mtc_utils.LC_KEYBOARD}
             #
             #======================================================
             """
