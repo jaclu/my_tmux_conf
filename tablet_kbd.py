@@ -40,6 +40,7 @@ KBD_BRYDGE_10_2_MAX = "Brydge 10.2 MAX+"
 KBD_YOOZON3 = "Yoozon 3"  # same as brydge
 KBD_OMNITYPE = "Omnitype Keyboard"
 KBD_BLUETOOTH = "Bluetooth Keyboard"  # Pad5 - sadly generic name
+KBD_TOUCH = "Touch Keyboard"
 
 
 class LimitedKbdSpecialHandling:
@@ -184,6 +185,9 @@ class LimitedKbdSpecialHandling:
             self.keyb_type_2()
         elif mtc_utils.LC_KEYBOARD == KBD_LOGITECH_COMBO_TOUCH:
             self.keyb_type_combo_touch()
+            return False  # hint that no further processing should happen
+        elif mtc_utils.LC_KEYBOARD == KBD_TOUCH:
+            self.keyb_type_touch()
         else:
             msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
             self.write(msg)
@@ -223,6 +227,12 @@ class LimitedKbdSpecialHandling:
         #
         self.keyb_type_2()  # Same esc handling
         self.alternate_key_backtick("\\033")
+
+    def keyb_type_touch(self):
+        #
+        #  Built in touch-keyb
+        #
+        self.tc.use_prefix_arrow_nav_keys = True
 
     # ======================================================
     #
@@ -356,7 +366,11 @@ class IshConsole(LimitedKbdSpecialHandling):
         if not super().config_console_keyb():
             return False
 
-        self.tc.write(
+        if mtc_utils.LC_KEYBOARD == KBD_TOUCH:
+            # No kbd remapping supported for touch kbd
+            return True
+
+        self.write(
             """
         #
         #  Map Function keys
@@ -518,9 +532,8 @@ def special_consoles_config(tmux_conf_instance):
         # If there is no indication what keyboard is used, no specific adaptions
         # can be applied.
         # Here the assumption is usage of the touch-keyb
-        if mtc_utils.LC_CONSOLE == "iSH":
-            tmux_conf_instance.use_prefix_arrow_nav_keys = True
-        return False
+        mtc_utils.LC_KEYBOARD = KBD_TOUCH
+        # <p> c-m = M
     if mtc_utils.LC_CONSOLE == "iSH":  # and not mtc_utils.IS_REMOTE:
         kbd = IshConsole(tmux_conf_instance)
     elif mtc_utils.LC_CONSOLE == "Termux":
