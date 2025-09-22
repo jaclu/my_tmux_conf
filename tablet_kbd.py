@@ -159,7 +159,9 @@ class LimitedKbdSpecialHandling:
             self.tc.write(msg)
             return False
 
+        print()
         print(f"===>  {self.__class__.__name__}  -  kbd: {mtc_utils.LC_KEYBOARD}")
+        print()
         self.tc.write(
             f"""
             #======================================================
@@ -514,11 +516,11 @@ class IshConsole(LimitedKbdSpecialHandling):
                 w(f'bind -N "Send {key}" -n User{k2uk[key]}     send-keys     {key}')
         w()  # spacer line
 
-        if any("User" in value for value in self.tc.muc_keys.values()):
-            print("---  self.tc.muc_keys  ---")
-            for k, u in self.tc.muc_keys.items():
-                print(f" userkey: {u}   key: {k}")
-            print()
+        # if any("User" in value for value in self.tc.muc_keys.values()):
+        #     print("---  self.tc.muc_keys  ---")
+        #     for k, u in self.tc.muc_keys.items():
+        #         print(f" userkey: {u}   key: {k}")
+        #     print()
 
 
 def special_consoles_config(tmux_conf_instance):
