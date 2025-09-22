@@ -512,9 +512,11 @@ def special_consoles_config(tmux_conf_instance):
         return False
 
     if not mtc_utils.LC_KEYBOARD:
-        # If there is no indication what keyboard is used, no adaptions
-        # can be applied, so might as well return
-        # tmux_conf_instance.write("# ><> no LC_KEYBOARD detected")
+        # If there is no indication what keyboard is used, no specific adaptions
+        # can be applied.
+        # Here the assumption is usage of the touch-keyb
+        if mtc_utils.LC_CONSOLE == "iSH":
+            tmux_conf_instance.use_prefix_arrow_nav_keys = True
         return False
     if mtc_utils.LC_CONSOLE == "iSH":  # and not mtc_utils.IS_REMOTE:
         kbd = IshConsole(tmux_conf_instance)
