@@ -145,6 +145,10 @@ class LimitedKbdSpecialHandling:
         }
         self.sequence_used = []
 
+    def write(self, cmd: str | list[str] | list[list[str]] = "", eol: str = "\n"):
+        # Sends the wtite back to the main tmux-conf handler
+        self.tc.write(cmd, eol)
+
     def config_console_keyb(self) -> bool:
         #
         #  Only use this if the following conditions are met:
@@ -155,11 +159,11 @@ class LimitedKbdSpecialHandling:
             msg = """WARNING: tmux < 2.6 does not support user-keys, thus handling
             keyboard adaptions not supported on this version"""
             print(msg)
-            self.tc.write(msg)
+            self.write(msg)
             return False
 
         print(f"This originated on a console - using keyboard: {mtc_utils.LC_KEYBOARD}")
-        self.tc.write(
+        self.write(
             f"""
             #======================================================
             #
@@ -182,7 +186,7 @@ class LimitedKbdSpecialHandling:
             self.keyb_type_combo_touch()
         else:
             msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
-            self.tc.write(msg)
+            self.write(msg)
             print(msg)
             return False
         return True
@@ -245,7 +249,7 @@ class LimitedKbdSpecialHandling:
         else:
             send_str = key
 
-        self.tc.write(
+        self.write(
             f"""#
             #  Replacement {key} key
             #
@@ -270,7 +274,7 @@ class LimitedKbdSpecialHandling:
 
     def hash_not_pound(self):
         sequence = "\\302\\243"
-        self.tc.write(
+        self.write(
             f"""
             # This keyb sends £ when it should send #
             {self.tc.opt_server} user-keys[{self.key_2_uk["#"]}] "{sequence}"
@@ -380,10 +384,9 @@ class IshConsole(LimitedKbdSpecialHandling):
         #  For keybs that already handles M-#
         #  this just binds them to send F# and swaps M-0 -> F10
         #
-        w = self.tc.write
         for i in range(1, 10):
-            w(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
-        w('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
+            self.write(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
+        self.write('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
 
     # ======================================================
     #
@@ -393,7 +396,7 @@ class IshConsole(LimitedKbdSpecialHandling):
     # ======================================================
 
     def m_fn_keys(self) -> None:
-        w = self.tc.write
+        w = self.write
         k2uk = self.key_2_uk
 
         fn_keys = (
@@ -414,7 +417,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         w()  # spacer line
 
     def ms_fn_keys(self) -> None:
-        w = self.tc.write
+        w = self.write
         k2uk = self.key_2_uk
 
         fn_keys = (
@@ -464,7 +467,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         """If fn keys are not mapped to ms numbers, use them as regular M- chars"""
 
         k2uk = self.key_2_uk
-        w = self.tc.write
+        w = self.write
 
         if not ms_fn_keys_mapped:
             self.alt_upper_case_numbers()
