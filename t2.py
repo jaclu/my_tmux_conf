@@ -84,7 +84,7 @@ class T2(SB):  # type: ignore
         set -g @menus_nav_home "#[fg=colour84]<=="
         set -g @menus_border_type 'rounded'
 
-        set -g @menus_display_commands "Yes"
+        # set -g @menus_display_commands "No"
         # set -g @menus_display_cmds_cols 95
 
         set -g @menus_use_hint_overlays no
@@ -104,11 +104,7 @@ class T2(SB):  # type: ignore
         set-environment -g TMUX_PLUGIN_MANAGER_PATH  "{self.plugins.get_env()[0]}"
         """
         )
-        # print(f"><> plugin_menus() {self.plugins.get_env()}")
-        # conf += (
-        #     f'set-environment -g TMUX_PLUGIN_MANAGER_PATH  "{self.plugins.get_env()[0]}"'
-        # )
-        # "$HOME/t2/tmux/plugins"
+
         return ["jaclu/tmux-menus", min_vers, conf]
 
     def local_overrides(self) -> None:
