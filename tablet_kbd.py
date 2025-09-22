@@ -160,6 +160,8 @@ class LimitedKbdSpecialHandling:
             return False
 
         print()
+        if mtc_utils.LC_ORIGIN:
+            print(f"===>  Session for limited console from:  {mtc_utils.LC_ORIGIN}")
         print(f"===>  {self.__class__.__name__}  -  kbd: {mtc_utils.LC_KEYBOARD}")
         print()
         self.tc.write(
