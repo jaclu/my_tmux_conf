@@ -77,23 +77,24 @@ class T2(SB):  # type: ignore
             """
         set -g @menus_trigger Space
 
-        set -g @menus_format_title "'#[fg=yellow,align=left] #{@menu_name} '"
-        set -g @menus_simple_style_border "fg=green,bg=default"
+        # set -g @menus_display_commands "No"
+        # set -g @menus_display_cmds_cols 95
+
+        set -g @menus_simple_style_border default
+        set -g @menus_simple_style_selected default
+        set -g @menus_simple_style default
         set -g @menus_nav_next "#[fg=colour220]-->"
         set -g @menus_nav_prev "#[fg=colour71]<--"
         set -g @menus_nav_home "#[fg=colour84]<=="
         set -g @menus_border_type 'rounded'
 
-        # set -g @menus_display_commands "No"
-        # set -g @menus_display_cmds_cols 95
+        set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
+        # set -g @menus_use_cache  No
+        set -g @menus_config_file "$TMUX_CONF"
 
         set -g @menus_use_hint_overlays no
         set -g @menus_show_key_hints no
 
-
-        set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
-        # set -g @menus_use_cache  No
-        set -g @menus_config_file "$TMUX_CONF"
 
         # set -g @menus_main_menu '~/tmp/alt_menu/alt_main.sh'
         # set -g @menus_main_menu "~/my_tmux_menus/main.sh"

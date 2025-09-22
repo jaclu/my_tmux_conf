@@ -299,6 +299,13 @@ class DefaultPlugins(BaseConfig):
             set -g @menus_trigger Space
             # set -g @menus_without_prefix No
 
+            set -g @menus_format_title "'#[fg=yellow,align=left] #{@menu_name} '"
+            set -g @menus_simple_style_border "fg=green,bg=default"
+            set -g @menus_nav_next "#[fg=colour220]-->"
+            set -g @menus_nav_prev "#[fg=colour71]<--"
+            set -g @menus_nav_home "#[fg=colour84]<=="
+            set -g @menus_border_type 'rounded'
+
             # set -g @menus_location_x C
             # set -g @menus_location_y C
 
@@ -308,7 +315,6 @@ class DefaultPlugins(BaseConfig):
             set -g @menus_use_hint_overlays No
             # set -g @menus_show_key_hints Yes
 
-            set -g @menus_border_type 'rounded'
             #
             #  Slightly catppuccin frappe inspired
             #
@@ -316,14 +322,6 @@ class DefaultPlugins(BaseConfig):
             # set -g @menus_simple_style_selected "fg=#414559,bg=#e5c890"
             # set -g @menus_simple_style "bg=#414559"        # @thm_surface_0
             # set -g @menus_simple_style_border "bg=#414559" # @thm_surface_0
-
-            set -g @menus_simple_style_selected default
-            set -g @menus_simple_style default
-            set -g @menus_simple_style_border default
-
-            set -g @menus_nav_next "#[fg=colour220]-->"
-            set -g @menus_nav_prev "#[fg=colour71]<--"
-            set -g @menus_nav_home "#[fg=colour84]<=="
 
             # set -g @menus_log_file "$HOME/tmp/tmux-menus.log"
             """,
