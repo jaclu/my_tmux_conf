@@ -1224,6 +1224,8 @@ class BaseConfig(TmuxConfig):
                 """
             )
             if self.use_prefix_arrow_nav_keys:
+                #  Due to the limited keyboard handling in iSH, only supporting
+                #  unmodified arrorws, prefix arrows ae used for PageUp/Down,Home/End
                 w(
                     f"""
                     bind -N "Select pane left - P+Left M-Left"    -r  h  {pane_left}
