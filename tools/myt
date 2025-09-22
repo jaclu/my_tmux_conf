@@ -414,25 +414,32 @@ start_tmux() {
 
 kill_tmux() {
     define_tmux_env
-    run_cmd "$TMUX_BIN -L $socket kill-server"
+    socket_identifier=" -L $socket"
+
+    echo "$TMUX" | grep -q "$socket" && {
+        error_msg "Trying to kill this tmux - aborted"
+    }
+    pgrep  -f "$socket_identifier" > /dev/null || {
+        error_msg "No tmux found using socket: $socket"
+    }
+    run_cmd "$TMUX_BIN $socket_identifier kill-server"
 
     # Normally this should be enough, sometimes when there are conflicting
     # tmux versions present, it can fail reporting lost server,
     # then use more primitive methods
-    cmd=" -L $socket"
-    pids="$(pgrep -f "$cmd")"
+    pids="$(pgrep -f "$socket_identifier")"
     if [ -n "$pids" ]; then
         log_it "tmux kill-server failed, trying to kill by pid"
-        pgrep -f "$cmd" | xargs kill || {
-            error_msg "Failed to kill tmux using socket: $socket"
+        pgrep -f "$socket_identifier" | xargs kill || {
+            error_msg "Failed to kill tmux using socket: $socket_identifier"
         }
-        pgrep -f "$cmd" >/dev/null && {
+        pgrep -f "$socket_identifier" >/dev/null && {
             echo "Failed when using normal kill, attempting kill -9"
-            pgrep -f "$cmd" | xargs kill -9 || {
-                error_msg "Failed to kill tmux using socket: $socket"
+            pgrep -f "$socket_identifier" | xargs kill -9 || {
+                error_msg "Failed to kill tmux using socket: $socket_identifier"
             }
         }
-        pgrep -f "$cmd" >/dev/null && error_msg "Process remains: $pids"
+        pgrep -f "$socket_identifier" >/dev/null && error_msg "Process remains: $pids"
         echo "Killed: $pids"
     elif [ "$ex_code" = 0 ]; then
         # tmux kill-server succeeded
