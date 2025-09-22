@@ -326,7 +326,7 @@ class DefaultPlugins(BaseConfig):
             set -g @menus_nav_prev "#[fg=colour71]<--"
             set -g @menus_nav_home "#[fg=colour84]<=="
 
-            set -g @menus_log_file "$HOME/tmp/tmux-menus.log"
+            # set -g @menus_log_file "$HOME/tmp/tmux-menus.log"
             """,
         ]
 
