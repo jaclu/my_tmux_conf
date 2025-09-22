@@ -1228,6 +1228,10 @@ class BaseConfig(TmuxConfig):
                 #  unmodified arrorws, prefix arrows ae used for PageUp/Down,Home/End
                 w(
                     f"""
+                    #
+                    #  Due to the limited keyboard handling in iSH, only supporting
+                    #  unmodified arrorws, here they are used for document navigation.
+                    #
                     bind -N "Select pane left - P+Left M-Left"    -r  h  {pane_left}
                     bind -N "Select pane down - P+Down M-Down"    -r  j  {pane_down}
                     bind -N "Select pane up - P+Up M-Up"          -r  k  {pane_up}
