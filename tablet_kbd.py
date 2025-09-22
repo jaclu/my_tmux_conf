@@ -166,7 +166,7 @@ class LimitedKbdSpecialHandling:
             f"""
             #======================================================
             #
-            #  Remap keys for limited console
+            #  Remap keys for limited console at: {mtc_utils.LC_ORIGIN}
             #
             #  {self.__class__.__name__}  -  kbd: {mtc_utils.LC_KEYBOARD}
             #

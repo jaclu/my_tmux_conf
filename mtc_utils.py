@@ -49,11 +49,50 @@ IS_REMOTE = bool(os.getenv("SSH_CLIENT"))
 IS_INNER_TMUX = bool(os.getenv("TMUX_OUTER"))
 
 #
-#  Hosts with limited consoles are setup to have defined this to indicate what
-#  keyboard it is currently using, in order for the right special adaptions defined in
-#  in tablet_kbd.py can be used.
+#  If the session originated on a "primitive keyboard" console, such as
+#  iSH or Termux, it is indicated in LC_CONSOLE
+#
+LC_CONSOLE = os.getenv("LC_CONSOLE") or ""
+
+#
+#  Hosts with limited consoles should also list what keyboard they are using
+#  in order for tablet_kbd.py to make correct workarounds
 #
 LC_KEYBOARD = os.getenv("LC_KEYBOARD") or ""
+
+#
+#   List hostname where session started, purely informational
+#
+LC_ORIGIN = os.getenv("LC_ORIGIN") or ""
+
+
+HOSTNAME = os.getenv("HOSTNAME_SHORT") or ""
+
+IS_DARWIN = platform.system() == "Darwin"
+IS_ISH = os.path.isdir("/proc/ish")
+IS_TERMUX = os.environ.get("TERMUX_VERSION") is not None
+IS_GHOSTTY: bool = os.environ.get("TERM_PROGRAM") == "ghostty"
+
+# muc keys and default values
+K_M_PLUS = "M-+"
+# K_M_PAR_OPEN = "M-("
+# K_M_PAR_CLOSE = "M-)"
+K_M_UNDERSCORE = "M-_"
+K_M_P = "M-P"
+K_M_X = "M-X"
+K_M_H = "M-h"
+K_M_J = "M-j"
+K_M_K = "M-k"
+K_M_L = "M-l"
+
+#
+#  Define some error types
+#
+ERROR_INCOMPATIBLE_TMUX_CONF_LIB = 64
+ERROR_MISSING_KEY_IN_MUC_KEYS = 65
+ERROR_USER_KEY_NOT_OCTAL = 65
+ERROR_T2_USING_DEF_TMUX_CONF = 67
+ERROR_STYLE_REDEFINED = 68
 
 
 #
@@ -121,38 +160,13 @@ def _get_short_hostname():
     return run_shell(f"{cmd} -s").lower()
 
 
-HOSTNAME = os.getenv("HOSTNAME_SHORT") or ""
+# ===============================================================
+#
+#   Main
+#
+# ===============================================================
+
 if HOSTNAME:
     HOSTNAME.lower()
 else:
     HOSTNAME = _get_short_hostname()
-
-
-IS_DARWIN = platform.system() == "Darwin"
-IS_ISH = os.path.isdir("/proc/ish")
-IS_TERMUX = os.environ.get("TERMUX_VERSION") is not None
-IS_GHOSTTY: bool = os.environ.get("TERM_PROGRAM") == "ghostty"
-#
-#  If the session originated on a "primitive keyboard" console, such as
-#  iSH or Termux, it is indicated in LC_CONSOLE
-#
-LC_CONSOLE = os.getenv("LC_CONSOLE") or ""
-
-# muc keys and default values
-K_M_PLUS = "M-+"
-# K_M_PAR_OPEN = "M-("
-# K_M_PAR_CLOSE = "M-)"
-K_M_UNDERSCORE = "M-_"
-K_M_P = "M-P"
-K_M_X = "M-X"
-K_M_H = "M-h"
-K_M_J = "M-j"
-K_M_K = "M-k"
-K_M_L = "M-l"
-
-
-ERROR_INCOMPATIBLE_TMUX_CONF_LIB = 64
-ERROR_MISSING_KEY_IN_MUC_KEYS = 65
-ERROR_USER_KEY_NOT_OCTAL = 65
-ERROR_T2_USING_DEF_TMUX_CONF = 67
-ERROR_STYLE_REDEFINED = 68
