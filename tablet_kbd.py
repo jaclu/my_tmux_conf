@@ -507,6 +507,10 @@ class IshConsole(LimitedKbdSpecialHandling):
 
 
 def special_consoles_config(tmux_conf_instance):
+    if not mtc_utils.LC_CONSOLE:
+        # If this is not a special console, take no action
+        return False
+
     if not mtc_utils.LC_KEYBOARD:
         # If there is no indication what keyboard is used, no adaptions
         # can be applied, so might as well return
