@@ -228,7 +228,7 @@ class LimitedKbdSpecialHandling:
         #
         #  Built in touch-keyb
         #
-        self.tc.write("# No adoptions available for Touch Keyboard")
+        self.tc.write("# Touch keyboard adaptations unavailable")
         self.tc.write()  # spacer line
         # self.tc.use_prefix_arrow_nav_keys = True
 
