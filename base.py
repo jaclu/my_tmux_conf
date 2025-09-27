@@ -304,7 +304,7 @@ class BaseConfig(TmuxConfig):
         #  Display what class this override comes from
         w("# ---  BaseConfig.local_overides()")
 
-        if not self.tablet_keyb:
+        if not self.tablet_keyb and self.vers_ok(2.6):
             # Tablet keyb configs handle their own euro rempaping
             eur_sequence = "\\033\\100"  # Dawin keyboards, is pc different?
             self.alternate_key_euro(eur_sequence)
@@ -481,7 +481,7 @@ class BaseConfig(TmuxConfig):
 
         self.true_color()
 
-        if shutil.which("yazi"):
+        if shutil.which("yazi") and self.vers_ok(1.0):
             w(
                 """
             #
