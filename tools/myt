@@ -133,7 +133,7 @@ py_venv_activate() {
     #
     #  Activate Python venv, will only be called if use_python_venv ia true
     #
-    lbl_3 "py_venv_activate()"
+    # lbl_3 "py_venv_activate()"
     $use_python_venv || return 1  # if venv is not used return
     if [ -f "$scr_venv_activate" ]; then
         lbl_3 "Using py venv: $d_venv"
@@ -151,7 +151,7 @@ py_venv_deactivate() {
     #
     #  Deactivate Python venv, will only be called if use_python_venv ia true
     #
-    lbl_3 "py_venv_deactivate()"
+    # lbl_3 "py_venv_deactivate()"
     $use_python_venv || return 1  # if venv is not used return
     lbl_3 "Exiting py venv: $d_venv"
     deactivate || error_msg "Failed to deactivate Python venv"
