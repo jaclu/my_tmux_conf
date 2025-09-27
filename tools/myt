@@ -35,7 +35,7 @@ Options can be given in any order.
 Available options:
 
 -h       Print this help and exit
---venv   Force (Re-) create of venv for building tmux.conf then terminate
+--venv   Force (Re-) create of venv for building tmux.conf
 -c       Use this tmux binary (default tmux)
 -k       Kill running tmux, can be combined with -2
 -m       Use tmate
@@ -69,6 +69,10 @@ lbl_2() {
 
 lbl_3() {
     log_it " --  $1"
+}
+
+lbl_4() {
+    log_it "  -  $1"
 }
 
 error_msg() {
@@ -628,7 +632,7 @@ ERROR_STYLE_REDEFINED=68
 
 [ -n "$f_myt_log" ] && {
     rm -f "$f_myt_log" # clear log on each run
-    lbl_3 "Will log progress to: $f_myt_log"
+    lbl_4 "Will log progress to: $f_myt_log"
 }
 
 if [ -f "$f_skip_venv" ]; then
