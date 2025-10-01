@@ -5,7 +5,7 @@
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
 #
-#  Pipe to this in oreder send back data through OSC 52
+#  Pipe to this in order to send back data through OSC 52
 #
 # shellcheck disable=SC2059
 printf "\033]52;c;$(base64 | tr -d '\r\n')\a"
