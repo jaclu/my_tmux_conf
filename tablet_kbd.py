@@ -265,7 +265,7 @@ class LimitedKbdSpecialHandling:
             #  Replacement {key} key
             #
             {self.tc.opt_server} user-keys[{self.key_2_uk[key]}]  "{sequence}"
-            bind -N "Send key" -n User{self.key_2_uk[key]}  send-keys {send_str}
+            bind -N "Send key {key}" -n User{self.key_2_uk[key]}  send-keys {send_str}
             """
         )
         self.sequence_used.append(sequence)
@@ -492,7 +492,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         w(  # not in root 308 310 311 312 316 324
             """
         #
-        #  iSH console doesn't generate the right keys for alt-S characters
+        #  iSH console doesn't generate the right keys for M-S characters
         #  Here they are interpreted by tmux
         #
         """
