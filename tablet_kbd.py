@@ -226,7 +226,7 @@ class LimitedKbdSpecialHandling:
         #  Logitech Combo Touch
         #
         self.alternate_key_escape("\\302\\247")
-        self.alt_key_define("\\033", "`")  # sends Esc by default
+        self.alternate_key_backtick("\\033")  # sends Esc by default
 
     def keyb_type_touch(self):
         #
@@ -255,7 +255,7 @@ class LimitedKbdSpecialHandling:
     def alt_key_define(self, sequence, key):
         self.alt_key_param_check(sequence, key)
         if key == "backtick":
-            send_str = "\\`"
+            send_str = "`"
         elif key == "delete":
             send_str = "DC"
         else:
