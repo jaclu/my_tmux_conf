@@ -185,7 +185,6 @@ class LimitedKbdSpecialHandling:
             self.keyb_type_2()
         elif mtc_utils.LC_KEYBOARD == KBD_LOGITECH_COMBO_TOUCH:
             self.keyb_type_combo_touch()
-            return False  # hint that no further processing should happen
         elif mtc_utils.LC_KEYBOARD == KBD_TOUCH:
             self.keyb_type_touch()
         else:
@@ -255,7 +254,7 @@ class LimitedKbdSpecialHandling:
     def alt_key_define(self, sequence, key):
         self.alt_key_param_check(sequence, key)
         if key == "backtick":
-            send_str = "\`"
+            send_str = "\\`"
         elif key == "delete":
             send_str = "DC"
         else:
