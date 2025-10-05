@@ -185,7 +185,6 @@ class LimitedKbdSpecialHandling:
             self.keyb_type_2()
         elif mtc_utils.LC_KEYBOARD == KBD_LOGITECH_COMBO_TOUCH:
             self.keyb_type_combo_touch()
-            return False  # hint that no further processing should happen
         elif mtc_utils.LC_KEYBOARD == KBD_TOUCH:
             self.keyb_type_touch()
         else:
@@ -225,8 +224,8 @@ class LimitedKbdSpecialHandling:
         #
         #  Logitech Combo Touch
         #
-        self.keyb_type_2()  # Same esc handling
-        self.alternate_key_backtick("\\033")
+        self.alternate_key_escape("\\302\\247")
+        self.alternate_key_backtick("\\033")  # sends Esc by default
 
     def keyb_type_touch(self):
         #
@@ -266,7 +265,7 @@ class LimitedKbdSpecialHandling:
             #  Replacement {key} key
             #
             {self.tc.opt_server} user-keys[{self.key_2_uk[key]}]  "{sequence}"
-            bind -N "Send key" -n User{self.key_2_uk[key]}  send-keys '{send_str}'
+            bind -N "Send key {key}" -n User{self.key_2_uk[key]}  send-keys {send_str}
             """
         )
         self.sequence_used.append(sequence)
@@ -478,8 +477,8 @@ class IshConsole(LimitedKbdSpecialHandling):
         self.auk["M-^"] = "\\357\\254\\202"
         self.auk["M-&"] = "\\342\\200\\241"
         self.auk["M-*"] = "\\302\\260"
-        # self.auk["M-("] = "\\302\\267"
-        # self.auk["M-)"] = "\\342\\200\\232"
+        self.auk["M-("] = "\\302\\267"
+        self.auk["M-)"] = "\\342\\200\\232"
 
     def alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
         """If fn keys are not mapped to ms numbers, use them as regular M- chars"""
@@ -493,7 +492,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         w(  # not in root 308 310 311 312 316 324
             """
         #
-        #  iSH console doesn't generate the right keys for alt-S characters
+        #  iSH console doesn't generate the right keys for M-S characters
         #  Here they are interpreted by tmux
         #
         """
