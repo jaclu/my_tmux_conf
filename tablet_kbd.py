@@ -393,7 +393,7 @@ class IshConsole(LimitedKbdSpecialHandling):
         self.alt_upper_case(ms_fn_keys_mapped)
 
         # use <prefix> arrows as PageUp/Dn Home/End
-        self.tc.use_prefix_arrow_nav_keys = True
+        self.tc.use_prefix_arrow_nav_keys = False
         return True
 
     def fn_keys(self):
@@ -513,7 +513,7 @@ class IshConsole(LimitedKbdSpecialHandling):
                 w("# tmux < 3.1 Fails to handle Meta N - so it is skipped")
             elif key == 'M-"':
                 w(f"""bind -N 'Send {key}' -n User{k2uk[key]}     send-keys     '{key}' """)
-            elif key ==  "M-}": 
+            elif key == "M-}":
                 w(f"""bind -N "Send {key}" -n User{k2uk[key]}     send-keys     "{key}" """)
             else:
                 w(f'bind -N "Send {key}" -n User{k2uk[key]}     send-keys     {key}')
