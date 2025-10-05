@@ -226,7 +226,7 @@ class LimitedKbdSpecialHandling:
         #  Logitech Combo Touch
         #
         self.keyb_type_2()  # Same esc handling
-        self.alternate_key_backtick("\\033")
+        # self.alternate_key_backtick("\\033")
 
     def keyb_type_touch(self):
         #
