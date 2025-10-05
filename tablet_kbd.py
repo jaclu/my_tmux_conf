@@ -512,7 +512,7 @@ class IshConsole(LimitedKbdSpecialHandling):
                 #    Special case to avoid cutof at second -N
                 w("# tmux < 3.1 Fails to handle Meta N - so it is skipped")
             elif key == 'M-"':
-                w(f"""bind -N 'Send {key}' -n User{k2uk[key]}     send-keys     {key} """)
+                w(f"""bind -N 'Send {key}' -n User{k2uk[key]}     send-keys     '{key}' """)
             elif key in ("M-{", "M-}", "M-$"):
                 w(f"""bind -N "Send {key}" -n User{k2uk[key]}     send-keys     "{key}" """)
             else:
