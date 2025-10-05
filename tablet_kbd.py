@@ -363,8 +363,6 @@ class IshConsole(LimitedKbdSpecialHandling):
             "M-<": "\\302\\257",
             "M->": "\\313\\230",
             "M-?": "\\302\\277",
-            "M-(": "\\302\\267",
-            "M-)": "\\200\\232",
         }
 
     def config_console_keyb(self):
@@ -479,8 +477,8 @@ class IshConsole(LimitedKbdSpecialHandling):
         self.auk["M-^"] = "\\357\\254\\202"
         self.auk["M-&"] = "\\342\\200\\241"
         self.auk["M-*"] = "\\302\\260"
-        # self.auk["M-("] = "\\302\\267"
-        # self.auk["M-)"] = "\\342\\200\\232"
+        self.auk["M-("] = "\\302\\267"
+        self.auk["M-)"] = "\\342\\200\\232"
 
     def alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
         """If fn keys are not mapped to ms numbers, use them as regular M- chars"""
