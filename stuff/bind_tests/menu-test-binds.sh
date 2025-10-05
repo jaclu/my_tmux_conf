@@ -28,7 +28,7 @@ static_content() {
 menu_name="Test binds"
 
 #  Full path to tmux-menux plugin, remember to do one /.. for each subfolder
-D_TM_BASE_PATH=~/t2/tmux/plugins/tmux-menus
+D_TM_BASE_PATH=$HOME/t2/tmux/plugins/tmux-menus
 
 # shellcheck source=/dev/null
 . "$D_TM_BASE_PATH"/scripts/dialog_handling.sh
