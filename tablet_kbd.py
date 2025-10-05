@@ -363,6 +363,8 @@ class IshConsole(LimitedKbdSpecialHandling):
             "M-<": "\\302\\257",
             "M->": "\\313\\230",
             "M-?": "\\302\\277",
+            "M-(": "\\302\\267",
+            "M-)": "\\200\\232",
         }
 
     def config_console_keyb(self):
