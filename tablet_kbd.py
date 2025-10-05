@@ -255,7 +255,7 @@ class LimitedKbdSpecialHandling:
     def alt_key_define(self, sequence, key):
         self.alt_key_param_check(sequence, key)
         if key == "backtick":
-            send_str = "\\`"
+            send_str = "`"
         elif key == "delete":
             send_str = "DC"
         else:
