@@ -9,12 +9,14 @@
 #
 
 static_content() {
-    # shellcheck disable=SC2154
-    $cfg_display_cmds && display_commands_toggle 1
+    # shellcheck disable=SC2154 # nav_home defined in scripts/dialog_handling.sh
+    set -- 0.0 M Left "Back to Main menu  $nav_home" main.sh
+    menu_generate_part 1 "$@"
+    # shellcheck disable=SC2154 # cfg_display_cmds defined in scripts/dialog_handling.sh
+    $cfg_display_cmds && display_commands_toggle 2 # give this its own menu part idx
 
-    set -- 0.0 S
-    set -- "$@" 0.0 C l "last-window" last-window
-    menu_generate_part 2 "$@"
+    set -- 0.0 S 0.0 C l "last-window" last-window
+    menu_generate_part 3 "$@"
 }
 
 
