@@ -313,9 +313,10 @@ class LimitedKbdSpecialHandling:
         )
         for fn, data in m_fn_keys.items():
             # print(name, data["key"], data["sequence"])
-            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  '
-              f'"{data["sequence"]}"  #    {data["key"]}')
-            w(f"bind -N 'Send {data["key"]}' -n User{k2uk[fn]}    send-keys  {fn}")
+            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{data["sequence"]}"')
+            w(
+                f"bind -N 'Send {data["key"]}' -n User{k2uk[fn]}    send-keys  {fn}  "
+                f"#  {data["key"]}")
         w()  # spacer line
 
     def handle_ms_fn_keys(self) -> None:
