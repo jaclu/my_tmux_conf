@@ -254,6 +254,7 @@ class LimitedKbdSpecialHandling:
         #
         self.alternate_key_escape("\\302\\247")
         self.alternate_key_backtick("\\033")  # sends Esc by default
+        self.fn_keys_handling = 1
 
     def keyb_type_touch(self):
         #
@@ -492,26 +493,14 @@ class IshConsole(LimitedKbdSpecialHandling):
         # use meta shift numbers as normal m- chars
         # Meta Shift numbers
         self.auk["M-!"] = "\\342\\201\\204"  # M-S-1
+        self.auk["M-#"] = "\\342\\200\\271"  # M-S-3
+        self.auk["M-$"] = "\\342\\200\\272"  # M-S-4
+        self.auk["M-%"] = "\\357\\254\\201"  # M-S-5
+        self.auk["M-^"] = "\\357\\254\\202"  # M-S-6
         self.auk["M-&"] = "\\342\\200\\241"  # M-S-7
         self.auk["M-*"] = "\\302\\260"  # M-S-8
         self.auk["M-("] = "\\302\\267"  # M-S-9
         self.auk["M-)"] = "\\342\\200\\232"  # M-S-0
-
-        if mtc_utils.LC_KEYBOARD in (
-            KBD_BRYDGE_10_2_MAX,
-            KBD_YOOZON3,
-        ):
-            # Special case mappings
-            # self.auk["F2"] = "\\342\\202\\254"  # M-S-2
-            self.auk["M-#"] = "\\342\\200\\271"  # M-S-3
-            self.auk["M-$"] = "\\342\\200\\272"  # M-S-4
-            self.auk["M-%"] = "\\357\\254\\201"  # M-S-5
-            self.auk["M-^"] = "\\357\\254\\202"  # M-S-6
-        else:
-            self.auk["M-#"] = "\\342\\200\\271"  # M-S-3
-            self.auk["M-$"] = "\\342\\200\\272"  # M-S-4
-            self.auk["M-%"] = "\\357\\254\\201"  # M-S-5
-            self.auk["M-^"] = "\\357\\254\\202"  # M-S-6
 
     def alt_upper_case(self) -> None:
         """If fn keys are not mapped to ms numbers, use them as regular M- chars"""
