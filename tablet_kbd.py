@@ -315,8 +315,8 @@ class LimitedKbdSpecialHandling:
             ("F10", "M-S-0", "\\342\\200\\232"),
         )
         for fn, key, sequence in fn_keys:
-            if key == "M-S-2" and self.has_been_handled["euro"]:
-                w("# M-S-2 used for euro symbol")
+            if key == "M-S-2" and self.has_been_handled["Euro"]:
+                w("# M-S-2 used for Euro symbol")
                 continue
             w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{sequence}"  #     {key}')
             w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  {fn}")
