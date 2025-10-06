@@ -361,7 +361,7 @@ class LimitedKbdSpecialHandling:
         self.alt_key_define(sequence, "Escape")
 
     def alternate_key_tilde(self, sequence: str) -> None:  # modifier=""
-        self.alt_key_define(sequence, "~")
+        self.alt_key_define(sequence, "\\~")
 
     def alternate_key_backtick(self, sequence: str) -> None:  # modifier=""
         self.alt_key_define(sequence, "backtick")
