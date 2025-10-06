@@ -247,6 +247,7 @@ class LimitedKbdSpecialHandling:
         self.alternate_key_escape("\\302\\247", "esc / m-esc")
         self.alternate_key_tilde("\\302\\261", "s-esc / m-s-esc")
         self.alternate_key_backtick("\\033\\060", "c-m-esc")
+        self.fn_keys_handling = 0
 
     def keyb_type_combo_touch(self):
         #
@@ -254,7 +255,6 @@ class LimitedKbdSpecialHandling:
         #
         self.alternate_key_escape("\\302\\247")
         self.alternate_key_backtick("\\033")  # sends Esc by default
-        self.fn_keys_handling = 0
 
     def keyb_type_touch(self):
         #
