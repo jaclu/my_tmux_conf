@@ -223,11 +223,11 @@ class LimitedKbdSpecialHandling:
         # <Esc> 302 247   §
         # ~     302 261 (Shift Esc) +/- char
         # `     033 060 (C-M Esc)
-        self.alternate_key_escape("\\302\\247")
-        self.alternate_key_tilde("\\302\\261")
-        # if define_backtick:
-        #     self.alternate_key_backtick("\\033\\060")
-        # self.alternate_key_euro("\\342\\202\\254")
+        self.alternate_key_escape("\\302\\247") # m-esc
+        self.alternate_key_tilde("\\302\\261") # s-esc / m-s-esc
+        self.alternate_key_backtick("\\033\\060") # c-m-esc
+        # cm-esc 033 060
+        # c-esc cs-esc 060
 
     def keyb_type_combo_touch(self):
         #
