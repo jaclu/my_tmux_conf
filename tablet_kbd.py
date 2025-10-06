@@ -50,30 +50,104 @@ TILDE = "tilde"
 BACKTICK = "backtick"
 DELETE = "delete"
 
+# Remap Meta-number to Fn keys
 m_fn_keys = {
-    "F1": { KEY: "M-1", SEQ: "\\033\\061" },
-    "F2": { KEY: "M-2", SEQ: "\\033\\062" },
-    "F3": { KEY: "M-3", SEQ: "\\033\\063" },
-    "F4": { KEY: "M-4", SEQ: "\\033\\064" },
-    "F5": { KEY: "M-5", SEQ: "\\033\\065" },
-    "F6": { KEY: "M-6", SEQ: "\\033\\066" },
-    "F7": { KEY: "M-7", SEQ: "\\033\\067" },
-    "F8": { KEY: "M-8", SEQ: "\\033\\070" },
-    "F9": { KEY: "M-9", SEQ: "\\033\\071" },
-    "F10":{ KEY: "M-10", SEQ: "\\033\\060" },
+    "F1": {KEY: "M-1", SEQ: "\\033\\061"},
+    "F2": {KEY: "M-2", SEQ: "\\033\\062"},
+    "F3": {KEY: "M-3", SEQ: "\\033\\063"},
+    "F4": {KEY: "M-4", SEQ: "\\033\\064"},
+    "F5": {KEY: "M-5", SEQ: "\\033\\065"},
+    "F6": {KEY: "M-6", SEQ: "\\033\\066"},
+    "F7": {KEY: "M-7", SEQ: "\\033\\067"},
+    "F8": {KEY: "M-8", SEQ: "\\033\\070"},
+    "F9": {KEY: "M-9", SEQ: "\\033\\071"},
+    "F10": {KEY: "M-10", SEQ: "\\033\\060"},
 }
 
-ms_fn_keys = { # fn_keys
-    "F1": { KEY: "M-S-1", SEQ: "\\342\\201\\204" },
-    "F2": { KEY: "M-S-2", SEQ: "\\342\\200\\271" },
-    "F3": { KEY: "M-S-3", SEQ: "\\342\\200\\272" },
-    "F4": { KEY: "M-S-4", SEQ: "\\357\\254\\201" },
-    "F5": { KEY: "M-S-5", SEQ: "\\357\\254\\202" },
-    "F6": { KEY: "M-S-6", SEQ: "\\342\\200\\241" },
-    "F7": { KEY: "M-S-7", SEQ: "\\342\\200\\241" },
-    "F8": { KEY: "M-S-8", SEQ: "\\302\\260" },
-    "F9": { KEY: "M-S-9", SEQ: "\\302\\267" },
-    "F10":{ KEY: "M-S-10", SEQ: "\\342\\200\\232" },
+# Remap Meta-Shift-number to Fn keys
+ms_fn_keys = {
+    "F1": {KEY: "M-S-1", SEQ: "\\342\\201\\204"},
+    "F2": {KEY: "M-S-2", SEQ: "\\342\\200\\271"},
+    "F3": {KEY: "M-S-3", SEQ: "\\342\\200\\272"},
+    "F4": {KEY: "M-S-4", SEQ: "\\357\\254\\201"},
+    "F5": {KEY: "M-S-5", SEQ: "\\357\\254\\202"},
+    "F6": {KEY: "M-S-6", SEQ: "\\342\\200\\241"},
+    "F7": {KEY: "M-S-7", SEQ: "\\342\\200\\241"},
+    "F8": {KEY: "M-S-8", SEQ: "\\302\\260"},
+    "F9": {KEY: "M-S-9", SEQ: "\\302\\267"},
+    "F10": {KEY: "M-S-10", SEQ: "\\342\\200\\232"},
+}
+
+# To ensure no collisions in user-keys
+# This maps keys to User key numbers
+key_2_uk = {
+    # < 200 Handled by base.py
+    ESCAPE: 200,
+    TILDE: 201,
+    BACKTICK: 202,
+    "Delete": 203,
+    "#": 204,
+    # Keyboard specific reserved range 210-299
+    # Alt upper case chars
+    "M-A": 301,
+    "M-B": 302,
+    "M-C": 303,
+    "M-D": 304,
+    "M-E": 305,
+    "M-F": 306,
+    "M-G": 307,
+    "M-H": 308,  # -  used in  auc_split_entire_window()
+    "M-I": 309,  # -  used in  auc_split_entire_window()
+    "M-J": 310,  # -  used in  auc_split_entire_window()
+    "M-K": 311,  # -  used in  auc_split_entire_window()
+    "M-L": 312,  # -  used in  auc_split_entire_window()
+    "M-M": 313,
+    "M-N": 314,
+    "M-O": 315,
+    "M-P": 316,
+    "M-Q": 317,
+    "M-R": 318,
+    "M-S": 319,
+    "M-T": 320,
+    "M-U": 321,
+    "M-V": 322,
+    "M-W": 323,
+    "M-X": 324,
+    "M-Y": 325,
+    "M-Z": 326,
+    "M-_": 327,  # - used in  auc_meta_ses_handling
+    "M-+": 328,  # - used in  auc_meta_ses_handling()
+    "M-{": 329,
+    "M-}": 330,
+    "M-|": 331,
+    "M-:": 332,
+    'M-"': 333,
+    "M-<": 334,
+    "M->": 335,
+    "M-?": 336,
+    # 350-359 Meta Shift Numbers(when not used for function keys)
+    "M-!": 350,
+    "M-@": 351,
+    "M-#": 352,
+    "M-$": 353,
+    "M-%": 354,
+    "M-^": 355,
+    "M-&": 356,
+    "M-*": 357,
+    "M-(": 358,
+    "M-)": 359,
+    # Function keys - listed without modifiers here, but could be
+    # defined with modifiers
+    "F1": 401,
+    "F2": 402,
+    "F3": 403,
+    "F4": 404,
+    "F5": 405,
+    "F6": 406,
+    "F7": 407,
+    "F8": 408,
+    "F9": 409,
+    "F10": 410,
 }
 
 
@@ -85,90 +159,6 @@ class LimitedKbdSpecialHandling:
         if not mtc_utils.LC_KEYBOARD:
             raise ImportWarning("No LC_KEYBOARD defined!")
         self.tc = tmux_conf_instance  # Primary tmux class, for backreferencing
-
-        # To ensure no collisions in user-keys indexes, always use the same source
-        self.key_2_uk = {
-            # < 200 Handled by base.py
-            ESCAPE: 200,
-            TILDE: 201,
-            BACKTICK: 202,
-            "Delete": 203,
-            "#": 204,
-            # Keyboard specific reserved range 210-299
-            # Alt upper case chars
-            "M-A": 301,
-            "M-B": 302,
-            "M-C": 303,
-            "M-D": 304,
-            "M-E": 305,
-            "M-F": 306,
-            "M-G": 307,
-            "M-H": 308,  # -  used in  auc_split_entire_window()
-            "M-I": 309,  # -  used in  auc_split_entire_window()
-            "M-J": 310,  # -  used in  auc_split_entire_window()
-            "M-K": 311,  # -  used in  auc_split_entire_window()
-            "M-L": 312,  # -  used in  auc_split_entire_window()
-            "M-M": 313,
-            "M-N": 314,
-            "M-O": 315,
-            "M-P": 316,
-            "M-Q": 317,
-            "M-R": 318,
-            "M-S": 319,
-            "M-T": 320,
-            "M-U": 321,
-            "M-V": 322,
-            "M-W": 323,
-            "M-X": 324,
-            "M-Y": 325,
-            "M-Z": 326,
-            "M-_": 327,  # - used in  auc_meta_ses_handling
-            "M-+": 328,  # - used in  auc_meta_ses_handling()
-            "M-{": 329,
-            "M-}": 330,
-            "M-|": 331,
-            "M-:": 332,
-            'M-"': 333,
-            "M-<": 334,
-            "M->": 335,
-            "M-?": 336,
-            # 350-359 Meta Shift Numbers(when not used for function keys)
-            "M-!": 350,
-            "M-@": 351,
-            "M-#": 352,
-            "M-$": 353,
-            "M-%": 354,
-            "M-^": 355,
-            "M-&": 356,
-            "M-*": 357,
-            "M-(": 358,
-            "M-)": 359,
-            # Function keys - listed without modifiers here, but could be
-            # defined with modifiers
-            "F1": 401,
-            "F2": 402,
-            "F3": 403,
-            "F4": 404,
-            "F5": 405,
-            "F6": 406,
-            "F7": 407,
-            "F8": 408,
-            "F9": 409,
-            "F10": 410,
-        }
-        self.fn_key_2_uk = {
-            # Pick up the userkey indexes
-            1: self.key_2_uk["F1"],
-            2: self.key_2_uk["F2"],
-            3: self.key_2_uk["F3"],
-            4: self.key_2_uk["F4"],
-            5: self.key_2_uk["F5"],
-            6: self.key_2_uk["F6"],
-            7: self.key_2_uk["F7"],
-            8: self.key_2_uk["F8"],
-            9: self.key_2_uk["F9"],
-            10: self.key_2_uk["F10"],
-        }
 
         # ensures that some settings ate not overridden via inheritance
         self.has_been_handled = {
@@ -213,7 +203,7 @@ class LimitedKbdSpecialHandling:
             """
         )
         if mtc_utils.LC_KEYBOARD == KBD_OMNITYPE:
-            self. keyb_type_omnitype()
+            self.keyb_type_omnitype()
         elif mtc_utils.LC_KEYBOARD == KBD_BLUETOOTH:
             pass
         elif mtc_utils.LC_KEYBOARD in (
@@ -258,18 +248,6 @@ class LimitedKbdSpecialHandling:
         self.alternate_key_tilde("\\302\\261", "s-esc / m-s-esc")
         self.alternate_key_backtick("\\033\\060", "c-m-esc")
 
-        # c-m-esc collides with m-0 on this keyb type  so use m-s-numbers for f-keys
-        self.fn_keys_handling = 3
-        # this collides with euro, so skip it
-        self.has_been_handled[EURO] = True
-
-        # sequence overrides
-        ms_fn_keys["F2"][SEQ] = "\\342\\202\\254" # M-S-2
-        ms_fn_keys["F3"][SEQ] = "\\342\\200\\271" # M-S-3
-        ms_fn_keys["F4"][SEQ] = "\\342\\200\\272" # M-S-4
-        ms_fn_keys["F5"][SEQ] = "\\357\\254\\201" # M-S-5
-        ms_fn_keys["F6"][SEQ] = "\\357\\254\\202" # M-S-6
-
     def keyb_type_combo_touch(self):
         #
         #  Logitech Combo Touch
@@ -292,17 +270,16 @@ class LimitedKbdSpecialHandling:
 
     def handle_fn_keys(self):
         if self.fn_keys_handling == 1:
-            self.fn_keys()
+            self.map_fn_keys()
         elif self.fn_keys_handling == 2:
-            self.handle_m_fn_keys()
+            self.map_m_fn_keys()
         elif self.fn_keys_handling == 3:
-            self.ms_fn_keys_mapped = True
-            self.handle_ms_fn_keys()
+            self.map_ms_fn_keys()
         else:
             err_msg = f"Invalid fn_keys_handling {self.fn_keys_handling}"
             sys.exit(err_msg)
 
-    def fn_keys(self):
+    def map_fn_keys(self):
         #
         #  For keybs that already handles M-#
         #  this just binds them to send F# and swaps M-0 -> F10
@@ -311,9 +288,8 @@ class LimitedKbdSpecialHandling:
             self.tc.write(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
         self.tc.write('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
 
-    def handle_m_fn_keys(self) -> None:
+    def map_m_fn_keys(self) -> None:
         w = self.tc.write
-        k2uk = self.key_2_uk
         w(
             """
         #
@@ -321,15 +297,15 @@ class LimitedKbdSpecialHandling:
         # """
         )
         for fn, data in m_fn_keys.items():
-            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{data[SEQ]}"')
+            w(f'{self.tc.opt_server}   user-keys[{key_2_uk[fn]}]  "{data[SEQ]}"')
             w(
-                f"bind -N 'Send {data[KEY]}' -n User{k2uk[fn]}    send-keys  {fn}  "
-                f"#  {data[KEY]}")
+                f"bind -N 'Send {data[KEY]}' -n User{key_2_uk[fn]}    send-keys  {fn}  "
+                f"#  {data[KEY]}"
+            )
         w()  # spacer line
 
-    def handle_ms_fn_keys(self) -> None:
+    def map_ms_fn_keys(self) -> None:
         w = self.tc.write
-        k2uk = self.key_2_uk
         w(
             """
         #
@@ -341,10 +317,13 @@ class LimitedKbdSpecialHandling:
             if data[KEY] == "M-S-2" and self.has_been_handled[EURO]:
                 w("# M-S-2 used for Euro symbol")
                 continue
-            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{data[SEQ]}"')
-            w(f"bind -N 'Send {data[KEY]}' -n User{k2uk[fn]}    send-keys  {fn}  "
-              f"#  {data[KEY]}")
+            w(f'{self.tc.opt_server}   user-keys[{key_2_uk[fn]}]  "{data[SEQ]}"')
+            w(
+                f"bind -N 'Send {data[KEY]}' -n User{key_2_uk[fn]}    send-keys  {fn}  "
+                f"#  {data[KEY]}"
+            )
         w()  # spacer line
+        self.ms_fn_keys_mapped = True
 
     # ======================================================
     #
@@ -380,8 +359,8 @@ class LimitedKbdSpecialHandling:
             f"""#
             #  Replacement {key} key
             #
-            {self.tc.opt_server} user-keys[{self.key_2_uk[key]}]  "{sequence}"{comment}
-            bind -N "Send key {key}" -n User{self.key_2_uk[key]}  send-keys {send_str}
+            {self.tc.opt_server} user-keys[{key_2_uk[key]}]  "{sequence}"{comment}
+            bind -N "Send key {key}" -n User{key_2_uk[key]}  send-keys {send_str}
             """
         )
         self.sequence_used.append(sequence)
@@ -404,8 +383,8 @@ class LimitedKbdSpecialHandling:
         self.tc.write(
             f"""
             # This keyb sends £ when it should send #
-            {self.tc.opt_server} user-keys[{self.key_2_uk["#"]}] "{sequence}"
-            bind -N "Send #" -n User{self.key_2_uk["#"]} send-keys  #
+            {self.tc.opt_server} user-keys[{key_2_uk["#"]}] "{sequence}"
+            bind -N "Send #" -n User{key_2_uk["#"]} send-keys  #
             """
         )
         self.sequence_used.append(sequence)
@@ -501,31 +480,42 @@ class IshConsole(LimitedKbdSpecialHandling):
 
     def define_muc_keys(self):
         self.tc.muc_keys = {
-            mtc_utils.K_M_PLUS: f"User{self.key_2_uk['M-+']}",
-            # mtc_utils.K_M_PAR_OPEN: f"User{self.key_2_uk['M-(']}",
-            # mtc_utils.K_M_PAR_CLOSE: f"User{self.key_2_uk['M-)']}",
-            mtc_utils.K_M_UNDERSCORE: f"User{self.key_2_uk['M-_']}",
-            mtc_utils.K_M_P: f"User{self.key_2_uk['M-P']}",
-            mtc_utils.K_M_X: f"User{self.key_2_uk['M-X']}",
+            mtc_utils.K_M_PLUS: f"User{key_2_uk['M-+']}",
+            # mtc_utils.K_M_PAR_OPEN: f"User{key_2_uk['M-(']}",
+            # mtc_utils.K_M_PAR_CLOSE: f"User{key_2_uk['M-)']}",
+            mtc_utils.K_M_UNDERSCORE: f"User{key_2_uk['M-_']}",
+            mtc_utils.K_M_P: f"User{key_2_uk['M-P']}",
+            mtc_utils.K_M_X: f"User{key_2_uk['M-X']}",
         }
 
     def alt_upper_case_numbers(self):
         # use meta shift numbers as normal m- chars
         # Meta Shift numbers
-        self.auk["M-!"] = "\\342\\201\\204"
-        self.auk["M-#"] = "\\342\\200\\271"
-        self.auk["M-$"] = "\\342\\200\\272"
-        self.auk["M-%"] = "\\357\\254\\201"
-        self.auk["M-^"] = "\\357\\254\\202"
-        self.auk["M-&"] = "\\342\\200\\241"
-        self.auk["M-*"] = "\\302\\260"
-        self.auk["M-("] = "\\302\\267"
-        self.auk["M-)"] = "\\342\\200\\232"
+        self.auk["M-!"] = "\\342\\201\\204"  # M-S-1
+        self.auk["M-&"] = "\\342\\200\\241"  # M-S-7
+        self.auk["M-*"] = "\\302\\260"  # M-S-8
+        self.auk["M-("] = "\\302\\267"  # M-S-9
+        self.auk["M-)"] = "\\342\\200\\232"  # M-S-0
+
+        if mtc_utils.LC_KEYBOARD in (
+            KBD_BRYDGE_10_2_MAX,
+            KBD_YOOZON3,
+        ):
+            # Special case mappings
+            # self.auk["F2"] = "\\342\\202\\254"  # M-S-2
+            self.auk["M-#"] = "\\342\\200\\271"  # M-S-3
+            self.auk["M-$"] = "\\342\\200\\272"  # M-S-4
+            self.auk["M-%"] = "\\357\\254\\201"  # M-S-5
+            self.auk["M-^"] = "\\357\\254\\202"  # M-S-6
+        else:
+            self.auk["M-#"] = "\\342\\200\\271"  # M-S-3
+            self.auk["M-$"] = "\\342\\200\\272"  # M-S-4
+            self.auk["M-%"] = "\\357\\254\\201"  # M-S-5
+            self.auk["M-^"] = "\\357\\254\\202"  # M-S-6
 
     def alt_upper_case(self) -> None:
         """If fn keys are not mapped to ms numbers, use them as regular M- chars"""
 
-        k2uk = self.key_2_uk
         w = self.tc.write
 
         if not self.ms_fn_keys_mapped:
@@ -542,23 +532,29 @@ class IshConsole(LimitedKbdSpecialHandling):
         muc_values = set(self.tc.muc_keys.values())
         for key, sequence in self.auk.items():
             if sequence in self.sequence_used:
-                # w(f'# --- already defined:    {k2uk[key]}   "{sequence}"      {key}')
-                # w(f'# ---  sequence in use:   {k2uk[key]}   "{sequence}"      {key}')
-                w(f"#                     User{k2uk[key]}                   {key}  alt key")
+                # w(f'# --- already defined:    {key_2_uk[key]}   "{sequence}"      {key}')
+                # w(f'# ---  sequence in use:   {key_2_uk[key]}   "{sequence}"      {key}')
+                w(
+                    "#                     "
+                    f"User{key_2_uk[key]}                   {key}  alt key"
+                )
                 continue
-            w(f'{self.tc.opt_server}   user-keys[{k2uk[key]}]  "{sequence}"')
-            if f"User{k2uk[key]}" in muc_values:
+            w(f'{self.tc.opt_server}   user-keys[{key_2_uk[key]}]  "{sequence}"')
+            if f"User{key_2_uk[key]}" in muc_values:
                 # Display muc keys
-                w(f"#                     User{k2uk[key]}                   {key}  muc_key")
+                w(
+                    "#                     "
+                    f"User{key_2_uk[key]}                   {key}  muc_key"
+                )
             elif key == "M-N" and not self.tc.vers_ok(3.1):
                 #    Special case to avoid cutof at second -N
                 w("# tmux < 3.1 Fails to handle Meta N - so it is skipped")
             elif key == 'M-"':
-                w(f"""bind -N 'Send {key}' -n User{k2uk[key]}     send-keys     '{key}' """)
+                w(f"bind -N 'Send {key}' -n User{key_2_uk[key]}     send-keys     '{key}'")
             elif key == "M-}":
-                w(f"""bind -N "Send {key}" -n User{k2uk[key]}     send-keys     "{key}" """)
+                w(f'bind -N "Send {key}" -n User{key_2_uk[key]}     send-keys     "{key}"')
             else:
-                w(f'bind -N "Send {key}" -n User{k2uk[key]}     send-keys     {key}')
+                w(f'bind -N "Send {key}" -n User{key_2_uk[key]}     send-keys     {key}')
         w()  # spacer line
 
         # if any("User" in value for value in self.tc.muc_keys.values()):
