@@ -225,7 +225,7 @@ class LimitedKbdSpecialHandling:
         self.alternate_key_escape("\\302\\247", "esc / m-esc")
         self.alternate_key_tilde("\\302\\261", "s-esc / ms-esc")
         self.alternate_key_backtick("\\033\\060", "cm-esc")
-        self.alternate_key_euro("\\342\\202\\254")
+        #self.alternate_key_euro("\\342\\202\\254")
         # c-m-esc collides with m-0 on this keyb type  so use m-s-numbers for f-keys
         self.fn_keys_handling = 3
 
