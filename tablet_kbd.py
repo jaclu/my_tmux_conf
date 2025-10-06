@@ -328,7 +328,7 @@ class LimitedKbdSpecialHandling:
         # """
         )
 
-        for fn, data in m_fn_keys.items():
+        for fn, data in ms_fn_keys.items():
             if data["key"] == "M-S-2" and self.has_been_handled["Euro"]:
                 w("# M-S-2 used for Euro symbol")
                 continue
