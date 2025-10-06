@@ -181,8 +181,7 @@ class LimitedKbdSpecialHandling:
         if mtc_utils.LC_KEYBOARD == KBD_OMNITYPE:
             self. keyb_type_1()
         elif mtc_utils.LC_KEYBOARD == KBD_BLUETOOTH:
-            # already handles esc, no specific settings needed
-            pass
+            self.alternate_key_euro("\\342\\202\\254")
         elif mtc_utils.LC_KEYBOARD in (
             KBD_BRYDGE_10_2_MAX,
             KBD_YOOZON3,
@@ -198,7 +197,6 @@ class LimitedKbdSpecialHandling:
             self.tc.write(msg)
             print(msg)
             return False
-        self.alternate_key_euro("\\342\\202\\254")
         if self.fn_keys_handling > 0:
             self.handle_fn_keys()
         return True
@@ -214,6 +212,7 @@ class LimitedKbdSpecialHandling:
         #  This keyb type already generates Esc on the key above tab
         #
         self.alternate_key_backtick("\\033\\140")
+        self.alternate_key_euro("\\342\\202\\254")
 
     def keyb_type_2(self):  # , define_backtick=True):
         #
@@ -226,6 +225,7 @@ class LimitedKbdSpecialHandling:
         self.alternate_key_escape("\\302\\247", "esc / m-esc")
         self.alternate_key_tilde("\\302\\261", "s-esc / ms-esc")
         self.alternate_key_backtick("\\033\\060", "cm-esc")
+        self.alternate_key_euro("\\342\\202\\254")
         # c-m-esc collides with m-0 on this keyb type  so use m-s-numbers for f-keys
         self.fn_keys_handling = 3
 
@@ -235,6 +235,7 @@ class LimitedKbdSpecialHandling:
         #
         self.alternate_key_escape("\\302\\247")
         self.alternate_key_backtick("\\033")  # sends Esc by default
+        self.alternate_key_euro("\\342\\202\\254")
 
     def keyb_type_touch(self):
         #
