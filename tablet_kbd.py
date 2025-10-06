@@ -355,7 +355,7 @@ class LimitedKbdSpecialHandling:
             f"""#
             #  Replacement {key} key
             #
-            {self.tc.opt_server} user-keys[{self.key_2_uk[key]}]  "{sequence}{comment}"
+            {self.tc.opt_server} user-keys[{self.key_2_uk[key]}]  "{sequence}"{comment}
             bind -N "Send key {key}" -n User{self.key_2_uk[key]}  send-keys {send_str}
             """
         )
