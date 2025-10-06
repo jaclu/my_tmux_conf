@@ -51,6 +51,8 @@ class LimitedKbdSpecialHandling:
         if not mtc_utils.LC_KEYBOARD:
             raise ImportWarning("No LC_KEYBOARD defined!")
         self.tc = tmux_conf_instance  # Primary tmux class, for backreferencing
+        self.ms_fn_keys_mapped = False
+        self.fn_keys_handling = 2
 
         # To ensure no collisions in user-keys indexes, always use the same source
         self.key_2_uk = {
@@ -192,6 +194,8 @@ class LimitedKbdSpecialHandling:
             self.tc.write(msg)
             print(msg)
             return False
+        if self.fn_keys_handling > 0:
+            self.handle_fn_keys()
         return True
 
     # ======================================================
@@ -236,6 +240,84 @@ class LimitedKbdSpecialHandling:
         self.tc.write("# No adaptations available for the touch keyboard")
         self.tc.write()  # spacer line
         # self.tc.use_prefix_arrow_nav_keys = True
+
+    # ======================================================
+    #
+    #  Fn key mappings
+    #
+    # ======================================================
+
+    def handle_fn_keys(self):
+        self.tc.write(
+            """
+        #
+        #  Map Function keys
+        # """
+        )
+        if self.fn_keys_handling == 1:
+            self.fn_keys()
+        elif self.fn_keys_handling == 2:
+            self.m_fn_keys()
+        elif self.fn_keys_handling == 3:
+            self.ms_fn_keys_mapped = True
+            self.ms_fn_keys()
+        else:
+            err_msg = f"Invalid fn_keys_handling {self.fn_keys_handling}"
+            sys.exit(err_msg)
+
+    def fn_keys(self):
+        #
+        #  For keybs that already handles M-#
+        #  this just binds them to send F# and swaps M-0 -> F10
+        #
+        for i in range(1, 10):
+            self.tc.write(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
+        self.tc.write('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
+
+    def m_fn_keys(self) -> None:
+        w = self.tc.write
+        k2uk = self.key_2_uk
+
+        fn_keys = (
+            ("F1", "M-1", "\\033\\061"),
+            ("F2", "M-2", "\\033\\062"),
+            ("F3", "M-3", "\\033\\063"),
+            ("F4", "M-4", "\\033\\064"),
+            ("F5", "M-5", "\\033\\065"),
+            ("F6", "M-6", "\\033\\066"),
+            ("F7", "M-7", "\\033\\067"),
+            ("F8", "M-8", "\\033\\070"),
+            ("F9", "M-9", "\\033\\071"),
+            ("F10", "M-0", "\\033\\060"),
+        )
+        for fn, key, sequence in fn_keys:
+            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{sequence}"  #     {key}')
+            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  {fn}")
+        w()  # spacer line
+
+    def ms_fn_keys(self) -> None:
+        w = self.tc.write
+        k2uk = self.key_2_uk
+
+        fn_keys = (
+            ("F1", "M-S-1", "\\342\\201\\204"),
+            ("F2", "M-S-2", "\\342\\200\\271"),
+            ("F3", "M-S-3", "\\342\\200\\272"),
+            ("F4", "M-S-4", "\\357\\254\\201"),
+            ("F5", "M-S-5", "\\357\\254\\202"),
+            ("F6", "M-S-6", "\\342\\200\\241"),
+            ("F7", "M-S-7", "\\342\\200\\241"),
+            ("F8", "M-S-8", "\\302\\260"),
+            ("F9", "M-S-9", "\\302\\267"),
+            ("F10", "M-S-0", "\\342\\200\\232"),
+        )
+        for fn, key, sequence in fn_keys:
+            if key == "M-S-2" and self.has_been_handled["euro"]:
+                w("# M-S-2 used for euro symbol")
+                continue
+            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{sequence}"  #     {key}')
+            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  {fn}")
+        w()  # spacer line
 
     # ======================================================
     #
@@ -374,37 +456,12 @@ class IshConsole(LimitedKbdSpecialHandling):
             # No kbd remapping supported for touch kbd
             return True
 
-        self.tc.write(
-            """
-        #
-        #  Map Function keys
-        # """
-        )
-        ms_fn_keys_mapped = False
-        fn_keys_handling = 2
-        if fn_keys_handling == 1:
-            self.fn_keys()
-        elif fn_keys_handling == 2:
-            self.m_fn_keys()
-        elif fn_keys_handling == 3:
-            ms_fn_keys_mapped = True
-            self.ms_fn_keys()
-
         self.define_muc_keys()
-        self.alt_upper_case(ms_fn_keys_mapped)
+        self.alt_upper_case()
 
         # use <prefix> arrows as PageUp/Dn Home/End
         self.tc.use_prefix_arrow_nav_keys = False
         return True
-
-    def fn_keys(self):
-        #
-        #  For keybs that already handles M-#
-        #  this just binds them to send F# and swaps M-0 -> F10
-        #
-        for i in range(1, 10):
-            self.tc.write(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
-        self.tc.write('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
 
     # ======================================================
     #
@@ -412,51 +469,6 @@ class IshConsole(LimitedKbdSpecialHandling):
     #  for consistency
     #
     # ======================================================
-
-    def m_fn_keys(self) -> None:
-        w = self.tc.write
-        k2uk = self.key_2_uk
-
-        fn_keys = (
-            ("F1", "M-1", "\\033\\061"),
-            ("F2", "M-2", "\\033\\062"),
-            ("F3", "M-3", "\\033\\063"),
-            ("F4", "M-4", "\\033\\064"),
-            ("F5", "M-5", "\\033\\065"),
-            ("F6", "M-6", "\\033\\066"),
-            ("F7", "M-7", "\\033\\067"),
-            ("F8", "M-8", "\\033\\070"),
-            ("F9", "M-9", "\\033\\071"),
-            ("F10", "M-0", "\\033\\060"),
-        )
-        for fn, key, sequence in fn_keys:
-            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{sequence}"  #     {key}')
-            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  {fn}")
-        w()  # spacer line
-
-    def ms_fn_keys(self) -> None:
-        w = self.tc.write
-        k2uk = self.key_2_uk
-
-        fn_keys = (
-            ("F1", "M-S-1", "\\342\\201\\204"),
-            ("F2", "M-S-2", "\\342\\200\\271"),
-            ("F3", "M-S-3", "\\342\\200\\272"),
-            ("F4", "M-S-4", "\\357\\254\\201"),
-            ("F5", "M-S-5", "\\357\\254\\202"),
-            ("F6", "M-S-6", "\\342\\200\\241"),
-            ("F7", "M-S-7", "\\342\\200\\241"),
-            ("F8", "M-S-8", "\\302\\260"),
-            ("F9", "M-S-9", "\\302\\267"),
-            ("F10", "M-S-0", "\\342\\200\\232"),
-        )
-        for fn, key, sequence in fn_keys:
-            if key == "M-S-2" and self.has_been_handled["euro"]:
-                w("# M-S-2 used for euro symbol")
-                continue
-            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{sequence}"  #     {key}')
-            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  {fn}")
-        w()  # spacer line
 
     def define_muc_keys(self):
         self.tc.muc_keys = {
@@ -481,13 +493,13 @@ class IshConsole(LimitedKbdSpecialHandling):
         self.auk["M-("] = "\\302\\267"
         self.auk["M-)"] = "\\342\\200\\232"
 
-    def alt_upper_case(self, ms_fn_keys_mapped: bool = False) -> None:
+    def alt_upper_case(self) -> None:
         """If fn keys are not mapped to ms numbers, use them as regular M- chars"""
 
         k2uk = self.key_2_uk
         w = self.tc.write
 
-        if not ms_fn_keys_mapped:
+        if not self.ms_fn_keys_mapped:
             self.alt_upper_case_numbers()
 
         w(  # not in root 308 310 311 312 316 324
