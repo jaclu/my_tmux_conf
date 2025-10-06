@@ -2021,7 +2021,9 @@ timer_end() {{
             w(
                 f"""
                 # When checking EUR was not reported as local currency where this node is
-                # located, so no EUR fix applied. This node reports: {currency}."""
+                # located, so no EUR fix applied. This node reports currency: {currency}.
+                #
+                """
             )
         else:
             w(

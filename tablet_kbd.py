@@ -204,7 +204,9 @@ class LimitedKbdSpecialHandling:
         #
         #  This keyb type already generates Esc on the key above tab
         #
+        self.tc.write("# LimitedKbdSpecialHandling: keyb_type_1")
         self.alternate_key_euro("\\342\\202\\254")
+        self.alternate_key_backtick("\\033\\140")
 
     def keyb_type_2(self):  # , define_backtick=True):
         #
@@ -306,9 +308,8 @@ class TermuxConsole(LimitedKbdSpecialHandling):
     """Used to adopt the Termux console"""
 
     def keyb_type_1(self):
+        self.tc.write("# TermuxConsole keyb_type_1")
         self.alternate_key_escape("\\140")
-        # Recently all three below fail, so for now disabled
-        # self.alternate_key_backtick("\\033\\140")
         # self.alternate_key_delete("\\033\\177")
         # self.alternate_key_euro("\\033\\100")  # same as on Darwin
 
