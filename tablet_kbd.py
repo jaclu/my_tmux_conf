@@ -42,6 +42,32 @@ KBD_OMNITYPE = "Omnitype Keyboard"
 KBD_BLUETOOTH = "Bluetooth Keyboard"  # Pad5 - sadly generic name
 KBD_TOUCH = "Touch Keyboard"
 
+m_fn_keys = {
+    "F1": { "key": "M-1", "sequence": "\\033\\061" },
+    "F2": { "key": "M-2", "sequence": "\\033\\062" },
+    "F3": { "key": "M-3", "sequence": "\\033\\063" },
+    "F4": { "key": "M-4", "sequence": "\\033\\064" },
+    "F5": { "key": "M-5", "sequence": "\\033\\065" },
+    "F6": { "key": "M-6", "sequence": "\\033\\066" },
+    "F7": { "key": "M-7", "sequence": "\\033\\067" },
+    "F8": { "key": "M-8", "sequence": "\\033\\070" },
+    "F9": { "key": "M-9", "sequence": "\\033\\071" },
+    "F10":{ "key": "M-10", "sequence": "\\033\\060" },
+}
+
+ms_fn_keys = { # fn_keys
+    "F1": { "key": "M-S-1", "sequence": "\\342\\201\\204" },
+    "F2": { "key": "M-S-2", "sequence": "\\342\\200\\271" },
+    "F3": { "key": "M-S-3", "sequence": "\\342\\200\\272" },
+    "F4": { "key": "M-S-4", "sequence": "\\357\\254\\201" },
+    "F5": { "key": "M-S-5", "sequence": "\\357\\254\\202" },
+    "F6": { "key": "M-S-6", "sequence": "\\342\\200\\241" },
+    "F7": { "key": "M-S-7", "sequence": "\\342\\200\\241" },
+    "F8": { "key": "M-S-8", "sequence": "\\302\\260" },
+    "F9": { "key": "M-S-9", "sequence": "\\302\\267" },
+    "F10":{ "key": "M-S-10", "sequence": "\\342\\200\\232" },
+}
+
 
 class LimitedKbdSpecialHandling:
     """Groupings of user-keys"""
@@ -228,6 +254,11 @@ class LimitedKbdSpecialHandling:
         #self.alternate_key_euro("\\342\\202\\254")
         # c-m-esc collides with m-0 on this keyb type  so use m-s-numbers for f-keys
         self.fn_keys_handling = 3
+        # sequence overrides
+        ms_fn_keys["F2"]["sequence"] = "\\342\\202\\254"
+        ms_fn_keys["F3"]["sequence"] = "\\342\\200\\271"
+        ms_fn_keys["F5"]["sequence"] = "\\357\\254\\201"
+        ms_fn_keys["F6"]["sequence"] = "\\357\\254\\202"
 
     def keyb_type_combo_touch(self):
         #
@@ -260,10 +291,10 @@ class LimitedKbdSpecialHandling:
         if self.fn_keys_handling == 1:
             self.fn_keys()
         elif self.fn_keys_handling == 2:
-            self.m_fn_keys()
+            self.handle_m_fn_keys()
         elif self.fn_keys_handling == 3:
             self.ms_fn_keys_mapped = True
-            self.ms_fn_keys()
+            self.handle_ms_fn_keys()
         else:
             err_msg = f"Invalid fn_keys_handling {self.fn_keys_handling}"
             sys.exit(err_msg)
@@ -277,49 +308,27 @@ class LimitedKbdSpecialHandling:
             self.tc.write(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
         self.tc.write('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
 
-    def m_fn_keys(self) -> None:
+    def handle_m_fn_keys(self) -> None:
         w = self.tc.write
         k2uk = self.key_2_uk
-
-        fn_keys = (
-            ("F1", "M-1", "\\033\\061"),
-            ("F2", "M-2", "\\033\\062"),
-            ("F3", "M-3", "\\033\\063"),
-            ("F4", "M-4", "\\033\\064"),
-            ("F5", "M-5", "\\033\\065"),
-            ("F6", "M-6", "\\033\\066"),
-            ("F7", "M-7", "\\033\\067"),
-            ("F8", "M-8", "\\033\\070"),
-            ("F9", "M-9", "\\033\\071"),
-            ("F10", "M-0", "\\033\\060"),
-        )
-        for fn, key, sequence in fn_keys:
-            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{sequence}"  #     {key}')
-            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  {fn}")
+        for fn, data in m_fn_keys.items():
+            # print(name, data["key"], data["sequence"])
+            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  '
+              f'"{data["sequence"]}"  #    {data["key"]}')
+            w(f"bind -N 'Send {data["key"]}' -n User{k2uk[fn]}    send-keys  {fn}")
         w()  # spacer line
 
-    def ms_fn_keys(self) -> None:
+    def handle_ms_fn_keys(self) -> None:
         w = self.tc.write
         k2uk = self.key_2_uk
 
-        fn_keys = (
-            ("F1", "M-S-1", "\\342\\201\\204"),
-            ("F2", "M-S-2", "\\342\\200\\271"),
-            ("F3", "M-S-3", "\\342\\200\\272"),
-            ("F4", "M-S-4", "\\357\\254\\201"),
-            ("F5", "M-S-5", "\\357\\254\\202"),
-            ("F6", "M-S-6", "\\342\\200\\241"),
-            ("F7", "M-S-7", "\\342\\200\\241"),
-            ("F8", "M-S-8", "\\302\\260"),
-            ("F9", "M-S-9", "\\302\\267"),
-            ("F10", "M-S-0", "\\342\\200\\232"),
-        )
-        for fn, key, sequence in fn_keys:
-            if key == "M-S-2" and self.has_been_handled["Euro"]:
+        for fn, data in m_fn_keys.items():
+            if data["key"] == "M-S-2" and self.has_been_handled["Euro"]:
                 w("# M-S-2 used for Euro symbol")
                 continue
-            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{sequence}"  #     {key}')
-            w(f"bind -N 'Send {key}' -n User{k2uk[fn]}    send-keys  {fn}")
+            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  '
+              f'"{data["sequence"]}"  #    {data["key"]}')
+            w(f"bind -N 'Send {data["key"]}' -n User{k2uk[fn]}    send-keys  {fn}")
         w()  # spacer line
 
     # ======================================================
