@@ -223,9 +223,9 @@ class LimitedKbdSpecialHandling:
         # <Esc> 302 247   §
         # ~     302 261 (Shift Esc) +/- char
         # `     033 060 (C-M Esc)
-        self.alternate_key_escape("\\302\\247") # m-esc
+        self.alternate_key_escape("\\302\\247", "esc / m-esc")
         self.alternate_key_tilde("\\302\\261", "s-esc / m-s-esc")
-        self.alternate_key_backtick("\\033\\060") # c-m-esc
+        self.alternate_key_backtick("\\033\\060", "c-m-esc")
         # cm-esc 033 060
         # c-esc cs-esc 060
 
@@ -362,17 +362,17 @@ class LimitedKbdSpecialHandling:
         self.sequence_used.append(sequence)
         self.has_been_handled[key] = True
 
-    def alternate_key_escape(self, sequence: str) -> None:
-        self.alt_key_define(sequence, "Escape")
+    def alternate_key_escape(self, sequence: str, comment: str = "") -> None:
+        self.alt_key_define(sequence, "Escape", comment)
 
-    def alternate_key_tilde(self, sequence: str, comment: str) -> None:  # modifier=""
+    def alternate_key_tilde(self, sequence: str, comment: str = "") -> None:
         self.alt_key_define(sequence, "tilde", comment)
 
-    def alternate_key_backtick(self, sequence: str) -> None:  # modifier=""
-        self.alt_key_define(sequence, "backtick")
+    def alternate_key_backtick(self, sequence: str, comment: str = "") -> None:
+        self.alt_key_define(sequence, "backtick", comment)
 
-    def alternate_key_delete(self, sequence: str) -> None:
-        self.alt_key_define(sequence, "delete")
+    def alternate_key_delete(self, sequence: str, comment: str = "") -> None:
+        self.alt_key_define(sequence, "delete", comment)
 
     def hash_not_pound(self):
         sequence = "\\302\\243"
