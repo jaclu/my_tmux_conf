@@ -213,9 +213,9 @@ class LimitedKbdSpecialHandling:
             """
         )
         if mtc_utils.LC_KEYBOARD == KBD_OMNITYPE:
-            self. keyb_type_1()
+            self. keyb_type_omnitype()
         elif mtc_utils.LC_KEYBOARD == KBD_BLUETOOTH:
-            self.alternate_key_euro("\\342\\202\\254")
+            pass
         elif mtc_utils.LC_KEYBOARD in (
             KBD_BRYDGE_10_2_MAX,
             KBD_YOOZON3,
@@ -231,6 +231,9 @@ class LimitedKbdSpecialHandling:
             self.tc.write(msg)
             print(msg)
             return False
+
+        self.alternate_key_euro("\\342\\202\\254")
+
         if self.fn_keys_handling > 0:
             self.handle_fn_keys()
         return True
@@ -241,35 +244,31 @@ class LimitedKbdSpecialHandling:
     #
     # ======================================================
 
-    def keyb_type_1(self):
+    def keyb_type_omnitype(self):
         #
         #  This keyb type already generates Esc on the key above tab
         #
         self.alternate_key_backtick("\\033\\140")
-        self.alternate_key_euro("\\342\\202\\254")
 
     def keyb_type_2(self):  # , define_backtick=True):
         #
         #  General settings seems to work for several keyboards
         #
-        # JacPad iSH KBD_BRYDGE_10_2_MAX
-        # <Esc> 302 247   §
-        # ~     302 261 (Shift Esc) +/- char
-        # `     033 060 (C-M Esc)
         self.alternate_key_escape("\\302\\247", "esc / m-esc")
-        self.alternate_key_tilde("\\302\\261", "s-esc / ms-esc")
-        self.alternate_key_backtick("\\033\\060", "cm-esc")
-        #self.alternate_key_euro("\\342\\202\\254")
+        self.alternate_key_tilde("\\302\\261", "s-esc / m-s-esc")
+        self.alternate_key_backtick("\\033\\060", "c-m-esc")
+
         # c-m-esc collides with m-0 on this keyb type  so use m-s-numbers for f-keys
         self.fn_keys_handling = 3
         # this collides with euro, so skip it
         self.has_been_handled[EURO] = True
 
         # sequence overrides
-        ms_fn_keys["F2"][SEQ] = "\\342\\202\\254"
-        ms_fn_keys["F3"][SEQ] = "\\342\\200\\271"
-        ms_fn_keys["F5"][SEQ] = "\\357\\254\\201"
-        ms_fn_keys["F6"][SEQ] = "\\357\\254\\202"
+        ms_fn_keys["F2"][SEQ] = "\\342\\202\\254" # M-S-2
+        ms_fn_keys["F3"][SEQ] = "\\342\\200\\271" # M-S-3
+        ms_fn_keys["F4"][SEQ] = "\\342\\200\\272" # M-S-4
+        ms_fn_keys["F5"][SEQ] = "\\357\\254\\201" # M-S-5
+        ms_fn_keys["F6"][SEQ] = "\\357\\254\\202" # M-S-6
 
     def keyb_type_combo_touch(self):
         #
@@ -277,7 +276,6 @@ class LimitedKbdSpecialHandling:
         #
         self.alternate_key_escape("\\302\\247")
         self.alternate_key_backtick("\\033")  # sends Esc by default
-        self.alternate_key_euro("\\342\\202\\254")
 
     def keyb_type_touch(self):
         #
@@ -340,7 +338,7 @@ class LimitedKbdSpecialHandling:
         )
 
         for fn, data in ms_fn_keys.items():
-            if data[KEY] == "M-S-2" and self.has_been_handled["Euro"]:
+            if data[KEY] == "M-S-2" and self.has_been_handled[EURO]:
                 w("# M-S-2 used for Euro symbol")
                 continue
             w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{data[SEQ]}"')
@@ -424,12 +422,12 @@ class LimitedKbdSpecialHandling:
 class TermuxConsole(LimitedKbdSpecialHandling):
     """Used to adopt the Termux console"""
 
-    def keyb_type_1(self):
+    def keyb_type_omnitype(self):
         self.alternate_key_escape("\\140")
         # self.alternate_key_delete("\\033\\177")
         # self.alternate_key_euro("\\033\\100")  # same as on Darwin
 
-        super().keyb_type_1()
+        super().keyb_type_omnitype()
 
 
 class IshConsole(LimitedKbdSpecialHandling):
