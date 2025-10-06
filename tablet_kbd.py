@@ -56,7 +56,7 @@ class LimitedKbdSpecialHandling:
         self.key_2_uk = {
             # < 200 Handled by base.py
             "Escape": 200,
-            "~": 201,
+            "tilde": 201,
             "backtick": 202,
             "Delete": 203,
             "#": 204,
@@ -139,7 +139,7 @@ class LimitedKbdSpecialHandling:
         # ensures that some settings ate not overridden via inheritance
         self.has_been_handled = {
             "Escape": False,
-            "~": False,
+            "tilde": False,
             "backtick": False,
             "Euro": False,
             "delete": False,
@@ -339,7 +339,9 @@ class LimitedKbdSpecialHandling:
 
     def alt_key_define(self, sequence, key):
         self.alt_key_param_check(sequence, key)
-        if key == "backtick":
+        if key == "tilde":
+            send_str = "\\~"
+        elif key == "backtick":
             send_str = "\\`"
         elif key == "delete":
             send_str = "DC"
@@ -361,7 +363,7 @@ class LimitedKbdSpecialHandling:
         self.alt_key_define(sequence, "Escape")
 
     def alternate_key_tilde(self, sequence: str) -> None:  # modifier=""
-        self.alt_key_define(sequence, "\\~")
+        self.alt_key_define(sequence, "tilde")
 
     def alternate_key_backtick(self, sequence: str) -> None:  # modifier=""
         self.alt_key_define(sequence, "backtick")
