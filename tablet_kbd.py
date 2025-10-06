@@ -282,12 +282,6 @@ class LimitedKbdSpecialHandling:
     # ======================================================
 
     def handle_fn_keys(self):
-        self.tc.write(
-            """
-        #
-        #  Map Function keys
-        # """
-        )
         if self.fn_keys_handling == 1:
             self.fn_keys()
         elif self.fn_keys_handling == 2:
@@ -311,6 +305,12 @@ class LimitedKbdSpecialHandling:
     def handle_m_fn_keys(self) -> None:
         w = self.tc.write
         k2uk = self.key_2_uk
+        w(
+            """
+        #
+        #  Map M-number to Function keys
+        # """
+        )
         for fn, data in m_fn_keys.items():
             # print(name, data["key"], data["sequence"])
             w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  '
@@ -321,6 +321,12 @@ class LimitedKbdSpecialHandling:
     def handle_ms_fn_keys(self) -> None:
         w = self.tc.write
         k2uk = self.key_2_uk
+        w(
+            """
+        #
+        #  Map M-S-number to Function keys
+        # """
+        )
 
         for fn, data in m_fn_keys.items():
             if data["key"] == "M-S-2" and self.has_been_handled["Euro"]:
