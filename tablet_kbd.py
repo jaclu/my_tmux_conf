@@ -44,6 +44,11 @@ KBD_TOUCH = "Touch Keyboard"
 
 KEY = "key"
 SEQ = "sequence"
+EURO = "Euro"
+ESCAPE = "Escape"
+TILDE = "tilde"
+BACKTICK = "backtick"
+DELETE = "delete"
 
 m_fn_keys = {
     "F1": { KEY: "M-1", SEQ: "\\033\\061" },
@@ -84,9 +89,9 @@ class LimitedKbdSpecialHandling:
         # To ensure no collisions in user-keys indexes, always use the same source
         self.key_2_uk = {
             # < 200 Handled by base.py
-            "Escape": 200,
-            "tilde": 201,
-            "backtick": 202,
+            ESCAPE: 200,
+            TILDE: 201,
+            BACKTICK: 202,
             "Delete": 203,
             "#": 204,
             # Keyboard specific reserved range 210-299
@@ -167,11 +172,11 @@ class LimitedKbdSpecialHandling:
 
         # ensures that some settings ate not overridden via inheritance
         self.has_been_handled = {
-            "Escape": False,
-            "tilde": False,
-            "backtick": False,
-            "Euro": False,
-            "delete": False,
+            ESCAPE: False,
+            TILDE: False,
+            BACKTICK: False,
+            EURO: False,
+            DELETE: False,
         }
         self.sequence_used = []
         self.ms_fn_keys_mapped = False
@@ -257,6 +262,9 @@ class LimitedKbdSpecialHandling:
         #self.alternate_key_euro("\\342\\202\\254")
         # c-m-esc collides with m-0 on this keyb type  so use m-s-numbers for f-keys
         self.fn_keys_handling = 3
+        # this collides with euro, so skip it
+        self.has_been_handled[EURO] = True
+
         # sequence overrides
         ms_fn_keys["F2"][SEQ] = "\\342\\202\\254"
         ms_fn_keys["F3"][SEQ] = "\\342\\200\\271"
@@ -358,11 +366,11 @@ class LimitedKbdSpecialHandling:
 
     def alt_key_define(self, sequence, key, comment=""):
         self.alt_key_param_check(sequence, key)
-        if key == "tilde":
+        if key == TILDE:
             send_str = "\\~"
-        elif key == "backtick":
+        elif key == BACKTICK:
             send_str = "\\`"
-        elif key == "delete":
+        elif key == DELETE:
             send_str = "DC"
         else:
             send_str = key
@@ -382,16 +390,16 @@ class LimitedKbdSpecialHandling:
         self.has_been_handled[key] = True
 
     def alternate_key_escape(self, sequence: str, comment: str = "") -> None:
-        self.alt_key_define(sequence, "Escape", comment)
+        self.alt_key_define(sequence, ESCAPE, comment)
 
     def alternate_key_tilde(self, sequence: str, comment: str = "") -> None:
-        self.alt_key_define(sequence, "tilde", comment)
+        self.alt_key_define(sequence, TILDE, comment)
 
     def alternate_key_backtick(self, sequence: str, comment: str = "") -> None:
-        self.alt_key_define(sequence, "backtick", comment)
+        self.alt_key_define(sequence, BACKTICK, comment)
 
     def alternate_key_delete(self, sequence: str, comment: str = "") -> None:
-        self.alt_key_define(sequence, "delete", comment)
+        self.alt_key_define(sequence, DELETE, comment)
 
     def hash_not_pound(self):
         sequence = "\\302\\243"
@@ -405,11 +413,12 @@ class LimitedKbdSpecialHandling:
         self.sequence_used.append(sequence)
 
     def alternate_key_euro(self, sequence):
-        key = "Euro"
-        self.alt_key_param_check(sequence, key)
+        if self.has_been_handled[EURO]:
+            return
+        self.alt_key_param_check(sequence, EURO)
         self.tc.alternate_key_euro(sequence)
         self.sequence_used.append(sequence)
-        self.has_been_handled[key] = True
+        self.has_been_handled[EURO] = True
 
 
 class TermuxConsole(LimitedKbdSpecialHandling):
