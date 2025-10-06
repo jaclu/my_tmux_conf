@@ -244,7 +244,7 @@ class LimitedKbdSpecialHandling:
         #
         #  General settings seems to work for several keyboards
         #
-        self.alternate_key_escape("\\302\\247", "esc / m-esc")
+        self.alternate_key_escape("\\302\\247")
         self.alternate_key_tilde("\\302\\261", "s-esc / m-s-esc")
         self.alternate_key_backtick("\\033\\060", "c-m-esc")
         self.fn_keys_handling = 0
@@ -404,6 +404,8 @@ class TermuxConsole(LimitedKbdSpecialHandling):
 
     def keyb_type_omnitype(self):
         self.alternate_key_escape("\\140")
+        self.alternate_key_euro("\\033\\100")
+
         # self.alternate_key_delete("\\033\\177")
         # self.alternate_key_euro("\\033\\100")  # same as on Darwin
 
