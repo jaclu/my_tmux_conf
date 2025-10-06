@@ -254,7 +254,7 @@ class LimitedKbdSpecialHandling:
         #
         self.alternate_key_escape("\\302\\247")
         self.alternate_key_backtick("\\033")  # sends Esc by default
-        self.fn_keys_handling = 1
+        self.fn_keys_handling = 0
 
     def keyb_type_touch(self):
         #
