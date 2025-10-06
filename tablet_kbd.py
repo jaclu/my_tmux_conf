@@ -190,6 +190,7 @@ class LimitedKbdSpecialHandling:
             self.keyb_type_combo_touch()
         elif mtc_utils.LC_KEYBOARD == KBD_TOUCH:
             self.keyb_type_touch()
+            self.fn_keys_handling = 0
         else:
             msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
             self.tc.write(msg)
