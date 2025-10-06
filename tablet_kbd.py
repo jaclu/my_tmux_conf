@@ -42,30 +42,33 @@ KBD_OMNITYPE = "Omnitype Keyboard"
 KBD_BLUETOOTH = "Bluetooth Keyboard"  # Pad5 - sadly generic name
 KBD_TOUCH = "Touch Keyboard"
 
+KEY = "key"
+SEQ = "sequence"
+
 m_fn_keys = {
-    "F1": { "key": "M-1", "sequence": "\\033\\061" },
-    "F2": { "key": "M-2", "sequence": "\\033\\062" },
-    "F3": { "key": "M-3", "sequence": "\\033\\063" },
-    "F4": { "key": "M-4", "sequence": "\\033\\064" },
-    "F5": { "key": "M-5", "sequence": "\\033\\065" },
-    "F6": { "key": "M-6", "sequence": "\\033\\066" },
-    "F7": { "key": "M-7", "sequence": "\\033\\067" },
-    "F8": { "key": "M-8", "sequence": "\\033\\070" },
-    "F9": { "key": "M-9", "sequence": "\\033\\071" },
-    "F10":{ "key": "M-10", "sequence": "\\033\\060" },
+    "F1": { KEY: "M-1", SEQ: "\\033\\061" },
+    "F2": { KEY: "M-2", SEQ: "\\033\\062" },
+    "F3": { KEY: "M-3", SEQ: "\\033\\063" },
+    "F4": { KEY: "M-4", SEQ: "\\033\\064" },
+    "F5": { KEY: "M-5", SEQ: "\\033\\065" },
+    "F6": { KEY: "M-6", SEQ: "\\033\\066" },
+    "F7": { KEY: "M-7", SEQ: "\\033\\067" },
+    "F8": { KEY: "M-8", SEQ: "\\033\\070" },
+    "F9": { KEY: "M-9", SEQ: "\\033\\071" },
+    "F10":{ KEY: "M-10", SEQ: "\\033\\060" },
 }
 
 ms_fn_keys = { # fn_keys
-    "F1": { "key": "M-S-1", "sequence": "\\342\\201\\204" },
-    "F2": { "key": "M-S-2", "sequence": "\\342\\200\\271" },
-    "F3": { "key": "M-S-3", "sequence": "\\342\\200\\272" },
-    "F4": { "key": "M-S-4", "sequence": "\\357\\254\\201" },
-    "F5": { "key": "M-S-5", "sequence": "\\357\\254\\202" },
-    "F6": { "key": "M-S-6", "sequence": "\\342\\200\\241" },
-    "F7": { "key": "M-S-7", "sequence": "\\342\\200\\241" },
-    "F8": { "key": "M-S-8", "sequence": "\\302\\260" },
-    "F9": { "key": "M-S-9", "sequence": "\\302\\267" },
-    "F10":{ "key": "M-S-10", "sequence": "\\342\\200\\232" },
+    "F1": { KEY: "M-S-1", SEQ: "\\342\\201\\204" },
+    "F2": { KEY: "M-S-2", SEQ: "\\342\\200\\271" },
+    "F3": { KEY: "M-S-3", SEQ: "\\342\\200\\272" },
+    "F4": { KEY: "M-S-4", SEQ: "\\357\\254\\201" },
+    "F5": { KEY: "M-S-5", SEQ: "\\357\\254\\202" },
+    "F6": { KEY: "M-S-6", SEQ: "\\342\\200\\241" },
+    "F7": { KEY: "M-S-7", SEQ: "\\342\\200\\241" },
+    "F8": { KEY: "M-S-8", SEQ: "\\302\\260" },
+    "F9": { KEY: "M-S-9", SEQ: "\\302\\267" },
+    "F10":{ KEY: "M-S-10", SEQ: "\\342\\200\\232" },
 }
 
 
@@ -255,10 +258,10 @@ class LimitedKbdSpecialHandling:
         # c-m-esc collides with m-0 on this keyb type  so use m-s-numbers for f-keys
         self.fn_keys_handling = 3
         # sequence overrides
-        ms_fn_keys["F2"]["sequence"] = "\\342\\202\\254"
-        ms_fn_keys["F3"]["sequence"] = "\\342\\200\\271"
-        ms_fn_keys["F5"]["sequence"] = "\\357\\254\\201"
-        ms_fn_keys["F6"]["sequence"] = "\\357\\254\\202"
+        ms_fn_keys["F2"][SEQ] = "\\342\\202\\254"
+        ms_fn_keys["F3"][SEQ] = "\\342\\200\\271"
+        ms_fn_keys["F5"][SEQ] = "\\357\\254\\201"
+        ms_fn_keys["F6"][SEQ] = "\\357\\254\\202"
 
     def keyb_type_combo_touch(self):
         #
@@ -312,11 +315,10 @@ class LimitedKbdSpecialHandling:
         # """
         )
         for fn, data in m_fn_keys.items():
-            # print(name, data["key"], data["sequence"])
-            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{data["sequence"]}"')
+            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{data[SEQ]}"')
             w(
-                f"bind -N 'Send {data["key"]}' -n User{k2uk[fn]}    send-keys  {fn}  "
-                f"#  {data["key"]}")
+                f"bind -N 'Send {data[KEY]}' -n User{k2uk[fn]}    send-keys  {fn}  "
+                f"#  {data[KEY]}")
         w()  # spacer line
 
     def handle_ms_fn_keys(self) -> None:
@@ -330,12 +332,12 @@ class LimitedKbdSpecialHandling:
         )
 
         for fn, data in ms_fn_keys.items():
-            if data["key"] == "M-S-2" and self.has_been_handled["Euro"]:
+            if data[KEY] == "M-S-2" and self.has_been_handled["Euro"]:
                 w("# M-S-2 used for Euro symbol")
                 continue
             w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  '
-              f'"{data["sequence"]}"  #    {data["key"]}')
-            w(f"bind -N 'Send {data["key"]}' -n User{k2uk[fn]}    send-keys  {fn}")
+              f'"{data[SEQ]}"  #    {data[KEY]}')
+            w(f"bind -N 'Send {data[KEY]}' -n User{k2uk[fn]}    send-keys  {fn}")
         w()  # spacer line
 
     # ======================================================
