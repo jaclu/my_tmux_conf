@@ -178,9 +178,11 @@ class LimitedKbdSpecialHandling:
             #======================================================
             """
         )
-        if mtc_utils.LC_KEYBOARD in (KBD_OMNITYPE, KBD_BLUETOOTH):
-            # already handles esc
-            self.keyb_type_1()
+        if mtc_utils.LC_KEYBOARD == KBD_OMNITYPE:
+            self. keyb_type_1()
+        elif mtc_utils.LC_KEYBOARD == KBD_BLUETOOTH:
+            # already handles esc, no specific settings needed
+            pass
         elif mtc_utils.LC_KEYBOARD in (
             KBD_BRYDGE_10_2_MAX,
             KBD_YOOZON3,
@@ -190,12 +192,13 @@ class LimitedKbdSpecialHandling:
             self.keyb_type_combo_touch()
         elif mtc_utils.LC_KEYBOARD == KBD_TOUCH:
             self.keyb_type_touch()
-            self.fn_keys_handling = 0
+            return False
         else:
             msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
             self.tc.write(msg)
             print(msg)
             return False
+        self.alternate_key_euro("\\342\\202\\254")
         if self.fn_keys_handling > 0:
             self.handle_fn_keys()
         return True
@@ -210,7 +213,6 @@ class LimitedKbdSpecialHandling:
         #
         #  This keyb type already generates Esc on the key above tab
         #
-        self.alternate_key_euro("\\342\\202\\254")
         self.alternate_key_backtick("\\033\\140")
 
     def keyb_type_2(self):  # , define_backtick=True):
