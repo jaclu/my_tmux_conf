@@ -224,10 +224,10 @@ class LimitedKbdSpecialHandling:
         # ~     302 261 (Shift Esc) +/- char
         # `     033 060 (C-M Esc)
         self.alternate_key_escape("\\302\\247", "esc / m-esc")
-        self.alternate_key_tilde("\\302\\261", "s-esc / m-s-esc")
-        self.alternate_key_backtick("\\033\\060", "c-m-esc")
-        # cm-esc 033 060
-        # c-esc cs-esc 060
+        self.alternate_key_tilde("\\302\\261", "s-esc / ms-esc")
+        self.alternate_key_backtick("\\033\\060", "cm-esc")
+        # c-m-esc collides with m-0 on this keyb type  so use m-s-numbers for f-keys
+        self.fn_keys_handling = 3
 
     def keyb_type_combo_touch(self):
         #
