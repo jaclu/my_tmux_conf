@@ -349,7 +349,7 @@ class LimitedKbdSpecialHandling:
             send_str = key
 
         if comment:
-            comment = f" # {comment}"
+            comment = f"  #  {comment}"
 
         self.tc.write(
             f"""#
