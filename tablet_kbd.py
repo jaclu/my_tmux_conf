@@ -224,7 +224,7 @@ class LimitedKbdSpecialHandling:
         # ~     302 261 (Shift Esc) +/- char
         # `     033 060 (C-M Esc)
         self.alternate_key_escape("\\302\\247") # m-esc
-        self.alternate_key_tilde("\\302\\261") # s-esc / m-s-esc
+        self.alternate_key_tilde("\\302\\261", "s-esc / m-s-esc")
         self.alternate_key_backtick("\\033\\060") # c-m-esc
         # cm-esc 033 060
         # c-esc cs-esc 060
@@ -337,7 +337,7 @@ class LimitedKbdSpecialHandling:
         if self.has_been_handled[key]:
             sys.exit(f"Alternate {key} key has already been defined")
 
-    def alt_key_define(self, sequence, key):
+    def alt_key_define(self, sequence, key, comment=""):
         self.alt_key_param_check(sequence, key)
         if key == "tilde":
             send_str = "\\~"
@@ -348,11 +348,14 @@ class LimitedKbdSpecialHandling:
         else:
             send_str = key
 
+        if comment:
+            comment = f" # {comment}"
+
         self.tc.write(
             f"""#
             #  Replacement {key} key
             #
-            {self.tc.opt_server} user-keys[{self.key_2_uk[key]}]  "{sequence}"
+            {self.tc.opt_server} user-keys[{self.key_2_uk[key]}]  "{sequence}{comment}"
             bind -N "Send key {key}" -n User{self.key_2_uk[key]}  send-keys {send_str}
             """
         )
@@ -362,8 +365,8 @@ class LimitedKbdSpecialHandling:
     def alternate_key_escape(self, sequence: str) -> None:
         self.alt_key_define(sequence, "Escape")
 
-    def alternate_key_tilde(self, sequence: str) -> None:  # modifier=""
-        self.alt_key_define(sequence, "tilde")
+    def alternate_key_tilde(self, sequence: str, comment: str) -> None:  # modifier=""
+        self.alt_key_define(sequence, "tilde", comment)
 
     def alternate_key_backtick(self, sequence: str) -> None:  # modifier=""
         self.alt_key_define(sequence, "backtick")
