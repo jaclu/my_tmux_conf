@@ -335,9 +335,9 @@ class LimitedKbdSpecialHandling:
             if data[KEY] == "M-S-2" and self.has_been_handled["Euro"]:
                 w("# M-S-2 used for Euro symbol")
                 continue
-            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  '
-              f'"{data[SEQ]}"  #    {data[KEY]}')
-            w(f"bind -N 'Send {data[KEY]}' -n User{k2uk[fn]}    send-keys  {fn}")
+            w(f'{self.tc.opt_server}   user-keys[{k2uk[fn]}]  "{data[SEQ]}"')
+            w(f"bind -N 'Send {data[KEY]}' -n User{k2uk[fn]}    send-keys  {fn}  "
+              f"#  {data[KEY]}")
         w()  # spacer line
 
     # ======================================================
