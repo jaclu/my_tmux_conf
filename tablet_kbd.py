@@ -51,8 +51,6 @@ class LimitedKbdSpecialHandling:
         if not mtc_utils.LC_KEYBOARD:
             raise ImportWarning("No LC_KEYBOARD defined!")
         self.tc = tmux_conf_instance  # Primary tmux class, for backreferencing
-        self.ms_fn_keys_mapped = False
-        self.fn_keys_handling = 2
 
         # To ensure no collisions in user-keys indexes, always use the same source
         self.key_2_uk = {
@@ -147,6 +145,9 @@ class LimitedKbdSpecialHandling:
             "delete": False,
         }
         self.sequence_used = []
+        self.ms_fn_keys_mapped = False
+        self.fn_keys_handling = 2
+        # self.tc.use_prefix_arrow_nav_keys = True
 
     def config_console_keyb(self) -> bool:
         #
@@ -208,7 +209,6 @@ class LimitedKbdSpecialHandling:
         #
         #  This keyb type already generates Esc on the key above tab
         #
-        self.tc.write("# LimitedKbdSpecialHandling: keyb_type_1")
         self.alternate_key_euro("\\342\\202\\254")
         self.alternate_key_backtick("\\033\\140")
 
@@ -239,7 +239,6 @@ class LimitedKbdSpecialHandling:
         #
         self.tc.write("# No adaptations available for the touch keyboard")
         self.tc.write()  # spacer line
-        # self.tc.use_prefix_arrow_nav_keys = True
 
     # ======================================================
     #
@@ -390,7 +389,6 @@ class TermuxConsole(LimitedKbdSpecialHandling):
     """Used to adopt the Termux console"""
 
     def keyb_type_1(self):
-        self.tc.write("# TermuxConsole keyb_type_1")
         self.alternate_key_escape("\\140")
         # self.alternate_key_delete("\\033\\177")
         # self.alternate_key_euro("\\033\\100")  # same as on Darwin
@@ -458,9 +456,6 @@ class IshConsole(LimitedKbdSpecialHandling):
 
         self.define_muc_keys()
         self.alt_upper_case()
-
-        # use <prefix> arrows as PageUp/Dn Home/End
-        self.tc.use_prefix_arrow_nav_keys = False
         return True
 
     # ======================================================
