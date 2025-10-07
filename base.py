@@ -306,7 +306,7 @@ class BaseConfig(TmuxConfig):
 
         if not self.tablet_keyb and self.vers_ok(2.6):
             # Tablet keyb configs handle their own euro rempaping
-            eur_sequence = "\\033\\100"  # Dawin keyboards, is pc different?
+            eur_sequence = "\\033\\100"  # Darwin keyboards, is pc different?
             self.alternate_key_euro(eur_sequence)
         w()  # Spacer after this local override section
 
