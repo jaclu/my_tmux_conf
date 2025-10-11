@@ -95,6 +95,8 @@ class T2(SB):  # type: ignore
         set -g @menus_use_hint_overlays no
         set -g @menus_show_key_hints no
 
+        # set -g @menus_location_x W
+        # set -g @menus_location_y C
 
         # set -g @menus_main_menu '~/tmp/alt_menu/alt_main.sh'
         # set -g @menus_main_menu "~/my_tmux_menus/main.sh"
