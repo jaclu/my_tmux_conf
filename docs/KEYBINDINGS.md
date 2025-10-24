@@ -26,10 +26,10 @@ dependent actions.
 | Key                 | No Prefix   | Default       | Description                         |
 | ------------------- | ----------- | ------------- | ----------------------------------- |
 |                     |             | `<p> ;`       | Previously active pane              |
-| `<p> h`\*           | `M-Left`    | `<p> Left`    | Select pane to the left             |
-| `<p> j`\*           | `M-Down`    | `<p> Down`    | Select pane below                   |
-| `<p> k`\*           | `M-Up`      | `<p> Up`      | Select pane above                   |
-| `<p> l`\*           | `M-Right`   | `<p> Right`   | Select pane to the right            |
+| `<p> h`             | `M-Left`    | `<p> Left`    | Select pane to the left             |
+| `<p> j`             | `M-Down`    | `<p> Down`    | Select pane below                   |
+| `<p> k`             | `M-Up`      | `<p> Up`      | Select pane above                   |
+| `<p> l`             | `M-Right`   | `<p> Right`   | Select pane to the right            |
 |                     |             | `<p> {`       | Swap pane backwards                 |
 |                     |             | `<p> }`       | Swap pane forwards                  |
 |                     |             |               |                                     |

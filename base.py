@@ -1223,29 +1223,22 @@ class BaseConfig(TmuxConfig):
                 bind -N "Select pane right - P+Right" -n  M-Right  {pane_right}
                 """
             )
-            if self.use_prefix_arrow_nav_keys:
-                #  Due to the limited keyboard handling in iSH, only supporting
-                #  unmodified arrorws, prefix arrows ae used for PageUp/Down,Home/End
-                w(
-                    f"""
-                    #
-                    #  Due to the limited keyboard handling in iSH, only supporting
-                    #  unmodified arrorws, here they are used for document navigation.
-                    #
-                    bind -N "Select pane left - P+Left M-Left"    -r  h  {pane_left}
-                    bind -N "Select pane down - P+Down M-Down"    -r  j  {pane_down}
-                    bind -N "Select pane up - P+Up M-Up"          -r  k  {pane_up}
-                    bind -N "Select pane right - P+Right M-Right" -r  l  {pane_right}
-                    """
-                )
-            else:
+            w(
+              f"""
+              bind -N "Select pane left - M-Left"    -r  h  {pane_left}
+              bind -N "Select pane down - M-Down"    -r  j  {pane_down}
+              bind -N "Select pane up - M-Up"          -r  k  {pane_up}
+              bind -N "Select pane right - M-Right" -r  l  {pane_right}
+              """
+             )
+            if not self.use_prefix_arrow_nav_keys:
                 w(
                     f"""# No repeats here, since I so often use arrows directly
                     # after moving to another pane
-                    bind -N "Select pane left - M-Left"    Left   {pane_left}
-                    bind -N "Select pane down - M-Down"    Down   {pane_down}
-                    bind -N "Select pane up - M-Up"        Up     {pane_up}
-                    bind -N "Select pane right - M-Right"  Right  {pane_right}
+                    bind -N "Select pane left - P+h M-Left"    Left   {pane_left}
+                    bind -N "Select pane down - P+j M-Down"    Down   {pane_down}
+                    bind -N "Select pane up - P+k M-Up"        Up     {pane_up}
+                    bind -N "Select pane right - P+l M-Right"  Right  {pane_right}
                     """
                 )
                 if mtc_utils.IS_GHOSTTY:

@@ -89,7 +89,7 @@ class T2(SB):  # type: ignore
         set -g @menus_border_type 'rounded'
 
         set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
-        # set -g @menus_use_cache  No
+        set -g @menus_use_cache  No
         set -g @menus_config_file "$TMUX_CONF"
 
         set -g @menus_use_hint_overlays no
