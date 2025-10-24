@@ -1217,19 +1217,17 @@ class BaseConfig(TmuxConfig):
         # indicate the right alternate keys
         if self.vers_ok(1.0):
             w(
-                f"""bind -N "Select pane left - P+Left"   -n  M-Left   {pane_left}
-                bind -N "Select pane down - P+Down"   -n  M-Down   {pane_down}
-                bind -N "Select pane up - P+Up"       -n  M-Up     {pane_up}
-                bind -N "Select pane right - P+Right" -n  M-Right  {pane_right}
+                f"""
+                bind -N "Select pane left - P+h"  -n  M-Left   {pane_left}
+                bind -N "Select pane down - P+j"  -n  M-Down   {pane_down}
+                bind -N "Select pane up - P+k"    -n  M-Up     {pane_up}
+                bind -N "Select pane right - P+l" -n  M-Right  {pane_right}
+
+                bind -N "Select pane left - M-Left"   -r  h  {pane_left}
+                bind -N "Select pane down - M-Down"   -r  j  {pane_down}
+                bind -N "Select pane up - M-Up"       -r  k  {pane_up}
+                bind -N "Select pane right - M-Right" -r  l  {pane_right}
                 """
-            )
-            w(
-              f"""
-              bind -N "Select pane left - M-Left"    -r  h  {pane_left}
-              bind -N "Select pane down - M-Down"    -r  j  {pane_down}
-              bind -N "Select pane up - M-Up"          -r  k  {pane_up}
-              bind -N "Select pane right - M-Right" -r  l  {pane_right}
-              """
              )
             if not self.use_prefix_arrow_nav_keys:
                 w(
