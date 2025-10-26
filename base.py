@@ -1228,7 +1228,7 @@ class BaseConfig(TmuxConfig):
                 bind -N "Select pane up - M-Up"       -r  k  {pane_up}
                 bind -N "Select pane right - M-Right" -r  l  {pane_right}
                 """
-             )
+            )
             if not self.use_prefix_arrow_nav_keys:
                 w(
                     f"""# No repeats here, since I so often use arrows directly
