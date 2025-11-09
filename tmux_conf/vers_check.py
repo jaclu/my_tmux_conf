@@ -22,14 +22,15 @@ class VersionCheck:
     def __init__(self, vers_detected: str, vers_requested: str = ""):
         # Remove subversion prefix/suffix
 
-        vers_filtered = vers_detected.split("rc-")[0].split("-git")[0]
-
         # vers_filtered = vers_detected.replace("next-", "")
 
-        no_next = re.match(r"^next-(\d+)\.(\d+)$", vers_filtered)
+        no_next = re.match(r"^next-(\d+)\.(\d+)$", vers_detected.strip())
         if no_next:
             major, minor = map(int, no_next.groups())
             vers_filtered = f"{major}.{minor - 1}"
+            print(f"><> next filering  {vers_detected} -> {vers_filtered}")
+        else:
+            vers_filtered = vers_detected.split("rc-")[0].split("-git")[0]
 
         if vers_detected != vers_filtered:
             print(f"Relabeling detected tmux version: {vers_detected} -> {vers_filtered}")
