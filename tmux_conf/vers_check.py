@@ -24,7 +24,8 @@ class VersionCheck:
 
         # vers_filtered = vers_detected.replace("next-", "")
 
-        no_next = re.match(r"^next-(\d+)\.(\d+)$", vers_detected.strip())
+        print(f"><> vers_detected: {vers_detected}")
+        no_next = re.match(r"^next-(\d+)\.(\d+)$", vers_detected)
         if no_next:
             major, minor = map(int, no_next.groups())
             vers_filtered = f"{major}.{minor - 1}"
