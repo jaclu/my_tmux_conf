@@ -231,6 +231,8 @@ define_tmux_env() {
     #  on the host
     #
     tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
+    # tmux_vers=${tmux_vers##next-}                 # Remove leading "next-" if present
+    # tmux_vers=${tmux_vers%%-rc*}                  # Remove trailing "-rc" and anything after
 
     socket="$(id -u)"
     $tmate_mode && socket="$socket-tmate"
@@ -243,19 +245,6 @@ define_tmux_env() {
         else
             conf_file="$d_t2/tmux/tmux.conf"
         fi
-        #
-        #  Handle some odd long versions, since they will be displayed in
-        #  status bar on t2 envs
-        #
-        case "$tmux_vers" in
-        3.1-rc) tmux_vers="3.1" ;; # asdf tmux 3.1 reports as this
-
-        next-3.4)
-            #  shellcheck disable=SC2034 # TODO: check why this is alerting
-            tmux_vers="3.4"
-            ;; # Alpine 3.18 reports as this
-        *) ;;
-        esac
     else
         socket="$socket"-default
         if $tmate_mode; then
@@ -511,6 +500,7 @@ create_tmux_conf() {
     if $t2_env; then
         cmd="T2_ENV=1 $cmd"
     fi
+    lbl_2 "Building tmux env: $cmd"
     run_cmd "$cmd"
     [ "$ex_code" != 0 ] && {
 
@@ -668,6 +658,7 @@ while [ -n "$1" ]; do
         }
         lbl_1 "Prepare the Python venv for my_tmux_conf"
         py_venv_create
+        exit 0
         ;;
     *)
         [ -n "$profile" ] && errror_msg "profile can only be defined once"

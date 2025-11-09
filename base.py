@@ -51,12 +51,12 @@ import sys
 
 import __main__
 
+import mtc_utils
+from tablet_kbd import special_consoles_config
+
 # pylint: disable=import-error
 # pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
-
-import mtc_utils
-from tablet_kbd import special_consoles_config
 
 # ruff checks might be relevant F403,F401
 
