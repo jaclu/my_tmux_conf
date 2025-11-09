@@ -231,8 +231,6 @@ define_tmux_env() {
     #  on the host
     #
     tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
-    # tmux_vers=${tmux_vers##next-}                 # Remove leading "next-" if present
-    # tmux_vers=${tmux_vers%%-rc*}                  # Remove trailing "-rc" and anything after
 
     socket="$(id -u)"
     $tmate_mode && socket="$socket-tmate"

@@ -19,8 +19,9 @@ class VersionCheck:
 
     def __init__(self, vers_detected: str, vers_requested: str = ""):
         # Remove subversion prefix/suffix
-        vers_filtered = vers_detected.replace("next-", "")
-        vers_filtered = vers_filtered.split("rc-")[0].split("-git")[0]
+        # vers_filtered = vers_detected.replace("next-", "")
+        # vers_filtered = vers_filtered.split("rc-")[0].split("-git")[0]
+        vers_filtered = vers_detected
         if vers_detected != vers_filtered:
             print(f"Relabeling detected tmux version: {vers_detected} -> {vers_filtered}")
         self._vers_actual = self.normalize_vers(vers_filtered)
@@ -118,8 +119,8 @@ class VersionCheck:
         #  correct , -> .
         vers = vers.replace(",", ".")
         # param fixes
-        vers.replace("next-", "")  # skip prefix
-        vers = vers.split("-rc")[0]  # cut off before suffix
+        # vers = vers.replace("next-", "")  # skip prefix
+        # vers = vers.split("-rc")[0]  # cut off before suffix
         #
         #  Only keep first two items
         #
