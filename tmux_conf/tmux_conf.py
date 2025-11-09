@@ -629,7 +629,7 @@ class TmuxConfig:
             self.debug_log(f"><> [error] {tmux_bin} Doesn't seem to be a tmux binary")
             raise TmuxConfNotTmuxCommand(f"{tmux_bin} Doesn't seem to be a tmux binary")
 
-        print(f"><> detected tmux vers: { parts[1] }")
+        print(f"><> detected tmux vers: {parts[1]}")
         vers = VersionCheck(actual_vers=parts[1], requested_vers=requested_vers)
         # except TmuxConfInvalidTmuxVersion:
         #     print("{parts[[1]} Doesn't seem to be a valid tmux version")
