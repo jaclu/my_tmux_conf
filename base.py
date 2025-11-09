@@ -1606,9 +1606,9 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.0) and mtc_utils.K_M_PLUS:
             s = (
-                f'bind -N "{
-                    self.muc_non_default_value(mtc_utils.K_M_PLUS)
-                }Create new session  - P++" '
+                'bind -N "'
+                f"{self.muc_non_default_value(mtc_utils.K_M_PLUS)}"
+                'Create new session  - P++" '
                 f"-n  {self.muc_keys[mtc_utils.K_M_PLUS]}  command-prompt "
             )
             if self.vers_ok(1.5):
@@ -1658,9 +1658,8 @@ class BaseConfig(TmuxConfig):
         #
         repo_dir = os.path.dirname(__file__)
         w(
-            f'bind -N "{
-                self.muc_non_default_value(mtc_utils.K_M_P)
-            }List all plugins defined"  {self.muc_keys[mtc_utils.K_M_P]}  '
+            f'bind -N "{self.muc_non_default_value(mtc_utils.K_M_P)}'
+            f'List all plugins defined"  {self.muc_keys[mtc_utils.K_M_P]}  '
             'run-shell "'
             '$TMUX_BIN display-message \\"Generating plugin list\\" \\; '
             # 1st load venv if used
