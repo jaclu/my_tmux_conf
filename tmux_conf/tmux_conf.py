@@ -617,7 +617,7 @@ class TmuxConfig:
             print(f"found {cmd} in conf file")
         return cmd
 
-    def use_tmux_bin(self, tmux_bin: str = "tmux", requested_vers: str = "") -> bool:
+    def use_tmux_bin(self, tmux_bin: str = "tmux", vers_requested: str = "") -> bool:
         """Returns True if this was a valid tmux bin
         If this was the case self.tmux_bin & self.vers will have been set
         """
@@ -629,8 +629,7 @@ class TmuxConfig:
             self.debug_log(f"><> [error] {tmux_bin} Doesn't seem to be a tmux binary")
             raise TmuxConfNotTmuxCommand(f"{tmux_bin} Doesn't seem to be a tmux binary")
 
-        print(f"><> detected tmux vers: {parts[1]}")
-        vers = VersionCheck(actual_vers=parts[1], requested_vers=requested_vers)
+        vers = VersionCheck(vers_detected=parts[1], vers_requested=vers_requested)
         # except TmuxConfInvalidTmuxVersion:
         #     print("{parts[[1]} Doesn't seem to be a valid tmux version")
         #     return False

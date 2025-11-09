@@ -17,14 +17,15 @@
 class VersionCheck:
     """compares tmux versions"""
 
-    def __init__(self, actual_vers: str, requested_vers=None):
+    def __init__(self, vers_detected: str, vers_requested: str = ""):
         # Remove subversion prefix/suffix
-        actual_vers = actual_vers.replace("next-", "")
-        actual_vers = actual_vers.split("rc-")[0].split("-git")[0]
-        print(f"><> Using tmux version: {actual_vers}")
-        self._vers_actual = self.normalize_vers(actual_vers)
-        if requested_vers:
-            self._vers = self.normalize_vers(requested_vers)
+        vers_filtered = vers_detected.replace("next-", "")
+        vers_filtered = vers_filtered.split("rc-")[0].split("-git")[0]
+        if vers_detected != vers_filtered:
+            print(f"  Using tmux version: {vers_filtered}")
+        self._vers_actual = self.normalize_vers(vers_filtered)
+        if vers_requested:
+            self._vers = self.normalize_vers(vers_requested)
         else:
             self._vers = self._vers_actual
         #
@@ -103,20 +104,6 @@ class VersionCheck:
 
     def normalize_vers(self, vers) -> str:
         """Normalizes vers into a string"""
-        # vers = "next-3.4"
-        # if vers == "next-3.4":
-        #     #
-        #     #  Alpine tmux-3.3a_git20230428 reports version as next-3.4
-        #     #  Change this into 3.3a-git20230428, so that notation follows
-        #     #  the normal logic, and can be used in vers checks
-        #     #
-        #     vers = "3.3a-git20230428"
-        # elif vers == "3.1-rc":
-        #     #
-        #     #  asdf tmux 3.1 reports as 3.1-rc, for simplicity just
-        #     #  brand it as 3.1
-        #     #
-        #     vers = "3.1"
 
         if isinstance(vers, str) and vers.find(".") < 0:
             try:
