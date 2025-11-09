@@ -13,14 +13,24 @@
 #
 """compares tmux versions"""
 
+import re
+
 
 class VersionCheck:
     """compares tmux versions"""
 
     def __init__(self, vers_detected: str, vers_requested: str = ""):
         # Remove subversion prefix/suffix
-        vers_filtered = vers_detected.replace("next-", "")
-        vers_filtered = vers_filtered.split("rc-")[0].split("-git")[0]
+
+        vers_filtered = vers_detected.split("rc-")[0].split("-git")[0]
+
+        # vers_filtered = vers_detected.replace("next-", "")
+
+        no_next = re.match(r"^next-(\d+)\.(\d+)$", vers_filtered)
+        if no_next:
+            major, minor = map(int, no_next.groups())
+            vers_filtered = f"{major}.{minor - 1}"
+
         if vers_detected != vers_filtered:
             print(f"Relabeling detected tmux version: {vers_detected} -> {vers_filtered}")
         self._vers_actual = self.normalize_vers(vers_filtered)
