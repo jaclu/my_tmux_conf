@@ -17,9 +17,9 @@
 class VersionCheck:
     """compares tmux versions"""
 
-    def __init__(self, actual_vers, requested_vers=None):
+    def __init__(self, actual_vers: str, requested_vers=None):
         # Remove subversion prefix/suffix
-        actual_vers.replace("next-", "")
+        actual_vers = actual_vers.replace("next-", "")
         actual_vers = actual_vers.split("rc-")[0].split("-git")[0]
         print(f"><> Using tmux version: {actual_vers}")
         self._vers_actual = self.normalize_vers(actual_vers)
