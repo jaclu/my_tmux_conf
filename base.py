@@ -1386,6 +1386,32 @@ class BaseConfig(TmuxConfig):
         #
         set-hook -g window-layout-changed " """
         )
+        self.hook_action_zoom_state()
+
+        w(
+            """
+          #
+          # To trigger a zoom state after current window is changed,
+          # first set zoom-state to an "invalid" value, to trigger a check
+          #
+          set-hook -g session-window-changed " """
+        )
+        w("    set -w @zoom-state 2", trim_ws=False)
+        self.hook_action_zoom_state()
+
+        w(
+            """
+          #
+          # To trigger a zoom state check after current session is changed,
+          # first set zoom-state to an "invalid" value, to trigger a check
+          #
+          set-hook -g client-session-changed " """
+        )
+        w("    set -w @zoom-state 2", trim_ws=False)
+        self.hook_action_zoom_state()
+
+    def hook_action_zoom_state(self):
+        w = self.write
         w(
             """
     if-shell -F '#{!=:#{window_zoomed_flag},#{@zoom-state}}' {
@@ -1418,8 +1444,6 @@ class BaseConfig(TmuxConfig):
             trim_ws=False,
         )
         w('"')
-
-        # set hook -g session-window-changed
 
     def mouse_handling(self):
         w = self.write
