@@ -864,33 +864,26 @@ class BaseConfig(TmuxConfig):
                 """
             )
 
-        pref = 'bind -N "Select the '
+        pref = "bind -N 'Select the "
         w(
             f"""# window navigation
-        {pref}previously current window  - M--"         -  last-window
-        {pref}previous window  - P+9 M-9 C-M-Left"  -r  p  previous-window
-        {pref}next window      - P+0 M-0 C-M-Right" -r  n  next-window
-        {pref}previous window  - P+p M-9 C-M-Left"  -r  9  previous-window
-        {pref}next window  - P+n M-0 C-M-Right"     -r  0  next-window
+        {pref}previously current window  - M--'         -  last-window
+        {pref}previous window  - P+9 M-9 C-M-Left'  -r  p  previous-window
+        {pref}next window      - P+0 M-0 C-M-Right' -r  n  next-window
+        {pref}previous window  - P+p M-9 C-M-Left'  -r  9  previous-window
+        {pref}next window  - P+n M-0 C-M-Right'     -r  0  next-window
         """
         )
         if self.vers_ok(1.2):
-            w(
-                f"""{pref}previous window  - P+p P+9 M-9"  -n  C-M-Left   previous-window
-            {pref}next window      - P+n P+0 M-0"  -n  C-M-Right  next-window"""
-            )
-        elif self.vers_ok(1.4):
-            w(
-                """
-            # temp disabled until I stop using this for split pane"""
-            )
-            w(
-                "bind -n C-M-Left display-message "
-                '"Soon win navigation - For new pane use: <P> M-Left"'
-            )
-            w(
-                "bind -n C-M-Right display-message "
-                '"Soon win navigation - For new pane use: <P> M-Right"'
+            # w(
+            #     f"""{pref}previous window  - P+p P+9 M-9'  -n  C-M-Left   previous-window
+            # {pref}next window      - P+n P+0 M-0'  -n  C-M-Right  next-window"""
+            # )
+            self.pane_un_zoomed_noprefix_binds.extend(
+                [
+                    f"{pref}previous window  - P+p P+9 M-9' -n  C-M-Left   previous-window",
+                    f"{pref}next window      - P+n P+0 M-0' -n  C-M-Right  next-window",
+                ]
             )
 
         #
@@ -1141,12 +1134,14 @@ class BaseConfig(TmuxConfig):
                 bind -N "Select pane right - M-Right" -r  l  {pane_right}
                 """
             )
-            self.pane_un_zoomed_noprefix_binds = [
-                f"bind -N 'Select pane left - P+h'  -n  M-Left   {pane_left}",
-                f"bind -N 'Select pane down - P+j'  -n  M-Down   {pane_down}",
-                f"bind -N 'Select pane up - P+k'    -n  M-Up     {pane_up}",
-                f"bind -N 'Select pane right - P+l' -n  M-Right  {pane_right}",
-            ]
+            self.pane_un_zoomed_noprefix_binds.extend(
+                [
+                    f"bind -N 'Select pane left - P+h'  -n  M-Left   {pane_left}",
+                    f"bind -N 'Select pane down - P+j'  -n  M-Down   {pane_down}",
+                    f"bind -N 'Select pane up - P+k'    -n  M-Up     {pane_up}",
+                    f"bind -N 'Select pane right - P+l' -n  M-Right  {pane_right}",
+                ]
+            )
             if not self.use_prefix_arrow_nav_keys:
                 w(
                     f"""# No repeats here, since I so often use arrows directly
@@ -1245,19 +1240,31 @@ class BaseConfig(TmuxConfig):
         w()
         if self.vers_ok(1.2):
             # keys without prefix never needs repeat set
-            w("bind -N 'Resize pane 1 left  - P+H' -n  C-S-Left   resize-pane -L")
-            w("bind -N 'Resize pane 1 down  - P+J' -n  C-S-Down   resize-pane -D")
-            w("bind -N 'Resize pane 1 up    - P+K' -n  C-S-Up     resize-pane -U")
-            w("bind -N 'Resize pane 1 right - P+L' -n  C-S-Right  resize-pane -R")
-            w()
-            w(
-                """# For larger changes M-S Arrows scale by 5
-            bind -N 'Resize pane 5 left'        -n  M-S-Left   resize-pane -L 10
-            bind -N 'Resize pane 5 down'        -n  M-S-Down   resize-pane -D 5
-            bind -N 'Resize pane 5 up'          -n  M-S-Up     resize-pane -U 5
-            bind -N 'Resize pane 5 right'       -n  M-S-Right  resize-pane -R 10
-            """
+            self.pane_un_zoomed_noprefix_binds.extend(
+                [
+                    "bind -N 'Resize pane 1 left  - P+H' -n  C-S-Left   resize-pane -L",
+                    "bind -N 'Resize pane 1 down  - P+J' -n  C-S-Down   resize-pane -D",
+                    "bind -N 'Resize pane 1 up    - P+K' -n  C-S-Up     resize-pane -U",
+                    "bind -N 'Resize pane 1 right - P+L' -n  C-S-Right  resize-pane -R",
+                    "bind -N 'Resize pane 10 left'       -n  M-S-Left   resize-pane -L 10",
+                    "bind -N 'Resize pane 5 down'        -n  M-S-Down   resize-pane -D 5",
+                    "bind -N 'Resize pane 5 up'          -n  M-S-Up     resize-pane -U 5",
+                    "bind -N 'Resize pane 10 right'      -n  M-S-Right  resize-pane -R 10",
+                ]
             )
+            # w("bind -N 'Resize pane 1 left  - P+H' -n  C-S-Left   resize-pane -L")
+            # w("bind -N 'Resize pane 1 down  - P+J' -n  C-S-Down   resize-pane -D")
+            # w("bind -N 'Resize pane 1 up    - P+K' -n  C-S-Up     resize-pane -U")
+            # w("bind -N 'Resize pane 1 right - P+L' -n  C-S-Right  resize-pane -R")
+            # w()
+            # w(
+            #     """# For larger changes M-S Arrows scale by 5
+            # bind -N 'Resize pane 5 left'        -n  M-S-Left   resize-pane -L 10
+            # bind -N 'Resize pane 5 down'        -n  M-S-Down   resize-pane -D 5
+            # bind -N 'Resize pane 5 up'          -n  M-S-Up     resize-pane -U 5
+            # bind -N 'Resize pane 5 right'       -n  M-S-Right  resize-pane -R 10
+            # """
+            # )
 
     def save_history(self):
         #
