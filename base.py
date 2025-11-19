@@ -991,20 +991,6 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.8):
             w(f"{self.opt_pane} allow-rename off")
 
-        if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
-            msg = "terminal clipboard is set"
-            if self.vers_ok(3.2):
-                delay = "-d 400"
-            else:
-                delay = ""
-            w(
-                f"""
-                # Displays that tmux picked up clipboard and (hopefully) sent it
-                # to the terminal
-                set-hook -g pane-set-clipboard "display-message {delay} '{msg}'"
-                """
-            )
-
         if self.vers_ok(3.5):
             w(
                 f"""{self.opt_pane} allow-set-title off
@@ -1098,22 +1084,6 @@ class BaseConfig(TmuxConfig):
                 pane_label = " " + pane_label
                 w(f'{self.opt_pane} pane-border-format "{pane_label}"')
 
-            disable_borders = f"{self.opt_win_loc} pane-border-status off"
-
-            if self.vers_ok(2.5):
-                #  Display pane border lines when more than one pane is present
-
-                # 2.4 crashes as soon as any of these hooks are triggered on
-                # my MacBook not sure if it is tmux version or asdf tmux bin related
-
-                if not self.vers_ok(2.6):
-                    w(  # needed for 2.5 to avoid label on new ses & win
-                        f"""
-                        set-hook -g after-new-session "{disable_borders}"
-                        set-hook -g after-new-window "{disable_borders}"
-                        """
-                    )
-
         if self.vers_ok(3.2):
             w(f"{self.opt_pane} pane-border-lines single")
 
@@ -1122,35 +1092,13 @@ class BaseConfig(TmuxConfig):
 
         # #{pane_current_command}
         if self.show_pane_title:
+            w()  # spacer
             if self.vers_ok(2.6):
-                w()  # spacer
-
-                if self.vers_ok(2.7):
-                    # In 2.6 select pane can't be assigned via '#D', would need to do:
-                    #   $TMUX_BIN select-pane -T $($TMUX_BIN display-message \
-                    #       -p '#{pane_id}')
-                    # not worth the effort for such a corner case
-
-                    #
-                    #  Set initial pane title to pane_id (#D)
-                    #
-                    w(
-                        """
-                    # For first pane in first window
-                    set-hook -g after-new-session "select-pane -T '#D'"
-                    # For first pane in new window
-                    set-hook -g after-new-window "select-pane -T '#D'"
-                    # For additional panes in same window
-                    set-hook -g after-split-window "select-pane -T '#D'"
-                    """
-                    )
-
                 w(
                     'bind -N "Set pane title"  P  command-prompt -I "#T" -p '
                     '"Pane title: " "select-pane -T \\"%%\\""'
                 )
             elif self.vers_ok(2.3) and not self.is_tmate():
-                w()  # spacer
                 w("bind  P  display-message 'Pane title setting needs 2.6'")
 
     def pane_navigation(self):
@@ -1227,8 +1175,7 @@ class BaseConfig(TmuxConfig):
             w(
                 f"""# Ignpre the half-page scroll in copy-mode
                 bind -N "Select pane up"   -T "copy-mode"  M-Up    {pane_up}
-                bind -N "Select pane down" -T "copy-mode"  M-Down  {pane_down}
-                """
+                bind -N "Select pane down" -T "copy-mode"  M-Down  {pane_down}"""
             )
 
     def pane_splitting(self):
@@ -1353,9 +1300,9 @@ class BaseConfig(TmuxConfig):
         )
         if not self.vers_ok(2.3) or self.is_tmate():
             w(
-                """# -----  Hooks not supported for tmux < 2.3 and tmate   -----
+                """# ===  Hooks not supported for tmux < 2.3 and tmate   ===
 
-              # set default no prefix pane nav
+              # no prefix nav keys according to no-zoom state
               """
             )
 
@@ -1364,51 +1311,97 @@ class BaseConfig(TmuxConfig):
 
             w()  # spacer
             return
+
+        if self.vers_ok(2.5):
+            #  Display pane border lines when more than one pane is present
+
+            # 2.4 crashes as soon as any of these hooks are triggered on
+            # my MacBook not sure if it is tmux version or asdf tmux bin related
+
+            if not self.vers_ok(2.6):
+                disable_borders = f"{self.opt_win_loc} pane-border-status off"
+                w(  # needed for 2.5 to avoid label on new ses & win
+                    f"""set-hook -g after-new-session[3] "{disable_borders}"
+                    set-hook -g after-new-window[3] "{disable_borders}"
+                    """
+                )
+
+        if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
+            msg = "terminal clipboard is set"
+            if self.vers_ok(3.2):
+                delay = "-d 400"
+            else:
+                delay = ""
+            w(
+                f"""# Displays that tmux picked up clipboard and (hopefully)
+                # sent it to the terminal
+                set-hook -g pane-set-clipboard[2] "display-message {delay} '{msg}'"
+                """
+            )
+
+        if self.vers_ok(2.7):
+            # In 2.6 select pane can't be assigned via '#D', would need to do:
+            #   $TMUX_BIN select-pane -T $($TMUX_BIN display-message \
+            #       -p '#{pane_id}')
+            # not worth the effort for such a corner case
+
+            #
+            #  Set initial pane title to pane_id (#D)
+            #
+            w(
+                """# For first pane in first window
+            set-hook -g after-new-session[1] "select-pane -T '#D'"
+            # For first pane in new window
+            set-hook -g after-new-window[1] "select-pane -T '#D'"
+            # For additional panes in same window
+            set-hook -g after-split-window[1] "select-pane -T '#D'"
+            """
+            )
+
         w(
             """#
-        #   zoom / unzoom env changes
+        #   ======  Pane Zoom  ======
         #
+        set -g @zoom-state 0
 
-        # Set initial state
-        set-hook -g after-new-window 'set -w @zoom-state 0'
-
-        # bind keys according to no-zoom state"""
+        # initial no-zoom state no-prefix nav keys"""
         )
         for s in self.pane_un_zoomed_noprefix_binds:
             w(s)
 
-        w(
-            """
-        #
-        # compare zoom flag with zoom state, use quick outer check to avoid
-        # excessive processing every time a pane is resized etc.
-        # If changed check zoom state, store new state and do relevant actions
-        #
-        set-hook -g window-layout-changed " """
-        )
-        self.hook_action_zoom_state()
+        if self.vers_ok(3.2):
+            w(
+                """
+            #
+            # compare zoom flag with zoom state, use quick outer check to avoid
+            # excessive processing every time a pane is resized etc.
+            # If changed check zoom state, store new state and do relevant actions
+            #
+            set-hook -g window-layout-changed[4] " """
+            )
+            self.hook_action_zoom_state()
 
-        w(
-            """
-          #
-          # To trigger a zoom state after current window is changed,
-          # first set zoom-state to an "invalid" value, to trigger a check
-          #
-          set-hook -g session-window-changed " """
-        )
-        w("    set -w @zoom-state 2", trim_ws=False)
-        self.hook_action_zoom_state()
+            w(
+                """
+            #
+            # To trigger a zoom state check after current window is changed,
+            # first set zoom-state to an "invalid" value, to trigger a check
+            #
+            set-hook -g session-window-changed[4] " """
+            )
+            w("    set -w @zoom-state 2", trim_ws=False)
+            self.hook_action_zoom_state()
 
-        w(
-            """
-          #
-          # To trigger a zoom state check after current session is changed,
-          # first set zoom-state to an "invalid" value, to trigger a check
-          #
-          set-hook -g client-session-changed " """
-        )
-        w("    set -w @zoom-state 2", trim_ws=False)
-        self.hook_action_zoom_state()
+            w(
+                """
+            #
+            # To trigger a zoom state check after current session is changed,
+            # first set zoom-state to an "invalid" value, to trigger a check
+            #
+            set-hook -g client-session-changed[4] " """
+            )
+            w("    set -w @zoom-state 2", trim_ws=False)
+            self.hook_action_zoom_state()
 
     def hook_action_zoom_state(self):
         w = self.write
