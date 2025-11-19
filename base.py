@@ -1358,25 +1358,13 @@ class BaseConfig(TmuxConfig):
             """
             )
 
-        w(
-            """#
-        #   ======  Pane Zoom  ======
-        #
-        set -g @zoom-state 0
-
-        # initial no-zoom state no-prefix nav keys"""
-        )
-        for s in self.pane_un_zoomed_noprefix_binds:
-            w(s)
-
         if self.vers_ok(3.2):
             w(
-                """
+                """#
+            #   ======  Pane Zoom  ======
             #
-            # compare zoom flag with zoom state, use quick outer check to avoid
-            # excessive processing every time a pane is resized etc.
-            # If changed check zoom state, store new state and do relevant actions
-            #
+
+            # Trigger if layout is changed - panes added/removed/resized/zoomed
             set-hook -g window-layout-changed[4] " """
             )
             self.hook_action_zoom_state()
@@ -1404,35 +1392,48 @@ class BaseConfig(TmuxConfig):
             self.hook_action_zoom_state()
 
     def hook_action_zoom_state(self):
+        # If only one pane is present in the window, treat it as in zoomed state
+
         w = self.write
+
+        #
+        # compare zoom flag with zoom state, use quick outer check to avoid
+        # excessive processing every time a pane is resized etc.
+        #
+        # If changed check zoom state, store new state and do relevant actions
+        #
+        # If only one pane is present, always set it to its "zoomed" state
+        # A single pane will not receive any window-layout-changed events due to
+        # pane resizing, so should not trigger any noticeable overhead.
+        #
         w(
             """
-    if-shell -F '#{!=:#{window_zoomed_flag},#{@zoom-state}}' {
-        if-shell -F '#{==:#{window_zoomed_flag},1}' {
+    if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-state}}}' {
+        if-shell -F '#{||:#{==:#{window_panes},1},#{==:#{window_zoomed_flag},1}}' {
             # Set zoomed state
-            set -w @zoom-state 1 ;
-            set -w pane-border-status off ;""",
+            set -w @zoom-state 1
+            set -w pane-border-status off""",
             trim_ws=False,
         )
 
+        # unbind no-prefix pane nav keys
         for s in self.pane_un_zoomed_noprefix_binds:
-            w(f"            unbind -n {shlex.split(s)[4]} ;", trim_ws=False)
+            w(f"            unbind -n {shlex.split(s)[4]}", trim_ws=False)
 
         w(
             """        } {
             # Set un-zoomed state
-            set -w @zoom-state 0 ;
-            set -w pane-border-status top ;""",
+            set -w @zoom-state 0
+            set -w pane-border-status top""",
             trim_ws=False,
         )
 
+        # bind no-prefix pane nav keys
         for s in self.pane_un_zoomed_noprefix_binds:
-            w(f"            {s} ;", trim_ws=False)
+            w(f"            {s}", trim_ws=False)
 
         w(
             """        }
-    } {
-        # do nothing if no zoom change detected
     }""",
             trim_ws=False,
         )
