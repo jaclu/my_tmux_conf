@@ -381,7 +381,10 @@ class TmuxConfig:
         self._write_enabled = state
 
     def write(
-        self, cmd: Union[str, list[str], list[list[str]]] = "", eol: str = "\n"
+        self,
+        cmd: Union[str, list[str], list[list[str]]] = "",
+        trim_ws: bool = True,  # trim leading white-space
+        eol: str = "\n",
     ) -> None:
         """Writes tmux cmds to config file
 
@@ -399,13 +402,13 @@ class TmuxConfig:
         if isinstance(cmd, list):
             for line in cmd:
                 self.debug_log(f"><> [list line] {line}")
-                self.write(line)
+                self.write(line, trim_ws)
             return  # list has already been processed
 
         if isinstance(cmd, str) and cmd.find("\n") > -1:
             for multi_line in cmd.split("\n"):
                 # self.debug_log(f"><> [multi_line] {multi_line}")
-                self.write(multi_line)
+                self.write(multi_line, trim_ws)
             return  # lines have already been processed
 
         if not self._parsing_note and cmd.find("bind -N") > -1:
@@ -421,9 +424,10 @@ class TmuxConfig:
             #
             self._parsing_note = True  # avoid recursion
             self.debug_log(f"><> [-N cmd] {cmd}")
-            for line in self.filter_note(cmd.strip()):
+            # for line in self.filter_note(cmd.strip()):
+            for line in self.filter_note(cmd, trim_ws=trim_ws):
                 self.debug_log(f"><> [note filtered line] {line}")
-                self.write(line)
+                self.write(line, trim_ws)
             self.debug_log("><> [end of -N cmd]\n")
             self._parsing_note = False
             return  # lines have already been processed
@@ -437,12 +441,15 @@ class TmuxConfig:
 
         # self.debug_log(f"><> [single line] {cmd}")
         with open(self.conf_file, "a", encoding="utf-8") as f:
-            l123 = cmd.strip()
-            self.debug_log(l123)
-            f.write(f"{l123}{eol}")  # use strip to get rid of indentions
-            #  f.write(f"{cmd}{eol}")
+            if trim_ws:
+                l123 = cmd.strip()
+                self.debug_log(l123)
+                f.write(f"{l123}{eol}")  # use strip to get rid of indentions
+                #  f.write(f"{cmd}{eol}")
+            else:
+                f.write(f"{cmd}{eol}")
 
-    def filter_note(self, line: str):
+    def filter_note(self, line: str, trim_ws: bool = True):
         """Handles notes, if tmux notes are not supported by running tmux
         generates:
           - the note as a comment (if self.use_notes_as_comments is True)
@@ -457,7 +464,10 @@ class TmuxConfig:
         ):
             return [line]
         parts = line.split("-N")
-        pre = parts[0].strip()
+        if trim_ws:
+            pre = parts[0].strip()
+        else:
+            pre = parts[0]
         post = parts[1].strip()
         if not post:
             # Probably an -N at end of line, so not related to a note
