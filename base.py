@@ -46,6 +46,7 @@
 
 import os
 import re
+import shlex
 import shutil
 import sys
 
@@ -188,20 +189,9 @@ class BaseConfig(TmuxConfig):
             plugins_display=plugins_display,
         )
         self.tablet_keyb = None
+        self.pane_un_zoomed_noprefix_binds: list[str] = []
         self.define_opt_params()
 
-        if self.vers_ok(1.8):
-            self.shell_bg = "run-shell -b"
-        else:
-            # option -b was introduced in 1.8, this filters out usages on unsitable
-            # versions, since if used, will trigger sometimes hard to trace hangs
-            self.shell_bg = (
-                "\n#================================\n"
-                "#   ERROR - broken code disabled!\n"
-                "#================================\n"
-                "# This usage of run-shell -b would likely "
-                "cause a hang on tmux < 1.8\n# "
-            )
         if self.vers_ok(1.9):
             # the syntax can be used in 1.8, but if used path is always set to /
             self.current_path_directive = "-c '#{pane_current_path}'"
@@ -330,6 +320,7 @@ class BaseConfig(TmuxConfig):
         self.session_handling()
         self.windows_handling()
         self.pane_handling()
+        self.handle_hooks()
         if self.vers_ok(1.0):
             self.mouse_handling()
         self.status_bar()
@@ -1107,12 +1098,6 @@ class BaseConfig(TmuxConfig):
                 pane_label = " " + pane_label
                 w(f'{self.opt_pane} pane-border-format "{pane_label}"')
 
-            hook_condition = (
-                "if-shell '[ #{window_zoomed_flag} -eq 1 ] || [ #{window_panes} -eq 1 ]' "
-            )
-
-            pbs_cmd = f"'{self.opt_win_loc} pane-border-status "
-            hook_action = f" {hook_condition} {pbs_cmd} off' {pbs_cmd} top'"
             disable_borders = f"{self.opt_win_loc} pane-border-status off"
 
             if self.vers_ok(2.5):
@@ -1128,19 +1113,7 @@ class BaseConfig(TmuxConfig):
                         set-hook -g after-new-window "{disable_borders}"
                         """
                     )
-                # the others dont seem to be needed...
-                # For debugging use
-                # set-hook -g after-split-window "{self._lg("after-split-window")}
-                #   {hook_action}"
-                # set-hook -g after-resize-pane "{self._lg("after-resize-pane")}
-                #   {hook_action}"
-                # set-hook -g after-kill-pane "{self._lg("after-kill-pane")}
-                #   {hook_action}"
-                w(
-                    f"""
-                    set-hook -g window-layout-changed "{hook_action}"
-                    """
-                )
+
         if self.vers_ok(3.2):
             w(f"{self.opt_pane} pane-border-lines single")
 
@@ -1180,10 +1153,6 @@ class BaseConfig(TmuxConfig):
                 w()  # spacer
                 w("bind  P  display-message 'Pane title setting needs 2.6'")
 
-    # def _lg(self, line):
-    #     # debug util, displays triggered hooks to a logfile
-    #     return f"run-shell 'echo {line} >>~/tmp/tmux-menus-dbg.log' \\;"
-
     def pane_navigation(self):
         w = self.write
         w(
@@ -1218,17 +1187,18 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.0):
             w(
                 f"""
-                bind -N "Select pane left - P+h"  -n  M-Left   {pane_left}
-                bind -N "Select pane down - P+j"  -n  M-Down   {pane_down}
-                bind -N "Select pane up - P+k"    -n  M-Up     {pane_up}
-                bind -N "Select pane right - P+l" -n  M-Right  {pane_right}
-
                 bind -N "Select pane left - M-Left"   -r  h  {pane_left}
                 bind -N "Select pane down - M-Down"   -r  j  {pane_down}
                 bind -N "Select pane up - M-Up"       -r  k  {pane_up}
                 bind -N "Select pane right - M-Right" -r  l  {pane_right}
                 """
             )
+            self.pane_un_zoomed_noprefix_binds = [
+                f"bind -N 'Select pane left - P+h'  -n  M-Left   {pane_left}",
+                f"bind -N 'Select pane down - P+j'  -n  M-Down   {pane_down}",
+                f"bind -N 'Select pane up - P+k'    -n  M-Up     {pane_up}",
+                f"bind -N 'Select pane right - P+l' -n  M-Right  {pane_right}",
+            ]
             if not self.use_prefix_arrow_nav_keys:
                 w(
                     f"""# No repeats here, since I so often use arrows directly
@@ -1369,6 +1339,87 @@ class BaseConfig(TmuxConfig):
                 '-I "$TMPDIR/tmux-e.history" "capture-pane -S - -E - -e \\; '
                 'save-buffer %1 \\; delete-buffer"'
             )
+
+    def handle_hooks(self):
+        w = self.write
+        w(
+            """
+        #======================================================
+        #
+        #   Handle Hooks
+        #
+        #======================================================
+        """
+        )
+        if not self.vers_ok(2.3) or self.is_tmate():
+            w(
+                """# -----  Hooks not supported for tmux < 2.3 and tmate   -----
+
+              # set default no prefix pane nav
+              """
+            )
+
+            for s in self.pane_un_zoomed_noprefix_binds:
+                w(s)
+
+            w()  # spacer
+            return
+        w(
+            """#
+        #   zoom / unzoom env changes
+        #
+
+        # Set initial state
+        set-hook -g after-new-window 'set -w @zoom-state 0'
+
+        # bind keys according to no-zoom state"""
+        )
+        for s in self.pane_un_zoomed_noprefix_binds:
+            w(s)
+
+        w(
+            """
+        #
+        # compare zoom flag with zoom state, use quick outer check to avoid
+        # excessive processing every time a pane is resized etc.
+        # If changed check zoom state, store new state and do relevant actions
+        #
+        set-hook -g window-layout-changed " """
+        )
+        w(
+            """
+    if-shell -F '#{!=:#{window_zoomed_flag},#{@zoom-state}}' {
+        if-shell -F '#{==:#{window_zoomed_flag},1}' {
+            # Set zoomed state
+            set -w @zoom-state 1 ;
+            set -w pane-border-status off ;""",
+            trim_ws=False,
+        )
+
+        for s in self.pane_un_zoomed_noprefix_binds:
+            w(f"            unbind -n {shlex.split(s)[4]} ;", trim_ws=False)
+
+        w(
+            """        } {
+            # Set un-zoomed state
+            set -w @zoom-state 0 ;
+            set -w pane-border-status top ;""",
+            trim_ws=False,
+        )
+
+        for s in self.pane_un_zoomed_noprefix_binds:
+            w(f"            {s} ;", trim_ws=False)
+
+        w(
+            """        }
+    } {
+        # do nothing if no zoom change detected
+    }""",
+            trim_ws=False,
+        )
+        w('"')
+
+        # set hook -g session-window-changed
 
     def mouse_handling(self):
         w = self.write
