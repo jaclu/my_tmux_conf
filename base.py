@@ -1416,6 +1416,10 @@ class BaseConfig(TmuxConfig):
             w("    set -w @zoom-state 2", trim_ws=False)
             self.hook_action_zoom_state()
 
+            # Debug helper add for each hook and state...
+            # msg = "hook set zoom-state = #{@zoom-state}"
+            # w(f"    display-message -d 0 'window-layout-changed {msg}'")
+
             w(
                 """
             #
