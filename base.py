@@ -864,7 +864,7 @@ class BaseConfig(TmuxConfig):
                 """
             )
 
-        pref = "bind -N 'Select the "
+        pref = "bind -N 'Select "
         w(
             f"""# window navigation
         {pref}previously current window  - M--'         -  last-window
@@ -910,16 +910,24 @@ class BaseConfig(TmuxConfig):
         #
         w("# adv key win nav")
         if self.vers_ok(1.0) and not self.tablet_keyb:
-            w(
-                "bind -N 'Select the previous window "
-                "- P+p P+9 C-M-Left' -n  M-9  previous-window"
+            self.pane_un_zoomed_noprefix_binds.extend(
+                [
+                    "bind -N 'Select previous window "
+                    "- P+p P+9 C-M-Left' -n  M-9  previous-window",
+                ]
             )
+            # w(
+            #     "bind -N 'Select previous window "
+            #     "- P+p P+9 C-M-Left' -n  M-9  previous-window"
+            # )
         if self.vers_ok(1.0):
-            s = "bind -N 'Select the"
-            w(
-                f"""{s} next window - P+n P+0 C-M-Right'    -n  M-0  next-window
-                {s} previously current window - P+-'    -n  M--  last-window"""
+            s = "bind -N 'Select"
+            self.pane_un_zoomed_noprefix_binds.extend(
+                [f"{s} next window - P+n P+0 C-M-Right'    -n  M-0  next-window"]
             )
+            # w(f"{s} next window - P+n P+0 C-M-Right'    -n  M-0  next-window")
+            w(f"{s} previously current window - P+-'    -n  M--  last-window")
+
         if self.vers_ok(2.1):
             w2 = "window"  # hackish strings to make sure
             cm = "-T copy-mode -n  M-"  # line is not to long
@@ -1132,10 +1140,10 @@ class BaseConfig(TmuxConfig):
             )
             self.pane_un_zoomed_noprefix_binds.extend(
                 [
-                    f"bind -N 'Select pane left - P+h'  -n  M-Left   {pane_left}",
-                    f"bind -N 'Select pane down - P+j'  -n  M-Down   {pane_down}",
-                    f"bind -N 'Select pane up - P+k'    -n  M-Up     {pane_up}",
-                    f"bind -N 'Select pane right - P+l' -n  M-Right  {pane_right}",
+                    f"bind -N 'Select pane left - P+h'    -n  M-Left   {pane_left}",
+                    f"bind -N 'Select pane down - P+j'    -n  M-Down   {pane_down}",
+                    f"bind -N 'Select pane up - P+k'      -n  M-Up     {pane_up}",
+                    f"bind -N 'Select pane right - P+l'   -n  M-Right  {pane_right}",
                 ]
             )
             if not self.use_prefix_arrow_nav_keys:
