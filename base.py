@@ -1626,7 +1626,6 @@ class BaseConfig(TmuxConfig):
                 f" {self.display_prefix()} ,{mode_indicator}"
                 "}#[default]"
             )
-            w(f"# prefix_indicator:[{prefix_indicator}]")
             self.sb_right += prefix_indicator
 
     def status_bar(self):
