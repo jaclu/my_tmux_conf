@@ -1333,8 +1333,8 @@ class BaseConfig(TmuxConfig):
             if not self.vers_ok(2.6):
                 disable_borders = f"{self.opt_win_loc} pane-border-status off"
                 w(  # needed for 2.5 to avoid label on new ses & win
-                    f"""set-hook -g after-new-session[3] "{disable_borders}"
-                    set-hook -g after-new-window[3] "{disable_borders}"
+                    f"""set-hook -g after-new-session[1] "{disable_borders}"
+                    set-hook -g after-new-window[1] "{disable_borders}"
                     """
                 )
 
@@ -1362,15 +1362,20 @@ class BaseConfig(TmuxConfig):
             #
             w(
                 """# For first pane in first window
-            set-hook -g after-new-session[1] "select-pane -T '#D'"
+            set-hook -g after-new-session[3] "select-pane -T '#D'"
             # For first pane in new window
-            set-hook -g after-new-window[1] "select-pane -T '#D'"
+            set-hook -g after-new-window[3] "select-pane -T '#D'"
             # For additional panes in same window
-            set-hook -g after-split-window[1] "select-pane -T '#D'"
+            set-hook -g after-split-window[3] "select-pane -T '#D'"
             """
             )
 
         if self.vers_ok(3.2):
+            #
+            # 3.2 introduced the following relevant features used here:
+            # 1 - Hook arrays name[index]
+            # 2 - #{||:A,B} (logical OR)
+            #
             w(
                 """#
             #   ======  Pane Zoom  ======
@@ -1404,7 +1409,13 @@ class BaseConfig(TmuxConfig):
             self.hook_action_zoom_state()
 
     def hook_action_zoom_state(self):
+        #
+        #  This expands to quite a bit of code, but by doing it inside tmux if-shell
+        #  conditions, it is ridiculously much faster,
+        #  compared to do the same via run-shell scripts
+        #
         # If only one pane is present in the window, treat it as in zoomed state
+        #
 
         w = self.write
 
@@ -1418,6 +1429,9 @@ class BaseConfig(TmuxConfig):
         # A single pane will not receive any window-layout-changed events due to
         # pane resizing, so should not trigger any noticeable overhead.
         #
+
+        #
+
         w(
             """
     if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-state}}}' {
