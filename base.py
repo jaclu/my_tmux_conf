@@ -532,8 +532,7 @@ class BaseConfig(TmuxConfig):
             w(
                 f"""# Remove the default prefix, do it before assigning
                 # the selected one, in case it was some variant of C-b
-                # keep it for now, doesn't hurt and might help pairprogrammers
-                # unbind  C-b
+                unbind  C-b
                 {self.opt_ses} prefix {self.prefix_key}"""
             )
             w(  # double prefix always works
