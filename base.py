@@ -1801,7 +1801,7 @@ class BaseConfig(TmuxConfig):
             f"{self.muc_keys[mtc_utils.K_M_X]}  confirm-before"
         )
         if self.vers_ok(1.5):
-            s += f' -p "kill tmux server {self.conf_file}? (y/n)"'
+            s += f' -p "kill tmux server on #[reverse]#H#[default] {self.conf_file}? (y/n)"'
         w(f"{s} kill-server")
 
     #
