@@ -875,15 +875,11 @@ class BaseConfig(TmuxConfig):
         """
         )
         if self.vers_ok(1.2):
-            # w(
-            #     f"""{pref}previous window  - P+p P+9 M-9'  -n  C-M-Left   previous-window
-            # {pref}next window      - P+n P+0 M-0'  -n  C-M-Right  next-window"""
-            # )
-            self.pane_un_zoomed_noprefix_binds.extend(
-                [
-                    f"{pref}previous window  - P+p P+9 M-9' -n  C-M-Left   previous-window",
-                    f"{pref}next window      - P+n P+0 M-0' -n  C-M-Right  next-window",
-                ]
+            w(
+                f"""
+            {pref}previous window  - P+p P+9 M-9'  -n  C-M-Left   previous-window
+            {pref}next window      - P+n P+0 M-0'  -n  C-M-Right  next-window
+            """
             )
 
         #
@@ -915,14 +911,14 @@ class BaseConfig(TmuxConfig):
         w("# adv key win nav")
         if self.vers_ok(1.0) and not self.tablet_keyb:
             w(
-                'bind -N "Select the previous window '
-                '- P+p P+9 C-M-Left" -n  M-9  previous-window'
+                "bind -N 'Select the previous window "
+                "- P+p P+9 C-M-Left' -n  M-9  previous-window"
             )
         if self.vers_ok(1.0):
-            s = 'bind -N "Select the'
+            s = "bind -N 'Select the"
             w(
-                f"""{s} next window - P+n P+0 C-M-Right"    -n  M-0  next-window
-                {s} previously current window - P+-"    -n  M--  last-window"""
+                f"""{s} next window - P+n P+0 C-M-Right'    -n  M-0  next-window
+                {s} previously current window - P+-'    -n  M--  last-window"""
             )
         if self.vers_ok(2.1):
             w2 = "window"  # hackish strings to make sure
@@ -1252,17 +1248,18 @@ class BaseConfig(TmuxConfig):
                     "bind -N 'Resize pane 10 right'      -n  M-S-Right  resize-pane -R 10",
                 ]
             )
+
             # w("bind -N 'Resize pane 1 left  - P+H' -n  C-S-Left   resize-pane -L")
             # w("bind -N 'Resize pane 1 down  - P+J' -n  C-S-Down   resize-pane -D")
             # w("bind -N 'Resize pane 1 up    - P+K' -n  C-S-Up     resize-pane -U")
             # w("bind -N 'Resize pane 1 right - P+L' -n  C-S-Right  resize-pane -R")
             # w()
             # w(
-            #     """# For larger changes M-S Arrows scale by 5
-            # bind -N 'Resize pane 5 left'        -n  M-S-Left   resize-pane -L 10
+            #     """# For larger changes M-S Arrows scale by 5/10
+            # bind -N 'Resize pane 10 left'       -n  M-S-Left   resize-pane -L 10
             # bind -N 'Resize pane 5 down'        -n  M-S-Down   resize-pane -D 5
             # bind -N 'Resize pane 5 up'          -n  M-S-Up     resize-pane -U 5
-            # bind -N 'Resize pane 5 right'       -n  M-S-Right  resize-pane -R 10
+            # bind -N 'Resize pane 10 right'      -n  M-S-Right  resize-pane -R 10
             # """
             # )
 
