@@ -747,7 +747,7 @@ class BaseConfig(TmuxConfig):
         w(
             f"""
         {self.opt_ses} repeat-time 750
-        {self.opt_ses} history-limit 5000
+        {self.opt_ses} history-limit 10000
         {self.opt_ses} status-keys emacs
         """
         )
