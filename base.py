@@ -320,6 +320,7 @@ class BaseConfig(TmuxConfig):
         self.session_handling()
         self.windows_handling()
         self.pane_handling()
+        self.handle_buffers()
         self.handle_hooks()
         if self.vers_ok(1.0):
             self.mouse_handling()
@@ -1016,14 +1017,6 @@ class BaseConfig(TmuxConfig):
 
         self.save_history()
 
-        if self.vers_ok(1.2):
-            w(
-                """
-                #  Select, search, delete and even edit(!) paste buffers
-                bind -N "Chose paste buffer(-s)"  B  choose-buffer
-                """
-            )
-
         #
         #  I have so many pane related settings, so it makes sense to
         #  split them up in multiple parts.
@@ -1297,6 +1290,30 @@ class BaseConfig(TmuxConfig):
                 'M-E  command-prompt -p "save history (includes escapes) to:" '
                 '-I "$TMPDIR/tmux-e.history" "capture-pane -S - -E - -e \\; '
                 'save-buffer %1 \\; delete-buffer"'
+            )
+
+    def handle_buffers(self):
+        w = self.write
+        w(
+            """
+        #======================================================
+        #
+        #   Handle Buffers
+        #
+        #======================================================
+        """
+        )
+        if self.vers_ok(1.2):
+            w(
+                """#  Select, search, delete and even edit(!) paste buffers
+                bind -N "Chose paste buffer(-s)"  B  choose-buffer
+                """
+            )
+        else:
+            w(
+                """
+            # No buffer support previous to tmux 1.2
+            """
             )
 
     def handle_hooks(self):
