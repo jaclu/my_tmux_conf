@@ -471,19 +471,24 @@ class BaseConfig(TmuxConfig):
 
         self.true_color()
 
-        if shutil.which("yazi") and self.vers_ok(1.0):
-            w(
-                """
-            #
-            # From: https://yazi-rs.github.io/docs/image-preview/#tmux
-            # To enable Yazi's image preview to work correctly in tmux,
-            # add the following 3 options
-            #
-            set -ga update-environment TERM
-            set -ga update-environment TERM_PROGRAM"""
-            )
-            if self.vers_ok(3.3):
-                w("set -g allow-passthrough on")
+        #
+        # Doesn't seem to be needed to allow yazi image passthrough anymore
+        # yazi now overrides allow-passthrough on a pane scope
+        #
+        # if shutil.which("yazi") and self.vers_ok(1.0):
+        #     w(
+        #         """
+        #     #
+        #     # From: https://yazi-rs.github.io/docs/image-preview/#tmux
+        #     # To enable Yazi's image preview to work correctly in tmux,
+        #     # add the following 3 options
+        #     #
+        #     set -ga update-environment TERM
+        #     set -ga update-environment TERM_PROGRAM"""
+        #     )
+        #     if self.vers_ok(3.3):
+        #         w("set -g allow-passthrough on")
+
         w()  # spacer between sections
 
     def true_color(self):
