@@ -484,8 +484,6 @@ class IshConsole(LimitedKbdSpecialHandling):
     def define_muc_keys(self):
         self.tc.muc_keys = {
             mtc_utils.K_M_PLUS: f"User{key_2_uk['M-+']}",
-            # mtc_utils.K_M_PAR_OPEN: f"User{key_2_uk['M-(']}",
-            # mtc_utils.K_M_PAR_CLOSE: f"User{key_2_uk['M-)']}",
             mtc_utils.K_M_UNDERSCORE: f"User{key_2_uk['M-_']}",
             mtc_utils.K_M_P: f"User{key_2_uk['M-P']}",
             mtc_utils.K_M_X: f"User{key_2_uk['M-X']}",

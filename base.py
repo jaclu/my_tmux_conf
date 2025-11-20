@@ -151,8 +151,6 @@ class BaseConfig(TmuxConfig):
         # Kbd binds that might need to be replaced by user-keys on nonstandard
         # consoles
         mtc_utils.K_M_PLUS: mtc_utils.K_M_PLUS,
-        # mtc_utils.K_M_PAR_OPEN: mtc_utils.K_M_PAR_OPEN,
-        # mtc_utils.K_M_PAR_CLOSE: mtc_utils.K_M_PAR_CLOSE,
         mtc_utils.K_M_UNDERSCORE: mtc_utils.K_M_UNDERSCORE,
         mtc_utils.K_M_P: mtc_utils.K_M_P,
         mtc_utils.K_M_X: mtc_utils.K_M_X,
@@ -1697,8 +1695,6 @@ class BaseConfig(TmuxConfig):
 
     def check_all_muc_keys_are_defined(self):
         self.check_if_muc_key_is_defined(mtc_utils.K_M_PLUS)
-        # self.check_if_muc_key_is_defined(mtc_utils.K_M_PAR_OPEN)
-        # self.check_if_muc_key_is_defined(mtc_utils.K_M_PAR_CLOSE)
         self.check_if_muc_key_is_defined(mtc_utils.K_M_UNDERSCORE)
         self.check_if_muc_key_is_defined(mtc_utils.K_M_P)
         self.check_if_muc_key_is_defined(mtc_utils.K_M_X)
@@ -1736,16 +1732,6 @@ class BaseConfig(TmuxConfig):
                 }  switch-client -l
                 """
             )
-            # bind -N '{
-            # self.muc_non_default_value(mtc_utils.K_M_PAR_OPEN)
-            # }Select previous session  - P+( C-M-Up' -n  {
-            #     self.muc_keys[mtc_utils.K_M_PAR_OPEN]
-            # }  switch-client -p
-            # bind -N '{
-            # self.muc_non_default_value(mtc_utils.K_M_PAR_CLOSE)
-            # }Select next session  - P+) C-M-Down'   -n  {
-            #     self.muc_keys[mtc_utils.K_M_PAR_CLOSE]
-            # }  switch-client -n
 
     def auc_display_plugins_used(self):  # used by iSH Console
         """iSH console doesn't generate correct ALT - Upper Case sequences,
