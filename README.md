@@ -55,9 +55,10 @@ things depending on environment.
 Since I often work on new tmux-plugins, this gave me an easy way to test
 compatibility, especially using asdf, where I can have all versions of tmux
 available. This led in the end to my tmux conf being fully backwards
-compatible all the way back to version 1.7 Not that I would realistically
-end up using so old versions, more as a why not, and to see if it could be
-handled by this environment without too much pain.
+compatible all the way back to version 0.8.
+
+Not that I would realistically end up using so old versions, more as a why not,
+and to see if it could be handled by this environment without too much pain.
 
 This is not meant as a tmux conf others should use directly as is.
 The idea is to provide a tool set where you can use your own preferred config,
@@ -66,8 +67,8 @@ run on more than one version of tmux.
 
 See my setup more as an example, than something to be directly used.
 
-As I am writing this, the most commonly available tmux versions
-on different platforms are 3.3a 3.2a, and 3.1 and making your env able
+As I am writing this,the most commonly available tmux versions
+on different platforms iw 3.5a and making your env able
 to handle those versions should probably be more than enough.
 Over time new versions will popup, so for new features new version checks
 would need to be included.
