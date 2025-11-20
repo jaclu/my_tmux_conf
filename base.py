@@ -1619,6 +1619,8 @@ class BaseConfig(TmuxConfig):
             else:
                 mode_indicator = ""
 
+            # Add all the various things that this should display with the right
+            # colors, like : prefix, zoomed, scrollback etc
             prefix_indicator = (  # will display copy_indicator if not active
                 "#{?client_prefix,#[fg=colour231]#[bg=colour04]"
                 f" {self.display_prefix()} ,{mode_indicator}"
