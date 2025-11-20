@@ -106,12 +106,3 @@ styling depending on host role.
 
 Most of my actual hosts are filtered out for privacy reasons, I have left
 a few in here, as examples.
-
-## venv
-
-If the python library tmux_conf is not present in the global python env,
-a venv is created in the repo folder and this is installed there automatically.
-
-If tmux_conf is present, but of an incompatible version, an error is printed along
-with a suggestion to run with `--venv` to recreate the venv, in order to give
-the opportunity to manage the venv manually if that is preferred.
