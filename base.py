@@ -744,7 +744,9 @@ class BaseConfig(TmuxConfig):
         """
         )
 
-        #
+        # Many of these options use -g to set it as a global default despite being
+        # thought of as session options by tmux
+
         # This prevents path_helper and similar tools from messing up PATH
         # inside tmux. On MacOS it is used by default,
         # maybe also on other platforms?
