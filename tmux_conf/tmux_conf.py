@@ -489,7 +489,7 @@ class TmuxConfig:
             post = post[1:]
         new_line = pre + post
         if self.use_notes_as_comments:
-            return [f"# -N {note}", new_line]
+            return ["", f"# -N {note}", new_line]
 
         return [new_line]
 
