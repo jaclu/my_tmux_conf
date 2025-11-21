@@ -1024,7 +1024,8 @@ class BaseConfig(TmuxConfig):
 
         w = self.write
         w(
-            """#
+            """
+        #
         #   ======  Pane frame lines  ======
         #"""
         )
@@ -1609,11 +1610,9 @@ class BaseConfig(TmuxConfig):
             else:
                 mode_indicator = ""
 
-            # Add all the various things that this should display with the right
-            # colors, like : prefix, zoomed, scrollback etc
             prefix_indicator = (  # will display copy_indicator if not active
                 "#{?client_prefix,#[fg=colour231]#[bg=colour04]"
-                f" {self.display_prefix()} ,{mode_indicator}"
+                f" {self.prefix_key} ,{mode_indicator}"
                 "}#[default]"
             )
             self.sb_right += prefix_indicator
@@ -1637,7 +1636,7 @@ class BaseConfig(TmuxConfig):
                 prefix = "tmate"
             else:
                 prefix = f"{self.vers.get()[:6]}"
-            t2_tag = f"{prefix} {self.display_prefix()} "
+            t2_tag = f"{prefix} {self.prefix_key} "
             self.sb_left = f"#[fg=green,bg=black]{t2_tag}#[default]{self.sb_left}"
 
         self.filter_me_from_sb_right()
@@ -1750,8 +1749,8 @@ class BaseConfig(TmuxConfig):
 
         #
         # The conf_file needs to be mentioned below to make sure
-        # the -p2 run-shell doesn't complain if a non-standard config is used
-        # it won't be over-written!
+        # the -p2 run-shell doesn't complain if a non-standard config is used.
+        # It won't be over-written!
         #
         repo_dir = os.path.dirname(__file__)
         w(
