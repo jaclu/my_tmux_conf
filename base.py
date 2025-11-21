@@ -1794,6 +1794,32 @@ class BaseConfig(TmuxConfig):
     #
     #  Utility methods
     #
+    def check_libs_compatible(self):
+        """Inspection of tmux-conf version to see if it is compatible"""
+        try:
+            lib_vers_found = self.lib_version.split()[0]
+            # [:len(TMUX_CONF_NEEDED)]
+        except AttributeError:
+            print()
+            print(f"ERROR: Needs tmux_conf lib version: {TMUX_CONF_NEEDED}")
+            print("       Failed to read version, probably too old()")
+            sys.exit(mtc_utils.ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
+
+        maj_vers_found = ".".join(lib_vers_found.split(".")[:2])
+        maj_vers_needed = ".".join(TMUX_CONF_NEEDED.split(".")[:2])
+
+        if maj_vers_found != maj_vers_needed:
+            self.incompatible_tmux_conf(
+                lib_vers_found,
+                "Major version incompatible!",
+                f"needs: {maj_vers_needed}",
+            )
+
+        min_vers_found = int(lib_vers_found.split(".")[2])
+        min_vers_needed = int(TMUX_CONF_NEEDED.split(".")[2])
+        if min_vers_found < min_vers_needed:
+            self.incompatible_tmux_conf(lib_vers_found, "Version to old!")
+
     def define_opt_params(self):
         #
         # Define params to use to set various types of options
@@ -1812,10 +1838,6 @@ class BaseConfig(TmuxConfig):
         else:
             # prior to 3.1 pane options were listed as win options
             self.opt_pane = self.opt_win
-
-    def display_prefix(self):
-        # Using consistent prefix key notation
-        return self.prefix_key  # .lower().replace("c-", "^")
 
     def mkscript_toggle_mouse(self):
         """Toggles mouse handling on/off"""
@@ -1890,17 +1912,6 @@ class BaseConfig(TmuxConfig):
         that condition helps me having to always check it manually.
         """
 
-        output = []
-        output.append(
-            """
-        #======================================================
-        #
-        #   Tmux Plugin Manager
-        #
-        #======================================================
-        """
-        )
-        #  os.makedirs(plugins_dir, exist_ok=True)
         plugins_dir, tpm_env = self.plugins.get_env()
         tpm_location = os.path.join(plugins_dir, "tpm")
         tpm_app = os.path.join(tpm_location, "tpm")
@@ -2047,32 +2058,6 @@ timer_end() {{
 """
         ]
         self.es.create(self._fnc_tpm_indicator, clear_tpm_init_sh)
-
-    def check_libs_compatible(self):
-        """Inspection of tmux-conf version to see if it is compatible"""
-        try:
-            lib_vers_found = self.lib_version.split()[0]
-            # [:len(TMUX_CONF_NEEDED)]
-        except AttributeError:
-            print()
-            print(f"ERROR: Needs tmux_conf lib version: {TMUX_CONF_NEEDED}")
-            print("       Failed to read version, probably too old()")
-            sys.exit(mtc_utils.ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
-
-        maj_vers_found = ".".join(lib_vers_found.split(".")[:2])
-        maj_vers_needed = ".".join(TMUX_CONF_NEEDED.split(".")[:2])
-
-        if maj_vers_found != maj_vers_needed:
-            self.incompatible_tmux_conf(
-                lib_vers_found,
-                "Major version incompatible!",
-                f"needs: {maj_vers_needed}",
-            )
-
-        min_vers_found = int(lib_vers_found.split(".")[2])
-        min_vers_needed = int(TMUX_CONF_NEEDED.split(".")[2])
-        if min_vers_found < min_vers_needed:
-            self.incompatible_tmux_conf(lib_vers_found, "Version to old!")
 
     def incompatible_tmux_conf(self, lib_vers_found: str, reason: str, details: str = ""):
         print()
