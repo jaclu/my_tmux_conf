@@ -88,7 +88,7 @@ class BaseConfig(TmuxConfig):
 
     monitor_activity: bool = False  # Notification when other windows change state
 
-    show_pane_title: bool = True  # If enabled, Set title with <P> P
+    show_pane_label: bool = True  # If enabled, Set pane label with <P> P
     show_pane_size: bool = True  # If enabled pane frame lines will display pane size
 
     #
@@ -203,9 +203,9 @@ class BaseConfig(TmuxConfig):
         #
         self.tpm_working_incicator = "@tpm-is-active"
 
-        if self.is_tmate() and (self.show_pane_title or self.show_pane_size):
-            print("show_pane_title & show_pane_size disabled for tmate")
-            self.show_pane_size = self.show_pane_title = False
+        if self.is_tmate() and (self.show_pane_label or self.show_pane_size):
+            print("show_pane_label & show_pane_size disabled for tmate")
+            self.show_pane_size = self.show_pane_label = False
 
         if self.t2_env:
             if self.conf_file == os.path.expanduser("~/.tmux.conf"):
@@ -1079,11 +1079,11 @@ class BaseConfig(TmuxConfig):
             )
 
         #
-        #  Display custom pane borders and title if >= 2.5 / 2.6 not certain
+        #  Display custom pane borders and label if >= 2.5 / 2.6 not certain
         #
         if self.vers_ok(2.3) and not self.is_tmate():
             pane_label = ""
-            if self.vers_ok(2.6) and self.show_pane_title:
+            if self.vers_ok(2.6) and self.show_pane_label:
                 pane_label += "#T "
             if self.show_pane_size:
                 pane_label += "(#{pane_width}x#{pane_height}) "
@@ -1099,14 +1099,14 @@ class BaseConfig(TmuxConfig):
         #     w(f"{self.opt_pane} pane-border-indicators arrows")
 
         # #{pane_current_command}
-        if self.show_pane_title:
+        if self.show_pane_label:
             if self.vers_ok(2.6):
                 w(
-                    'bind -N "Set pane title"  P  command-prompt -I "#T" -p '
-                    '"Pane title: " "select-pane -T \\"%%\\""'
+                    'bind -N "Set pane label"  P  command-prompt -I "#T" -p '
+                    '"Pane label: " "select-pane -T \\"%%\\""'
                 )
             elif self.vers_ok(2.3) and not self.is_tmate():
-                w("bind  P  display-message 'Pane title setting needs 2.6'")
+                w("bind  P  display-message 'Pane label setting needs 2.6'")
 
     def pane_navigation(self):
         if not self.vers_ok(1.0):
@@ -1388,7 +1388,7 @@ class BaseConfig(TmuxConfig):
             # not worth the effort for such a corner case
 
             #
-            #  Set initial pane title to pane_id (#D)
+            #  Set initial pane label to pane_id (#D)
             #
             w(
                 """# For first pane in first window
