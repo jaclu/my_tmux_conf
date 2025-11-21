@@ -1325,9 +1325,6 @@ class BaseConfig(TmuxConfig):
             )
 
     def handle_hooks(self):
-        if not self.vers_ok(2.5):
-            return  # hooks are supported from 2.3 but we currently start using them by 2.5
-
         w = self.write
         w(
             """
@@ -1342,7 +1339,7 @@ class BaseConfig(TmuxConfig):
             w(
                 """# ===  Hooks not supported for tmux < 2.3 and tmate   ===
 
-              # no prefix nav keys according to no-zoom state
+              # Hardcoding no-prefix nav-keys according to no-zoom state
               """
             )
 
