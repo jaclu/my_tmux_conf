@@ -452,6 +452,7 @@ class BaseConfig(TmuxConfig):
                 w(f"{self.opt_server} default-terminal screen-256color")
             else:
                 w(f"{self.opt_server} default-terminal tmux-256color")
+
             #
             #  Making OSC 52 work on mosh connections.
             #  For this to work the term name used must match, hence * :)
@@ -484,24 +485,6 @@ class BaseConfig(TmuxConfig):
             w(f"{self.opt_win} xterm-keys on")
 
         self.true_color()
-
-        #
-        # Doesn't seem to be needed to allow yazi image passthrough anymore
-        # yazi now overrides allow-passthrough on a pane scope
-        #
-        # if shutil.which("yazi") and self.vers_ok(1.0):
-        #     w(
-        #         """
-        #     #
-        #     # From: https://yazi-rs.github.io/docs/image-preview/#tmux
-        #     # To enable Yazi's image preview to work correctly in tmux,
-        #     # add the following 3 options
-        #     #
-        #     set -ga update-environment TERM
-        #     set -ga update-environment TERM_PROGRAM"""
-        #     )
-        #     if self.vers_ok(3.3):
-        #         w("set -g allow-passthrough on")
 
         w()  # spacer between sections
 
@@ -550,7 +533,7 @@ class BaseConfig(TmuxConfig):
             """
         #======================================================
         #
-        #   General environment - server options
+        #   General environment - global and server options
         #
         #======================================================
         """
@@ -575,10 +558,39 @@ class BaseConfig(TmuxConfig):
                     f'bind -N "prefix then same char sends {self.prefix_key} through"  '
                     f"{self.remove_prefix(self.prefix_key)}  send-keys {self.prefix_key}"
                 )
-
-            # in tmux-sensible it was recommended to bind prefix + same char without ctrl
-            # to last-window, not sure, but perhaps a good idea?
             w()  # spacer
+
+        # This allows tmux to update the terminal title according to set-titles-string
+        w(f"{self.opt_server} set-titles on")
+        if self.vers_ok(1.0):
+            # String used to set the client terminal title if set-titles is on
+            w(
+                f"{self.opt_server} set-titles-string "
+                '"#{host_short} - '
+                f"tmux {self.vers.get()}"
+                ' - #{session_name}:#{window_name}:#T"'
+            )
+        if self.vers_ok(3.5):
+            # This allows apps inside tmux to set the terminal title
+            w(
+                f"""{self.opt_server} allow-set-title on
+                """
+            )
+        if self.vers_ok(3.3):
+            #
+            # Allow yazi and similar apps to send binary data like images/audio
+            # to the terminal using binary OSC transfer.
+            # Be aware that even if this is off, yazi will silently run
+            #    tmux set -g allow-passthrough on
+            # thereby ignoring a clear user preference, so this setting has no effect
+            # in preventing yazi from binary transfers
+            # This is a clear security hole, that might unintentionally lead to
+            # prosecution if yazi is run on a folder containing non public binary data
+            # So on a server containing sensitive data DO NOT USE yazi!
+            #
+            w("set -g allow-passthrough off")
+
+        w()  # spacer
 
         if self.vers_ok(1.1):
             self.mkscript_shlvl_offset()
@@ -608,8 +620,7 @@ class BaseConfig(TmuxConfig):
         #
         if self.vers_ok(3.1):
             w(
-                f"""
-                # Hint that plugins can check, will only be true if hints
+                f"""# Hint that plugins can check, will only be true if hints
                 # are supported by running tmux, so plugins will not need
                 # to check tmux version for this
                 {self.opt_server} @use_bind_key_notes_in_plugins Yes
@@ -732,7 +743,6 @@ class BaseConfig(TmuxConfig):
         #======================================================
         """
         )
-        w(f"{self.opt_ses} set-titles on")
 
         #
         # This prevents path_helper and similar tools from messing up PATH
@@ -756,14 +766,8 @@ class BaseConfig(TmuxConfig):
             w()  # spacer
 
         if self.vers_ok(1.0):
-            # setting terminal app title - not sure if this is desired
             w(f"{self.opt_ses} base-index 1")
-            w(
-                f"{self.opt_ses} set-titles-string "
-                '"#{host_short} - '
-                f"tmux {self.vers.get()}"
-                ' - #{session_name}:#{window_name}:#T"'
-            )
+
         if self.vers_ok(1.7):
             w(f"{self.opt_ses} renumber-windows on")
         elif self.vers_ok(1.2):
@@ -1006,12 +1010,6 @@ class BaseConfig(TmuxConfig):
             w(f"{self.opt_pane} pane-base-index 1")
         if self.vers_ok(1.8):
             w(f"{self.opt_pane} allow-rename off")
-
-        if self.vers_ok(3.5):
-            w(
-                f"""{self.opt_pane} allow-set-title off
-                """
-            )
 
         if self.vers_ok(0.9):
             s = 'bind -N "Kill pane in focus"  x  confirm-before'
