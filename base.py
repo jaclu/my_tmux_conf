@@ -1309,20 +1309,22 @@ class BaseConfig(TmuxConfig):
             )
 
     def handle_buffers(self):
-        w = self.write
-        if self.vers_ok(1.2):
-            w(
-                """
-            #======================================================
-            #
-            #   Handle Buffers
-            #
-            #======================================================
+        if not self.vers_ok(1.2):
+            return
 
-            #  Select, search, delete and even edit(!) paste buffers
-            bind -N "Chose paste buffer(-s)"  B  choose-buffer
+        w = self.write
+        w(
             """
-            )
+        #======================================================
+        #
+        #   Handle Buffers
+        #
+        #======================================================
+
+        #  Select, search, delete and even edit(!) paste buffers
+        bind -N "Chose paste buffer(-s)"  B  choose-buffer
+        """
+        )
 
     def handle_hooks(self):
         w = self.write
