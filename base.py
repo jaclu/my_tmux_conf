@@ -770,11 +770,12 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.7):
             w(f"{self.opt_ses} renumber-windows on")
-        elif self.vers_ok(1.2):
-            w(f"{self.opt_ses} detach-on-destroy off")
+
         if self.vers_ok(3.2):
             #  will switch to any detached session, when no more active ones
             w(f"{self.opt_ses} detach-on-destroy no-detached")
+        elif self.vers_ok(1.2):
+            w(f"{self.opt_ses} detach-on-destroy off")
 
         w(
             f"""
