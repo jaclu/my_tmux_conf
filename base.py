@@ -790,7 +790,7 @@ class BaseConfig(TmuxConfig):
 
         w()  # spacer between sections
 
-    def windows_handling_part_1(self):
+    def windows_handling(self):
         w = self.write
         w(
             f"""
@@ -817,6 +817,7 @@ class BaseConfig(TmuxConfig):
             w(f"{self.opt_win} monitor-activity off")
             if self.vers_ok(2.6):
                 w(f"{self.opt_win} monitor-bell off")
+        w()  # spacer
 
         w(f"bind -N 'Toggle synchronize'  *  {self.opt_win_loc} synchronize-panes")
 
@@ -825,8 +826,7 @@ class BaseConfig(TmuxConfig):
                 """
             # the default key is still available: <prefix> E
             # this is quicker to type on a touch screen
-            bind -N "Spread panes out evenly."  e  select-layout -E
-            """
+            bind -N "Spread panes out evenly."  e  select-layout -E"""
             )
 
         if self.vers_ok(3.5):
@@ -835,8 +835,7 @@ class BaseConfig(TmuxConfig):
             bind -N "Main vertical - mirrored" "M-\\#" \
                 select-layout main-horizontal-mirrored
             bind -N "Main vertical - mirrored" "M-\\$" \
-                select-layout main-vertical-mirrored
-            """
+                select-layout main-vertical-mirrored"""
             )
 
         # if self.vers_ok(1.5):
@@ -856,34 +855,51 @@ class BaseConfig(TmuxConfig):
                 f"""
                 bind -N "New window - P+= M-="      c    {cmd_new_win_named}
                 bind -N "New window - P+c M-="      =    {cmd_new_win_named}
-                bind -N "New window  - P+= P+c" -n  M-=  {cmd_new_win_named}
-                """
+                bind -N "New window  - P+= P+c" -n  M-=  {cmd_new_win_named}"""
             )
         else:
             w(
                 """
                 bind -N "New window - P+="  c  new-window
-                bind -N "New window - P+c"  =  new-window
-                """
+                bind -N "New window - P+c"  =  new-window"""
             )
+        self.windows_navigation()
 
-        pref = "bind -N 'Select "
+        #
+        #  Swap window left/right <prefix>  < / >
+        #  This collides with some default popups,
+        #  so only use if they are disabled.
+        #  This is also available as no-prefix:  M-<  and  M->
+        #  regardless of default popup status.
+        #
         w(
-            f"""# window navigation
-        {pref}previously current window  - M--'         -  last-window
-        {pref}previous window  - P+9 M-9 C-M-Left'  -r  p  previous-window
-        {pref}next window      - P+0 M-0 C-M-Right' -r  n  next-window
-        {pref}previous window  - P+p M-9 C-M-Left'  -r  9  previous-window
-        {pref}next window  - P+n M-0 C-M-Right'     -r  0  next-window
-        """
-        )
-        if self.vers_ok(1.2):
-            w(
-                f"""
-            {pref}previous window  - P+p P+9 M-9'  -n  C-M-Left   previous-window
-            {pref}next window      - P+n P+0 M-0'  -n  C-M-Right  next-window
             """
-            )
+            bind -N "Swap window left"    -r  <    swap-window -d -t :-1
+            bind -N "Swap window right"   -r  >    swap-window -d -t :+1"""
+        )
+
+        s = 'bind -N "Rename current window"   W  command-prompt'
+        if self.vers_ok(1.5):
+            s += ' -I "#W"'
+        w(f'{s} "rename-window -- \\"%%\\""')
+        w()  # spacer
+
+        #
+        #  If last window of current session is killed, the session
+        #  is destroyed and focus is moved to another session
+        #
+        for c in ("&", "X"):
+            if self.vers_ok(1.5):
+                w(
+                    f'bind -N "Kill window in focus"    {c}  confirm-before -p '
+                    '"kill current window \\"#W\\"? (y/n)" "kill-window"'
+                )
+            elif self.vers_ok(0.9):
+                w(f'bind -N "Kill window in focus"  {c}  confirm-before kill-window')
+        w()  # spacer between sections
+
+    def windows_navigation(self):
+        w = self.write
 
         #
         #  Splitting the entire window
@@ -900,18 +916,28 @@ class BaseConfig(TmuxConfig):
                 bind -N 'Split window left'   M-H  split-window  -fhb  {cp}
                 bind -N 'Split window down'   M-J  split-window  -fv   {cp}
                 bind -N 'Split window up'     M-K  split-window  -fvb  {cp}
-                bind -N 'Split window right'  M-L  split-window  -fh   {cp}
-                """
+                bind -N 'Split window right'  M-L  split-window  -fh   {cp}"""
             )
 
-    def windows_handling(self):
-        self.windows_handling_part_1()
-        w = self.write
+        pref = "bind -N 'Select "
+        w(
+            f"""
+        # window navigation
+        {pref}previously current window  - M--'         -  last-window
+        {pref}previous window  - P+9 M-9 C-M-Left'  -r  p  previous-window
+        {pref}next window      - P+0 M-0 C-M-Right' -r  n  next-window
+        {pref}previous window  - P+p M-9 C-M-Left'  -r  9  previous-window
+        {pref}next window  - P+n M-0 C-M-Right'     -r  0  next-window"""
+        )
+        if self.vers_ok(1.2):
+            w(
+                f"""{pref}previous window  - P+p P+9 M-9'  -n  C-M-Left   previous-window
+            {pref}next window      - P+n P+0 M-0'  -n  C-M-Right  next-window"""
+            )
 
         #
         #  I tend to bind ^[9 & ^[0 to Alt-Left/Right in my terminal apps
         #
-        w("# adv key win nav")
         if self.vers_ok(1.0) and not self.tablet_keyb:
             self.pane_un_zoomed_noprefix_binds.extend(
                 [
@@ -919,10 +945,6 @@ class BaseConfig(TmuxConfig):
                     "- P+p P+9 C-M-Left' -n  M-9  previous-window",
                 ]
             )
-            # w(
-            #     "bind -N 'Select previous window "
-            #     "- P+p P+9 C-M-Left' -n  M-9  previous-window"
-            # )
         if self.vers_ok(1.0):
             s = "bind -N 'Select"
             self.pane_un_zoomed_noprefix_binds.extend(
@@ -940,38 +962,6 @@ class BaseConfig(TmuxConfig):
                 bind -N "Previous {w2}  - P+9" {cm}9  previous-{w2}
                 bind -N "Next {w2} - P+0"      {cm}0  next-{w2}"""
             )
-        #
-        #  Swap window left/right <prefix>  < / >
-        #  This collides with some default popups,
-        #  so only use if they are disabled.
-        #  This is also available as no-prefix:  M-<  and  M->
-        #  regardless of default popup status.
-        #
-        w(
-            """
-            # window shuffle
-            bind -N "Swap window left"    -r  <    swap-window -d -t :-1
-            bind -N "Swap window right"   -r  >    swap-window -d -t :+1"""
-        )
-
-        s = 'bind -N "Rename current window"   W  command-prompt'
-        if self.vers_ok(1.5):
-            s += ' -I "#W"'
-        w(f'{s} "rename-window -- \\"%%\\""')
-
-        #
-        #  If last window of current session is killed, the session
-        #  is destroyed and focus is moved to another session
-        #
-        for c in ("&", "X"):
-            if self.vers_ok(1.5):
-                w(
-                    f'bind -N "Kill window in focus"    {c}  confirm-before -p '
-                    '"kill current window \\"#W\\"? (y/n)" "kill-window"'
-                )
-            elif self.vers_ok(0.9):
-                w(f'bind -N "Kill window in focus"  {c}  confirm-before kill-window')
-        w()  # spacer between sections
 
     def pane_handling(self):
         w = self.write
