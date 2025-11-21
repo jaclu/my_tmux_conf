@@ -332,7 +332,8 @@ class TmuxConfig:
         self.edit_config()
         if self.plugin_handler and self.plugins.installed():
             w(
-                """#======================================================
+                """
+            #======================================================
             #
             #   Plugins
             #

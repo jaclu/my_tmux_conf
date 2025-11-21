@@ -359,18 +359,15 @@ class BaseConfig(TmuxConfig):
     #
     def remove_unwanted_default_bindings(self):
         w = self.write
-        w(
-            """
-        #======================================================
-        #
-        #   Remove unwanted default bindings
-        #
-        #======================================================
-        """
-        )
         if self.vers_ok(1.1):
             w(
-                """#
+                """
+                #======================================================
+                #
+                #   Remove unwanted default bindings
+                #
+                #======================================================
+
                 #  Chooses next layout, potentially ruining a carefully crafted one.
                 #  I can't really see any purpose with this one. You can access
                 #  the layouts directly using <prefix> M-[1-5],
@@ -378,6 +375,9 @@ class BaseConfig(TmuxConfig):
                 #
                 unbind  Space    #  Select next layout"""
             )
+        else:
+            return
+
         if self.skip_default_popups and self.vers_ok(3.0):
             w(
                 """
@@ -433,23 +433,37 @@ class BaseConfig(TmuxConfig):
         # # Allow client to pass locale environment variables
         # AcceptEnv LANG LC_*
         #
+
+        # if self.vers_ok(2.0) and not self.vers_ok(2.1):
+        #     w(
+        #         f"""#
+        #     # tmux 2.0 broke DECSCUSR cursor-shape escape sequences
+        #     # (Emacs uses these to show a visible block/beam cursor).
+        #     # tmux 2.0 filtered them out, so inside tmux Emacs could switch cursor shape
+        #     # to invisible but could not switch it back.
+        #     #
+        #     {self.opt_server} default-terminal screen-256color
+
+        #     set -as terminal-overrides ',*:Ss=\\E[%p1%d q:Se=\\E[2 q'
+        #       """
+        #     )
         if self.vers_ok(1.0):
             if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
                 w(f"{self.opt_server} default-terminal screen-256color")
             else:
                 w(f"{self.opt_server} default-terminal tmux-256color")
-
             #
             #  Making OSC 52 work on mosh connections.
             #  For this to work the term name used must match, hence * :)
             #  from: https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
             #
             if not os.getenv("TMUX_NO_CLIPBOARD"):
+                s = f"{self.opt_server} -a terminal-overrides"
                 w(
                     f"""
                 # Ms modifies OSC52 clipboard handling to work with mosh
-                {self.opt_server} -a terminal-overrides ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
-                    """
+                {s} ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
+                """
                 )
 
         if self.vers_ok(1.9):
@@ -506,8 +520,11 @@ class BaseConfig(TmuxConfig):
                 #  not needed for all terminal apps, but since it doesn't hurt,
                 #  it makes sense to always include it
                 #
-                w(f"{self.opt_server} -a terminal-features 'xterm*:extkeys'")
-                w(f'{self.opt_server} -a terminal-features ",*:{self.color_tag_24bit}"')
+                w(
+                    f"""
+                {self.opt_server} -a terminal-features 'xterm*:extkeys'
+                {self.opt_server} -a terminal-features ",*:{self.color_tag_24bit}" """
+                )
             elif self.vers_ok(2.2):
                 if not self.vers_ok(2.7):
                     #  24-bit color on older versions
@@ -515,7 +532,16 @@ class BaseConfig(TmuxConfig):
                     #  so in the unlikely event that is used, disable use_24bit_color
                     #  RGB not supported until 2.7
                     self.color_tag_24bit = "Tc"
-                w(f"{self.opt_server} -a terminal-overrides ',*:{self.color_tag_24bit}'")
+                w(
+                    f"""
+                {self.opt_server} -a terminal-overrides ',*:{self.color_tag_24bit}'"""
+                )
+            else:
+                w(
+                    """
+                # 24-bit color not supported
+                set-environment -gu COLORTERM"""
+                )
 
     # pylint: disable=too-many-branches,too-many-statements
     def general_environment(self):
@@ -1049,8 +1075,7 @@ class BaseConfig(TmuxConfig):
             w(
                 f"""
                 {self.opt_pane} pane-active-border-style fg={border_active}
-                {self.opt_pane} pane-border-style fg={border_other}
-            """
+                {self.opt_pane} pane-border-style fg={border_other}"""
             )
 
         #
@@ -1075,7 +1100,6 @@ class BaseConfig(TmuxConfig):
 
         # #{pane_current_command}
         if self.show_pane_title:
-            w()  # spacer
             if self.vers_ok(2.6):
                 w(
                     'bind -N "Set pane title"  P  command-prompt -I "#T" -p '
@@ -1121,8 +1145,7 @@ class BaseConfig(TmuxConfig):
                 bind -N "Select pane left - M-Left"   -r  h  {pane_left}
                 bind -N "Select pane down - M-Down"   -r  j  {pane_down}
                 bind -N "Select pane up - M-Up"       -r  k  {pane_up}
-                bind -N "Select pane right - M-Right" -r  l  {pane_right}
-                """
+                bind -N "Select pane right - M-Right" -r  l  {pane_right}"""
             )
             self.pane_un_zoomed_noprefix_binds.extend(
                 [
@@ -1139,16 +1162,15 @@ class BaseConfig(TmuxConfig):
                     bind -N "Select pane left - P+h M-Left"    Left   {pane_left}
                     bind -N "Select pane down - P+j M-Down"    Down   {pane_down}
                     bind -N "Select pane up - P+k M-Up"        Up     {pane_up}
-                    bind -N "Select pane right - P+l M-Right"  Right  {pane_right}
-                    """
+                    bind -N "Select pane right - P+l M-Right"  Right  {pane_right}"""
                 )
                 if mtc_utils.IS_GHOSTTY:
                     w(
-                        f"""# Ghostty has pretty good keyboard defs out of the box,
+                        f"""
+                        # Ghostty has pretty good keyboard defs out of the box,
                         # but doesn't generate correct sequences for M Left/Right ...
                         bind -N "Select pane left - P+Left"   -n  M-b  {pane_left}
-                        bind -N "Select pane right - P+Right" -n  M-f  {pane_right}
-                        """
+                        bind -N "Select pane right - P+Right" -n  M-f  {pane_right}"""
                     )
 
         if self.vers_ok(2.4):
@@ -1287,29 +1309,24 @@ class BaseConfig(TmuxConfig):
 
     def handle_buffers(self):
         w = self.write
-        w(
-            """
-        #======================================================
-        #
-        #   Handle Buffers
-        #
-        #======================================================
-        """
-        )
         if self.vers_ok(1.2):
             w(
-                """#  Select, search, delete and even edit(!) paste buffers
-                bind -N "Chose paste buffer(-s)"  B  choose-buffer
                 """
-            )
-        else:
-            w(
-                """
-            # No buffer support previous to tmux 1.2
+            #======================================================
+            #
+            #   Handle Buffers
+            #
+            #======================================================
+
+            #  Select, search, delete and even edit(!) paste buffers
+            bind -N "Chose paste buffer(-s)"  B  choose-buffer
             """
             )
 
     def handle_hooks(self):
+        if not self.vers_ok(2.5):
+            return  # hooks are supported from 2.3 but we currently start using them by 2.5
+
         w = self.write
         w(
             """
@@ -1668,7 +1685,6 @@ class BaseConfig(TmuxConfig):
         {self.opt_ses} status-right "{self.sb_right}"
 
         bind -N "Toggle status bar"  T  {self.opt_ses} status
-
         """
         )
 
