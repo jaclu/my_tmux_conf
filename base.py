@@ -536,7 +536,7 @@ class BaseConfig(TmuxConfig):
                     f"""
                 {self.opt_server} -a terminal-overrides ',*:{self.color_tag_24bit}'"""
                 )
-            else:
+            elif self.vers_ok(1.0):
                 w(
                     """
                 # 24-bit color not supported
@@ -1109,6 +1109,9 @@ class BaseConfig(TmuxConfig):
                 w("bind  P  display-message 'Pane title setting needs 2.6'")
 
     def pane_navigation(self):
+        if not self.vers_ok(1.0):
+            return
+
         w = self.write
         w(
             """
