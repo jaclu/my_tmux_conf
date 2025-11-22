@@ -595,8 +595,9 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.1):
             self.mkscript_shlvl_offset()
             w(
-                f"""# Save correction factor for displaying SHLVL inside tmux
-                {self.es.run_it(self._fnc_shlvl_offset, in_bg=True)}"""
+            f"""# Save correction factor for displaying SHLVL inside tmux
+            {self.es.run_it(self._fnc_shlvl_offset, in_bg=True)}
+            """
             )
 
         if os.getenv("TMUX_NO_CLIPBOARD"):
@@ -620,23 +621,22 @@ class BaseConfig(TmuxConfig):
         #
         if self.vers_ok(3.1):
             w(
-                f"""# Hint that plugins can check, will only be true if hints
+                f"""
+                # Hint that plugins can check, will only be true if hints
                 # are supported by running tmux, so plugins will not need
                 # to check tmux version for this
                 {self.opt_server} @use_bind_key_notes_in_plugins Yes
-                """
-            )
+                """)
 
         if self.vers_ok(2.8):
-            w("# All keys not nound will display this warning")
-            w(
-                'bind -N "Key not bound"  Any  display-message '
-                '"This key is not bound to any action"'
-            )
+            msg = "This key is not bound to any action"
+            w(f"""# All keys not bound will display this warning
+            bind -N "Key not bound"  Any  display-message  "{msg}"
+            """)
 
         nav_key = "N"
         if self.vers_ok(2.7):
-            w(f'bind -N "Navigate ses/win/pane"     {nav_key}  choose-tree -O time -sZ')
+            w(f"""bind -N "Navigate ses/win/pane"     {nav_key}  choose-tree -O time -sZ""")
         elif self.vers_ok(1.0):
             w(
                 f'bind -N "Navigate ses/win/pane not available warning"  {nav_key}  '
