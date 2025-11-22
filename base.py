@@ -1772,6 +1772,8 @@ class BaseConfig(TmuxConfig):
         # It won't be over-written!
         #
         repo_dir = os.path.dirname(__file__)
+        w("# Displays defined plugins by calling app defining this env with -p2")
+        w("# First enabling my_tmux_conf venv if present")
         w(
             f'bind -N "{self.muc_non_default_value(mtc_utils.K_M_P)}'
             f'List all plugins defined"  {self.muc_keys[mtc_utils.K_M_P]}  '
