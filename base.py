@@ -1343,64 +1343,62 @@ class BaseConfig(TmuxConfig):
         if not self.vers_ok(2.3) or self.is_tmate():
             w(
                 """# ===  Hooks not supported for tmux < 2.3 and tmate   ===
-
-              # Hardcoding no-prefix nav-keys according to no-zoom state
               """
             )
 
-            for s in self.pane_un_zoomed_noprefix_binds:
-                w(s)
+        if not self.is_tmate():
+            borders_enable = f"{self.opt_win} pane-border-status top"
+            if self.vers_ok(2.4):
+                #  Display pane border lines when more than one pane is present
 
-            w()  # spacer
-            return
+                # 2.4 crashes as soon as any of these hooks are triggered on
+                # my MacBook not sure if it is tmux version or asdf tmux bin related
 
-        if self.vers_ok(2.5):
-            #  Display pane border lines when more than one pane is present
-
-            # 2.4 crashes as soon as any of these hooks are triggered on
-            # my MacBook not sure if it is tmux version or asdf tmux bin related
-
-            if not self.vers_ok(2.6):
-                disable_borders = f"{self.opt_win_loc} pane-border-status off"
+                # if not self.vers_ok(2.6):
+                borders_disable = f"{self.opt_win} pane-border-status off"
                 w(  # needed for 2.5 to avoid label on new ses & win
-                    f"""set-hook -g after-new-session[1] "{disable_borders}"
-                    set-hook -g after-new-window[1] "{disable_borders}"
+                    f"""set-hook -g after-new-session "{borders_disable}"
+                    set-hook -g after-new-window "{borders_disable}"
+                    set-hook -g after-split-window "{borders_enable}"
+                    set-hook -g pane-exited "{borders_disable}"
+                    """
+                )
+            else:
+                w(borders_enable)
+
+            if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
+                msg = "terminal clipboard is set"
+                if self.vers_ok(3.2):
+                    delay = "-d 400"
+                else:
+                    delay = ""
+                w(
+                    f"""# Displays that tmux picked up clipboard and (hopefully)
+                    # sent it to the terminal
+                    set-hook -g pane-set-clipboard[2] "display-message {delay} '{msg}'"
                     """
                 )
 
-        if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
-            msg = "terminal clipboard is set"
-            if self.vers_ok(3.2):
-                delay = "-d 400"
-            else:
-                delay = ""
-            w(
-                f"""# Displays that tmux picked up clipboard and (hopefully)
-                # sent it to the terminal
-                set-hook -g pane-set-clipboard[2] "display-message {delay} '{msg}'"
+            if self.vers_ok(2.7):
+                # In 2.6 select pane can't be assigned via '#D', would need to do:
+                #   $TMUX_BIN select-pane -T $($TMUX_BIN display-message \
+                #       -p '#{pane_id}')
+                # not worth the effort for such a corner case
+
+                #
+                #  Set initial pane label to pane_id (#D)
+                #
+                w(
+                    """# For first pane in first window
+                set-hook -g after-new-session[3] "select-pane -T '#D'"
+                # For first pane in new window
+                set-hook -g after-new-window[3] "select-pane -T '#D'"
+                # For additional panes in same window
+                set-hook -g after-split-window[3] "select-pane -T '#D'"
                 """
-            )
+                )
 
-        if self.vers_ok(2.7):
-            # In 2.6 select pane can't be assigned via '#D', would need to do:
-            #   $TMUX_BIN select-pane -T $($TMUX_BIN display-message \
-            #       -p '#{pane_id}')
-            # not worth the effort for such a corner case
-
-            #
-            #  Set initial pane label to pane_id (#D)
-            #
-            w(
-                """# For first pane in first window
-            set-hook -g after-new-session[3] "select-pane -T '#D'"
-            # For first pane in new window
-            set-hook -g after-new-window[3] "select-pane -T '#D'"
-            # For additional panes in same window
-            set-hook -g after-split-window[3] "select-pane -T '#D'"
-            """
-            )
-
-        if self.vers_ok(3.2):
+        if self.vers_ok(3.2) and not self.is_tmate():
             #
             # 3.2 introduced the following relevant features used here:
             # 1 - Hook arrays name[index]
@@ -1437,6 +1435,15 @@ class BaseConfig(TmuxConfig):
             )
             w("    set -w @zoom-state 2", trim_ws=False)
             self.hook_action_zoom_state()
+        else:
+            w("""# tmux < 3.2 (and tmate) does not support the if-shell conditions needed
+              # to check zoom state.
+              # Hardcoding no-prefix nav-keys according to no-zoom state""")
+            for s in self.pane_un_zoomed_noprefix_binds:
+                w(s)
+
+            w()  # spacer
+
 
     def hook_action_zoom_state(self):
         #
