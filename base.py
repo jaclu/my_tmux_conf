@@ -595,7 +595,7 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.1):
             self.mkscript_shlvl_offset()
             w(
-            f"""# Save correction factor for displaying SHLVL inside tmux
+                f"""# Save correction factor for displaying SHLVL inside tmux
             {self.es.run_it(self._fnc_shlvl_offset, in_bg=True)}
             """
             )
@@ -626,13 +626,16 @@ class BaseConfig(TmuxConfig):
                 # are supported by running tmux, so plugins will not need
                 # to check tmux version for this
                 {self.opt_server} @use_bind_key_notes_in_plugins Yes
-                """)
+                """
+            )
 
         if self.vers_ok(2.8):
             msg = "This key is not bound to any action"
-            w(f"""# All keys not bound will display this warning
+            w(
+                f"""# All keys not bound will display this warning
             bind -N "Key not bound"  Any  display-message  "{msg}"
-            """)
+            """
+            )
 
         nav_key = "N"
         if self.vers_ok(2.7):
@@ -1331,6 +1334,7 @@ class BaseConfig(TmuxConfig):
 
     def handle_hooks(self):
         w = self.write
+
         w(
             """
         #======================================================
@@ -1340,63 +1344,79 @@ class BaseConfig(TmuxConfig):
         #======================================================
         """
         )
-        if not self.vers_ok(2.3) or self.is_tmate():
+
+        if not self.vers_ok(2.3):
             w(
-                """# ===  Hooks not supported for tmux < 2.3 and tmate   ===
-              """
+                """# ===  Hooks not supported for tmux < 2.3   ===
+            """
             )
 
-        if not self.is_tmate():
-            borders_enable = f"{self.opt_win} pane-border-status top"
-            if self.vers_ok(2.4):
-                #  Display pane border lines when more than one pane is present
+        if self.vers_ok(2.4) and not self.is_tmate():
+            # pane-border-status not available < 2.4
+            # tmate doesn't support -w options in hooks - "no current session"
+            #  Display pane border lines when more than one pane is present
 
-                # 2.4 crashes as soon as any of these hooks are triggered on
-                # my MacBook not sure if it is tmux version or asdf tmux bin related
-
-                # if not self.vers_ok(2.6):
-                borders_disable = f"{self.opt_win} pane-border-status off"
-                w(  # needed for 2.5 to avoid label on new ses & win
-                    f"""set-hook -g after-new-session "{borders_disable}"
-                    set-hook -g after-new-window "{borders_disable}"
-                    set-hook -g after-split-window "{borders_enable}"
-                    set-hook -g pane-exited "{borders_disable}"
-                    """
-                )
+            if self.vers_ok(3.0):  # prior to 3.0 hooks were not arrays
+                array_idx = "[1]"
             else:
-                w(borders_enable)
+                array_idx = ""
+            borders_enable = f"{self.opt_win_loc} pane-border-status top"
+            borders_disable = f"{self.opt_win_loc} pane-border-status off"
+            w(  # needed for 2.5 to avoid label on new ses & win
+                f"""set-hook -g after-new-session{array_idx} "{borders_disable}"
+                set-hook -g after-new-window{array_idx} "{borders_disable}"
+                set-hook -g after-split-window{array_idx} "{borders_enable}"
+            """
+            )
+            w(
+                f'set-hook -g pane-exited{array_idx} "'
+                "if-shell -F '#{==:#{window_panes},1}' \\"
+            )
+            w(
+                """    'set-option -w pane-border-status off' "
+            """,
+                trim_ws=False,
+            )
 
-            if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
-                msg = "terminal clipboard is set"
-                if self.vers_ok(3.2):
-                    delay = "-d 400"
-                else:
-                    delay = ""
-                w(
-                    f"""# Displays that tmux picked up clipboard and (hopefully)
-                    # sent it to the terminal
-                    set-hook -g pane-set-clipboard[2] "display-message {delay} '{msg}'"
-                    """
-                )
-
-            if self.vers_ok(2.7):
-                # In 2.6 select pane can't be assigned via '#D', would need to do:
-                #   $TMUX_BIN select-pane -T $($TMUX_BIN display-message \
-                #       -p '#{pane_id}')
-                # not worth the effort for such a corner case
-
-                #
-                #  Set initial pane label to pane_id (#D)
-                #
-                w(
-                    """# For first pane in first window
-                set-hook -g after-new-session[3] "select-pane -T '#D'"
-                # For first pane in new window
-                set-hook -g after-new-window[3] "select-pane -T '#D'"
-                # For additional panes in same window
-                set-hook -g after-split-window[3] "select-pane -T '#D'"
+        if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
+            if self.vers_ok(3.0):
+                array_idx = "[2]"
+            else:
+                array_idx = ""
+            msg = "terminal clipboard is set"
+            if self.vers_ok(3.2):
+                delay = "-d 400"
+            else:
+                delay = ""
+            w(
+                f"""# Displays that tmux picked up clipboard and (hopefully)
+                # sent it to the terminal
+                set-hook -g pane-set-clipboard{array_idx} "display-message {delay} '{msg}'"
                 """
-                )
+            )
+
+        if self.vers_ok(2.7):
+            # In 2.6 select pane can't be assigned via '#D', would need to do:
+            #   $TMUX_BIN select-pane -T $($TMUX_BIN display-message \
+            #       -p '#{pane_id}')
+            # not worth the effort for such a corner case
+            if self.vers_ok(3.0):
+                array_idx = "[3]"
+            else:
+                array_idx = ""
+
+            #
+            #  Set initial pane label to pane_id (#D)
+            #
+            w(
+                f"""# For first pane in first window
+            set-hook -g after-new-session{array_idx} "select-pane -T '#D'"
+            # For first pane in new window
+            set-hook -g after-new-window{array_idx} "select-pane -T '#D'"
+            # For additional panes in same window
+            set-hook -g after-split-window{array_idx} "select-pane -T '#D'"
+            """
+            )
 
         if self.vers_ok(3.2) and not self.is_tmate():
             #
@@ -1418,7 +1438,7 @@ class BaseConfig(TmuxConfig):
                 """
             #
             # To trigger a zoom state check after current window is changed,
-            # first set zoom-state to an "invalid" value, to trigger a check
+            # first set zoom-state to an "invalid" value
             #
             set-hook -g session-window-changed[4] " """
             )
@@ -1429,21 +1449,22 @@ class BaseConfig(TmuxConfig):
                 """
             #
             # To trigger a zoom state check after current session is changed,
-            # first set zoom-state to an "invalid" value, to trigger a check
+            # first set zoom-state to an "invalid" value
             #
             set-hook -g client-session-changed[4] " """
             )
             w("    set -w @zoom-state 2", trim_ws=False)
             self.hook_action_zoom_state()
         else:
-            w("""# tmux < 3.2 (and tmate) does not support the if-shell conditions needed
-              # to check zoom state.
-              # Hardcoding no-prefix nav-keys according to no-zoom state""")
+            w(
+                """# tmux < 3.2 (and tmate) does not support the if-shell conditionss needed
+            # to check zoom state.
+            # Hardcoding no-prefix nav-keys according to no-zoom state"""
+            )
             for s in self.pane_un_zoomed_noprefix_binds:
                 w(s)
 
-            w()  # spacer
-
+        w()  # spacer
 
     def hook_action_zoom_state(self):
         #
