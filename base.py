@@ -188,6 +188,7 @@ class BaseConfig(TmuxConfig):
         )
         self.tablet_keyb = None
         self.pane_un_zoomed_noprefix_binds: list[str] = []
+        self.hook_array_index = 0  # used to group hooks
         self.define_opt_params()
 
         if self.vers_ok(1.9):
@@ -1356,20 +1357,17 @@ class BaseConfig(TmuxConfig):
             # tmate doesn't support -w options in hooks - "no current session"
             #  Display pane border lines when more than one pane is present
 
-            if self.vers_ok(3.0):  # prior to 3.0 hooks were not arrays
-                array_idx = "[1]"
-            else:
-                array_idx = ""
+            idx = self.get_next_hook_array_idx()
             borders_enable = f"{self.opt_win_loc} pane-border-status top"
             borders_disable = f"{self.opt_win_loc} pane-border-status off"
             w(  # needed for 2.5 to avoid label on new ses & win
-                f"""set-hook -g after-new-session{array_idx} "{borders_disable}"
-                set-hook -g after-new-window{array_idx} "{borders_disable}"
-                set-hook -g after-split-window{array_idx} "{borders_enable}"
+                f"""set-hook -g after-new-session{idx} "{borders_disable}"
+                set-hook -g after-new-window{idx} "{borders_disable}"
+                set-hook -g after-split-window{idx} "{borders_disable}"
             """
             )
             w(
-                f'set-hook -g pane-exited{array_idx} "'
+                f'set-hook -g pane-exited{idx} "'
                 "if-shell -F '#{==:#{window_panes},1}' \\"
             )
             w(
@@ -1379,11 +1377,9 @@ class BaseConfig(TmuxConfig):
             )
 
         if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
-            if self.vers_ok(3.0):
-                array_idx = "[2]"
-            else:
-                array_idx = ""
+            idx = self.get_next_hook_array_idx()
             msg = "terminal clipboard is set"
+
             if self.vers_ok(3.2):
                 delay = "-d 400"
             else:
@@ -1391,7 +1387,7 @@ class BaseConfig(TmuxConfig):
             w(
                 f"""# Displays that tmux picked up clipboard and (hopefully)
                 # sent it to the terminal
-                set-hook -g pane-set-clipboard{array_idx} "display-message {delay} '{msg}'"
+                set-hook -g pane-set-clipboard{idx} "display-message {delay} '{msg}'"
                 """
             )
 
@@ -1400,21 +1396,18 @@ class BaseConfig(TmuxConfig):
             #   $TMUX_BIN select-pane -T $($TMUX_BIN display-message \
             #       -p '#{pane_id}')
             # not worth the effort for such a corner case
-            if self.vers_ok(3.0):
-                array_idx = "[3]"
-            else:
-                array_idx = ""
+            idx = self.get_next_hook_array_idx()
 
             #
             #  Set initial pane label to pane_id (#D)
             #
             w(
                 f"""# For first pane in first window
-            set-hook -g after-new-session{array_idx} "select-pane -T '#D'"
+            set-hook -g after-new-session{idx} "select-pane -T '#D'"
             # For first pane in new window
-            set-hook -g after-new-window{array_idx} "select-pane -T '#D'"
+            set-hook -g after-new-window{idx} "select-pane -T '#D'"
             # For additional panes in same window
-            set-hook -g after-split-window{array_idx} "select-pane -T '#D'"
+            set-hook -g after-split-window{idx} "select-pane -T '#D'"
             """
             )
 
@@ -1424,34 +1417,35 @@ class BaseConfig(TmuxConfig):
             # 1 - Hook arrays name[index]
             # 2 - #{||:A,B} (logical OR)
             #
+            idx = self.get_next_hook_array_idx()
             w(
-                """#
+                f"""#
             #   ======  Pane Zoom  ======
             #
 
             # Trigger if layout is changed - panes added/removed/resized/zoomed
-            set-hook -g window-layout-changed[4] " """
+            set-hook -g window-layout-changed{idx} " """
             )
             self.hook_action_zoom_state()
 
             w(
-                """
+                f"""
             #
             # To trigger a zoom state check after current window is changed,
             # first set zoom-state to an "invalid" value
             #
-            set-hook -g session-window-changed[4] " """
+            set-hook -g session-window-changed{idx} " """
             )
             w("    set -w @zoom-state 2", trim_ws=False)
             self.hook_action_zoom_state()
 
             w(
-                """
+                f"""
             #
             # To trigger a zoom state check after current session is changed,
             # first set zoom-state to an "invalid" value
             #
-            set-hook -g client-session-changed[4] " """
+            set-hook -g client-session-changed{idx} " """
             )
             w("    set -w @zoom-state 2", trim_ws=False)
             self.hook_action_zoom_state()
@@ -1465,6 +1459,13 @@ class BaseConfig(TmuxConfig):
                 w(s)
 
         w()  # spacer
+
+    def get_next_hook_array_idx(self):
+        if self.vers_ok(3.0):
+            self.hook_array_index += 1
+            return f"[{self.hook_array_index}]"
+        else:
+            return ""
 
     def hook_action_zoom_state(self):
         #
