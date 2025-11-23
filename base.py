@@ -1363,7 +1363,7 @@ class BaseConfig(TmuxConfig):
             w(  # needed for 2.5 to avoid label on new ses & win
                 f"""set-hook -g after-new-session{idx} "{borders_disable}"
                 set-hook -g after-new-window{idx} "{borders_disable}"
-                set-hook -g after-split-window{idx} "{borders_disable}"
+                set-hook -g after-split-window{idx} "{borders_enable}"
             """
             )
             w(
@@ -1461,11 +1461,11 @@ class BaseConfig(TmuxConfig):
         w()  # spacer
 
     def get_next_hook_array_idx(self):
+        rslt = ""
         if self.vers_ok(3.0):
             self.hook_array_index += 1
-            return f"[{self.hook_array_index}]"
-        else:
-            return ""
+            rslt =  f"[{self.hook_array_index}]"
+        return rslt
 
     def hook_action_zoom_state(self):
         #
