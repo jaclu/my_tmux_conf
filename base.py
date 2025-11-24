@@ -344,17 +344,6 @@ class BaseConfig(TmuxConfig):
                 #
                 self.mkscript_tpm_indicator()
 
-        #     self.write(
-        #         f"""
-        # #======================================================
-        # #
-        # #   Base class overrides
-        # #
-        # #======================================================
-
-        #     """
-        #     )
-
     #
     #  content methods broken up in parts, by content
     #
@@ -2127,6 +2116,9 @@ timer_end() {{
         clear_tpm_init_sh = [
             f"""
 {self._fnc_tpm_indicator}() {{
+    #
+    # Function that turns on/off self.tpm_initializing addition to status-right
+    #
     # echo "><> {self._fnc_tpm_indicator}($1)" >> /Users/jaclu/tmp/tmux-menus-dbg.log
     case "$1" in
       "set") task="set" ;;
