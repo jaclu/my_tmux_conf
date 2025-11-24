@@ -88,6 +88,8 @@ class BaseConfig(TmuxConfig):
     show_pane_label: bool = True  # If enabled, Set pane label with <P> P
     show_pane_size: bool = True  # If enabled pane frame lines will display pane size
 
+    selected_shell = ""  # If unset $SHELL is used
+
     #
     #  This causes most colors on MacOS Term.app to fail
     #
@@ -127,7 +129,8 @@ class BaseConfig(TmuxConfig):
     plugin_handler = "jaclu/tpm"  # overrides of tmux-conf package default
 
     #
-    #  Some devices are unable to generate the nav keys - PageUp, PageDown, Home, and End
+    #  Some devices are unable to generate the nav keys -
+    #    PageUp, PageDown, Home, and End
     #
     #  Tablet keyboards typically lack dedicated navigation keys such as PageUp,
     #  PageDown, Home, and End. Additionally, iSH only supports unmodified
@@ -598,6 +601,28 @@ class BaseConfig(TmuxConfig):
             """
             )
 
+        # This prevents path_helper and similar tools from messing up PATH
+        # inside tmux. On MacOS it is used by default,
+        # maybe also on other platforms?
+        #
+        # Example of what it does: assume ~/bin is first in PATH
+        # Inside tmux shells it will now be almost last...
+        #
+        # However using this on iSH confuses remote tmux sessions utterly
+        #
+        if not mtc_utils.IS_ISH:
+            if not self.selected_shell:
+                self.selected_shell = os.getenv("SHELL")
+            if self.vers_ok(0.1):  # was 1.0
+                # prevents /usr/libexec/path_helper from messing up PATH
+                w(f'{self.opt_ses} default-command "{self.selected_shell}"')
+            else:
+                w(
+                    f'{self.opt_ses} default-command "export '
+                    f'TERM=screen-256color \\; {self.selected_shell}"'
+                )
+            w()  # spacer
+
         if os.getenv("TMUX_NO_CLIPBOARD"):
             # On ssh/mosh connections, when running an asdf tmux with local
             # version changed.
@@ -746,27 +771,8 @@ class BaseConfig(TmuxConfig):
         )
 
         # Many of these options use -g to set it as a global default despite being
-        # thought of as session options by tmux
-
-        # This prevents path_helper and similar tools from messing up PATH
-        # inside tmux. On MacOS it is used by default,
-        # maybe also on other platforms?
-        #
-        # Example of what it does: assume ~/bin is first in PATH
-        # Inside tmux shells it will now be almost last...
-        #
-        # However using this on iSH confuses remote tmux sessions utterly
-        #
-        if not mtc_utils.IS_ISH:
-            if self.vers_ok(2.0):  # was 1.0
-                # prevents /usr/libexec/path_helper from messing up PATH
-                w(f'{self.opt_ses} default-command "${{SHELL}}"')
-            else:
-                w(
-                    f'{self.opt_ses} default-command "export '
-                    'TERM=screen-256color \\; ${SHELL}"'
-                )
-            w()  # spacer
+        # thought of as session options by tmux in order to be set for all coming
+        # sessions
 
         if self.vers_ok(1.0):
             w(f"{self.opt_ses} base-index 1")
@@ -1952,6 +1958,7 @@ class BaseConfig(TmuxConfig):
     shlvl="$(echo "$SHLVL")"
     f_tmux_socket="$(echo "$TMUX" | cut -d, -f 1)"
     f_tmux_offset="$f_tmux_socket"-shlvl_offset
+    $TMUX_BIN set -g @SHLVL_OFFSET "$f_tmux_offset"
 
     # clear out the previous one, to ensure the current is created
     rm -f "$f_tmux_offset"
@@ -1975,11 +1982,13 @@ class BaseConfig(TmuxConfig):
     else
         corrected_offset="$shlvl"
     fi
-    echo "$corrected_offset" >"$f_tmux_offset"
+    echo "$corrected_offset" >"$f_tmux_offset" || {{
+        echo "ERROR: Failed o save shlvl offset to: $f_tmux_offset"
+        exit 1
+    }}
     msg="SHLVL[$SHLVL] shlvl[$shlvl] os_offset[$os_offset]"
     echo "$msg corrected[$corrected_offset]" >>~/tmp/shlvl.log
-    # ensure that it was created,
-    if [ ! -s "$f_tmux_offset" ]; then
+    if [ ! -s "$f_tmux_offset" ]; then  # ensure that it was created with content
         echo "ERROR: Failed to create: $f_tmux_offset"
         exit 1
     fi
