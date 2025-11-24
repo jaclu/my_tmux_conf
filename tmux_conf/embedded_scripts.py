@@ -28,7 +28,11 @@ class EmbeddedScripts:
     """Handles scripts, either embedded or stored in scripts/ as external"""
 
     def __init__(
-        self, conf_file: str, vers_class: VersionCheck, use_embedded_scripts: bool
+        self,
+        conf_file: str,
+        vers_class: VersionCheck,
+        use_embedded_scripts: bool,
+        plugin_handler: str,
     ) -> None:
         #  Ensure conf file is using ~ or full path if ~ not applicable
         conf_file = tilde_home_dir(conf_file)
@@ -37,6 +41,7 @@ class EmbeddedScripts:
         self._conf_file = conf_file
         self._vers = vers_class
         self._use_embedded_scripts = use_embedded_scripts
+        self.plugin_handler = plugin_handler
         self._scripts: list[str] = []
         self.defined_scripts: list[str] = []
         self._bash_scripts: list[str] = []
@@ -68,6 +73,12 @@ class EmbeddedScripts:
 
         depending on self._use_embedded_scripts
         """
+        if self._use_embedded_scripts and self.plugin_handler == "manual":
+            # Since manual plugin handler uses bash, force all other embeded scripts
+            # to use bash, otherwise they will fail when bashisms are observed in other
+            # functions
+            use_bash = True
+
         if built_in is False:
             self.defined_scripts.append(scr_name)
         else:
@@ -107,7 +118,9 @@ class EmbeddedScripts:
         cmd += '"'
         if self._use_embedded_scripts:
             cmd += f"cut -c3- '{os.path.expanduser(self._conf_file)}' | "
-            if scr_name in self._bash_scripts:
+            if self._bash_scripts:
+                print("><> at least one script is bash")
+                # if scr_name in self._bash_scripts:
                 if not self._bash_shell:
                     bash_shell = run_shell("command -v bash")
                     if not bash_shell:
@@ -117,6 +130,7 @@ class EmbeddedScripts:
             else:
                 cmd += "sh"
             cmd += f" -s {scr_name}"
+            print(f"><> run_it cmd: {cmd}")
         else:
             cmd += f"{self.get_dir()}/{scr_name}.sh"
         cmd += '"'

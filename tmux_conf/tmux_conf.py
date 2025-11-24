@@ -160,6 +160,7 @@ class TmuxConfig:
             conf_file=self.conf_file,
             vers_class=self.vers,  # type: ignore
             use_embedded_scripts=self.use_embedded_scripts,
+            plugin_handler=self.plugin_handler,
         )
 
         #
