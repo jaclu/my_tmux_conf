@@ -8,7 +8,7 @@
 
 """Setup a tmate env"""
 
-from sb.sb_muted import SB
+from sb.sb_test import SB
 
 
 class Tmate(SB):
@@ -21,8 +21,7 @@ class Tmate(SB):
     tmux_bin = "tmate"
     is_limited_host = True  # Trigger display of plugin progress
 
-    # def __init__(self) -> None:
-    #    super().__init__(conf_file="~/.tmate.conf", tmux_bin="tmate")
+    # use_embedded_scripts = False
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         super().status_bar_customization(print_header=print_header)
