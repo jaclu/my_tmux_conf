@@ -54,14 +54,11 @@ import __main__
 
 import mtc_utils
 from tablet_kbd import special_consoles_config
-
-# pylint: disable=import-error
-# pyright: reportMissingImports=false
 from tmux_conf import TmuxConfig
 
 # ruff checks might be relevant F403,F401
 
-TMUX_CONF_NEEDED = "0.21.0"
+TMUX_CONF_NEEDED = "0.21.2"
 
 
 # https://youtu.be/yFLY0SVutgM?si=VoKETDw39BAUHfST&t=420
