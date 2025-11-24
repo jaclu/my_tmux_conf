@@ -26,7 +26,7 @@ from typing import Union
 import __main__
 
 from .constants import __version__
-from .embedded_scripts import EmbeddedScripts
+from .embeded_scripts import EmbeddedScripts
 from .exceptions import TmuxConfNotTmuxCommand
 from .plugins import Plugins
 from .utils import btick_unescaped, parse_cmdline, run_shell, verify_conf_file_usable
@@ -359,8 +359,9 @@ class TmuxConfig:
         #
         #  Should be called as late as possible, to be able to have
         #  gathered all the intended embedded scripts.
+        #  If external scripts are used, his does nothing
         #
-        for line in self.es.content():
+        for line in self.es.generate_embedded_scripts_content():
             self.write(line)
 
     def list_plugin_methods(self):  # -> list[Callable[[], list[str]]]:

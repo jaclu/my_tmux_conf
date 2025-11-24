@@ -22,7 +22,7 @@ from dataclasses import dataclass
 import __main__
 
 from .constants import XDG_CONFIG_HOME
-from .embedded_scripts import EmbeddedScripts
+from .embeded_scripts import EmbeddedScripts
 from .vers_check import VersionCheck
 
 PLUGIN_VERS_MIN = 0
@@ -417,6 +417,7 @@ class Plugins:
             $TMUX_BIN display "Could not find init for plugin: $name"
             sleep 2
         fi
+        $TMUX_BIN display "Plugins initialized!"
     done
 }}""",
         ]
