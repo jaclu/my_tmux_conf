@@ -593,7 +593,18 @@ class BaseConfig(TmuxConfig):
 
         w()  # spacer
 
-        if self.vers_ok(1.1):
+        if os.getenv("SHLVL") and self.vers_ok(2.2):
+            # SHLVL is an env hint I use in my env to detect depth of subshells
+            # and for subshells its displayed in the prompt.
+            # this snippet calculates the offset of shlvl for the initial shell
+            # in a tmux pane, to only show a shell as a subshell if it is deeper.
+            # If this feature is not used, the related tmux.conf code is ignored.
+            #
+            # Prior to 2.2, despite the man page claiming the socket is created in /tmp
+            # $TMPDIR is used, thereby not making the shlvl correction factor findable
+            # since the shell init checks in /tmp, thus this feature is disabled
+            # for ancient versions
+
             self.mkscript_shlvl_offset()
             w(
                 f"""# Save correction factor for displaying SHLVL inside tmux
