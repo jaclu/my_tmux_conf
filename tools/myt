@@ -105,61 +105,61 @@ is_fs_chrooted() {
 
 #---------------------------------------------------------------
 #
-#   venv handling
+#   venv handling (disabled ATM)
 #
 #---------------------------------------------------------------
 
-py_venv_create() {
-    [ -d "$d_venv" ] && {
-        lbl_2 "Removing previous venv: $d_venv"
-        rm -rf "$d_venv"
-    }
-    lbl_1 "Creating py venv: $d_venv"
-    echo
-    echo "If this seems to take forever, run: $my_tmux_conf_location/tools/progress-venv-build.sh"
-    echo "in a separate terminal to see progress"
-    echo
-    python3 -m venv "$d_venv" || error_msg "Failed to create venv"
-    #  shellcheck source=/dev/null
-    . "$d_venv"/bin/activate || error_msg "Failure to activate new venv"
-    lbl_2 "Using py venv: $d_venv"
-    lbl_3 "pip install -U pip"
-    pip install -U pip || errror_msg "pip install failed"
+# py_venv_create() {
+#     [ -d "$d_venv" ] && {
+#         lbl_2 "Removing previous venv: $d_venv"
+#         rm -rf "$d_venv"
+#     }
+#     lbl_1 "Creating py venv: $d_venv"
+#     echo
+#     echo "If this seems to take forever, run: $my_tmux_conf_location/tools/progress-venv-build.sh"
+#     echo "in a separate terminal to see progress"
+#     echo
+#     python3 -m venv "$d_venv" || error_msg "Failed to create venv"
+#     #  shellcheck source=/dev/null
+#     . "$d_venv"/bin/activate || error_msg "Failure to activate new venv"
+#     lbl_2 "Using py venv: $d_venv"
+#     lbl_3 "pip install -U pip"
+#     pip install -U pip || errror_msg "pip install failed"
 
-    #  Python dependency
-    lbl_3 "pip install tmux_conf"
-    pip install tmux_conf || errror_msg "pip install failed"
-    lbl_2  "Created venv: $d_venv"
-    echo # on screen spacer
-}
+#     #  Python dependency
+#     lbl_3 "pip install tmux_conf"
+#     pip install tmux_conf || errror_msg "pip install failed"
+#     lbl_2  "Created venv: $d_venv"
+#     echo # on screen spacer
+# }
 
-py_venv_activate() {
-    #
-    #  Activate Python venv, will only be called if use_python_venv ia true
-    #
-    # lbl_3 "py_venv_activate()"
-    $use_python_venv || return 1  # if venv is not used return
-    if [ -f "$scr_venv_activate" ]; then
-        lbl_3 "Using py venv: $d_venv"
-        #  shellcheck source=/dev/null
-        . "$scr_venv_activate" || error_msg "Failed to activate venv - run: myt --venv"
-    else
-        # Only auto-create the venv if not present, to avoid risking killing a venv
-        # with plenty of ohther stuff installed
-        lbl_2 "Not found: $scr_venv_activate - (re-)creating venv..."
-        py_venv_create
-    fi
-}
+# py_venv_activate() {
+#     #
+#     #  Activate Python venv, will only be called if use_python_venv ia true
+#     #
+#     # lbl_3 "py_venv_activate()"
+#     $use_python_venv || return 1  # if venv is not used return
+#     if [ -f "$scr_venv_activate" ]; then
+#         lbl_3 "Using py venv: $d_venv"
+#         #  shellcheck source=/dev/null
+#         . "$scr_venv_activate" || error_msg "Failed to activate venv - run: myt --venv"
+#     else
+#         # Only auto-create the venv if not present, to avoid risking killing a venv
+#         # with plenty of ohther stuff installed
+#         lbl_2 "Not found: $scr_venv_activate - (re-)creating venv..."
+#         py_venv_create
+#     fi
+# }
 
-py_venv_deactivate() {
-    #
-    #  Deactivate Python venv, will only be called if use_python_venv ia true
-    #
-    # lbl_3 "py_venv_deactivate()"
-    $use_python_venv || return 1  # if venv is not used return
-    lbl_3 "Exiting py venv: $d_venv"
-    deactivate || error_msg "Failed to deactivate Python venv"
-}
+# py_venv_deactivate() {
+#     #
+#     #  Deactivate Python venv, will only be called if use_python_venv ia true
+#     #
+#     # lbl_3 "py_venv_deactivate()"
+#     $use_python_venv || return 1  # if venv is not used return
+#     lbl_3 "Exiting py venv: $d_venv"
+#     deactivate || error_msg "Failed to deactivate Python venv"
+# }
 
 #---------------------------------------------------------------
 #
@@ -480,8 +480,8 @@ get_location_my_tmux_conf() {
         log_it "and run ./deploy to solve his"
         exit 1
     }
-    d_venv="$my_tmux_conf_location"/.venv
-    scr_venv_activate="$d_venv"/bin/activate
+    # d_venv="$my_tmux_conf_location"/.venv
+    # scr_venv_activate="$d_venv"/bin/activate
 }
 
 create_tmux_conf() {
@@ -493,7 +493,7 @@ create_tmux_conf() {
 
     lbl_2 "Using tmux: $TMUX_BIN [$tmux_vers]"
 
-    py_venv_activate
+    # py_venv_activate
     lbl_2 "Using Python: $(command -v python3)"
 
     cmd="$profile -r -t $TMUX_BIN \"$conf_file\""
@@ -524,7 +524,7 @@ create_tmux_conf() {
     }
     lbl_2 "New tmux conf generated!"
 
-    $use_python_venv && py_venv_deactivate
+    # $use_python_venv && py_venv_deactivate
     if grep -q "Dependency tmux_conf not installed!" "$f_myt_log"; then
         error_msg "venv seems broken - use option: -r or --venv"
     elif ! grep -q "Writing tmux" "$f_myt_log"; then
@@ -599,12 +599,14 @@ tmux_2() {
 #
 #===============================================================
 
+# d_repo="$(dirname "$0")"
 d_initial="$PWD"                            #  original pwd, will switch back to it before starting tmux
 d_t2="$HOME/t2"
+
 # d_t2="$HOME/hupp t2" # for testing path with space
 
 f_myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log #  Logs how the latest tmux env was setup
-f_skip_venv="$HOME"/.myt_skip_venv
+# f_skip_venv="$HOME"/.myt_skip_venv
 tmux_bin=""
 kill_tmux=false
 tmate_mode=false
@@ -625,12 +627,12 @@ ERROR_STYLE_REDEFINED=68
     lbl_4 "Will log progress to: $f_myt_log"
 }
 
-if [ -f "$f_skip_venv" ]; then
-    use_python_venv=false
-    # lbl_2 "use_python_venv=false"
-else
-    use_python_venv=true
-fi
+# if [ -f "$f_skip_venv" ]; then
+#     use_python_venv=false
+#     # lbl_2 "use_python_venv=false"
+# else
+#     use_python_venv=true
+# fi
 
 # Find all the tools and host profiles needed to generate a tmux conf
 get_location_my_tmux_conf
@@ -652,14 +654,15 @@ while [ -n "$1" ]; do
         ;;
     "-s") single_session=false ;;
     "-2") t2_env=true ;;
-    "--venv")
-        $use_python_venv || {
-            error_msg "--venv can't be used when $f_skip_venv is present"
-        }
-        lbl_1 "Prepare the Python venv for my_tmux_conf"
-        py_venv_create
-        exit 0
-        ;;
+    #  venv handling disabled 2025-11-24
+    # "--venv")
+    #     $use_python_venv || {
+    #         error_msg "--venv can't be used when $f_skip_venv is present"
+    #     }
+    #     lbl_1 "Prepare the Python venv for my_tmux_conf"
+    #     py_venv_create
+    #     exit 0
+    #     ;;
     *)
         [ -n "$profile" ] && errror_msg "profile can only be defined once"
         profile="$1"
