@@ -22,11 +22,10 @@ class VersionCheck:
     def __init__(self, vers_detected: str, vers_requested: str = ""):
         # Remove subversion prefix/suffix
 
-        # vers_filtered = vers_detected.replace("next-", "")
-
-        no_next = re.match(r"^next-(\d+)\.(\d+)$", vers_detected)
-        if no_next:
-            major, minor = map(int, no_next.groups())
+        v_next = re.match(r"^next-(\d+)\.(\d+)$", vers_detected)
+        if v_next:
+            # if next- prefix found, label the version as one subversion lower
+            major, minor = map(int, v_next.groups())
             vers_filtered = f"{major}.{minor - 1}"
         else:
             # skip suffixes rc-  &  -git
