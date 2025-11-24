@@ -5,6 +5,10 @@ License: MIT
 
 Part of https://github.com/jaclu/helpfull_scripts
 
+runs myt on a remote node, unlimittedjumps hosts can be used: rt jumphost/jump2/dest_node
+assuming the jump host has this rt installed.
+
+If given, params -2 and -q will be sent through to myt on the destination node
 """
 
 import argparse
@@ -117,7 +121,7 @@ class Host:
             print(f"remote user:  {self.remote_user}")
         print(f"rem_cmd:    {self.rem_cmd}")
 
-        print(f"mosh:       {self.mosh_client} - " f"{self.mosh_server} {self.mosh_ports}")
+        print(f"mosh:       {self.mosh_client} - {self.mosh_server} {self.mosh_ports}")
         print(f"cmd line:   {self.full_command_line()}")
 
     def full_command_line(self):
@@ -267,13 +271,12 @@ def parse_cmd_line():
     parser.add_argument(
         "-u",
         "--user",
-        help="User to connect as to the server.\n" "If not given, ~/.ssh/config decides",
+        help="User to connect as to the server.\nIf not given, ~/.ssh/config decides",
     )
     parser.add_argument(
         "-c",
         "--command",
-        help="Command to run on remote host\n"
-        'default: "tmux -u new-session -ADs #SESSION"',
+        help='Command to run on remote host\ndefault: "tmux -u new-session -ADs #SESSION"',
     )
     parser.add_argument(
         "-m",
@@ -285,7 +288,7 @@ def parse_cmd_line():
     parser.add_argument(
         "-p",
         "--ports",
-        help="port span to use for mosh connection\n" "example: 60500:60510",
+        help="port span to use for mosh connection\nexample: 60500:60510",
     )
     parser.add_argument(
         "-S",
@@ -318,7 +321,7 @@ def main():
         else:
             msg += "ssh"
         if hc.use_2nd or hc.use_quick:
-            msg += " myt Options:"
+            msg += " - myt Options:"
             if hc.use_2nd:
                 msg += " -2"
             if hc.use_quick:
