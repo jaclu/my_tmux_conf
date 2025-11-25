@@ -18,11 +18,11 @@ import shutil
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from .embeded_scripts import EmbeddedScripts
-from .plugin_deployment import PluginDeployment
-from .plugin_display import PluginDisplay
-from .plugin_registry import PluginRegistry
-from .vers_check import VersionCheck
+from ..embeded_scripts import EmbeddedScripts
+from ..vers_check import VersionCheck
+from .deployment import PluginDeployment
+from .display import PluginDisplay
+from .registry import PluginRegistry
 
 PLUGIN_VERS_MIN = 0
 PLUGIN_MTHD = 1

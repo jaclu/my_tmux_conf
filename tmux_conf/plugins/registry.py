@@ -15,8 +15,8 @@ import os
 import sys
 from collections.abc import Callable
 
-from .constants import XDG_CONFIG_HOME
-from .vers_check import VersionCheck
+from ..constants import XDG_CONFIG_HOME
+from ..vers_check import VersionCheck
 
 PLUGIN_VERS_MIN = 0
 PLUGIN_MTHD = 1

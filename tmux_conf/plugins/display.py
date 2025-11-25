@@ -16,7 +16,7 @@ import sys
 
 import __main__
 
-from .plugin_registry import (
+from .registry import (
     PLUGIN_MTHD,
     PLUGIN_STATIC_CODE,
     PLUGIN_VERS_MIN,

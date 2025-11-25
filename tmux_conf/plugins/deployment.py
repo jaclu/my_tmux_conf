@@ -13,8 +13,8 @@
 
 import os
 
-from .embeded_scripts import EmbeddedScripts
-from .plugin_registry import PLUGIN_MTHD, PLUGIN_STATIC_CODE, PluginRegistry
+from ..embeded_scripts import EmbeddedScripts
+from .registry import PLUGIN_MTHD, PLUGIN_STATIC_CODE, PluginRegistry
 
 
 class PluginDeployment:
