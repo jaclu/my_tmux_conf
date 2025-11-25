@@ -21,14 +21,6 @@ class CmdBuilder:  # pylint: disable=too-few-public-methods
 
         self._cached_bash = ""
 
-    def _ensure_bash(self):
-        if not self._cached_bash:
-            detected_bash = run_shell("command -v bash")
-            if not detected_bash:
-                sys.exit("Failed to find bash!")
-            self._cached_bash = detected_bash
-        return self._cached_bash
-
     def build(self, spec: ScriptSpec, in_bg: bool) -> str:
         """
         Docstring for build
@@ -59,3 +51,11 @@ class CmdBuilder:  # pylint: disable=too-few-public-methods
 
         cmd += '"'
         return cmd
+
+    def _ensure_bash(self):
+        if not self._cached_bash:
+            detected_bash = run_shell("command -v bash")
+            if not detected_bash:
+                sys.exit("Failed to find bash!")
+            self._cached_bash = detected_bash
+        return self._cached_bash

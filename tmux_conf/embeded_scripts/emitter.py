@@ -30,7 +30,7 @@ class ScriptEmitter:
         self._embedded_text: list[str] = []
 
     def run_cmd(self, spec: ScriptSpec, in_bg=False) -> str:
-        """Run a command"""
+        """Generate a run-shell entry for the script"""
         return self._builder.build(spec, in_bg)
 
     def emit(self, spec: ScriptSpec) -> None:
@@ -39,8 +39,6 @@ class ScriptEmitter:
             self._emit_embedded(spec)
         else:
             self._emit_external(spec)
-
-    # ------------ Embedded output block ------------
 
     def embedded_block(self) -> list[str]:
         """
@@ -64,13 +62,9 @@ class ScriptEmitter:
         out.append('# "$@" #  This triggers the embedded script')
         return out
 
-    # ------------ External path for run commands ------------
-
     def external_path(self, spec: ScriptSpec) -> str:
         """Proivdes external path"""
         return f"{self._script_dir()}/{spec.name}.sh"
-
-    # ------------ Embedded handling ------------
 
     def _emit_embedded(self, spec: ScriptSpec) -> None:
         for line in spec.lines:
@@ -78,8 +72,6 @@ class ScriptEmitter:
             for part in line.split("\n"):
                 self._embedded_text.append(f"# {part}")
         self._embedded_text.append("")  # separator
-
-    # ------------ External handling ------------
 
     def _emit_external(self, spec: ScriptSpec) -> None:
         script_dir = self._script_dir()
@@ -109,8 +101,6 @@ class ScriptEmitter:
             sys.exit(1)
         p = pathlib.Path(path)
         p.chmod(p.stat().st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
-
-    # ------------ Paths ------------
 
     def _script_dir(self) -> str:
         if self._builder.cfg.use_embedded:
