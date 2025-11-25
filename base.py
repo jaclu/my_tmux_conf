@@ -1538,8 +1538,8 @@ class BaseConfig(TmuxConfig):
     if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-state}}}' {
         if-shell -F '#{||:#{==:#{window_panes},1},#{==:#{window_zoomed_flag},1}}' {
             # Set zoomed state
-            set-option -w @zoom-state 1
-            set-option -w pane-border-status off""",
+            set -w @zoom-state 1
+            set -w pane-border-status off""",
             trim_ws=False,
         )
 
@@ -1553,8 +1553,8 @@ class BaseConfig(TmuxConfig):
         w(
             """        } {
             # Set un-zoomed state
-            set-option -w @zoom-state 0
-            set-option -w pane-border-status top""",
+            set -w @zoom-state 0
+            set -w pane-border-status top""",
             trim_ws=False,
         )
 
@@ -1917,15 +1917,15 @@ class BaseConfig(TmuxConfig):
         # in general they are global, except for opt_win_loc that needs to modify
         # settings on a specific window
         #
-        self.opt_server = "set-option -g"
-        self.opt_ses = "set-option -g"
+        self.opt_server = "set -g"
+        self.opt_ses = "set -g"
         if self.vers_ok(1.8):
-            self.opt_win_loc = "set-option -w"
+            self.opt_win_loc = "set -w"
         else:
             self.opt_win_loc = "set-window-option"
         self.opt_win = f"{self.opt_win_loc} -g"
         if self.vers_ok(3.1):
-            self.opt_pane = "set-option -g"
+            self.opt_pane = "set -g"
         else:
             # prior to 3.1 pane options were listed as win options
             self.opt_pane = self.opt_win

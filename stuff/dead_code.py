@@ -40,7 +40,7 @@ class NotUsedtPlugins(BaseConfig):
             """
             # set -g @fzf-goto-session 's'  # trigger key
             # set -g @fzf-goto-session-without-prefix 'true'
-            # set-option -g @fzf-goto-session-only 'true'
+            # set -g @fzf-goto-session-only 'true'
             """,
         ]
 

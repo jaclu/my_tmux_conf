@@ -45,18 +45,18 @@ class SB(DefaultPlugins):
 
         self.sb_right = self.sb_right.replace("%a %h", f"#[fg={MUTED_TEXT}] %a %h")
         w(
-            f'set-option -g window-status-format "#[fg={MUTED_TEXT}]'
+            f'set -g window-status-format "#[fg={MUTED_TEXT}]'
             '#I:#W#{?window_flags,#{window_flags}, }#[default]"'
         )
-        w(f'set-option -g window-status-current-format "#[fg={THEME_TEXT}]#W"')
-        w("set-option -g status-justify centre")
+        w(f'set -g window-status-current-format "#[fg={THEME_TEXT}]#W"')
+        w("set -g status-justify centre")
 
         if self.vers_ok("1.9"):
             # medium wihte on grey
-            w('set-option -g message-style "fg=colour251,bg=colour8"')
-            w('set-option -g mode-style "fg=colour251,bg=colour8"')
-            w(f"set-option -g status-style fg={MUTED_TEXT},bg=default")
-            w("set-option -g window-status-current-style default")
+            w('set -g message-style "fg=colour251,bg=colour8"')
+            w('set -g mode-style "fg=colour251,bg=colour8"')
+            w(f"set -g status-style fg={MUTED_TEXT},bg=default")
+            w("set -g window-status-current-style default")
 
         return True  # request footer to be printed
 

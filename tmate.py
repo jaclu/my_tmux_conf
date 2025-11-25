@@ -31,6 +31,21 @@ class Tmate(SB):
 
         return print_header
 
+    def local_overrides(self) -> None:
+        """
+        When overriding this method in a subclass, ensure that
+        super().local_overrides() is called first, to retain any overrides
+        defined by parent classes before applying additional customizations.
+        """
+        super().local_overrides()
+
+        #  First mention what class this override comes from
+        self.write("""
+        # --- Tmate.local_overides()
+        # Get rid of tmate occupying status-line forever...
+        run-shell -b "sleep 1; $TMUX_BIN display 'Press Enter to clear status-line'"
+        """)
+
 
 if __name__ == "__main__":
     Tmate().run()
