@@ -13,7 +13,8 @@
 
 This package provides comprehensive plugin management for tmux configurations,
 including:
-- Plugin registration and version checking
+- Plugin registration and version checking, ignoring any plugin that depends
+on a more recent tmux
 - Plugin deployment (TPM or manual)
 - Plugin display and reporting
 """
