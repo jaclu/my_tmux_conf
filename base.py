@@ -1721,17 +1721,18 @@ class BaseConfig(TmuxConfig):
         #  Add this after status_bar_customization() to make it
         #  non-obvious to override it, hint local_overides()
         #
-        if self.t2_env:
-            #
-            #  max length of vers is 6 chars, in order to
-            #  not flood status line if running a devel tmux
-            #
-            if self.is_tmate():
-                prefix = "tmate"
-            else:
-                prefix = f"{self.vers.get()[:6]}"
-            t2_tag = f"{prefix} {self.prefix_key} "
-            self.sb_left = f"#[fg=green,bg=black]{t2_tag}#[default]{self.sb_left}"
+        # if self.t2_env:
+
+        #
+        #  max length of vers is 6 chars, in order to
+        #  not flood status line if running a devel tmux
+        #
+        if self.is_tmate():
+            prefix = "tmate"
+        else:
+            prefix = f"{self.vers.get()[:6]}"
+        t2_tag = f"{prefix} {self.prefix_key} "
+        self.sb_left = f"#[fg=green,bg=black]{t2_tag}#[default]{self.sb_left}"
 
         self.filter_me_from_sb_right()
 
