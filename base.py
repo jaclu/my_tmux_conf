@@ -562,10 +562,25 @@ class BaseConfig(TmuxConfig):
             )
         if self.vers_ok(3.5):
             # This allows apps inside tmux to set the terminal title
-            w(
-                f"""{self.opt_server} allow-set-title on
-                """
-            )
+            w(f"{self.opt_server} allow-set-title on")
+
+        w(f"""{self.opt_server} repeat-time 750
+        {self.opt_server} history-limit 10000
+        {self.opt_server} status-keys emacs""")
+
+        if os.getenv("TMUX_NO_CLIPBOARD"):
+            # On ssh/mosh connections, when running an asdf tmux with local
+            # version changed.
+            # tmux instacraches when anything is selected in a tmux buffer
+            # if set-clipboard is not off
+            if self.vers_ok(1.5):
+                w(f"{self.opt_server} set-clipboard off  # TMUX_NO_CLIPBOARD")
+        else:
+            # using external on the outer, prevents inner tmux from setting
+            # terminal clipboard
+            if self.vers_ok(1.5):
+                w(f"{self.opt_server} set-clipboard on")
+
         if self.vers_ok(3.3):
             #
             # Allow yazi and similar apps to send binary data like images/audio
@@ -578,7 +593,28 @@ class BaseConfig(TmuxConfig):
             # prosecution if yazi is run on a folder containing non public binary data
             # So on a server containing sensitive data DO NOT USE yazi!
             #
-            w("set -g allow-passthrough off")
+            w(f"{self.opt_server} allow-passthrough off")
+
+        # This prevents path_helper and similar tools from messing up PATH
+        # inside tmux. On MacOS it is used by default,
+        # maybe also on other platforms?
+        #
+        # Example of what it does: assume ~/bin is first in PATH
+        # Inside tmux shells it will now be almost last...
+        #
+        # However using this on iSH confuses remote tmux sessions utterly
+        #
+        if not mtc_utils.IS_ISH:
+            if not self.selected_shell:
+                self.selected_shell = os.getenv("SHELL")
+            if self.vers_ok(0.1):  # was 1.0
+                # prevents /usr/libexec/path_helper from messing up PATH
+                w(f'{self.opt_server} default-command "{self.selected_shell}"')
+            else:
+                w(
+                    f'{self.opt_server} default-command "export '
+                    f'TERM=screen-256color \\; {self.selected_shell}"'
+                )
 
         w()  # spacer
 
@@ -601,41 +637,6 @@ class BaseConfig(TmuxConfig):
             """
             )
 
-        # This prevents path_helper and similar tools from messing up PATH
-        # inside tmux. On MacOS it is used by default,
-        # maybe also on other platforms?
-        #
-        # Example of what it does: assume ~/bin is first in PATH
-        # Inside tmux shells it will now be almost last...
-        #
-        # However using this on iSH confuses remote tmux sessions utterly
-        #
-        if not mtc_utils.IS_ISH:
-            if not self.selected_shell:
-                self.selected_shell = os.getenv("SHELL")
-            if self.vers_ok(0.1):  # was 1.0
-                # prevents /usr/libexec/path_helper from messing up PATH
-                w(f'{self.opt_ses} default-command "{self.selected_shell}"')
-            else:
-                w(
-                    f'{self.opt_ses} default-command "export '
-                    f'TERM=screen-256color \\; {self.selected_shell}"'
-                )
-            w()  # spacer
-
-        if os.getenv("TMUX_NO_CLIPBOARD"):
-            # On ssh/mosh connections, when running an asdf tmux with local
-            # version changed.
-            # tmux instacraches when anything is selected in a tmux buffer
-            # if set-clipboard is not off
-            if self.vers_ok(1.5):
-                w(f"{self.opt_server} set-clipboard off  # TMUX_NO_CLIPBOARD")
-        else:
-            # using external on the outer, prevents inner tmux from setting
-            # terminal clipboard
-            if self.vers_ok(1.5):
-                w(f"{self.opt_server} set-clipboard on")
-
         #
         #  Common variable telling plugins if -N notation is wanted
         #  (assuming tmux version supports it)
@@ -644,8 +645,7 @@ class BaseConfig(TmuxConfig):
         #
         if self.vers_ok(3.1):
             w(
-                f"""
-                # Hint that plugins can check, will only be true if hints
+                f"""# Hint that plugins can check, will only be true if hints
                 # are supported by running tmux, so plugins will not need
                 # to check tmux version for this
                 {self.opt_server} @use_bind_key_notes_in_plugins Yes
@@ -786,13 +786,7 @@ class BaseConfig(TmuxConfig):
         elif self.vers_ok(1.2):
             w(f"{self.opt_ses} detach-on-destroy off")
 
-        w(
-            f"""
-        {self.opt_ses} repeat-time 750
-        {self.opt_ses} history-limit 10000
-        {self.opt_ses} status-keys emacs
-        """
-        )
+        w("")  # spacer
 
         if self.vers_ok(0.9):
             s = 'bind -N "Kill session in focus"         M-x  confirm-before'
@@ -1025,6 +1019,8 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(1.8):
             w(f"{self.opt_pane} allow-rename off")
 
+        w("")  # spacer
+
         if self.vers_ok(0.9):
             s = 'bind -N "Kill pane in focus"  x  confirm-before'
             if self.vers_ok(1.5):
@@ -1039,11 +1035,7 @@ class BaseConfig(TmuxConfig):
         #
         if self.vers_ok(1.2):
             cmd = "send-keys C-l \\; run-shell 'sleep 0.1' \\; clear-history"
-            w(
-                f"""
-                bind -N "Clear history & screen"  M-l  {cmd}
-                """
-            )
+            w(f"bind -N 'Clear history & screen'  M-l  {cmd}")
 
         self.save_history()
 
@@ -1107,8 +1099,10 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(3.2):
             w(f"{self.opt_pane} pane-border-lines single")
 
-        # if self.vers_ok(3.3):
-        #     w(f"{self.opt_pane} pane-border-indicators arrows")
+        if self.vers_ok(3.3):
+            w(f"{self.opt_pane} pane-border-indicators off")
+
+        w("")  # spacer
 
         # #{pane_current_command}
         if self.show_pane_label:
@@ -1313,7 +1307,9 @@ class BaseConfig(TmuxConfig):
             s2 = "%1"
         else:
             s2 = "$TMPDIR/tmux.history"
-        w(f'{s} "capture-pane -S - -E - \\; save-buffer {s2} \\; delete-buffer"')
+        w(f"""
+        {s} "capture-pane -S - -E - \\; save-buffer {s2} \\; delete-buffer"
+          """)
         if self.vers_ok(1.8):
             w(
                 'bind -N "Save history to prompted file name (includes escapes)"  '
