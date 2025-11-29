@@ -129,7 +129,7 @@ class BaseConfig(TmuxConfig):
     plugin_handler = "jaclu/tpm"  # overrides of tmux-conf package default
 
     # If colors for this is defined, it will be displayed, if "" it is not
-    show_vers_prefix_in_sb_colors = "fg=green,bg=black"
+    show_vers_n_prefix_in_sb_colors = "fg=green,bg=black"
 
     #
     #  Some devices are unable to generate the nav keys -
@@ -1718,11 +1718,9 @@ class BaseConfig(TmuxConfig):
 
         #
         #  Add this after status_bar_customization() to make it
-        #  non-obvious to override it, hint local_overides()
+        #  non-obvious to override it - hint local_overides()
         #
-        # if self.t2_env:
-
-        if self.show_vers_prefix_in_sb_colors:
+        if self.show_vers_n_prefix_in_sb_colors:
             #
             #  max length of vers is 6 chars, in order to
             #  not flood status line if running a devel tmux
@@ -1733,7 +1731,7 @@ class BaseConfig(TmuxConfig):
                 prefix = f"{self.vers.get()[:6]}"
             t2_tag = f"{prefix} {self.prefix_key} "
             self.sb_left = (
-                f"#[{self.show_vers_prefix_in_sb_colors}]{t2_tag}#[default]{self.sb_left}"
+                f"#[{self.show_vers_n_prefix_in_sb_colors}]{t2_tag}#[default]{self.sb_left}"
             )
 
         self.filter_me_from_sb_right()
