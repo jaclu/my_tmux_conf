@@ -1015,14 +1015,13 @@ class BaseConfig(TmuxConfig):
         #======================================================
         """
         )
-        # the sleeps below are needed to wait until a pane exists
-        if self.vers_ok(1.6):
-            #  Set base index for panes to 1 instead of 0
-            w(f"{self.opt_pane} pane-base-index 1")
         if self.vers_ok(1.8):
             w(f"{self.opt_pane} allow-rename off")
 
-        w("")  # spacer
+        if self.vers_ok(1.6):
+            #  Set base index for panes to 1 instead of 0
+            w(f"""{self.opt_pane} pane-base-index 1
+              """)
 
         if self.vers_ok(0.9):
             s = 'bind -N "Kill pane in focus"  x  confirm-before'
@@ -1835,20 +1834,21 @@ class BaseConfig(TmuxConfig):
         user keys will be given
         """
         w = self.write
-        w()
-        w("# auc_display_plugins_used()")
         if not self.vers_ok(1.8):
             # There is no plugin support...
             return
 
+        w()
         #
         # The conf_file needs to be mentioned below to make sure
         # the -p2 run-shell doesn't complain if a non-standard config is used.
         # It won't be over-written!
         #
         repo_dir = os.path.dirname(__file__)
-        w("# Displays defined plugins by calling app defining this env with -p2")
-        w("# First enabling my_tmux_conf venv if present")
+        w("""
+          # auc_display_plugins_used()
+          #   Displays defined plugins by calling app defining this env with -p2
+          #   First enabling my_tmux_conf venv if present""")
         w(
             f'bind -N "{self.muc_non_default_value(mtc_utils.K_M_P)}'
             f'List all plugins defined"  {self.muc_keys[mtc_utils.K_M_P]}  '
@@ -1874,8 +1874,6 @@ class BaseConfig(TmuxConfig):
             return
 
         w = self.write
-        w()
-        w("# auc_kill_tmux_server()")
         s = (
             f'bind -N "{self.muc_non_default_value(mtc_utils.K_M_X)}Kill tmux server"  '
             f"{self.muc_keys[mtc_utils.K_M_X]}  confirm-before"
@@ -1885,7 +1883,9 @@ class BaseConfig(TmuxConfig):
                 f' -p "kill tmux server on #[reverse]{self.conf_file}'
                 '#[default] @#[reverse]#h#[default]? (y/n)"'
             )
-        w(f"{s} kill-server")
+        w(f"""
+        # auc_kill_tmux_server()
+        {s} kill-server""")
 
     #
     #  Utility methods
