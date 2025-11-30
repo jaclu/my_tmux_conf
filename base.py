@@ -128,8 +128,8 @@ class BaseConfig(TmuxConfig):
 
     plugin_handler = "jaclu/tpm"  # overrides of tmux-conf package default
 
-    display_prefix = True # display prefix on SB left
-    display_tmux_vers = True # display tmux version on SB left
+    display_prefix = True  # display prefix on SB left
+    display_tmux_vers = True  # display tmux version on SB left
     # If colors for this is defined, it will be displayed, if "" it is not
     show_prefix_n_vers_in_sb_colors = "fg=green,bg=black"
 
@@ -569,9 +569,11 @@ class BaseConfig(TmuxConfig):
             # This allows apps inside tmux to set the terminal title
             w(f"{self.opt_server} allow-set-title on")
 
-        w(f"""{self.opt_server} repeat-time 750
+        w(
+            f"""{self.opt_server} repeat-time 750
         {self.opt_server} history-limit 10000
-        {self.opt_server} status-keys emacs""")
+        {self.opt_server} status-keys emacs"""
+        )
 
         if os.getenv("TMUX_NO_CLIPBOARD"):
             # On ssh/mosh connections, when running an asdf tmux with local
@@ -1023,8 +1025,10 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.6):
             #  Set base index for panes to 1 instead of 0
-            w(f"""{self.opt_pane} pane-base-index 1
-              """)
+            w(
+                f"""{self.opt_pane} pane-base-index 1
+              """
+            )
 
         if self.vers_ok(0.9):
             s = 'bind -N "Kill pane in focus"  x  confirm-before'
@@ -1312,9 +1316,11 @@ class BaseConfig(TmuxConfig):
             s2 = "%1"
         else:
             s2 = "$TMPDIR/tmux.history"
-        w(f"""
+        w(
+            f"""
         {s} "capture-pane -S - -E - \\; save-buffer {s2} \\; delete-buffer"
-          """)
+          """
+        )
         if self.vers_ok(1.8):
             w(
                 'bind -N "Save history to prompted file name (includes escapes)"  '
@@ -1829,22 +1835,18 @@ class BaseConfig(TmuxConfig):
             w(f'{s} -p "Name of new session: " "new-session -s \\"%%\\""')
 
         if self.vers_ok(1.2):
-            w(
-                f"""bind -N '{
-                self.muc_non_default_value(mtc_utils.K_M_UNDERSCORE)
-                }Switch to last session  - P+_'         -n  {
-                    self.muc_keys[mtc_utils.K_M_UNDERSCORE]
-                }  switch-client -l"""
-            )
+            s = f"bind -N '{self.muc_non_default_value(mtc_utils.K_M_UNDERSCORE)}"
+            s += "Switch to last session  - P+_'     -n  "
+            s += f"{self.muc_keys[mtc_utils.K_M_UNDERSCORE]}       switch-client -l"
+            w(s)
 
     def auc_display_plugins_used(self):  # used by iSH Console
-
-        #iSH console doesn't generate correct ALT - Upper Case sequences,
-        #so when that is the env, intended keys must be bound as user keys.
-        #To make that without having two separate snippets of code doing
-        #the same and keeping them in sync, the default parameters are
-        #the "normal" case, when used for iSH console, the
-        #user keys will be given
+        # iSH console doesn't generate correct ALT - Upper Case sequences,
+        # so when that is the env, intended keys must be bound as user keys.
+        # To make that without having two separate snippets of code doing
+        # the same and keeping them in sync, the default parameters are
+        # the "normal" case, when used for iSH console, the
+        # user keys will be given
         #
         w = self.write
         if not self.vers_ok(1.8):
@@ -1858,10 +1860,12 @@ class BaseConfig(TmuxConfig):
         # It won't be over-written!
         #
         repo_dir = os.path.dirname(__file__)
-        w("""
+        w(
+            """
           # auc_display_plugins_used()
           #   Displays defined plugins by calling app defining this env with -p2
-          #   First enabling my_tmux_conf venv if present""")
+          #   First enabling my_tmux_conf venv if present"""
+        )
         w(
             f'bind -N "{self.muc_non_default_value(mtc_utils.K_M_P)}'
             f'List all plugins defined"  {self.muc_keys[mtc_utils.K_M_P]}  '
@@ -1896,9 +1900,11 @@ class BaseConfig(TmuxConfig):
                 f' -p "kill tmux server on #[reverse]{self.conf_file}'
                 '#[default] @#[reverse]#h#[default]? (y/n)"'
             )
-        w(f"""
+        w(
+            f"""
         # auc_kill_tmux_server()
-        {s} kill-server""")
+        {s} kill-server"""
+        )
 
     #
     #  Utility methods
