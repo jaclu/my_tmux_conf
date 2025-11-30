@@ -21,30 +21,24 @@
 
 """Setup secondary session"""
 
-# everything, a lot of this is setup
-#  in the default file, this is for color theme and selection of often
-#  changing list of plugins I am testing
-#  out.
-import mtc_utils
+from typing import Any
 
-if mtc_utils.HOSTNAME == "ish-hetz1":
+from mtc_utils import HOSTNAME
+
+if HOSTNAME == "ish-hetz1":
     from sb.sb_acceptance import SB
 else:
-    from sb.sb_t2 import SB  # type: ignore
-
-# print("><> t2.py ")
+    from sb.sb_t2 import SB  # type: ignore[assignment]
 
 
-# Pylance complains about the base class here, the above condition confuses it
-# pylint: disable=too-many-ancestors
-class T2(SB):  # type: ignore
+class T2(SB):  # pyright: ignore[reportGeneralTypeIssues]
     """Normally the Inner tmux session"""
 
     t2_env = "1"
 
     # show_prefix_n_vers_in_sb_colors = ""
 
-    if mtc_utils.HOSTNAME == "JacMac":
+    if HOSTNAME == "JacMac":
         use_plugin_battery = True
 
     # use_plugin_gentrify = True
@@ -67,7 +61,8 @@ class T2(SB):  # type: ignore
 
     # use_plugin_packet_loss = True
 
-    def plugin_menus(self) -> list:  # 1.5
+    def plugin_menus(self) -> list[Any]:  # 1.5
+        """Definition of tmux-menus plugin configuration"""
         #  Tested down to vers 1.5
         if not self.use_plugin_menus:
             # it works on iSH, but soo slow it is of no practical usage
@@ -155,4 +150,5 @@ class T2(SB):  # type: ignore
 
 
 if __name__ == "__main__":
+    T2().run()
     T2().run()

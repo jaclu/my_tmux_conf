@@ -127,7 +127,7 @@ class Plugins:
         self._is_limited_host = is_limited
         return self._is_limited_host
 
-    def scan(self, plugin_methods):
+    def scan(self, plugin_methods: list[Callable[[], list[str]]]) -> None:
         """Investigate all defined plugin methods, and determine if a
         given plugin can be used depending on running tmux, or if it should be skipped
         """
@@ -145,7 +145,7 @@ class Plugins:
         """Adds the plugin handler (if any desired)"""
         return self._deployment.deploy_plugin_handler()
 
-    def clear(self):
+    def clear(self) -> None:
         """To minimize risk of some bug causing massive file deletion,
         file path is double checked.
         """

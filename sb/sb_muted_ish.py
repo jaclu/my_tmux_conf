@@ -34,7 +34,7 @@ class SB(DefaultPlugins):
     username_template = f"#[fg={THEME_TEXT}] #(whoami)#[default]@"
     sb_left = f"#[fg={THEME_TEXT}]#{{session_name}}#[fg={MUTED_TEXT}]: "
 
-    def status_bar_customization(self, print_header=True):
+    def status_bar_customization(self, print_header: bool = True) -> bool:
         """override statusbar config"""
         self.assign_style(__file__)
         super().status_bar_customization(print_header=print_header)

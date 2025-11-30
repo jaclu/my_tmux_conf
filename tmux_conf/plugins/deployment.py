@@ -73,9 +73,10 @@ class PluginDeployment:
         #  First ensure that plugin code that needs to process the
         #  environment is done and output is written to config.
         #
+
         for name, info in used_plugins.items():
             plugin_method = info[PLUGIN_MTHD]
-            plugin_method()  # type: ignore[operator]
+            plugin_method()
 
         # Callable[[], list[str]]
         #  Add plugin references and hard coded plugin settings.
@@ -85,7 +86,7 @@ class PluginDeployment:
             if vers.is_ok("1.8"):
                 output.append(f'set -g @plugin "{name}"')
                 static_code = info[PLUGIN_STATIC_CODE]
-                for line in static_code.split("\n"):  # type: ignore[union-attr]
+                for line in static_code.split("\n"):
                     output.append(line.strip())
             else:
                 #  prior to 1.8, any variables starting with @ would get tmux

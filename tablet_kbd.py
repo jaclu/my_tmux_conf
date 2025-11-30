@@ -26,8 +26,11 @@
 """Checks if this is run on the iSH console"""
 
 import sys
+from typing import Any
 
-import mtc_utils
+from base_config import BaseConfig
+
+from .mtc_utils import K_M_P, K_M_PLUS, K_M_UNDERSCORE, K_M_X, LC_ORIGIN
 
 #
 #  To make it easier to identify what keyboard to config
@@ -154,11 +157,12 @@ key_2_uk = {
 class LimitedKbdSpecialHandling:
     """Groupings of user-keys"""
 
-    def __init__(self, tmux_conf_instance):
+    def __init__(self, tmux_conf_instance: BaseConfig, kbd: str) -> None:
         """Defines Userkey Function key mapping"""
-        if not mtc_utils.LC_KEYBOARD:
+        self.kbd = kbd
+        if not self.kbd:
             raise ImportWarning("No LC_KEYBOARD defined!")
-        self.tc = tmux_conf_instance  # Primary tmux class, for backreferencing
+        self.tc: BaseConfig = tmux_conf_instance  # Primary tmux class, for backreferencing
 
         # ensures that some settings ate not overridden via inheritance
         self.has_been_handled = {
@@ -168,7 +172,7 @@ class LimitedKbdSpecialHandling:
             EURO: False,
             DELETE: False,
         }
-        self.sequence_used = []
+        self.sequence_used: list[Any] = []
         self.ms_fn_keys_mapped = False
         self.fn_keys_handling = 2
         # self.tc.use_prefix_arrow_nav_keys = True
@@ -177,7 +181,7 @@ class LimitedKbdSpecialHandling:
         #
         #  Only use this if the following conditions are met:
         #     1) tmux >= 2.6
-        #     2) LC_KEYBOARD is set
+        #     2) self.kbd is set
         #
         if not self.tc.vers_ok(2.6):
             msg = """WARNING: tmux < 2.6 does not support user-keys, thus handling
@@ -187,37 +191,37 @@ class LimitedKbdSpecialHandling:
             return False
 
         print()
-        if mtc_utils.LC_ORIGIN:
-            print(f"===>  Session for limited console from:  {mtc_utils.LC_ORIGIN}")
-        print(f"===>  {self.__class__.__name__}  -  kbd: {mtc_utils.LC_KEYBOARD}")
+        if LC_ORIGIN:
+            print(f"===>  Session for limited console from:  {LC_ORIGIN}")
+        print(f"===>  {self.__class__.__name__}  -  kbd: {self.kbd}")
         print()
         self.tc.write(
             f"""
             #======================================================
             #
-            #  Remap keys for limited console at: {mtc_utils.LC_ORIGIN}
+            #  Remap keys for limited console at: {LC_ORIGIN}
             #
-            #  {self.__class__.__name__}  -  kbd: {mtc_utils.LC_KEYBOARD}
+            #  {self.__class__.__name__}  -  kbd: {self.kbd}
             #
             #======================================================
             """
         )
-        if mtc_utils.LC_KEYBOARD == KBD_OMNITYPE:
+        if self.kbd == KBD_OMNITYPE:
             self.keyb_type_omnitype()
-        elif mtc_utils.LC_KEYBOARD == KBD_BLUETOOTH:
+        elif self.kbd == KBD_BLUETOOTH:
             pass
-        elif mtc_utils.LC_KEYBOARD in (
+        elif self.kbd in (
             KBD_BRYDGE_10_2_MAX,
             KBD_YOOZON3,
         ):
             self.keyb_type_2()
-        elif mtc_utils.LC_KEYBOARD == KBD_LOGITECH_COMBO_TOUCH:
+        elif self.kbd == KBD_LOGITECH_COMBO_TOUCH:
             self.keyb_type_combo_touch()
-        elif mtc_utils.LC_KEYBOARD == KBD_TOUCH:
+        elif self.kbd == KBD_TOUCH:
             self.keyb_type_touch()
             return False
         else:
-            msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
+            msg = f"# Unrecognized iSH LC_KEYBOARD: {self.kbd}"
             self.tc.write(msg)
             print(msg)
             return False
@@ -234,13 +238,13 @@ class LimitedKbdSpecialHandling:
     #
     # ======================================================
 
-    def keyb_type_omnitype(self):
+    def keyb_type_omnitype(self) -> None:
         #
         #  This keyb type already generates Esc on the key above tab
         #
         self.alternate_key_backtick("\\033\\140")
 
-    def keyb_type_2(self):  # , define_backtick=True):
+    def keyb_type_2(self) -> None:  # , define_backtick=True):
         #
         #  General settings seems to work for several keyboards
         #
@@ -249,14 +253,14 @@ class LimitedKbdSpecialHandling:
         self.alternate_key_backtick("\\033\\060", "c-m-esc")
         self.fn_keys_handling = 0
 
-    def keyb_type_combo_touch(self):
+    def keyb_type_combo_touch(self) -> None:
         #
         #  Logitech Combo Touch
         #
         self.alternate_key_escape("\\302\\247")
         self.alternate_key_backtick("\\033")  # sends Esc by default
 
-    def keyb_type_touch(self):
+    def keyb_type_touch(self) -> None:
         #
         #  Built in touch-keyb
         #
@@ -269,7 +273,7 @@ class LimitedKbdSpecialHandling:
     #
     # ======================================================
 
-    def handle_fn_keys(self):
+    def handle_fn_keys(self) -> None:
         if self.fn_keys_handling == 1:
             self.map_fn_keys()
         elif self.fn_keys_handling == 2:
@@ -280,7 +284,7 @@ class LimitedKbdSpecialHandling:
             err_msg = f"Invalid fn_keys_handling {self.fn_keys_handling}"
             sys.exit(err_msg)
 
-    def map_fn_keys(self):
+    def map_fn_keys(self) -> None:
         #
         #  For keybs that already handles M-#
         #  this just binds them to send F# and swaps M-0 -> F10
@@ -332,7 +336,7 @@ class LimitedKbdSpecialHandling:
     #
     # ======================================================
 
-    def alt_key_param_check(self, sequence, key):
+    def alt_key_param_check(self, sequence: str, key: str) -> None:
         if sequence[:1] != "\\":
             err_msg = (
                 f"ERROR: TabletKbd:alt_key_param_check({sequence}, {key}) "
@@ -342,7 +346,7 @@ class LimitedKbdSpecialHandling:
         if self.has_been_handled[key]:
             sys.exit(f"Alternate {key} key has already been defined")
 
-    def alt_key_define(self, sequence, key, comment=""):
+    def alt_key_define(self, sequence: str, key: str, comment: str = "") -> None:
         self.alt_key_param_check(sequence, key)
         if key == TILDE:
             send_str = "\\~"
@@ -379,7 +383,7 @@ class LimitedKbdSpecialHandling:
     def alternate_key_delete(self, sequence: str, comment: str = "") -> None:
         self.alt_key_define(sequence, DELETE, comment)
 
-    def hash_not_pound(self):
+    def hash_not_pound(self) -> None:
         sequence = "\\302\\243"
         self.tc.write(
             f"""
@@ -390,7 +394,7 @@ class LimitedKbdSpecialHandling:
         )
         self.sequence_used.append(sequence)
 
-    def alternate_key_euro(self, sequence):
+    def alternate_key_euro(self, sequence: str) -> None:
         if self.has_been_handled[EURO]:
             return
         self.alt_key_param_check(sequence, EURO)
@@ -402,7 +406,7 @@ class LimitedKbdSpecialHandling:
 class TermuxConsole(LimitedKbdSpecialHandling):
     """Used to adopt the Termux console"""
 
-    def keyb_type_omnitype(self):
+    def keyb_type_omnitype(self) -> None:
         self.alternate_key_escape("\\140")
         self.alternate_key_euro("\\033\\100")
 
@@ -417,8 +421,8 @@ class IshConsole(LimitedKbdSpecialHandling):
     This redefines the rather limited keyboard in order to make it more useful.
     """
 
-    def __init__(self, tmux_conf_instance):
-        super().__init__(tmux_conf_instance)
+    def __init__(self, tmux_conf_instance: BaseConfig, kbd: str) -> None:
+        super().__init__(tmux_conf_instance, kbd)
         self.auk = {
             # iSH Console can not generate Alt Upper Case characters, so they are mapped
             "M-A": "\\303\\205",
@@ -462,11 +466,11 @@ class IshConsole(LimitedKbdSpecialHandling):
             "M-?": "\\302\\277",
         }
 
-    def config_console_keyb(self):
+    def config_console_keyb(self) -> bool:
         if not super().config_console_keyb():
             return False
 
-        if mtc_utils.LC_KEYBOARD == KBD_TOUCH:
+        if self.kbd == KBD_TOUCH:
             # No kbd remapping supported for touch kbd
             return True
 
@@ -481,15 +485,15 @@ class IshConsole(LimitedKbdSpecialHandling):
     #
     # ======================================================
 
-    def define_muc_keys(self):
+    def define_muc_keys(self) -> None:
         self.tc.muc_keys = {
-            mtc_utils.K_M_PLUS: f"User{key_2_uk['M-+']}",
-            mtc_utils.K_M_UNDERSCORE: f"User{key_2_uk['M-_']}",
-            mtc_utils.K_M_P: f"User{key_2_uk['M-P']}",
-            mtc_utils.K_M_X: f"User{key_2_uk['M-X']}",
+            K_M_PLUS: f"User{key_2_uk['M-+']}",
+            K_M_UNDERSCORE: f"User{key_2_uk['M-_']}",
+            K_M_P: f"User{key_2_uk['M-P']}",
+            K_M_X: f"User{key_2_uk['M-X']}",
         }
 
-    def alt_upper_case_numbers(self):
+    def alt_upper_case_numbers(self) -> None:
         # use meta shift numbers as normal m- chars
         # Meta Shift numbers
         self.auk["M-!"] = "\\342\\201\\204"  # M-S-1
@@ -551,26 +555,4 @@ class IshConsole(LimitedKbdSpecialHandling):
         #     for k, u in self.tc.muc_keys.items():
         #         print(f" userkey: {u}   key: {k}")
         #     print()
-
-
-def special_consoles_config(tmux_conf_instance):
-    if not mtc_utils.LC_CONSOLE:
-        # If this is not a special console, take no action
-        return False
-
-    if not mtc_utils.LC_KEYBOARD:
-        # If there is no indication what keyboard is used, no specific adaptions
-        # can be applied.
-        # Here the assumption is usage of the touch-keyb
-        mtc_utils.LC_KEYBOARD = KBD_TOUCH
-        # <p> c-m = M
-    if mtc_utils.LC_CONSOLE == "iSH":  # and not mtc_utils.IS_REMOTE:
-        kbd = IshConsole(tmux_conf_instance)
-    elif mtc_utils.LC_CONSOLE == "Termux":
-        kbd = TermuxConsole(tmux_conf_instance)
-    else:
-        sys.exit(f"ERROR: Unrecognized LC_CONSOLE:  [{mtc_utils.LC_CONSOLE}]")
-
-    if kbd.config_console_keyb():
-        return True
-    return False
+        #     print()

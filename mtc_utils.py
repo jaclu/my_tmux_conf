@@ -126,24 +126,24 @@ def get_currency() -> str:
 #
 #  Internals
 #
-def _currency_request(url, tag="currency") -> str:
+def _currency_request(url: str, tag: str = "currency") -> str:
     """Returns currency for device location, or "" if not detected"""
     result = run_shell(f"curl -s {url}")
     # Parse the JSON output
     if result.strip():  # Ensure the command ran successfully
         data = json.loads(result)
-        currency = data.get(tag, "Unknown")
+        currency: str = data.get(tag, "Unknown")
     else:
         currency = ""
     return currency
 
 
-def _get_currency_from_geoplugin():
+def _get_currency_from_geoplugin() -> str:
     """retrieving currency"""
     return _currency_request("http://www.geoplugin.net/json.gp", "geoplugin_currencyCode")
 
 
-def _get_currency_from_ipwhois():
+def _get_currency_from_ipwhois() -> str:
     """retrieving currency"""
     return _currency_request("https://ipwhois.app/json/", "currency_code")
 
@@ -153,7 +153,7 @@ def _get_currency_from_ipapi() -> str:
     return _currency_request("https://ipapi.co/json")
 
 
-def _get_short_hostname():
+def _get_short_hostname() -> str:
     cmd = shutil.which("hostname")
     return run_shell(f"{cmd} -s").lower()
 

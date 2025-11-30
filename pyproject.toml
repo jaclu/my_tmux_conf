@@ -1,5 +1,6 @@
 [tool.black]
 line-length = 92
+include = '\.pyi?$'
 exclude = '''
 /(
     \.venv
@@ -13,20 +14,30 @@ combine_as_imports = true
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
 [tool.mypy]
-exclude = ["\\.venv"]
-ignore_missing_imports = true
+python_version = "3.11"
+exclude = [".venv", "stuff/dead_code.py"]
+strict = true
+# ignore_missing_imports = true
+#show_error_codes = true
+#warn_unused_configs = true
+#no_implicit_reexport = true
 
-[tool.pymarkdown.plugins.line-length]
-line_length = 92
 
-[tool.pymarkdown.plugins.md033]
-allowed_elements = "nbsp,prefix"
+[tool.pymarkdown]
+# plugins.no-inline-html.enabled = false
+#plugins.line-length.enabled = false
+plugins.line-length.line_length = 92
+plugins.line-length.code_block_line_length = 92
+plugins.md033.allowed_elements = "nbsp,prefix"
+
+#[tool.pymarkdown.plugins.line-length]
+#line_length = 92
+#
+#[tool.pymarkdown.plugins.md033]
+#allowed_elements = "nbsp,prefix"
 
 [tool.pyright]
-exclude = [
-    ".venv",
-    "**/__pycache__"
-]
+exclude = [".venv", "**/__pycache__"]
 reportMissingImports = "error"
 reportMissingTypeStubs = false
 

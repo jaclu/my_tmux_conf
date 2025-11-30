@@ -18,7 +18,7 @@ root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root_dir)
 
 # pylint: disable=wrong-import-position,import-error
-from base import BaseConfig  # noqa: E402
+from base_config import BaseConfig  # noqa: E402
 
 
 class NotUsedtPlugins(BaseConfig):
@@ -28,7 +28,7 @@ class NotUsedtPlugins(BaseConfig):
     use_plugin_jump = False
     skip_plugin_tmux_fzf = False
 
-    def plugin_fzf_session_switch(self) -> list:  # 3.3
+    def plugin_fzf_session_switch(self) -> list[Any]:  # 3.3
         """can be used on older versions with limitations"""
         if self.skip_plugin_fzf_session_switch:
             vers_min = -1.0

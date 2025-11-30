@@ -18,7 +18,7 @@ from collections.abc import Callable
 import __main__
 
 from ..vers_check import VersionCheck
-from .registry import PLUGIN_VERS_MIN, PluginRegistry
+from .registry import PLUGIN_MTHD, PLUGIN_STATIC_CODE, PLUGIN_VERS_MIN, PluginRegistry
 
 
 # pylint: disable=too-few-public-methods
@@ -117,9 +117,9 @@ class PluginDisplay:
         print(f"> {inner_name:<{max_l_name - 2}} - {info[PLUGIN_VERS_MIN]} {suffix}")
         # print(f"><> {type(info[PLUGIN_MTHD])}")
         # sys.exit(1)
-        info[1]()  # Execute plugin method for verbose output
+        info[PLUGIN_MTHD]()  # Execute plugin method for verbose output
         # Skip indentation, for easier read
-        for line in info[2].split("\n"):
+        for line in info[PLUGIN_STATIC_CODE].split("\n"):
             print(f"{line.strip()}")
 
     def _display_plugin_brief(
@@ -135,7 +135,7 @@ class PluginDisplay:
         print(f"{inner_name:<{max_l_name}} - {info[PLUGIN_VERS_MIN]} {suffix}")
 
     def _display_unused_plugins(
-        self, plugin_items: list[str], skipped_plugins: list
+        self, plugin_items: list[str], skipped_plugins: list[tuple[str, str]]
     ) -> None:
         """Display unused plugins found in the plugins directory."""
         # Remove skipped plugins from plugin_items
@@ -148,7 +148,9 @@ class PluginDisplay:
             for s in plugin_items:
                 print("\t", s)
 
-    def _display_skipped_plugins(self, skipped_plugins: list, max_l_name: int) -> None:
+    def _display_skipped_plugins(
+        self, skipped_plugins: list[tuple[str, str]], max_l_name: int
+    ) -> None:
         """Display plugins that were skipped due to version requirements."""
         print()
         max_l_v = max(len(vers_val) for vers_val, _ in skipped_plugins)

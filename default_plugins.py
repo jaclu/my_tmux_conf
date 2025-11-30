@@ -25,14 +25,15 @@
 """Defines default plugins"""
 
 import os
+from typing import Any
 
 #
 #  Since I often run this on iSH, this class will bind missing keys in the
 #  case this is run directly on the IshConsole, in all other cases it will
 #  do nothing
 #
-import mtc_utils
-from base import BaseConfig
+from .base_config import BaseConfig
+from .mtc_utils import IS_INNER_TMUX, IS_ISH, IS_TERMUX
 
 
 class DefaultPlugins(BaseConfig):
@@ -78,14 +79,14 @@ class DefaultPlugins(BaseConfig):
     use_plugin_session_wizard = True
     use_plugin_suspend = True
 
-    if mtc_utils.IS_ISH:
+    if IS_ISH:
         use_plugin_session_wizard = False
 
     #
     # Replaced by corresponding use_plugin variables
     #
 
-    if mtc_utils.IS_INNER_TMUX:
+    if IS_INNER_TMUX:
         #  Doesn't make much sense in an inner tmux
         use_plugin_mouse_swipe = False
         # use_plugin_power_zoom = False
@@ -189,7 +190,7 @@ class DefaultPlugins(BaseConfig):
     #
     # ----------------------------------------------------------
 
-    def plugin_better_mouse_mode(self) -> list:  # [str | float | int]:  # 2.1
+    def plugin_better_mouse_mode(self) -> list[Any]:  # [str | float | int]:  # 2.1
         """A tmux plugin to better manage the mouse.
         Emulate mouse scrolling for full-screen programs that doesn't
         provide built in mouse support, such as man, less, vi.
@@ -220,14 +221,14 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_extrakto(self) -> list:  # 3.2
+    def plugin_extrakto(self) -> list[Any]:  # 3.2
         """Can be used on older versions with limitations
         Popup allowing for selection of items on screen
         tab for insert tested down to 1.8
         enter to copy instakills asdf local tmux
         Default trigger: <prefix> Tab
         """
-        if not self.use_plugin_extrakto or mtc_utils.IS_ISH:
+        if not self.use_plugin_extrakto or IS_ISH:
             # the popup gets stuck on iSH
             vers_min = -1.0
         else:
@@ -256,12 +257,12 @@ class DefaultPlugins(BaseConfig):
                 """
         return ["jaclu/extrakto", vers_min, conf]
 
-    def plugin_jump(self) -> list:  # 2.4
+    def plugin_jump(self) -> list[Any]:  # 2.4
         """Jump to word(-s) on the screen that you want to copy,
         without having to use the mouse.
         Default trigger: <prefix> u
         """
-        if not self.use_plugin_jump or mtc_utils.IS_ISH or mtc_utils.IS_TERMUX:
+        if not self.use_plugin_jump or IS_ISH or IS_TERMUX:
             # it seems Termux fails to handle ttys
             # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Dont use
@@ -281,7 +282,7 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_menus(self) -> list:  # 1.5
+    def plugin_menus(self) -> list[Any]:  # 1.5
         #  Tested down to vers 1.5
         #  Default trigger: <prefix> Space
         if self.use_plugin_menus:
@@ -319,7 +320,7 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_mouse_swipe(self) -> list:  # 3.0
+    def plugin_mouse_swipe(self) -> list[Any]:  # 3.0
         """right-click & swipe switches Windows / Sessions"""
         if not self.use_plugin_mouse_swipe or self.is_limited_host:
             min_vers = -1.0  # Dont use
@@ -334,7 +335,7 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_power_zoom(self) -> list:  # 2.0
+    def plugin_power_zoom(self) -> list[Any]:  # 2.0
         """Zooms to separate Window, to allow for adding support panes
         Default trigger: <prefix> Z
         """
@@ -354,7 +355,7 @@ class DefaultPlugins(BaseConfig):
             """
         return ["jaclu/tmux-power-zoom", vers_min, conf]
 
-    def plugin_resurrect(self) -> list:  # 1.9
+    def plugin_resurrect(self) -> list[Any]:  # 1.9
         """Saves & Restores server sessions
 
         save: <prefix> C-s restore: <prefix> C-r
@@ -364,7 +365,7 @@ class DefaultPlugins(BaseConfig):
         This plugins fails to restore sessions in iSH, at least on my
         devices. so no point enabling tmux-resurrect & tmux-continuum
         on iSH"""
-        if not self.use_plugin_resurrect or mtc_utils.IS_ISH or self.is_tmate():
+        if not self.use_plugin_resurrect or IS_ISH or self.is_tmate():
             min_vers = -1.0  # Dont use
         else:
             min_vers = 1.9
@@ -404,7 +405,7 @@ class DefaultPlugins(BaseConfig):
         """
         return ["jaclu/tmux-resurrect", min_vers, conf]
 
-    def plugin_session_wizard(self) -> list:  # 3.2
+    def plugin_session_wizard(self) -> list[Any]:  # 3.2
         # default trigger: T
         #
         #  Long startup time on limited hosts...
@@ -421,7 +422,7 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_suspend(self) -> list:  # 2.4
+    def plugin_suspend(self) -> list[Any]:  # 2.4
         """Suspend tmux from receiving any keyboard commands
         This plugin inserts its display on status-right, so no need to
         manually add a placeholder
@@ -444,7 +445,7 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_zz_continuum(self) -> list:  # 1.9
+    def plugin_zz_continuum(self) -> list[Any]:  # 1.9
         """Automatically save and restore tmux server's open sessions.
 
         Depends on the plugin tmux-resurrect for actual save/restore.
@@ -488,7 +489,7 @@ class DefaultPlugins(BaseConfig):
     #
     # ----------------------------------------------------------
 
-    def plugin_battery(self):  # 2.2
+    def plugin_battery(self) -> list[Any]:  # 2.2
         """Forked from: https://github.com/tmux-plugins/tmux-battery
 
         Only meaningful for local tmux!
@@ -513,7 +514,7 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_mullvad(self):  # 2.2
+    def plugin_mullvad(self) -> list[Any]:  # 2.2
         """Display mullvad VPN status
         #{mullvad_city}#{mullvad_country}#{mullvad_status}
         """
@@ -556,7 +557,7 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_spotify_info(self):  # 1.9
+    def plugin_spotify_info(self) -> list[Any]:  # 1.9
         """Only usable on MacOS!
 
         Forked from https://github.com/jdxcode/tmux-spotify-info
@@ -586,7 +587,7 @@ class DefaultPlugins(BaseConfig):
     #
     # ----------------------------------------------------------
 
-    def plugin_1password(self):  # ?.?  local
+    def plugin_1password(self) -> list[Any]:  # ?.?  local
         """Plugin for 1password CLI tool
         Does not seem to use the status bar"""
         if self.use_plugin_1password:
@@ -607,7 +608,7 @@ class DefaultPlugins(BaseConfig):
                 """,
         ]
 
-    def plugin_gentrify(self) -> list:
+    def plugin_gentrify(self) -> list[Any]:
         #
         # Sounds kind of interesting, but when tried on 25-05-24 seemed
         # too buggy
@@ -618,7 +619,7 @@ class DefaultPlugins(BaseConfig):
             min_vers = -1.0  # Dont use
         return ["kristopolous/tmux-gentrify", min_vers, ""]
 
-    def plugin_keyboard_type(self):  # 1.9
+    def plugin_keyboard_type(self) -> list[Any]:  # 1.9
         """Display in status-bar with:  #{keyboard_type}
         When displaying takes 0.8 s to process...
 
@@ -642,7 +643,7 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_packet_loss(self):  # 1.9
+    def plugin_packet_loss(self) -> list[Any]:  # 1.9
         if self.use_plugin_packet_loss:
             min_vers = 1.9
         else:
@@ -674,7 +675,7 @@ class DefaultPlugins(BaseConfig):
             """,
         ]
 
-    def plugin_which_key(self) -> list:
+    def plugin_which_key(self) -> list[Any]:
         """Somewhat similar to tmux-menus, but more limited.
 
         Doesn't support going back through the menus yet, but with this
@@ -695,7 +696,7 @@ class DefaultPlugins(BaseConfig):
 
         return ["alexwforsythe/tmux-which-key", min_vers, ""]
 
-    def plugin_yank(self) -> list:  # 1.8
+    def plugin_yank(self) -> list[Any]:  # 1.8
         """copies text from the command line to the clipboard.
         Default rigger: <prefix> y
         """
@@ -714,4 +715,5 @@ class DefaultPlugins(BaseConfig):
 
 
 if __name__ == "__main__":
+    DefaultPlugins().run()
     DefaultPlugins().run()

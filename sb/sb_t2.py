@@ -10,23 +10,14 @@
 
 """Style t2 env"""
 
-import os
-import sys
-
-# Put the "project path first to support relative imports"
-root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, root_dir)
-
-# flake8: noqa: E402
-# pylint: disable=wrong-import-position,import-error
-from default_plugins import DefaultPlugins  # noqa: E402
+from ..default_plugins import DefaultPlugins
 
 
 # pylint: disable=R0903
 class SB(DefaultPlugins):
     """Style t2 env"""
 
-    def status_bar_customization(self, print_header=True):
+    def status_bar_customization(self, print_header: bool = True) -> bool:
         """override statusbar config"""
         fg_clr = "black"
         if self.vers_ok(1.0):
@@ -51,4 +42,5 @@ class SB(DefaultPlugins):
 
 
 if __name__ == "__main__":
+    SB().run()
     SB().run()

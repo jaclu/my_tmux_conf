@@ -47,7 +47,7 @@ class SB(DefaultPlugins):
             )
         return print_header  # request footer to be printed
 
-    def mkscript_rev_sb_color(self):
+    def mkscript_rev_sb_color(self) -> None:
         """Reverse statusbar color"""
         cut_this1 = "cut -d',' -f1 | cut -d'='"
         cut_this2 = "cut -d',' -f2 | cut -d'='"

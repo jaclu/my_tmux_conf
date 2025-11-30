@@ -49,12 +49,27 @@ import re
 import shlex
 import shutil
 import sys
+from typing import LiteralString, NoReturn
 
 import __main__
 
-import mtc_utils
-from tablet_kbd import special_consoles_config
-from tmux_conf import TmuxConfig
+from .mtc_utils import (
+    ERROR_INCOMPATIBLE_TMUX_CONF_LIB,
+    ERROR_MISSING_KEY_IN_MUC_KEYS,
+    ERROR_STYLE_REDEFINED,
+    ERROR_T2_USING_DEF_TMUX_CONF,
+    ERROR_USER_KEY_NOT_OCTAL,
+    HOSTNAME,
+    IS_GHOSTTY,
+    IS_ISH,
+    K_M_P,
+    K_M_PLUS,
+    K_M_UNDERSCORE,
+    K_M_X,
+    get_currency,
+)
+from .special_console import special_consoles_config
+from .tmux_conf import TmuxConfig
 
 # ruff checks might be relevant F403,F401
 
@@ -109,7 +124,7 @@ class BaseConfig(TmuxConfig):
     sb_left: str = "|#{session_name}| "
     sb_right: str = "%a %h-%d %H:%MUSERNAME_TEMPLATEHOSTNAME_TEMPLATE"
     username_template: str = " #[fg=colour1,bg=colour195]#(whoami)#[default]"
-    hostname_template: str = f"#[fg=colour195,bg=colour1]{mtc_utils.HOSTNAME}#[default]"
+    hostname_template: str = f"#[fg=colour195,bg=colour1]{HOSTNAME}#[default]"
     tpm_initializing: str = "#[reverse,blink] tpm initializing...#[default]"
 
     handle_iterm2: bool = True  # Select screen-256color for iTerm2
@@ -155,10 +170,10 @@ class BaseConfig(TmuxConfig):
     muc_keys = {
         # Kbd binds that might need to be replaced by user-keys on nonstandard
         # consoles
-        mtc_utils.K_M_PLUS: mtc_utils.K_M_PLUS,
-        mtc_utils.K_M_UNDERSCORE: mtc_utils.K_M_UNDERSCORE,
-        mtc_utils.K_M_P: mtc_utils.K_M_P,
-        mtc_utils.K_M_X: mtc_utils.K_M_X,
+        K_M_PLUS: K_M_PLUS,
+        K_M_UNDERSCORE: K_M_UNDERSCORE,
+        K_M_P: K_M_P,
+        K_M_X: K_M_X,
     }
 
     # use_debug_log = True  # if True, debug log will be printed
@@ -180,7 +195,7 @@ class BaseConfig(TmuxConfig):
     ) -> None:
         # Indicates if this tmux is run on the iSH console
         # print(f"><> BaseConfig.__init__() - conf_file [{conf_file}]")
-        self.style = None
+        self.style = ""
         self.check_libs_compatible()
         super().__init__(
             parse_cmd_line=parse_cmd_line,
@@ -191,7 +206,9 @@ class BaseConfig(TmuxConfig):
             clear_plugins=clear_plugins,
             plugins_display=plugins_display,
         )
-        self.tablet_keyb = None
+
+        self.tablet_keyb: bool = special_consoles_config(self)
+
         self.pane_un_zoomed_noprefix_binds: list[str] = []
         self.hook_array_index = 0  # used to group hooks
         self.define_opt_params()
@@ -217,13 +234,13 @@ class BaseConfig(TmuxConfig):
             if self.conf_file == os.path.expanduser("~/.tmux.conf"):
                 print()
                 print("ERROR: T2_ENV & ~/.tmux.conf can't be combined!")
-                sys.exit(mtc_utils.ERROR_T2_USING_DEF_TMUX_CONF)
+                sys.exit(ERROR_T2_USING_DEF_TMUX_CONF)
             conf_dir = os.path.dirname(self.conf_file)
             self.tpm_location = os.path.join(conf_dir, "plugins", "tpm")
             self.prefix_key = self.prefix_key_T2
             print(f"T2_ENV uses prefix_key: {self.prefix_key}")
 
-        if mtc_utils.IS_ISH or mtc_utils.HOSTNAME == "ish-hetz1":
+        if IS_ISH or HOSTNAME == "ish-hetz1":
             print("Detected iSH kernel, assuming this to be a limited host")
             self.is_limited_host = True
 
@@ -237,7 +254,7 @@ class BaseConfig(TmuxConfig):
     def edit_config(self, edit_key: str = "e") -> None:
         pass  # Im not really using it, so skip it
 
-    def assign_style(self, style_name) -> None:
+    def assign_style(self, style_name: str) -> None:
         """Use this to name the style being used, and to ensure that
         multiple styles are not unintentionally assigned.
         """
@@ -250,7 +267,7 @@ class BaseConfig(TmuxConfig):
                 f"ERROR: Style already assigned as: {self.style}, "
                 f"Can not use style: {this_style}"
             )
-            sys.exit(mtc_utils.ERROR_STYLE_REDEFINED)
+            sys.exit(ERROR_STYLE_REDEFINED)
         self.style = this_style
         print(f"Style used is: >> {self.style} <<")
 
@@ -316,7 +333,6 @@ class BaseConfig(TmuxConfig):
         available via prefix, in order to still be accessible on dumb
         terminals.
         """
-        self.tablet_keyb = special_consoles_config(self)
         self.remove_unwanted_default_bindings()
         self.check_all_muc_keys_are_defined()
         self.connecting_terminal()
@@ -352,7 +368,7 @@ class BaseConfig(TmuxConfig):
     #
     #  content methods broken up in parts, by content
     #
-    def remove_unwanted_default_bindings(self):
+    def remove_unwanted_default_bindings(self) -> None:
         w = self.write
         if self.vers_ok(1.1):
             w(
@@ -403,7 +419,7 @@ class BaseConfig(TmuxConfig):
                 )
         w()  # spacer
 
-    def connecting_terminal(self):  # cmd: 2 + optional
+    def connecting_terminal(self) -> None:  # cmd: 2 + optional
         w = self.write
         w(
             """
@@ -483,7 +499,7 @@ class BaseConfig(TmuxConfig):
 
         w()  # spacer between sections
 
-    def true_color(self):
+    def true_color(self) -> None:
         w = self.write
         #
         #  Support for CSI u  extended keys
@@ -522,7 +538,7 @@ class BaseConfig(TmuxConfig):
                 )
 
     # pylint: disable=too-many-branches,too-many-statements
-    def general_environment(self):
+    def general_environment(self) -> None:
         w = self.write
         w(
             """
@@ -611,9 +627,9 @@ class BaseConfig(TmuxConfig):
         #
         # However using this on iSH confuses remote tmux sessions utterly
         #
-        if not mtc_utils.IS_ISH:
+        if not IS_ISH:
             if not self.selected_shell:
-                self.selected_shell = os.getenv("SHELL")
+                self.selected_shell = os.getenv("SHELL") or "/bin/sh"
             if self.vers_ok(0.1):  # was 1.0
                 # prevents /usr/libexec/path_helper from messing up PATH
                 w(f'{self.opt_server} default-command "{self.selected_shell}"')
@@ -760,12 +776,12 @@ class BaseConfig(TmuxConfig):
             )
         w()  # spacer between sections
 
-    def remove_prefix(self, s):
+    def remove_prefix(self, s: str) -> str:
         if s.lower().startswith("c-"):
             return s[2:]  # Remove the first 2 characters
         return s
 
-    def session_handling(self):
+    def session_handling(self) -> None:
         w = self.write
         w(
             """
@@ -832,7 +848,7 @@ class BaseConfig(TmuxConfig):
 
         w()  # spacer between sections
 
-    def windows_handling(self):
+    def windows_handling(self) -> None:
         w = self.write
         w(
             f"""
@@ -944,7 +960,7 @@ class BaseConfig(TmuxConfig):
                 w(f'bind -N "Kill window in focus"  {c}  confirm-before kill-window')
         w()  # spacer between sections
 
-    def windows_navigation(self):
+    def windows_navigation(self) -> None:
         w = self.write
 
         #
@@ -1009,7 +1025,7 @@ class BaseConfig(TmuxConfig):
                 bind -N "Next {w2} - P+0"      {cm}0  next-{w2}"""
             )
 
-    def pane_handling(self):
+    def pane_handling(self) -> None:
         w = self.write
         w(
             """
@@ -1057,7 +1073,7 @@ class BaseConfig(TmuxConfig):
         self.pane_splitting()
         self.pane_resizing()
 
-    def pane_frame_lines(self):
+    def pane_frame_lines(self) -> None:
         if not self.vers_ok(1.9):
             return
 
@@ -1123,7 +1139,7 @@ class BaseConfig(TmuxConfig):
             elif self.vers_ok(2.3) and not self.is_tmate():
                 w("bind  P  display-message 'Pane label setting needs 2.6'")
 
-    def pane_navigation(self):
+    def pane_navigation(self) -> None:
         if not self.vers_ok(1.0):
             return
 
@@ -1182,7 +1198,7 @@ class BaseConfig(TmuxConfig):
                     bind -N "Select pane up - P+k M-Up"        Up     {pane_up}
                     bind -N "Select pane right - P+l M-Right"  Right  {pane_right}"""
                 )
-                if mtc_utils.IS_GHOSTTY:
+                if IS_GHOSTTY:
                     w(
                         f"""
                         # Ghostty has pretty good keyboard defs out of the box,
@@ -1203,7 +1219,7 @@ class BaseConfig(TmuxConfig):
                 bind -N "Select pane down" -T "copy-mode"  M-Down  {pane_down}"""
             )
 
-    def pane_splitting(self):
+    def pane_splitting(self) -> None:
         #
         #  The defaults just covers splitting the pane right and down.
         #  I am using P+A-Arrows & P+C-hjkl to get a more logical input, and
@@ -1238,7 +1254,7 @@ class BaseConfig(TmuxConfig):
             w(f"bind -N 'Split pane left - P+C-h'   M-Left   split-window  -hb  {cur_path}")
             w(f"bind -N 'Split pane up - P+C-k'     M-Up     split-window  -vb  {cur_path}")
 
-    def pane_resizing(self):
+    def pane_resizing(self) -> None:
         w = self.write
         w(
             """
@@ -1297,7 +1313,7 @@ class BaseConfig(TmuxConfig):
             # """
             # )
 
-    def save_history(self):
+    def save_history(self) -> None:
         #
         #  Save history for current pane, prompts for filename
         #
@@ -1329,7 +1345,7 @@ class BaseConfig(TmuxConfig):
                 'save-buffer %1 \\; delete-buffer"'
             )
 
-    def handle_buffers(self):
+    def handle_buffers(self) -> None:
         if not self.vers_ok(1.2):
             return
 
@@ -1347,7 +1363,7 @@ class BaseConfig(TmuxConfig):
         """
         )
 
-    def handle_hooks(self):
+    def handle_hooks(self) -> None:
         w = self.write
 
         w(
@@ -1496,7 +1512,7 @@ class BaseConfig(TmuxConfig):
 
         w()  # spacer
 
-    def generate_old_style_binds(self):
+    def generate_old_style_binds(self) -> tuple[LiteralString, LiteralString]:
         # pre 3.2 all binds/unbinds must be given as a single ; separated string
         unbinds_l = []
         for line in self.pane_un_zoomed_noprefix_binds:
@@ -1516,14 +1532,14 @@ class BaseConfig(TmuxConfig):
         binds_s = " ; " + " ; ".join(binds_l)
         return binds_s, unbinds_s
 
-    def get_next_hook_array_idx(self):
+    def get_next_hook_array_idx(self) -> str:
         rslt = ""
         if self.vers_ok(3.0):
             self.hook_array_index += 1
             rslt = f"[{self.hook_array_index}]"
         return rslt
 
-    def hook_action_zoom_state(self):
+    def hook_action_zoom_state(self) -> None:
         #
         #  This expands to quite a bit of code, but by doing it inside tmux if-shell
         #  conditions, it is ridiculously much faster,
@@ -1580,7 +1596,7 @@ class BaseConfig(TmuxConfig):
         )
         w('"')
 
-    def mouse_handling(self):
+    def mouse_handling(self) -> None:
         w = self.write
         w(
             """
@@ -1624,7 +1640,7 @@ class BaseConfig(TmuxConfig):
         w()  # spacer
 
     # pylint: disable=too-many-branches
-    def status_bar_prepare(self):
+    def status_bar_prepare(self) -> None:
         w = self.write
         w(
             """
@@ -1718,7 +1734,7 @@ class BaseConfig(TmuxConfig):
             )
             self.sb_right += prefix_indicator
 
-    def status_bar(self):
+    def status_bar(self) -> None:
         w = self.write
         self.status_bar_prepare()
         if self.status_bar_customization():
@@ -1786,7 +1802,7 @@ class BaseConfig(TmuxConfig):
         """
         )
 
-    def filter_me_from_sb_right(self):
+    def filter_me_from_sb_right(self) -> None:
         """Don't display my primary username."""
 
         #  If its my default accounts don't show username
@@ -1797,50 +1813,50 @@ class BaseConfig(TmuxConfig):
     #  Handling of muc_keys - keys limited keyboards might need to override
     #  with user keys
     #
-    def check_if_muc_key_is_defined(self, k):
+    def check_if_muc_key_is_defined(self, k: str) -> None:
         # should raise key error if missing
         try:
             _ = self.muc_keys[k]
         except KeyError:
             print()
             print(f"ERROR: The key '{k}' was not defined in self.muc_keys")
-            sys.exit(mtc_utils.ERROR_MISSING_KEY_IN_MUC_KEYS)
+            sys.exit(ERROR_MISSING_KEY_IN_MUC_KEYS)
 
-    def check_all_muc_keys_are_defined(self):
-        self.check_if_muc_key_is_defined(mtc_utils.K_M_PLUS)
-        self.check_if_muc_key_is_defined(mtc_utils.K_M_UNDERSCORE)
-        self.check_if_muc_key_is_defined(mtc_utils.K_M_P)
-        self.check_if_muc_key_is_defined(mtc_utils.K_M_X)
+    def check_all_muc_keys_are_defined(self) -> None:
+        self.check_if_muc_key_is_defined(K_M_PLUS)
+        self.check_if_muc_key_is_defined(K_M_UNDERSCORE)
+        self.check_if_muc_key_is_defined(K_M_P)
+        self.check_if_muc_key_is_defined(K_M_X)
 
-    def muc_non_default_value(self, default):
+    def muc_non_default_value(self, default: str) -> str:
         # If a non-default is used, display it as a prefix
         if default != self.muc_keys[default]:
             return f"(Use key: {default} ) "
         return ""
 
-    def auc_meta_ses_handling(self):
+    def auc_meta_ses_handling(self) -> None:
         # Defaults might be overridden by TabletBtKbd()
         w = self.write
 
-        if self.vers_ok(1.0) and mtc_utils.K_M_PLUS:
+        if self.vers_ok(1.0) and K_M_PLUS:
             w("# auc_meta_ses_handling()")
             s = (
                 'bind -N "'
-                f"{self.muc_non_default_value(mtc_utils.K_M_PLUS)}"
+                f"{self.muc_non_default_value(K_M_PLUS)}"
                 'Create new session  - P++" '
-                f"-n  {self.muc_keys[mtc_utils.K_M_PLUS]}  command-prompt "
+                f"-n  {self.muc_keys[K_M_PLUS]}  command-prompt "
             )
             if self.vers_ok(1.5):
                 s += ' -I "?"'
             w(f'{s} -p "Name of new session: " "new-session -s \\"%%\\""')
 
         if self.vers_ok(1.2):
-            s = f"bind -N '{self.muc_non_default_value(mtc_utils.K_M_UNDERSCORE)}"
+            s = f"bind -N '{self.muc_non_default_value(K_M_UNDERSCORE)}"
             s += "Switch to last session  - P+_'     -n  "
-            s += f"{self.muc_keys[mtc_utils.K_M_UNDERSCORE]}       switch-client -l"
+            s += f"{self.muc_keys[K_M_UNDERSCORE]}       switch-client -l"
             w(s)
 
-    def auc_display_plugins_used(self):  # used by iSH Console
+    def auc_display_plugins_used(self) -> None:  # used by iSH Console
         # iSH console doesn't generate correct ALT - Upper Case sequences,
         # so when that is the env, intended keys must be bound as user keys.
         # To make that without having two separate snippets of code doing
@@ -1867,8 +1883,8 @@ class BaseConfig(TmuxConfig):
           #   First enabling my_tmux_conf venv if present"""
         )
         w(
-            f'bind -N "{self.muc_non_default_value(mtc_utils.K_M_P)}'
-            f'List all plugins defined"  {self.muc_keys[mtc_utils.K_M_P]}  '
+            f'bind -N "{self.muc_non_default_value(K_M_P)}'
+            f'List all plugins defined"  {self.muc_keys[K_M_P]}  '
             'run-shell "'
             '$TMUX_BIN display-message \\"Generating plugin list\\" \\; '
             # 1st load venv if used
@@ -1877,7 +1893,7 @@ class BaseConfig(TmuxConfig):
             '"'
         )
 
-    def auc_kill_tmux_server(self):  # used by iSH Console
+    def auc_kill_tmux_server(self) -> None:  # used by iSH Console
         """iSH console doesn't generate correct ALT - Upper Case sequences,
         so when that is the env, intended keys must be bound as user keys.
         To make that without having two separate snippets of code doing
@@ -1892,8 +1908,8 @@ class BaseConfig(TmuxConfig):
 
         w = self.write
         s = (
-            f'bind -N "{self.muc_non_default_value(mtc_utils.K_M_X)}Kill tmux server"  '
-            f"{self.muc_keys[mtc_utils.K_M_X]}  confirm-before"
+            f'bind -N "{self.muc_non_default_value(K_M_X)}Kill tmux server"  '
+            f"{self.muc_keys[K_M_X]}  confirm-before"
         )
         if self.vers_ok(1.5):
             s += (
@@ -1909,7 +1925,7 @@ class BaseConfig(TmuxConfig):
     #
     #  Utility methods
     #
-    def check_libs_compatible(self):
+    def check_libs_compatible(self) -> None:
         """Inspection of tmux-conf version to see if it is compatible"""
         try:
             lib_vers_found = self.lib_version.split()[0]
@@ -1918,7 +1934,7 @@ class BaseConfig(TmuxConfig):
             print()
             print(f"ERROR: Needs tmux_conf lib version: {TMUX_CONF_NEEDED}")
             print("       Failed to read version, probably too old()")
-            sys.exit(mtc_utils.ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
+            sys.exit(ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
 
         maj_vers_found = ".".join(lib_vers_found.split(".")[:2])
         maj_vers_needed = ".".join(TMUX_CONF_NEEDED.split(".")[:2])
@@ -1935,7 +1951,7 @@ class BaseConfig(TmuxConfig):
         if min_vers_found < min_vers_needed:
             self.incompatible_tmux_conf(lib_vers_found, "Version to old!")
 
-    def define_opt_params(self):
+    def define_opt_params(self) -> None:
         #
         # Define params to use to set various types of options
         # in general they are global, except for opt_win_loc that needs to modify
@@ -1954,7 +1970,7 @@ class BaseConfig(TmuxConfig):
             # prior to 3.1 pane options were listed as win options
             self.opt_pane = self.opt_win
 
-    def mkscript_toggle_mouse(self):
+    def mkscript_toggle_mouse(self) -> None:
         """Toggles mouse handling on/off"""
         #  The {} encapsulating the script needs to be doubled to escape them
         toggle_mouse_sh = [
@@ -1973,7 +1989,7 @@ class BaseConfig(TmuxConfig):
         ]
         self.es.create(self._fnc_toggle_mouse, toggle_mouse_sh)
 
-    def mkscript_shlvl_offset(self):
+    def mkscript_shlvl_offset(self) -> None:
         """Generate a SHLVL offset"""
         shlvl_offset_sh = [
             # region shlvl_offset_sh
@@ -2022,7 +2038,7 @@ class BaseConfig(TmuxConfig):
         ]
         self.es.create(self._fnc_shlvl_offset, shlvl_offset_sh)
 
-    def mkscript_tpm_deploy(self):
+    def mkscript_tpm_deploy(self) -> None:
         """Overrides tmux_conf.plugins instance, to add
         toggling of tpm_initializing.
 
@@ -2131,7 +2147,7 @@ timer_end() {{
         ]
         self.es.create(self._fnc_activate_tpm, activate_tpm_sh)
 
-    def mkscript_tpm_indicator(self):
+    def mkscript_tpm_indicator(self) -> None:
         """Changes state for tpm_initializing with params: set clear"""
         purge_seq = self.tpm_initializing.replace("[", "\\[").replace("]", "\\]")
         # self.sb_purge_tpm_running = f"$TMUX_BIN {self.opt_ses} -q status-right "
@@ -2180,7 +2196,9 @@ timer_end() {{
         ]
         self.es.create(self._fnc_tpm_indicator, clear_tpm_init_sh)
 
-    def incompatible_tmux_conf(self, lib_vers_found: str, reason: str, details: str = ""):
+    def incompatible_tmux_conf(
+        self, lib_vers_found: str, reason: str, details: str = ""
+    ) -> NoReturn:
         print()
         print("ERROR: Incompatible tmux-conf package")
         print()
@@ -2190,9 +2208,9 @@ timer_end() {{
             print(details)
         print()
         print(f"vers found: {lib_vers_found}   needs: {TMUX_CONF_NEEDED}")
-        sys.exit(mtc_utils.ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
+        sys.exit(ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
 
-    def alternate_key_euro(self, sequence: str):
+    def alternate_key_euro(self, sequence: str) -> None:
         """Some keybs fail to render the Euro sign for M-S-2
         Only do this if local currency is EUR"""
         if not self.vers_ok(2.6):
@@ -2201,10 +2219,10 @@ timer_end() {{
         if sequence[:1] != "\\":
             print()
             print(f"ERROR: alternate_key_euro({sequence}) must be given in octal notation")
-            sys.exit(mtc_utils.ERROR_USER_KEY_NOT_OCTAL)
+            sys.exit(ERROR_USER_KEY_NOT_OCTAL)
 
         w = self.write
-        currency = mtc_utils.get_currency()
+        currency = get_currency()
         if currency == "EUR":
             # print("><> Wiill write euro workaround")
             w(

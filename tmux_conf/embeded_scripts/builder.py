@@ -4,6 +4,7 @@ Docstring for tmux_conf.embeded_scripts.command_builder
 
 import os
 import sys
+from typing import Any
 
 from ..utils import run_shell
 from .config import RunCmdConfig
@@ -13,7 +14,7 @@ from .spec import ScriptSpec
 class CmdBuilder:  # pylint: disable=too-few-public-methods
     """Handles only the logic for building the tmux run-shell command."""
 
-    def __init__(self, cfg: RunCmdConfig, external_resolver):
+    def __init__(self, cfg: RunCmdConfig, external_resolver: Any) -> None:
         self.cfg: RunCmdConfig = cfg
         # For external scripts this is the full path script name
         # For embedded scripts, this is the name of the tmux.conf
@@ -52,7 +53,7 @@ class CmdBuilder:  # pylint: disable=too-few-public-methods
         cmd += '"'
         return cmd
 
-    def _ensure_bash(self):
+    def _ensure_bash(self) -> str:
         if not self._cached_bash:
             detected_bash = run_shell("command -v bash")
             if not detected_bash:

@@ -2,6 +2,8 @@
 registry
 """
 
+from typing import Any
+
 from .spec import ScriptSpec
 
 
@@ -10,9 +12,9 @@ class ScriptRegistry:  # pylint: disable=too-few-public-methods
     Docstring for ScriptRegistry
     """
 
-    def __init__(self):
-        self._defined = set()  # user-defined scripts
-        self._built_in_accepted = set()
+    def __init__(self) -> None:
+        self._defined: set[Any] = set()  # user-defined scripts
+        self._built_in_accepted: set[Any] = set()
 
     def accept(self, spec: ScriptSpec) -> bool:
         """User-defined scripts always register"""

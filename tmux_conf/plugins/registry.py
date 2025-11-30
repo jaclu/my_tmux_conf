@@ -14,13 +14,14 @@
 import os
 import sys
 from collections.abc import Callable
+from typing import Literal
 
 from ..constants import XDG_CONFIG_HOME
 from ..vers_check import VersionCheck
 
-PLUGIN_VERS_MIN = 0
-PLUGIN_MTHD = 1
-PLUGIN_STATIC_CODE = 2
+PLUGIN_VERS_MIN: Literal[0] = 0
+PLUGIN_MTHD: Literal[1] = 1
+PLUGIN_STATIC_CODE: Literal[2] = 2
 
 
 class PluginRegistry:
@@ -47,7 +48,7 @@ class PluginRegistry:
         # plugins incompatible with this version
         self._skipped_plugins: list[tuple[str, str]] = []
 
-    def scan(self, plugin_methods):
+    def scan(self, plugin_methods: list[Callable[[], list[str]]]) -> None:
         """Investigate all defined plugin methods, and determine if a
         given plugin can be used depending on running tmux, or if it should be skipped
         """
