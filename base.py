@@ -804,7 +804,11 @@ class BaseConfig(TmuxConfig):
             s += ' -p "Name of new session: "'
         w(f'{s} "new-session -s \\"%%\\""')
 
-        self.auc_meta_ses_handling()  # used by iSH Console
+        s = '\nbind -N "Rename Session"  S  command-prompt'
+        if self.vers_ok(1.5):
+            s += ' -I "#S"'
+        w(f'{s} "rename-session -- \\"%%\\""')
+
         if self.vers_ok(1.2):
             # before 1.2 there was no relative switch-client
 
@@ -820,10 +824,7 @@ class BaseConfig(TmuxConfig):
                 bind -N "Select next session  - P+)"        -n  C-M-Down  {sc_n}"""
             )
 
-        s = '\nbind -N "Rename Session"  S  command-prompt'
-        if self.vers_ok(1.5):
-            s += ' -I "#S"'
-        w(f'{s} "rename-session -- \\"%%\\""')
+        self.auc_meta_ses_handling()  # used by iSH Console
 
         w()  # spacer between sections
 
@@ -1800,10 +1801,9 @@ class BaseConfig(TmuxConfig):
     def auc_meta_ses_handling(self):
         # Defaults might be overridden by TabletBtKbd()
         w = self.write
-        w()
-        w("# auc_meta_ses_handling()")
 
         if self.vers_ok(1.0) and mtc_utils.K_M_PLUS:
+            w("# auc_meta_ses_handling()")
             s = (
                 'bind -N "'
                 f"{self.muc_non_default_value(mtc_utils.K_M_PLUS)}"
@@ -1816,23 +1816,22 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.2):
             w(
-                f"""
-                bind -N '{
-                    self.muc_non_default_value(mtc_utils.K_M_UNDERSCORE)
+                f"""bind -N '{
+                self.muc_non_default_value(mtc_utils.K_M_UNDERSCORE)
                 }Switch to last session  - P+_'         -n  {
                     self.muc_keys[mtc_utils.K_M_UNDERSCORE]
-                }  switch-client -l
-                """
+                }  switch-client -l"""
             )
 
     def auc_display_plugins_used(self):  # used by iSH Console
-        """iSH console doesn't generate correct ALT - Upper Case sequences,
-        so when that is the env, intended keys must be bound as user keys.
-        To make that without having two separate snippets of code doing
-        the same and keeping them in sync, the default parameters are
-        the "normal" case, when used for iSH console, the
-        user keys will be given
-        """
+
+        #iSH console doesn't generate correct ALT - Upper Case sequences,
+        #so when that is the env, intended keys must be bound as user keys.
+        #To make that without having two separate snippets of code doing
+        #the same and keeping them in sync, the default parameters are
+        #the "normal" case, when used for iSH console, the
+        #user keys will be given
+        #
         w = self.write
         if not self.vers_ok(1.8):
             # There is no plugin support...
