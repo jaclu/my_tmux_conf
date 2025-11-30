@@ -39,7 +39,7 @@ class PluginRegistry:
         vers_class: VersionCheck,
     ):
         self._conf_file = conf_file
-        self._vers = vers_class
+        self._vers: VersionCheck = vers_class
 
         # plugins compatible with this version
         self._used_plugins: dict[str, tuple[str, Callable[[], list[str]], str]] = {}

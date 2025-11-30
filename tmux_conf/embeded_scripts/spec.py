@@ -3,7 +3,6 @@ Docstring for tmux_conf.embeded_scripts.script_spec
 """
 
 from dataclasses import dataclass
-from typing import List
 
 
 @dataclass(frozen=True)
@@ -13,6 +12,6 @@ class ScriptSpec:
     """
 
     name: str
-    lines: List[str]
+    lines: list[str]
     use_bash: bool
     built_in: bool

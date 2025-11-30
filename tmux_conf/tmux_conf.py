@@ -21,7 +21,6 @@ import os
 import shutil
 import sys
 from pathlib import Path
-from typing import Union
 
 import __main__
 
@@ -385,7 +384,7 @@ class TmuxConfig:
 
     def write(
         self,
-        cmd: Union[str, list[str], list[list[str]]] = "",
+        cmd: str | list[str] | list[list[str]] = "",
         trim_ws: bool = True,  # trim leading white-space
         eol: str = "\n",
     ) -> None:

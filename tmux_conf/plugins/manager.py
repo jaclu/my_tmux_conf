@@ -24,10 +24,6 @@ from .deployment import PluginDeployment
 from .display import PluginDisplay
 from .registry import PluginRegistry
 
-PLUGIN_VERS_MIN = 0
-PLUGIN_MTHD = 1
-PLUGIN_STATIC_CODE = 2
-
 
 @dataclass
 class Plugin:

@@ -32,7 +32,7 @@ import os
 #  do nothing
 #
 import mtc_utils
-from base import BaseConfig  # BaseConfig
+from base import BaseConfig
 
 
 class DefaultPlugins(BaseConfig):

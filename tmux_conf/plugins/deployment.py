@@ -12,8 +12,10 @@
 """Plugin deployment handling for tmux plugins"""
 
 import os
+from collections.abc import Callable
 
 from ..embeded_scripts import EmbeddedScripts
+from ..vers_check import VersionCheck
 from .registry import PLUGIN_MTHD, PLUGIN_STATIC_CODE, PluginRegistry
 
 
@@ -58,12 +60,14 @@ class PluginDeployment:
         check is needed, put that code before the return. Within the method
         all normal tmux-conf functionality is available.
         """
-        used_plugins = self._registry.get_used_plugins()
+        used_plugins: dict[str, tuple[str, Callable[[], list[str]], str]] = (
+            self._registry.get_used_plugins()
+        )
         if not used_plugins:
             return []
 
         output = []
-        vers = self._registry.get_version_checker()
+        vers: VersionCheck = self._registry.get_version_checker()
 
         #
         #  First ensure that plugin code that needs to process the
@@ -73,7 +77,7 @@ class PluginDeployment:
             plugin_method = info[PLUGIN_MTHD]
             plugin_method()  # type: ignore[operator]
 
-        #
+        # Callable[[], list[str]]
         #  Add plugin references and hard coded plugin settings.
         #
         for name, info in used_plugins.items():
