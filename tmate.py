@@ -23,7 +23,8 @@ class Tmate(SB):
 
     # use_embedded_scripts = False
 
-    def status_bar_customization(self, print_header: bool = True) -> bool:
+    def not_status_bar_customization(self, print_header: bool = True) -> bool:
+        """not needed atm, since base already provides vers and prefix display"""
         super().status_bar_customization(print_header=print_header)
         # if self.prefix_key.lower() != "c-b":
         tag = f"#[fg=green,bg=black]{self.prefix_key} #[default]"
@@ -32,11 +33,7 @@ class Tmate(SB):
         return print_header
 
     def local_overrides(self) -> None:
-        """
-        When overriding this method in a subclass, ensure that
-        super().local_overrides() is called first, to retain any overrides
-        defined by parent classes before applying additional customizations.
-        """
+        """overrides of general config"""
         super().local_overrides()
 
         #  First mention what class this override comes from

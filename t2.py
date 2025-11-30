@@ -42,7 +42,7 @@ class T2(SB):  # type: ignore
 
     t2_env = "1"
 
-    # show_vers_n_prefix_in_sb_colors = ""
+    # show_prefix_n_vers_in_sb_colors = ""
 
     if mtc_utils.HOSTNAME == "JacMac":
         use_plugin_battery = True

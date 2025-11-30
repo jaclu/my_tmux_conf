@@ -128,8 +128,10 @@ class BaseConfig(TmuxConfig):
 
     plugin_handler = "jaclu/tpm"  # overrides of tmux-conf package default
 
+    display_prefix = True # display prefix on SB left
+    display_tmux_vers = True # display tmux version on SB left
     # If colors for this is defined, it will be displayed, if "" it is not
-    show_vers_n_prefix_in_sb_colors = "fg=green,bg=black"
+    show_prefix_n_vers_in_sb_colors = "fg=green,bg=black"
 
     #
     #  Some devices are unable to generate the nav keys -
@@ -1720,19 +1722,31 @@ class BaseConfig(TmuxConfig):
         #  Add this after status_bar_customization() to make it
         #  non-obvious to override it - hint local_overides()
         #
-        if self.show_vers_n_prefix_in_sb_colors:
-            #
-            #  max length of vers is 6 chars, in order to
-            #  not flood status line if running a devel tmux
-            #
-            if self.is_tmate():
-                prefix = "tmate"
+        if self.show_prefix_n_vers_in_sb_colors:
+            if self.display_prefix:
+                env_tag = f"{self.prefix_key} "
             else:
-                prefix = f"{self.vers.get()[:6]}"
-            t2_tag = f"{prefix} {self.prefix_key} "
-            self.sb_left = (
-                f"#[{self.show_vers_n_prefix_in_sb_colors}]{t2_tag}#[default]{self.sb_left}"
-            )
+                env_tag = ""
+
+            if self.display_tmux_vers:
+                #
+                #  max length of vers is 6 chars, in order to
+                #  not flood status line if running a devel tmux
+                #
+                if self.is_tmate():
+                    vers = "tmate"
+                else:
+                    vers = f"{self.vers.get()[:6]}"
+                if env_tag:
+                    env_tag = f"{env_tag}{vers} "
+                else:
+                    env_tag = f"{vers} "
+
+            if env_tag:
+                self.sb_left = (
+                    f"#[{self.show_prefix_n_vers_in_sb_colors}]{env_tag}#[default]"
+                    f"{self.sb_left}"
+                )
 
         self.filter_me_from_sb_right()
 
