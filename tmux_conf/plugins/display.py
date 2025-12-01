@@ -135,7 +135,7 @@ class PluginDisplay:
         print(f"{inner_name:<{max_l_name}} - {info[PLUGIN_VERS_MIN]} {suffix}")
 
     def _display_unused_plugins(
-        self, plugin_items: list[str], skipped_plugins: list
+        self, plugin_items: list[str], skipped_plugins: list[tuple[str, str]]
     ) -> None:
         """Display unused plugins found in the plugins directory."""
         # Remove skipped plugins from plugin_items
@@ -148,7 +148,9 @@ class PluginDisplay:
             for s in plugin_items:
                 print("\t", s)
 
-    def _display_skipped_plugins(self, skipped_plugins: list, max_l_name: int) -> None:
+    def _display_skipped_plugins(
+        self, skipped_plugins: list[tuple[str, str]], max_l_name: int
+    ) -> None:
         """Display plugins that were skipped due to version requirements."""
         print()
         max_l_v = max(len(vers_val) for vers_val, _ in skipped_plugins)

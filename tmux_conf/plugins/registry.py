@@ -47,7 +47,7 @@ class PluginRegistry:
         # plugins incompatible with this version
         self._skipped_plugins: list[tuple[str, str]] = []
 
-    def scan(self, plugin_methods):
+    def scan(self, plugin_methods: list[Callable[[], list[str]]]) -> None:
         """Investigate all defined plugin methods, and determine if a
         given plugin can be used depending on running tmux, or if it should be skipped
         """

@@ -21,6 +21,7 @@ import os
 import shutil
 import sys
 from pathlib import Path
+from typing import Any
 
 import __main__
 
@@ -133,7 +134,7 @@ class TmuxConfig:
         self.conf_file = verify_conf_file_usable(conf_file)
 
         self.use_tmux_bin(tmux_bin, tmux_version)
-        if tmux_version and (tmux_version != self.vers.get()):  # type: ignore
+        if tmux_version and (tmux_version != self.vers.get()):
             # self.define_tmux_vers(tmux_version)
             if not self.is_tmate():
                 #
@@ -157,7 +158,7 @@ class TmuxConfig:
 
         self.es = EmbeddedScripts(
             conf_file=self.conf_file,
-            vers_class=self.vers,  # type: ignore
+            vers_class=self.vers,
             use_embedded_scripts=self.use_embedded_scripts,
             plugin_handler=self.plugin_handler,
         )
@@ -173,7 +174,7 @@ class TmuxConfig:
 
         self.plugins = Plugins(
             conf_file=self.conf_file,
-            vers_class=self.vers,  # type: ignore
+            vers_class=self.vers,
             es_class=self.es,
             plugin_handler=self.plugin_handler,
             clear_plugins=clear_plugins,
@@ -293,8 +294,8 @@ class TmuxConfig:
     #  Some general methods that might be useful
     #
     # ================================================================
-    def vers_ok(self, vers) -> bool:
-        return self.vers.is_ok(vers)  # type: ignore
+    def vers_ok(self, vers: int | float | str) -> bool:
+        return self.vers.is_ok(vers)
 
     # ================================================================
     #
@@ -340,11 +341,7 @@ class TmuxConfig:
             #======================================================\n"""
             )
             for line in self.plugins.parse():
-                if isinstance(line, list):
-                    for sub_line in line:
-                        self.write(sub_line)
-                else:
-                    self.write(line)
+                self.write(line)
 
         #
         #  Local overrides should happen as late as possible, but still _before_
@@ -363,7 +360,8 @@ class TmuxConfig:
         for line in self.es.generate_embedded_scripts_content():
             self.write(line)
 
-    def list_plugin_methods(self):  # -> list[Callable[[], list[str]]]:
+    def list_plugin_methods(self) -> list[Any]:
+        # -> list[Callable[[], list[str]]]:
         """Support for plugins.py, provides a list of all plugin_... methods"""
         plugin_mthds = []
         if self.plugin_handler:
@@ -451,7 +449,7 @@ class TmuxConfig:
             else:
                 f.write(f"{cmd}{eol}")
 
-    def filter_note(self, line: str, trim_ws: bool = True):
+    def filter_note(self, line: str, trim_ws: bool = True) -> list[str]:
         """Handles notes, if tmux notes are not supported by running tmux
         generates:
           - the note as a comment (if self.use_notes_as_comments is True)
@@ -528,9 +526,9 @@ class TmuxConfig:
         #          tmux-conf: {self.lib_version}
         #         Created on: {run_shell("hostname").strip()}"""
         )
-        if self.vers.get() != self.vers.get_actual():  # type: ignore
+        if self.vers.get() != self.vers.get_actual():
             w(f"#     actual version: ({self.vers.get_actual()})")
-        w(f"#   For tmux version: {self.vers.get()}")  # type: ignore
+        w(f"#   For tmux version: {self.vers.get()}")
         w(
             f"""#
         #
@@ -668,7 +666,7 @@ class TmuxConfig:
     #   debug
     #
     # ===============================================================
-    def init_debug_log(self):
+    def init_debug_log(self) -> None:
         if not self.use_debug_log:
             return
 
@@ -682,7 +680,7 @@ class TmuxConfig:
         if self.debug_log_file.exists():
             self.debug_log_file.unlink()
 
-    def debug_log(self, msg):
+    def debug_log(self, msg: str) -> None:
         if self.use_debug_log:
             with open(self.debug_log_file, "a", encoding="utf-8") as f:
                 f.write(f"{msg}\n")

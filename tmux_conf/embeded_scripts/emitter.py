@@ -29,7 +29,7 @@ class ScriptEmitter:
         )
         self._embedded_text: list[str] = []
 
-    def run_cmd(self, spec: ScriptSpec, in_bg=False) -> str:
+    def run_cmd(self, spec: ScriptSpec, in_bg: bool = False) -> str:
         """Generate a run-shell entry for the script"""
         return self._builder.build(spec, in_bg)
 
