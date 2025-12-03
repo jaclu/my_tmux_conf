@@ -85,9 +85,9 @@ class Host:
 
         if use_mosh:
             self.use_mosh = True
-            self.rem_cmd = f"bash -i -c '{myt_cmd}'"
+            self.rem_cmd = f"bash -l -i -c '{myt_cmd}'"
         else:
-            self.rem_cmd = f"\"bash -i -c '{myt_cmd}'\""
+            self.rem_cmd = f"\"bash -l -i -c '{myt_cmd}'\""
         if mosh_client:
             self.mosh_client = mosh_client
         if mosh_server:
@@ -98,8 +98,8 @@ class Host:
     def bounce_to(self, bounce_host):
         """continue to host"""
         #  works:
-        #   mosh hetz1 -- bash -i -c 'rt jacdroid'
-        #   ssh -t hetz1 "bash -i -c 'rt jacdroid'"
+        #   mosh hetz1 -- bash -l -i -c 'rt jacdroid'
+        #   ssh -t hetz1 "bash -l -i -c 'rt jacdroid'"
 
         rt_cmd = "rt"
         if self.use_quick:
@@ -107,9 +107,9 @@ class Host:
         if self.use_2nd:
             rt_cmd += " -2"
         if self.use_mosh:
-            self.rem_cmd = f"bash -i -c '{rt_cmd} {bounce_host}'"
+            self.rem_cmd = f"bash -l -i -c '{rt_cmd} {bounce_host}'"
         else:
-            self.rem_cmd = f"\"bash -i -c '{rt_cmd} {bounce_host}'\""
+            self.rem_cmd = f"\"bash -l -i -c '{rt_cmd} {bounce_host}'\""
 
     def show_info(self):
         """display info about session"""
@@ -327,6 +327,7 @@ def main():
             if hc.use_quick:
                 msg += " -q"
         print(msg + " ...")
+        # print(f"would run: {hc.full_command_line()}")
         os.system(hc.full_command_line())  # nosec
 
 
