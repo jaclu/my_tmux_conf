@@ -135,6 +135,9 @@ select_tmux_bin() {
         fi
     fi
     asdf_scan && return
+    [ -n "$asdf_version_requested" ] && {
+        error_msg "Requested asdf tmux version, when no asdf env is available"
+    }
     TMUX_BIN="$(command -v tmux)"
     if [ -n "$TMUX_BIN" ]; then
         # lbl_3 "><> tmux found in PATH: $TMUX_BIN"
@@ -156,6 +159,7 @@ asdf_scan() {
     }
     TMUX_BIN="$(asdf which tmux 2>/dev/null)"
     [ -n "$TMUX_BIN" ] && {
+        # some asdf tmux found, try to change it to requested version
         if [ -n "$asdf_version_requested" ]; then
             $t2_env  || {
                 error_msg "Requested asdf tmux version can only be used in T2_ENV mode"
