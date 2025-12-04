@@ -4,6 +4,14 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        {
+            "type": "bashdb",
+            "request": "launch",
+            "name": "Bash-Debug tools/myt",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/tools/myt",
+            "args": ["-2", "-a", "2.8"]
+        },
 
         {
             "name": "Python Debugger: Current File with Arguments",
