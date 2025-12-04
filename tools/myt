@@ -130,10 +130,10 @@ asdf_scan() {
         # some asdf tmux found, try to change it to requested version
         if [ -n "$asdf_version_requested" ]; then
             $t2_env  || {
-                error_msg "Requested asdf tmux version can only be used in T2_ENV mode"
+                error_msg "Changing asdf tmux version can only be used in T2_ENV mode"
             }
             [ "$(pwd)" != "$d_t2" ] && {
-                error_msg "Requested asdf tmux version can only be set in T2_ENV folder"
+                error_msg "asdf_scan() T2_ENV folder not pwd"
             }
             asdf set tmux "$asdf_version_requested" || {
                 error_msg "Failed to set asdf tmux version to: $asdf_version_requested"
@@ -178,7 +178,7 @@ select_tmux_bin() {
     fi
     asdf_scan && return
     [ -n "$asdf_version_requested" ] && {
-        error_msg "Requested asdf tmux version, when no asdf env is available"
+        error_msg "Attemptiong to set asdf tmux version, when no asdf env is available"
     }
     TMUX_BIN="$(command -v tmux)"
     if [ -n "$TMUX_BIN" ]; then
