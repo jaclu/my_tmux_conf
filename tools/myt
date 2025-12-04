@@ -54,7 +54,7 @@ log_it() {
     [ -n "$f_myt_log" ] && {
         echo "[$(date '+%F %T')] $1" >>"$f_myt_log" || {
             echo "ERROR: Failed to log output to: $f_myt_log" >/dev/stderr
-            exit 3
+            exit  "$ERROR_AFTER_DISPLAYING_MSG"
         }
     }
 }
@@ -79,7 +79,7 @@ lbl_4() {
 error_msg() {
     echo
     lbl_1 "ERROR: $1"
-    ex_code="${2:-1}"
+    ex_code="${2:-$ERROR_VIA_ERROR_MSG}"
     [ "$ex_code" -ge 0 ] && exit "$ex_code"
 }
 
@@ -112,38 +112,6 @@ is_fs_chrooted() {
 
 get_tmux_vers() {
     tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
-}
-
-select_tmux_bin() {
-    # lbl_3 "select_tmux_bin()"
-    #
-    #  Selects what tmux bin to use
-    #
-    if [ -n "$tmux_bin" ]; then
-        # User defined tmux
-        TMUX_BIN="$tmux_bin"
-        # lbl_2 "><> user defined tmux: $TMUX_BIN"
-        return
-    fi
-    if $tmate_mode; then
-        if command -v tmate >/dev/null; then
-            TMUX_BIN="tmate"
-            # lbl_3 "><> tmate mode - TMUX_BIN=tmate"
-            return
-        else
-            error_msg "tmate not found"
-        fi
-    fi
-    asdf_scan && return
-    [ -n "$asdf_version_requested" ] && {
-        error_msg "Requested asdf tmux version, when no asdf env is available"
-    }
-    TMUX_BIN="$(command -v tmux)"
-    if [ -n "$TMUX_BIN" ]; then
-        # lbl_3 "><> tmux found in PATH: $TMUX_BIN"
-        return
-    fi
-    [ -z "$TMUX_BIN" ] && error_msg "Failed to define TMUX_BIN PATH[$PATH]"
 }
 
 asdf_scan() {
@@ -188,6 +156,38 @@ asdf_scan() {
     error_msg "asdf with tmux defined, but 'asdf which tmux' failed to report path"
 }
 
+select_tmux_bin() {
+    # lbl_3 "select_tmux_bin()"
+    #
+    #  Selects what tmux bin to use
+    #
+    if [ -n "$tmux_bin" ]; then
+        # User defined tmux
+        TMUX_BIN="$tmux_bin"
+        # lbl_2 "><> user defined tmux: $TMUX_BIN"
+        return
+    fi
+    if $tmate_mode; then
+        if command -v tmate >/dev/null; then
+            TMUX_BIN="tmate"
+            # lbl_3 "><> tmate mode - TMUX_BIN=tmate"
+            return
+        else
+            error_msg "tmate not found"
+        fi
+    fi
+    asdf_scan && return
+    [ -n "$asdf_version_requested" ] && {
+        error_msg "Requested asdf tmux version, when no asdf env is available"
+    }
+    TMUX_BIN="$(command -v tmux)"
+    if [ -n "$TMUX_BIN" ]; then
+        # lbl_3 "><> tmux found in PATH: $TMUX_BIN"
+        return
+    fi
+    [ -z "$TMUX_BIN" ] && error_msg "Failed to define TMUX_BIN PATH[$PATH]"
+}
+
 define_tmux_env() {
     # lbl_3 "define_tmux_env() - requires d_t2 [$d_t2]"
 
@@ -212,7 +212,27 @@ define_tmux_env() {
     is_fs_chrooted && socket="${socket}-chr"
     if $t2_env; then
         [ -z "$d_t2" ] && error_msg "d_t2 undefined"
-        socket="$socket"-serv2
+        socket="$socket-serv2"
+        if [ -n "$asdf_version_requested" ]; then
+            # shellcheck disable=SC2009  # in this case ps -e is preferable
+            if ps -e -o args= | grep -q "[t]mux -L $socket"; then
+                log_it "Found tmux using $socket when redefining tmux bin"
+                printf "Continue, first shutting down existing tmux on this socket? [y/N]"
+                IFS= read -r answer
+                case "$answer" in
+                    [yY])
+                        ;;  # continue
+                    *)
+                        echo "Aborted."
+                        exit "$ERROR_AFTER_DISPLAYING_MSG"
+                        ;;
+                esac
+                kill_tmux || {
+                    error_msg "Failed to kill existing tmux using socket: $socket"
+                }
+            fi
+        fi
+
         if $tmate_mode; then
             conf_file="$d_t2/tmate.conf"
         else
@@ -396,7 +416,7 @@ start_tmux() {
 }
 
 kill_tmux() {
-    define_tmux_env
+    [ -z "$socket" ] && define_tmux_env # avoid recursion
     socket_identifier=" -L $socket"
 
     echo "$TMUX" | grep -q "$socket" && {
@@ -428,7 +448,6 @@ kill_tmux() {
         # tmux kill-server succeeded
         lbl_1 "killed tmux server using socket: $socket"
     fi
-    exit 0
 }
 
 #---------------------------------------------------------------
@@ -444,14 +463,14 @@ get_location_my_tmux_conf() {
     [ ! -f "$f_destination" ] && {
         log_it "Location of my_tmux_conf repo not stored, go to repo folder"
         log_it "and run ./deploy to solve his"
-        exit 1
+        exit "$ERROR_AFTER_DISPLAYING_MSG"
     }
 
     my_tmux_conf_location="$(cat "$f_destination")"
     [ ! -d "$my_tmux_conf_location" ] && {
         log_it "Location of my_tmux_conf repo incorrect, go to repo folder"
         log_it "and run ./deploy to solve his"
-        exit 1
+        exit "$ERROR_AFTER_DISPLAYING_MSG"
     }
     # d_venv="$my_tmux_conf_location"/.venv
     # scr_venv_activate="$d_venv"/bin/activate
@@ -585,6 +604,9 @@ single_session=true
 t2_env=false
 profile=""
 
+#
+ERROR_AFTER_DISPLAYING_MSG=43
+ERROR_VIA_ERROR_MSG=44
 # align with mtc_utils.ERROR_... codes
 ERROR_INCOMPATIBLE_TMUX_CONF_LIB=64
 ERROR_MISSING_KEY_IN_MUC_KEYS=65
@@ -642,7 +664,10 @@ done
 
 # must happen after all params are parsed to know if this should kill
 # main tmux or t2_env
-$kill_tmux && kill_tmux
+if $kill_tmux; then
+    kill_tmux
+    exit 0
+fi
 
 # some versions of tmux have trouble on an inner tmux if tmux-256color is set
 [ "$TERM" = "tmux-256color" ] && export TERM=xterm-256color
