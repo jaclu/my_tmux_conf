@@ -32,6 +32,8 @@ class Host:
 
     use_2nd = False
     use_quick = False
+    use_asdf_version = ""
+    use_tmate = False
     use_mosh = False
     mosh_client = "mosh"  # local mosh command
     mosh_server = ""  # default: 'mosh-server'
@@ -46,6 +48,8 @@ class Host:
         remote_command="",
         use_2nd=False,
         use_quick=False,
+        use_asdf_version="",
+        use_tmate=False,
         use_mosh=False,
         mosh_client="mosh",
         mosh_server="",
@@ -58,14 +62,23 @@ class Host:
         #  the inner quotes, like 'bin/myt -2' instead of 'bin/myt'
         #
         myt_cmd = "myt"
+        print(f"><> Host.__init__() - use_asdf_version:{use_asdf_version}")
+
+        #
+        #  Options sent to remote myt
+        #
         if use_2nd:
             self.use_2nd = True
             myt_cmd += " -2"
-
         if use_quick:
             self.use_quick = True
             myt_cmd += " -q"
-
+        if use_asdf_version:
+            self.use_asdf_version = use_asdf_version
+            myt_cmd += f" -a {use_asdf_version}"
+        if use_tmate:
+            self.use_tmate = True
+            myt_cmd += " -m"
         if not server:
             print("ERROR! No server given")
             sys.exit(1)
@@ -83,6 +96,7 @@ class Host:
             print("ERROR: remote_command can't be empty!")
             sys.exit(1)
 
+        print(f"><> after parsing - myt_cmd:{myt_cmd}")
         if use_mosh:
             self.use_mosh = True
             self.rem_cmd = f"bash -l -i -c '{myt_cmd}'"
@@ -106,6 +120,10 @@ class Host:
             rt_cmd += " -q"
         if self.use_2nd:
             rt_cmd += " -2"
+        if self.use_asdf_version:
+            rt_cmd += f" -a {self.use_asdf_version}"
+        if self.use_tmate:
+            rt_cmd += " -m"
         if self.use_mosh:
             self.rem_cmd = f"bash -l -i -c '{rt_cmd} {bounce_host}'"
         else:
@@ -154,13 +172,18 @@ def get_host_class(
     remote_command="",
     use_2nd=False,
     use_quick=False,
+    asdf_version="",
+    use_tmate=False,
     use_mosh=False,
     mosh_client="",
     mosh_server="",
     mosh_ports="",
 ):
     """get class defining host"""
-    # print(f"><> get_host_class() - use_2nd:{use_2nd} quck:{use_quick}")
+    print(
+        f"><> get_host_class() - use_2nd:{use_2nd} "
+        f"quck:{use_quick} asdf_version:{asdf_version}"
+    )
     #
     #  Handle bounce connections
     #
@@ -178,6 +201,8 @@ def get_host_class(
             remote_user=remote_user,
             use_2nd=use_2nd,
             use_quick=use_quick,
+            asdf_version=asdf_version,
+            use_tmate=use_tmate,
             use_mosh=use_mosh,
             mosh_client=mosh_client,
             mosh_server=mosh_server,
@@ -200,6 +225,8 @@ def get_host_class(
                 remote_command=remote_command,
                 use_2nd=use_2nd,
                 use_quick=use_quick,
+                use_asdf_version=asdf_version,
+                use_tmate=use_tmate,
                 use_mosh=use_mosh,
                 mosh_client=mosh_client,
                 mosh_server=mosh_server,
@@ -217,6 +244,8 @@ def get_host_class(
             remote_command=remote_command,
             use_2nd=use_2nd,
             use_quick=use_quick,
+            use_asdf_version=asdf_version,
+            use_tmate=use_tmate,
             use_mosh=use_mosh,
             mosh_client=mosh_client,
             mosh_server=mosh_server,
@@ -246,18 +275,6 @@ def parse_cmd_line():
         "If -m is used, mosh will be used when connecting to\n"
         "the first jump-host.\n"
         f">> a{BOUNCE_KEY}b can not be combined with option -c <<\n",
-    )
-    parser.add_argument(
-        "-2",
-        "--use_2nd",
-        action="store_true",
-        help="use 2nd tmux env\n",
-    )
-    parser.add_argument(
-        "-q",
-        "--quick",
-        action="store_true",
-        help="quik connect, don't re-generate tmux.conf\n",
     )
     parser.add_argument(
         "-v", "--version", action="version", version=f"%(prog)s {APP_VERSION}"
@@ -295,6 +312,33 @@ def parse_cmd_line():
         "--mosh-server",
         help="mosh server cmd on remote machine, default: mosh-server",
     )
+    #
+    #  Options sent to remote myt
+    #
+    parser.add_argument(
+        "-2",
+        "--use_2nd",
+        action="store_true",
+        help="use 2nd tmux env on remote\n",
+    )
+    parser.add_argument(
+        "-q",
+        "--quick",
+        action="store_true",
+        help="quik connect, don't re-generate tmux.conf on remote\n",
+    )
+    parser.add_argument(
+        "-a",
+        "--asdf_version",
+        help="set asdf tmux version on remote",
+        action="store",
+    )
+    parser.add_argument(
+        "-t",
+        "--use_tmate",
+        action="store_true",
+        help="use tmate on remote\n",
+    )
     return parser.parse_args()
 
 
@@ -307,6 +351,8 @@ def main():
         remote_command=args.command,
         use_2nd=args.use_2nd,
         use_quick=args.quick,
+        asdf_version=args.asdf_version,
+        use_tmate=args.use_tmate,
         use_mosh=args.use_mosh,
         mosh_client=args.mosh_client,
         mosh_server=args.mosh_server,
@@ -326,6 +372,10 @@ def main():
                 msg += " -2"
             if hc.use_quick:
                 msg += " -q"
+            if hc.use_asdf_version:
+                msg += f" -a {hc.use_asdf_version}"
+            if hc.use_tmate:
+                msg += " -m"
         print(msg + " ...")
         # print(f"would run: {hc.full_command_line()}")
         os.system(hc.full_command_line())  # nosec

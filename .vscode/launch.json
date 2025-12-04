@@ -9,9 +9,9 @@
             "name": "Python Debugger: Current File with Arguments",
             "type": "debugpy",
             "request": "launch",
-            "program": "sample_hosts/hetz1.py",
+            "program": "tools/rt",
             "console": "integratedTerminal",
-            "args": "-r -t /Users/jaclu/.asdf/installs/tmux/3.4/bin/tmux /Users/jaclu/t2/tmux/tmux.conf"
+            "args": "-2 -m localhost"
         }
     ]
 }
