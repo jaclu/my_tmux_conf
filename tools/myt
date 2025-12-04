@@ -130,7 +130,7 @@ asdf_scan() {
         # some asdf tmux found, try to change it to requested version
         if [ -n "$asdf_version_requested" ]; then
             $t2_env  || {
-                error_msg "Changing asdf tmux version can only be used in T2_ENV mode"
+                error_msg "Changing asdf tmux version can only be done in T2_ENV mode"
             }
             [ "$(pwd)" != "$d_t2" ] && {
                 error_msg "asdf_scan() T2_ENV folder not pwd"
