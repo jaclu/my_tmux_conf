@@ -26,7 +26,7 @@
 display_help() {
     #region help text
     cat <<EOF
-Usage: myt [--venv] or [-c tmux] [-k] [-m] [-q] [-s] [-2] [profile]
+Usage: myt [-a ver] [-c tmux] [-k] [-m] [-q] [-s] [-2] [profile]
 
 Generates tmux config and starts tmux
 Default profile is hostname.py
@@ -35,13 +35,14 @@ Options can be given in any order.
 Available options:
 
 -h       Print this help and exit
---venv   Force (Re-) create of venv for building tmux.conf
+-a ver   Use asdf tmux version 'ver' (only for T2_ENV mode)
 -c       Use this tmux binary (default tmux)
 -k       Kill running tmux, can be combined with -2
 -m       Use tmate
 -q       Dont generate config, start tmux directly
 -s       Share session
 -2       Run in T2_ENV (inner tmux, other prefix)
+           tmux env based in: $d_t2
 profile  Run using specific profile
 EOF
     #endregion
@@ -77,7 +78,7 @@ lbl_4() {
 
 error_msg() {
     echo
-    log_it "ERROR: $1"
+    lbl_1 "ERROR: $1"
     ex_code="${2:-1}"
     [ "$ex_code" -ge 0 ] && exit "$ex_code"
 }
@@ -105,67 +106,13 @@ is_fs_chrooted() {
 
 #---------------------------------------------------------------
 #
-#   venv handling (disabled ATM)
-#
-#---------------------------------------------------------------
-
-# py_venv_create() {
-#     [ -d "$d_venv" ] && {
-#         lbl_2 "Removing previous venv: $d_venv"
-#         rm -rf "$d_venv"
-#     }
-#     lbl_1 "Creating py venv: $d_venv"
-#     echo
-#     echo "If this seems to take forever, run: $my_tmux_conf_location/tools/progress-venv-build.sh"
-#     echo "in a separate terminal to see progress"
-#     echo
-#     python3 -m venv "$d_venv" || error_msg "Failed to create venv"
-#     #  shellcheck source=/dev/null
-#     . "$d_venv"/bin/activate || error_msg "Failure to activate new venv"
-#     lbl_2 "Using py venv: $d_venv"
-#     lbl_3 "pip install -U pip"
-#     pip install -U pip || errror_msg "pip install failed"
-
-#     #  Python dependency
-#     lbl_3 "pip install tmux_conf"
-#     pip install tmux_conf || errror_msg "pip install failed"
-#     lbl_2  "Created venv: $d_venv"
-#     echo # on screen spacer
-# }
-
-# py_venv_activate() {
-#     #
-#     #  Activate Python venv, will only be called if use_python_venv ia true
-#     #
-#     # lbl_3 "py_venv_activate()"
-#     $use_python_venv || return 1  # if venv is not used return
-#     if [ -f "$scr_venv_activate" ]; then
-#         lbl_3 "Using py venv: $d_venv"
-#         #  shellcheck source=/dev/null
-#         . "$scr_venv_activate" || error_msg "Failed to activate venv - run: myt --venv"
-#     else
-#         # Only auto-create the venv if not present, to avoid risking killing a venv
-#         # with plenty of ohther stuff installed
-#         lbl_2 "Not found: $scr_venv_activate - (re-)creating venv..."
-#         py_venv_create
-#     fi
-# }
-
-# py_venv_deactivate() {
-#     #
-#     #  Deactivate Python venv, will only be called if use_python_venv ia true
-#     #
-#     # lbl_3 "py_venv_deactivate()"
-#     $use_python_venv || return 1  # if venv is not used return
-#     lbl_3 "Exiting py venv: $d_venv"
-#     deactivate || error_msg "Failed to deactivate Python venv"
-# }
-
-#---------------------------------------------------------------
-#
 #   running tmux
 #
 #---------------------------------------------------------------
+
+get_tmux_vers() {
+    tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
+}
 
 select_tmux_bin() {
     # lbl_3 "select_tmux_bin()"
@@ -209,7 +156,29 @@ asdf_scan() {
     }
     TMUX_BIN="$(asdf which tmux 2>/dev/null)"
     [ -n "$TMUX_BIN" ] && {
-        # lbl_3 "><> asdf defined tmux: $TMUX_BIN"
+        if [ -n "$asdf_version_requested" ]; then
+            $t2_env  || {
+                error_msg "Requested asdf tmux version can only be used in T2_ENV mode"
+            }
+            [ "$(pwd)" != "$d_t2" ] && {
+                error_msg "Requested asdf tmux version can only be set in T2_ENV folder"
+            }
+            asdf set tmux "$asdf_version_requested" || {
+                error_msg "Failed to set asdf tmux version to: $asdf_version_requested"
+            }
+
+            # lbl_3 "><> asdf requested version: $asdf_version_requested"
+            ASDF_DATA_DIR="${ASDF_DATA_DIR:-$HOME/.asdf}"
+            ASDF_BIN_DIR="$ASDF_DATA_DIR/installs/tmux/$asdf_version_requested/bin"
+            _tmux_bin="$ASDF_BIN_DIR"/tmux
+            if [ ! -x "$_tmux_bin" ]; then
+                error_msg "Requested asdf tmux version not installed: $asdf_version_requested"
+            fi
+
+            TMUX_BIN="$_tmux_bin"
+            lbl_4 "option -a changed asdf tmux into version: $asdf_version_requested"
+            return 0
+        fi
         return 0
     }
     error_msg "asdf with tmux defined, but 'asdf which tmux' failed to report path"
@@ -230,7 +199,7 @@ define_tmux_env() {
     #  names not to potentially collide with what is running
     #  on the host
     #
-    tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
+    get_tmux_vers
     # tmux_vers=${tmux_vers##next-}                 # Remove leading "next-" if present
     # tmux_vers=${tmux_vers%%-rc*}                  # Remove trailing "-rc" and anything after
 
@@ -494,7 +463,7 @@ create_tmux_conf() {
     lbl_2 "Using tmux: $TMUX_BIN [$tmux_vers]"
 
     # py_venv_activate
-    lbl_2 "Using Python: $(command -v python3)"
+    lbl_4 "Using Python: $(command -v python3)"
 
     cmd="$profile -r -t $TMUX_BIN \"$conf_file\""
     if $t2_env; then
@@ -506,7 +475,7 @@ create_tmux_conf() {
 
         case "$ex_code" in
             "$ERROR_INCOMPATIBLE_TMUX_CONF_LIB")
-                lbl_1 "run this with --venv to recreate the venv!"
+                lbl_1 "Incompatible tmux_conf python module installed!"
                 exit "$ex_code"
                 ;;
             "$ERROR_MISSING_KEY_IN_MUC_KEYS" | \
@@ -525,9 +494,7 @@ create_tmux_conf() {
     lbl_2 "New tmux conf generated!"
 
     # $use_python_venv && py_venv_deactivate
-    if grep -q "Dependency tmux_conf not installed!" "$f_myt_log"; then
-        error_msg "venv seems broken - use option: -r or --venv"
-    elif ! grep -q "Writing tmux" "$f_myt_log"; then
+    if ! grep -q "Writing tmux" "$f_myt_log"; then
         error_msg "Python build failed to complete, check: $f_myt_log"
     fi
 }
@@ -603,10 +570,9 @@ tmux_2() {
 d_initial="$PWD"                            #  original pwd, will switch back to it before starting tmux
 d_t2="$HOME/t2"
 
-# d_t2="$HOME/hupp t2" # for testing path with space
-
 f_myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log #  Logs how the latest tmux env was setup
 # f_skip_venv="$HOME"/.myt_skip_venv
+asdf_version_requested=""
 tmux_bin=""
 kill_tmux=false
 tmate_mode=false
@@ -640,6 +606,13 @@ get_location_my_tmux_conf
 while [ -n "$1" ]; do
     case "$1" in
     "-h" | "--help") display_help ;;
+    "-a")
+        [ -z "$2" ] && {
+            error_msg "option -a needs asdf version as param"
+        }
+        asdf_version_requested="$2"
+        shift # shift one extra for param
+        ;;
     "-c")
         shift
         [ -n "$1" ] || {
@@ -654,15 +627,6 @@ while [ -n "$1" ]; do
         ;;
     "-s") single_session=false ;;
     "-2") t2_env=true ;;
-    #  venv handling disabled 2025-11-24
-    # "--venv")
-    #     $use_python_venv || {
-    #         error_msg "--venv can't be used when $f_skip_venv is present"
-    #     }
-    #     lbl_1 "Prepare the Python venv for my_tmux_conf"
-    #     py_venv_create
-    #     exit 0
-    #     ;;
     *)
         [ -n "$profile" ] && errror_msg "profile can only be defined once"
         profile="$1"
