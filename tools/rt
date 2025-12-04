@@ -62,7 +62,6 @@ class Host:
         #  the inner quotes, like 'bin/myt -2' instead of 'bin/myt'
         #
         myt_cmd = "myt"
-        print(f"><> Host.__init__() - use_asdf_version:{use_asdf_version}")
 
         #
         #  Options sent to remote myt
@@ -96,7 +95,6 @@ class Host:
             print("ERROR: remote_command can't be empty!")
             sys.exit(1)
 
-        print(f"><> after parsing - myt_cmd:{myt_cmd}")
         if use_mosh:
             self.use_mosh = True
             self.rem_cmd = f"bash -l -i -c '{myt_cmd}'"
@@ -180,10 +178,6 @@ def get_host_class(
     mosh_ports="",
 ):
     """get class defining host"""
-    print(
-        f"><> get_host_class() - use_2nd:{use_2nd} "
-        f"quck:{use_quick} asdf_version:{asdf_version}"
-    )
     #
     #  Handle bounce connections
     #

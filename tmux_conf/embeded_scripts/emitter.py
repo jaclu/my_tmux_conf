@@ -79,8 +79,7 @@ class ScriptEmitter:
             os.makedirs(script_dir, exist_ok=True)
         except PermissionError:
             print(
-                "><> EXCEPTION! PermissionError: _emit_external() "
-                "Failed to create {script_dir}"
+                "EXCEPTION! PermissionError: _emit_external() Failed to create {script_dir}"
             )
             sys.exit(1)
 
@@ -97,7 +96,7 @@ class ScriptEmitter:
                 for line in txt:
                     f.write(line.rstrip("\n") + "\n")
         except FileNotFoundError:
-            print(f"><> EXCEPTION! FileNotFoundError: could not wrie to: {path}")
+            print(f"EXCEPTION! FileNotFoundError: could not wrie to: {path}")
             sys.exit(1)
         p = pathlib.Path(path)
         p.chmod(p.stat().st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)

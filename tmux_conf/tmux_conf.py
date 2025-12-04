@@ -401,7 +401,7 @@ class TmuxConfig:
 
         if isinstance(cmd, list):
             for line in cmd:
-                self.debug_log(f"><> [list line] {line}")
+                # self.debug_log(f"><> [list line] {line}")
                 self.write(line, trim_ws)
             return  # list has already been processed
 
@@ -423,12 +423,12 @@ class TmuxConfig:
             #   - the remainder of the initial line
             #
             self._parsing_note = True  # avoid recursion
-            self.debug_log(f"><> [-N cmd] {cmd}")
+            # self.debug_log(f"><> [-N cmd] {cmd}")
             # for line in self.filter_note(cmd.strip()):
             for line in self.filter_note(cmd, trim_ws=trim_ws):
-                self.debug_log(f"><> [note filtered line] {line}")
+                # self.debug_log(f"><> [note filtered line] {line}")
                 self.write(line, trim_ws)
-            self.debug_log("><> [end of -N cmd]\n")
+            # self.debug_log("><> [end of -N cmd]\n")
             self._parsing_note = False
             return  # lines have already been processed
 
@@ -636,7 +636,7 @@ class TmuxConfig:
 
         parts = run_shell(f"{tmux_bin} -V").split(" ")
         if len(parts) != 2 or parts[0] not in ("tmux", "tmate"):
-            self.debug_log(f"><> [error] {tmux_bin} Doesn't seem to be a tmux binary")
+            self.debug_log(f"[error] {tmux_bin} Doesn't seem to be a tmux binary")
             raise TmuxConfNotTmuxCommand(f"{tmux_bin} Doesn't seem to be a tmux binary")
 
         vers = VersionCheck(vers_detected=parts[1], vers_requested=vers_requested)
