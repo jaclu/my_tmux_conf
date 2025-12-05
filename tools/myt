@@ -114,6 +114,34 @@ get_tmux_vers() {
     tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
 }
 
+define_socket() {
+    [ -n "$socket" ] && {
+        lbl_4 "define_socket() - called when already defined: $socket"
+        return  # already assigned
+    }
+
+    socket="$(id -u)"
+    $tmate_mode && socket="$socket-tmate"
+    is_fs_chrooted && socket="${socket}-chr"
+    if $t2_env; then
+        [ -z "$d_t2" ] && error_msg "d_t2 undefined"
+        socket="$socket-serv2"
+        if $tmate_mode; then
+            conf_file="$d_t2/tmate.conf"
+        else
+            conf_file="$d_t2/tmux/tmux.conf"
+        fi
+    else
+        socket="$socket"-default
+        if $tmate_mode; then
+            conf_file="$HOME/.tmate.conf"
+        else
+            conf_file="$HOME/.tmux.conf"
+        fi
+    fi
+
+}
+
 asdf_scan() {
     command -v asdf >/dev/null || {
         # asdf not available
@@ -132,6 +160,26 @@ asdf_scan() {
             $t2_env  || {
                 error_msg "Changing asdf tmux version can only be done in T2_ENV mode"
             }
+
+            define_socket
+            # shellcheck disable=SC2009  # in this case ps -e is preferable
+            if ps -e -o args= | grep -q "[t]mux -L $socket"; then
+                log_it "Found tmux using $socket when redefining tmux bin"
+                printf "Continue, first shutting down existing tmux on this socket? [y/N]"
+                IFS= read -r answer
+                case "$answer" in
+                    [yY])
+                        ;;  # continue
+                    *)
+                        echo "Aborted."
+                        exit "$ERROR_AFTER_DISPLAYING_MSG"
+                        ;;
+                esac
+                kill_tmux || {
+                    error_msg "Failed to kill existing tmux using socket: $socket"
+                }
+            fi
+
             [ "$(pwd)" != "$d_t2" ] && {
                 error_msg "asdf_scan() T2_ENV folder not pwd"
             }
@@ -207,45 +255,7 @@ define_tmux_env() {
     # tmux_vers=${tmux_vers##next-}                 # Remove leading "next-" if present
     # tmux_vers=${tmux_vers%%-rc*}                  # Remove trailing "-rc" and anything after
 
-    socket="$(id -u)"
-    $tmate_mode && socket="$socket-tmate"
-    is_fs_chrooted && socket="${socket}-chr"
-    if $t2_env; then
-        [ -z "$d_t2" ] && error_msg "d_t2 undefined"
-        socket="$socket-serv2"
-        if [ -n "$asdf_version_requested" ]; then
-            # shellcheck disable=SC2009  # in this case ps -e is preferable
-            if ps -e -o args= | grep -q "[t]mux -L $socket"; then
-                log_it "Found tmux using $socket when redefining tmux bin"
-                printf "Continue, first shutting down existing tmux on this socket? [y/N]"
-                IFS= read -r answer
-                case "$answer" in
-                    [yY])
-                        ;;  # continue
-                    *)
-                        echo "Aborted."
-                        exit "$ERROR_AFTER_DISPLAYING_MSG"
-                        ;;
-                esac
-                kill_tmux || {
-                    error_msg "Failed to kill existing tmux using socket: $socket"
-                }
-            fi
-        fi
-
-        if $tmate_mode; then
-            conf_file="$d_t2/tmate.conf"
-        else
-            conf_file="$d_t2/tmux/tmux.conf"
-        fi
-    else
-        socket="$socket"-default
-        if $tmate_mode; then
-            conf_file="$HOME/.tmate.conf"
-        else
-            conf_file="$HOME/.tmux.conf"
-        fi
-    fi
+    [ -z "$socket" ] && define_socket
     # lbl_3 "><>   tmux_vers [$tmux_vers]"
 
     #    chk_incompatible_socket
@@ -416,7 +426,11 @@ start_tmux() {
 }
 
 kill_tmux() {
-    [ -z "$socket" ] && define_tmux_env # avoid recursion
+    [ -z "$TMUX_BIN" ] && [ -z "$socket" ] && {
+        # avoid recursion in the asdf_version_requested case...
+        define_tmux_env
+    }
+
     socket_identifier=" -L $socket"
 
     echo "$TMUX" | grep -q "$socket" && {
