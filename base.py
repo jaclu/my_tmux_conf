@@ -1893,17 +1893,28 @@ class BaseConfig(TmuxConfig):
         w = self.write
         s = (
             f'bind -N "{self.muc_non_default_value(mtc_utils.K_M_X)}Kill tmux server"  '
-            f"{self.muc_keys[mtc_utils.K_M_X]}  confirm-before"
+            f'{self.muc_keys[mtc_utils.K_M_X]}  '
         )
         if self.vers_ok(1.5):
+            s += 'confirm-before -p "'
+        else:
+            s += 'command-prompt -p "'
+        s += "Kill this server "
+        if self.vers_ok(3.3):
             s += (
-                f' -p "kill tmux server on #[reverse]{self.conf_file}'
-                '#[default] @#[reverse]#h#[default]? (y/n)"'
+                f"#[reverse]{self.conf_file}"
+                "#[default] [#[reverse]#h#[default]]"
             )
+        else:
+            s += f"{self.conf_file}"
+        if self.vers_ok(1.5):
+            s += " (y/N)"
+        else:
+            s += " (Esc to abort)"
         w(
             f"""
         # auc_kill_tmux_server()
-        {s} kill-server"""
+        {s}" kill-server"""
         )
 
     #
