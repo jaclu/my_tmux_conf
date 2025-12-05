@@ -360,7 +360,8 @@ def main():
             msg += "mosh"
         else:
             msg += "ssh"
-        if hc.use_2nd or hc.use_quick:
+
+        if hc.use_2nd or hc.use_quick or hc.use_asdf_version or hc.use_tmate:
             msg += " - myt Options:"
             if hc.use_2nd:
                 msg += " -2"
