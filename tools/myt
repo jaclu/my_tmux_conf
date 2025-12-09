@@ -26,7 +26,7 @@
 display_help() {
     #region help text
     cat <<EOF
-Usage: myt [-a ver] [-c tmux] [-k] [-m] [-q] [-s] [-2] [profile]
+Usage: myt [-a ver] [-c tmux] [-k] [-q] [-s] [-t] [-2] [profile]
 
 Generates tmux config and starts tmux
 Default profile is hostname.py
@@ -38,9 +38,9 @@ Available options:
 -a ver   Use asdf tmux version 'ver' (only for T2_ENV mode)
 -c       Use this tmux binary (default tmux)
 -k       Kill running tmux, can be combined with -2
--m       Use tmate
 -q       Dont generate config, start tmux directly
 -s       Share session
+-t       Use tmate
 -2       Run in T2_ENV (inner tmux, other prefix)
            tmux env based in: $d_t2
 profile  Run using specific profile
@@ -661,11 +661,11 @@ while [ -n "$1" ]; do
         tmux_bin="$1"
         ;;
     "-k") kill_tmux=true ;;
-    "-m") tmate_mode=true ;;
     "-q")
         quick_mode=true
         ;;
     "-s") single_session=false ;;
+    "-t") tmate_mode=true ;;
     "-2") t2_env=true ;;
     *)
         [ -n "$profile" ] && errror_msg "profile can only be defined once"
