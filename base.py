@@ -1885,9 +1885,9 @@ class BaseConfig(TmuxConfig):
         the "normal" case, when used for iSH console, the
         user keys will be given
 
-        Can not be used before tmux 0.9!
+        Can not be used before tmux 1.0!
         """
-        if not self.vers_ok(0.9):
+        if not self.vers_ok(1.0):
             return
 
         w = self.write
