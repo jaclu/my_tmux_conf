@@ -7,6 +7,7 @@
 #
 #  See the README.md in the repository for more info
 #
+
 """packet wide constants"""
 
 __version__ = "0.21.4"

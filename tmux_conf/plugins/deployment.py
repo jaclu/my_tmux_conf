@@ -1,12 +1,10 @@
 #
-#  Copyright (c) 2022-2024: Jacob.Lundqvist@gmail.com
+#  Copyright (c) 2022-2025: Jacob.Lundqvist@gmail.com
 #  License: MIT
 #
 #  Part of https://github.com/jaclu/tmux-conf
 #
 #  See constants.py for version info
-#
-#  See the README.md in the repository for more info
 #
 
 """Plugin deployment handling for tmux plugins"""

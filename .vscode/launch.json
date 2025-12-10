@@ -10,11 +10,21 @@
             "name": "Bash-Debug tools/myt",
             "cwd": "${workspaceFolder}",
             "program": "${workspaceFolder}/tools/myt",
-            "args": ["-2", "-a", "2.8"]
+            "args": ["-2", "-a", "1.7"]
         },
 
         {
-            "name": "Python Debugger: Current File with Arguments",
+            "name": "Python Debugger: Build tmux.conf",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "t2.py",
+            "console": "integratedTerminal",
+            "env": "T2_ENV=1",
+            "args": "-r -t /Users/jaclu/.asdf/installs/tmux/1.8/bin/tmux '/Users/jaclu/t2/tmux/tmux.conf'"
+        },
+
+        {
+            "name": "Python Debugger: rt",
             "type": "debugpy",
             "request": "launch",
             "program": "tools/rt",

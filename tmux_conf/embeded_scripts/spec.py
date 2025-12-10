@@ -1,5 +1,12 @@
+#
+#  Copyright (c) 2025: Jacob.Lundqvist@gmail.com
+#  License: MIT
+#
+#  Part of https://github.com/jaclu/my_tmux_conf
+#
+
 """
-Docstring for tmux_conf.embeded_scripts.script_spec
+Dataclass defining a script
 """
 
 from dataclasses import dataclass
