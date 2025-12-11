@@ -669,14 +669,14 @@ class BaseConfig(TmuxConfig):
             """
             )
 
-        nav_key = "N"
-        if self.vers_ok(2.7):
-            w(f"""bind -N "Navigate ses/win/pane"     {nav_key}  choose-tree -O time -sZ""")
-        elif self.vers_ok(1.0):
-            w(
-                f'bind -N "Navigate ses/win/pane not available warning"  {nav_key}  '
-                'display-message "Navigate needs 2.7"'
-            )
+        if self.vers_ok(1.0):
+            show_action = f'\\; display-message "{self.conf_file} sourced"'
+        else:
+            show_action = ""
+        w(
+            f'bind -N  "Source {self.conf_file}"  R  source-file '
+            f'"{self.conf_file}" {show_action}'
+        )
 
         w(
             """
@@ -686,7 +686,7 @@ class BaseConfig(TmuxConfig):
         )
         popup_min_vers = 3.2
         key_ipython = "i"
-        key_lazygit = "y"
+        key_lazygit = "g"
         key_scrpad = "O"  # P being taken this is pOpup :)
         if self.vers_ok(popup_min_vers):
             dp_ipython = "display-popup -E ipython"
@@ -732,15 +732,6 @@ class BaseConfig(TmuxConfig):
                 f'display-message "pOpup scratchpad session needs tmux {popup_min_vers}"'
             )
         w()  # spacer
-
-        if self.vers_ok(1.0):
-            show_action = f'\\; display-message "{self.conf_file} sourced"'
-        else:
-            show_action = ""
-        w(
-            f'bind -N  "Source {self.conf_file}"  R  source-file '
-            f'"{self.conf_file}" {show_action}'
-        )
 
         self.auc_display_plugins_used()
         self.auc_kill_tmux_server()
