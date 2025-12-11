@@ -442,25 +442,27 @@ class BaseConfig(TmuxConfig):
         #     set -as terminal-overrides ',*:Ss=\\E[%p1%d q:Se=\\E[2 q'
         #       """
         #     )
-        if self.vers_ok(1.0):
+        if self.vers_ok(2.9):
+            w(f"{self.opt_server} default-terminal tmux-256color")
+        elif self.vers_ok(1.0):
             if self.handle_iterm2 and os.getenv("LC_TERMINAL") == "iTerm2":
                 w(f"{self.opt_server} default-terminal screen-256color")
             else:
                 w(f"{self.opt_server} default-terminal tmux-256color")
 
-            #
-            #  Making OSC 52 work on mosh connections.
-            #  For this to work the term name used must match, hence * :)
-            #  from: https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
-            #
-            if not os.getenv("TMUX_NO_CLIPBOARD"):
-                s = f"{self.opt_server} -a terminal-overrides"
-                w(
-                    f"""
-                # Ms modifies OSC52 clipboard handling to work with mosh
-                {s} ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
-                """
-                )
+        #
+        #  Making OSC 52 work on mosh connections.
+        #  For this to work the term name used must match, hence * :)
+        #  from: https://gist.github.com/yudai/95b20e3da66df1b066531997f982b57b
+        #
+        if not os.getenv("TMUX_NO_CLIPBOARD"):
+            s = f"{self.opt_server} -a terminal-overrides"
+            w(
+                f"""
+            # Ms modifies OSC52 clipboard handling to work with mosh
+            {s} ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
+            """
+            )
 
         if self.vers_ok(1.9):
             #  Enable focus events for terminals that support them to be passed
@@ -1901,7 +1903,7 @@ class BaseConfig(TmuxConfig):
             s += 'command-prompt -p "'
         s += "Kill this server "
         if self.vers_ok(3.3):
-            s += f"#[reverse]{self.conf_file}" "#[default] [#[reverse]#h#[default]]"
+            s += f"#[reverse]{self.conf_file}#[default] [#[reverse]#h#[default]]"
         else:
             s += f"{self.conf_file}"
         if self.vers_ok(1.5):
