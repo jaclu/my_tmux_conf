@@ -8,7 +8,7 @@
 #  Template giving the status bar the colors I use for a cloud host
 #
 
-"""host hetz1"""
+"""host hetz2"""
 
 import os
 import sys
@@ -25,7 +25,7 @@ from default_plugins import DefaultPlugins  # noqa: E402
 
 # pylint: disable=R0903
 class Hetz2(DefaultPlugins):
-    """hetz1 config"""
+    """hetz2 config"""
 
     # optionals selected
     use_plugin_packet_loss = True
@@ -33,7 +33,8 @@ class Hetz2(DefaultPlugins):
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """override statusbar config"""
         fg_clr = "black"
-        bg_clr = "colour34"
+        bg_clr = "colour68"
+        # 214 - too orange
         self.assign_style(__file__)
         super().status_bar_customization(print_header=print_header)
 
@@ -60,8 +61,8 @@ class Hetz2(DefaultPlugins):
         """
         super().local_overrides()
         #  Display what class this override comes from
-        self.write("# hetz1.local_overides")
-        log_file = "~/cloud/Dropbox/machines/hetz1/packet-loss/hetz1.log"
+        self.write("# hetz2.local_overides")
+        log_file = "~/cloud/Dropbox/machines/hetz2/packet-loss/hetz2.log"
         self.write(
             f"""
             set -g @packet-loss-run_disconnected  yes
