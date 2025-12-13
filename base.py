@@ -854,7 +854,7 @@ class BaseConfig(TmuxConfig):
                 w(f"{self.opt_win} monitor-bell off")
 
         if self.vers_ok(3.6):
-            w(f"{self.opt_win} pane-scrollbars modal")
+            w(f"{self.opt_win} pane-scrollbars off")
 
         w()  # spacer
 
