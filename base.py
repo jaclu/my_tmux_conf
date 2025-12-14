@@ -178,7 +178,6 @@ class BaseConfig(TmuxConfig):
         plugins_display: int = 0,  # Display info about plugins
         # environment: Environment = Environment.normal,
     ) -> None:
-        # Indicates if this tmux is run on the iSH console
         # print(f"><> BaseConfig.__init__() - conf_file [{conf_file}]")
         self.style = None
         self.check_libs_compatible()
@@ -223,7 +222,7 @@ class BaseConfig(TmuxConfig):
             self.prefix_key = self.prefix_key_T2
             print(f"T2_ENV uses prefix_key: {self.prefix_key}")
 
-        if mtc_utils.IS_ISH or mtc_utils.HOSTNAME == "ish-hetz1":
+        if mtc_utils.IS_ISH or mtc_utils.HOSTNAME == "iSH":
             print("Detected iSH kernel, assuming this to be a limited host")
             self.is_limited_host = True
 
