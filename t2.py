@@ -134,10 +134,13 @@ class T2(SB):  # type: ignore
             #
             w(
                 """# t2 border style
-                set -g pane-active-border-style "fg=yellow"
-                set -g pane-border-style        "fg=colour105"
-                """
+                set -g pane-border-style        "fg=colour105" """
             )
+            w(
+                f"{self.opt_pane} pane-active-border-style "
+                "'#{?pane_in_mode,fg=yellow,#{?synchronize-panes,fg=red,fg=green}}'"
+            )
+
 
         if "tmux-packet-loss" in self.plugins.installed(short_name=True):
             w(

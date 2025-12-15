@@ -1077,11 +1077,17 @@ class BaseConfig(TmuxConfig):
             border_active = "colour40"  # green
             border_other = "colour241"  # low intensity grey
 
+            # {self.opt_pane} pane-active-border-style fg={border_active}
+            # default
+            #
+            #  #{?pane_in_mode,fg=yellow,#{?synchronize-panes,fg=red,fg=green}}
             w(
-                f"""
-                {self.opt_pane} pane-active-border-style fg={border_active}
-                {self.opt_pane} pane-border-style fg={border_other}"""
+                f"{self.opt_pane} pane-active-border-style "
+                "'#{?pane_in_mode,fg=yellow,#{?synchronize-panes,fg=red,fg="
+                f"{border_active}"
+                "}}'"
             )
+            w(f"{self.opt_pane} pane-border-style fg={border_other}")
 
         #
         #  Display custom pane borders and label if >= 2.5 / 2.6 not certain
