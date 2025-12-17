@@ -132,17 +132,21 @@ class T2(SB):  # type: ignore
             #  Works both on bright and dark backgrounds
             #  this makes it easier to see if a pane is part of a t2 env
             #
-            w(
-                """# t2 border style
-                set -g pane-border-style        "fg=colour105" """
-            )
+            # border_active = "colour70"    # pale green
+            # border_other = "colour31"     # pale blue
+
             if self.vers_ok(3.2):
                 w(
                     f"{self.opt_pane} pane-active-border-style "
-                    "'#{?pane_in_mode,fg=yellow,#{?synchronize-panes,fg=red,fg=green}}'"
+                    "'#{?pane_in_mode,fg=yellow,#{?synchronize-panes,fg=red,fg=colour70}}'"
+                )
+                w(
+                    f"{self.opt_pane} pane-border-style "
+                    "'#{?pane_in_mode,fg=yellow,fg=colour31}'"
                 )
             else:
-                w(f"{self.opt_pane} pane-active-border-style fg=green")
+                w(f"""{self.opt_pane} pane-active-border-style fg=colour70
+                {self.opt_pane} pane-border-style fg=colour31""")
 
         if "tmux-packet-loss" in self.plugins.installed(short_name=True):
             w(

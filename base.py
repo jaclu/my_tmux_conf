@@ -1073,8 +1073,8 @@ class BaseConfig(TmuxConfig):
             #  Works both on bright and dark backgrounds
             #
 
-            # experimenting with stronger contrast...
-            border_active = "colour40"  # green
+            # border_active = "colour40"  # green
+            border_active = " "  # orange
             border_other = "colour241"  # low intensity grey
 
             if self.vers_ok(3.2):
@@ -1082,12 +1082,15 @@ class BaseConfig(TmuxConfig):
                 w(
                     f"{self.opt_pane} pane-active-border-style "
                     "'#{?pane_in_mode,fg=yellow,#{?synchronize-panes,fg=red,fg="
-                    f"{border_active}"
-                    "}}'"
+                    f"{border_active}}}}}'"
+                )
+                w(
+                    f"{self.opt_pane} pane-border-style "
+                    f"'#{{?pane_in_mode,fg=yellow,fg={border_active}}}'"
                 )
             else:
-                w(f"{self.opt_pane} pane-active-border-style fg={border_active}")
-            w(f"{self.opt_pane} pane-border-style fg={border_other}")
+                w(f"""{self.opt_pane} pane-active-border-style fg={border_active}
+                {self.opt_pane} pane-border-style fg={border_other}""")
 
         #
         #  Display custom pane borders and label if >= 2.5 / 2.6 not certain
