@@ -1072,21 +1072,19 @@ class BaseConfig(TmuxConfig):
             #
             #  Works both on bright and dark backgrounds
             #
-
-            # border_active = "colour40"  # green
-            border_active = " "  # orange
+            border_active = "colour136"  # orange
             border_other = "colour241"  # low intensity grey
+            sync_colors = f"#{{?synchronize-panes,fg=red,fg={border_active}}}"
 
             if self.vers_ok(3.2):
                 # supports #{? notation in this context
                 w(
                     f"{self.opt_pane} pane-active-border-style "
-                    "'#{?pane_in_mode,fg=yellow,#{?synchronize-panes,fg=red,fg="
-                    f"{border_active}}}}}'"
+                    f"'#{{?pane_in_mode,fg=yellow,{sync_colors}}}'"
                 )
                 w(
                     f"{self.opt_pane} pane-border-style "
-                    f"'#{{?pane_in_mode,fg=yellow,fg={border_active}}}'"
+                    f"'#{{?pane_in_mode,fg=yellow,fg={border_other}}}'"
                 )
             else:
                 w(f"""{self.opt_pane} pane-active-border-style fg={border_active}

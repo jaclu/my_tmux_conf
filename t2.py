@@ -138,7 +138,8 @@ class T2(SB):  # type: ignore
             if self.vers_ok(3.2):
                 w(
                     f"{self.opt_pane} pane-active-border-style "
-                    "'#{?pane_in_mode,fg=yellow,#{?synchronize-panes,fg=red,fg=colour70}}'"
+                    "'#{?pane_in_mode,fg=yellow,"
+                    "#{?synchronize-panes,fg=red,fg=colour70}}'"
                 )
                 w(
                     f"{self.opt_pane} pane-border-style "
