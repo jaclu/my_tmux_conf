@@ -151,7 +151,8 @@ class Host:
             cmd += f"{self.remote_session()} --"
         else:
             cmd = f"ssh -t {self.remote_session()}"
-        return f"{cmd} {self.rem_cmd}"
+        # adding reset to fix term if connection is lost
+        return f"{cmd} {self.rem_cmd} ; reset"
 
     def remote_session(self):
         """remote session identifier"""
