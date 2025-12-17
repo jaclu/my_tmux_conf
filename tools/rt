@@ -110,8 +110,8 @@ class Host:
     def bounce_to(self, bounce_host):
         """continue to host"""
         #  works:
-        #   mosh hetz1 -- bash -l -i -c 'rt jacdroid'
-        #   ssh -t hetz1 "bash -l -i -c 'rt jacdroid'"
+        #   mosh hetz2 -- bash -l -i -c 'rt jacdroid'
+        #   ssh -t hetz2 "bash -l -i -c 'rt jacdroid'"
 
         rt_cmd = "rt"
         if self.use_quick:
@@ -409,8 +409,8 @@ class Win10(Host):
     mosh_ports = "62000:62001"
 
 
-class Hetz1(Host):
-    """definig host hetz1"""
+class Hetz2(Host):
+    """definig host hetz2"""
 
     mosh_ports = "60300:60399"
 
