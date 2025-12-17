@@ -146,8 +146,10 @@ class T2(SB):  # type: ignore
                     "'#{?pane_in_mode,fg=yellow,fg=colour241}'"
                 )
             else:
-                w(f"""{self.opt_pane} pane-active-border-style fg=colour70
-                {self.opt_pane} pane-border-style fg=colour241""")
+                w(
+                    f"""{self.opt_pane} pane-active-border-style fg=colour70
+                {self.opt_pane} pane-border-style fg=colour241"""
+                )
 
         if "tmux-packet-loss" in self.plugins.installed(short_name=True):
             w(
