@@ -151,6 +151,7 @@ class Host:
             cmd += f"{self.remote_session()} --"
         else:
             cmd = f"ssh -t {self.remote_session()}"
+
         # adding reset to fix term if connection is lost
         return f"{cmd} {self.rem_cmd} ; reset"
 
