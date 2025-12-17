@@ -1073,7 +1073,7 @@ class BaseConfig(TmuxConfig):
             #  Works both on bright and dark backgrounds
             #
             border_active = "colour136"  # orange
-            border_other = "colour241"  # low intensity grey
+            border_other = "colour31"  # pale blue
             sync_colors = f"#{{?synchronize-panes,fg=red,fg={border_active}}}"
 
             if self.vers_ok(3.2):
