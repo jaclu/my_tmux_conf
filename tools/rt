@@ -391,7 +391,7 @@ def main():
                 check=False,
             )
         elif ex_code == 44:
-            print(f"[{h_name}] remote tmux server exited: {ex_code}")
+            print(f"[{h_name}] remote tmux server was killed: {ex_code}")
         elif ex_code not in (0, 1):
             print(f"[{h_name}] Unexpected exit code from remote end: {ex_code}")
         # else:
