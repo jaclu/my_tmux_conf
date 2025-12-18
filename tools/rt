@@ -383,7 +383,7 @@ def main():
             # remote tmux died, tends to leave the terminal messed up
             # do a reset
             msg = f"[{h_name}] rt: screen reset, since remote end"
-            msg += f" died unexpectedly with exit code [{ex_code}]"
+            msg += f" died unexpectedly with exit code: {ex_code}"
             cmd = f'reset ; echo "{msg}"'
             subprocess.run(
                 cmd,
@@ -391,9 +391,9 @@ def main():
                 check=False,
             )
         elif ex_code == 44:
-            print(f"[{h_name}] remote tmux server was killed: {ex_code}")
+            print(f"[{h_name}] remote tmux server was killed, exit code: {ex_code}")
         elif ex_code not in (0, 1):
-            print(f"[{h_name}] Unexpected exit code from remote end: {ex_code}")
+            print(f"[{h_name}] Unexpected exit code from remote end, exit code:: {ex_code}")
         # else:
         #    print(f"[{h_name}] exit code from remote end: {ex_code}")
 
