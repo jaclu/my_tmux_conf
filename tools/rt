@@ -390,8 +390,10 @@ def main():
                 shell=True,
                 check=False,
             )
-        elif ex_code not in (0, 1):
-            print(f"[{h_name}] Unexpected exit code from remote end: {ex_code}")
+        # elif ex_code not in (0, 1):
+        #     print(f"[{h_name}] Unexpected exit code from remote end: {ex_code}")
+        else:
+            print(f"[{h_name}] exit code from remote end: {ex_code}")
 
 
 #
