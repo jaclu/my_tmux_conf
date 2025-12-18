@@ -13,6 +13,7 @@ If given, params -2 and -q will be sent through to myt on the destination node
 
 import argparse
 import inspect
+import os
 import subprocess
 import sys
 
@@ -380,7 +381,8 @@ def main():
         if ex_code == 44:
             # remote tmux died, tends to leave the terminal messed up
             # do a reset
-            msg = f"rt: remote end died unexpectedly with exit code [{ex_code}]"
+            h_name = os.getenv("HOSTNAME_SHORT") or ""
+            msg = f"[{h_name}]rt: remote end died unexpectedly with exit code [{ex_code}]"
             cmd = f'reset ; echo "{msg}"'
             subprocess.run(
                 cmd,
