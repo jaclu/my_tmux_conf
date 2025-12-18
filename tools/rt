@@ -13,7 +13,7 @@ If given, params -2 and -q will be sent through to myt on the destination node
 
 import argparse
 import inspect
-import os
+import subprocess
 import sys
 
 APP_VERSION = "0.4.4   2024-04-10"
@@ -151,9 +151,7 @@ class Host:
             cmd += f"{self.remote_session()} --"
         else:
             cmd = f"ssh -t {self.remote_session()}"
-
-        # adding reset to fix term if connection is lost
-        return f"{cmd} {self.rem_cmd} || reset"
+        return f"{cmd} {self.rem_cmd}"
 
     def remote_session(self):
         """remote session identifier"""
@@ -374,8 +372,19 @@ def main():
             if hc.use_tmate:
                 msg += " -m"
         print(msg + " ...")
-        # print(f"would run: {hc.full_command_line()}")
-        os.system(hc.full_command_line())  # nosec
+        proc = subprocess.run(hc.full_command_line(), shell=True, check=False)
+        ex_code = proc.returncode
+        # print(f"><> exit code: [{ex_code}]")
+        if ex_code == 44:
+            msg = f"rt: remote end died unexpectedly with exit code [{ex_code}]"
+            cmd = f'reset ; echo "{msg}"'
+            subprocess.run(
+                cmd,
+                shell=True,
+                check=False,
+            )
+        elif ex_code != 1:
+            print(f"Unexpected exit code from remote end: {ex_code}")
 
 
 #
