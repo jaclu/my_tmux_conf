@@ -373,8 +373,8 @@ def main():
             if hc.use_tmate:
                 msg += " -m"
         print(msg + " ...")
-        cmd = hc.full_command_line()
         h_name = os.getenv("HOSTNAME_SHORT") or ""
+        cmd = hc.full_command_line()
         # print(f"><> will run: {cmd}")
         proc = subprocess.run(cmd, shell=True, check=False)
         ex_code = proc.returncode
@@ -390,10 +390,10 @@ def main():
                 shell=True,
                 check=False,
             )
-        # elif ex_code not in (0, 1):
-        #     print(f"[{h_name}] Unexpected exit code from remote end: {ex_code}")
-        else:
-            print(f"[{h_name}] exit code from remote end: {ex_code}")
+        elif ex_code not in (0, 1):
+            print(f"[{h_name}] Unexpected exit code from remote end: {ex_code}")
+        # else:
+        #    print(f"[{h_name}] exit code from remote end: {ex_code}")
 
 
 #
