@@ -864,7 +864,7 @@ class BaseConfig(TmuxConfig):
                 """
             # the default key is still available: <prefix> E
             # this is quicker to type on a touch screen
-            bind -N "Spread panes out evenly."  e  select-layout -E"""
+            bind -N "Spread panes out evenly"  e  select-layout -E"""
             )
 
         if self.vers_ok(3.5):
