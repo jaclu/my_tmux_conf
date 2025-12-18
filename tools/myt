@@ -506,7 +506,7 @@ create_tmux_conf() {
     if $t2_env; then
         cmd="T2_ENV=1 $cmd"
     fi
-    lbl_2 "Building tmux env: $cmd"
+    lbl_2 "Building tmux conf: $cmd"
     run_cmd "$cmd"
     [ "$ex_code" != 0 ] && {
 
