@@ -374,15 +374,15 @@ def main():
                 msg += " -m"
         print(msg + " ...")
         cmd = hc.full_command_line()
+        h_name = os.getenv("HOSTNAME_SHORT") or ""
         # print(f"><> will run: {cmd}")
         proc = subprocess.run(cmd, shell=True, check=False)
         ex_code = proc.returncode
         # print(f"><> exit code: [{ex_code}]")
-        if ex_code == 44:
+        if ex_code == 255:
             # remote tmux died, tends to leave the terminal messed up
             # do a reset
-            h_name = os.getenv("HOSTNAME_SHORT") or ""
-            msg = f"[{h_name}]rt: remote end died unexpectedly with exit code [{ex_code}]"
+            msg = f"[{h_name}] rt: remote end died unexpectedly with exit code [{ex_code}]"
             cmd = f'reset ; echo "{msg}"'
             subprocess.run(
                 cmd,
@@ -390,7 +390,7 @@ def main():
                 check=False,
             )
         elif ex_code not in (0, 1):
-            print(f"Unexpected exit code from remote end: {ex_code}")
+            print(f"[{h_name}] Unexpected exit code from remote end: {ex_code}")
 
 
 #
