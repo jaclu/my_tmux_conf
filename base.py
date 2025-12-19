@@ -976,13 +976,19 @@ class BaseConfig(TmuxConfig):
 
         #
         #  I tend to bind ^[9 & ^[0 to Alt-Left/Right in my terminal apps
+        #  so even if I typically use C-M- Left/Right directly the above is easier
+        #  to bind to in terminal apps
         #
+
         # if self.vers_ok(1.0) and not self.tablet_keyb:
         #     s = "bind -N 'Select"
         #     self.pane_un_zoomed_noprefix_binds.extend([])
+
         if self.vers_ok(1.0):
             s = "bind -N 'Select"
             self.pane_un_zoomed_noprefix_binds.extend(
+                # This is kind of odd, if I use tmux-keybtest my iSH node generates
+                # M-9 & M-0, yet they dont trigger inside my tmux
                 [
                     f"{s} previously current window - P+-'    -n  M--  last-window",
                     f"{s} previous window - P+p P+9 C-M-Left' -n  M-9  previous-window",
