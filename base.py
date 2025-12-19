@@ -258,8 +258,8 @@ class BaseConfig(TmuxConfig):
         local_overides() is called later so that can not modify status bar
         left & right without a pointless reassignment.
 
-        I use this to modify status bar colors in subclasses
-        add hooks for plugins that are currently used.
+        I use this to modify status bar colors in subclasses and adding hooks
+        for displaying info for plugins that are currently used.
 
         I have come to realize that leaving them in for non active
         plugins is not desired. If the plugin code is present in
@@ -957,15 +957,16 @@ class BaseConfig(TmuxConfig):
                 bind -N 'Split window right'  M-L  split-window  -fh   {cp}"""
             )
 
-        pref = "bind -N 'Select "
+        pref = "bind -N 'Select"
         w(
             f"""
         # window navigation
-        {pref}previously current window  - M--'         -  last-window
-        {pref}previous window  - P+9 M-9 C-M-Left'  -r  p  previous-window
-        {pref}next window      - P+0 M-0 C-M-Right' -r  n  next-window
-        {pref}previous window  - P+p M-9 C-M-Left'  -r  9  previous-window
-        {pref}next window  - P+n M-0 C-M-Right'     -r  0  next-window"""
+        {pref} previously current window - P+-' -r  -  last-window
+        {pref} previous window  - P+p M-9 C-M-Left'  -r  p  previous-window
+        {pref} next window  - P+n M-0 C-M-Right'     -r  n  next-window
+        {pref} previous window  - P+9 M-9 C-M-Left'  -r  9  previous-window
+        {pref} next window      - P+0 M-0 C-M-Right' -r  0  next-window
+        """
         )
         if self.vers_ok(1.2):
             w(
@@ -976,20 +977,19 @@ class BaseConfig(TmuxConfig):
         #
         #  I tend to bind ^[9 & ^[0 to Alt-Left/Right in my terminal apps
         #
-        if self.vers_ok(1.0) and not self.tablet_keyb:
-            self.pane_un_zoomed_noprefix_binds.extend(
-                [
-                    "bind -N 'Select previous window "
-                    "- P+p P+9 C-M-Left' -n  M-9  previous-window",
-                ]
-            )
+        # if self.vers_ok(1.0) and not self.tablet_keyb:
+        #     s = "bind -N 'Select"
+        #     self.pane_un_zoomed_noprefix_binds.extend([])
         if self.vers_ok(1.0):
             s = "bind -N 'Select"
             self.pane_un_zoomed_noprefix_binds.extend(
-                [f"{s} next window - P+n P+0 C-M-Right'    -n  M-0  next-window"]
+                [
+                    f"{s} previously current window - P+-'    -n  M--  last-window",
+                    f"{s} previous window - P+p P+9 C-M-Left' -n  M-9  previous-window",
+                    f"{s} next window - P+n P+0 C-M-Right'    -n  M-0  next-window",
+                ]
             )
             # w(f"{s} next window - P+n P+0 C-M-Right'    -n  M-0  next-window")
-            w(f"{s} previously current window - P+-'    -n  M--  last-window")
 
         if self.vers_ok(2.1):
             w2 = "window"  # hackish strings to make sure
@@ -1358,6 +1358,10 @@ class BaseConfig(TmuxConfig):
         #   Handle Hooks
         #
         #======================================================
+
+        # General idea is to disable binds that it makes sense to send through to
+        # a potential inner tmux in the case of single or zoomed pane.
+        # Stuff like pane navigation etc.
         """
         )
 
