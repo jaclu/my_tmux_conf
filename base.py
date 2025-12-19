@@ -1365,9 +1365,9 @@ class BaseConfig(TmuxConfig):
         #
         #======================================================
 
-        # General idea is to disable binds that it makes sense to send through to
-        # a potential inner tmux in the case of single or zoomed pane.
-        # Stuff like pane navigation etc.
+        # General idea is to disable noprefix binds that it makes sense to send
+        # through to a potential inner tmux in the case of single or zoomed pane.
+        # Stuff like window and pane navigation etc.
         """
         )
 
@@ -1383,15 +1383,15 @@ class BaseConfig(TmuxConfig):
                 w(s)
             return
 
-        if not self.vers_ok(3.2):
+        if self.vers_ok(3.2):
+            binds_s = unbinds_s = ""
+        else:
             w(
                 """# before 3.2 complex if-shell -F conditions could not be used, so we have
             # to revert to a more primitive handling of the pass-through binds
             """
             )
             binds_s, unbinds_s = self.generate_old_style_binds()
-        else:
-            binds_s = unbinds_s = ""
         borders_enable = f"set -w pane-border-status top{binds_s}"
         borders_disable = f"set -w pane-border-status off{unbinds_s}"
         if self.vers_ok(2.4) and not self.is_tmate():
