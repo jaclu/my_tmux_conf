@@ -12,9 +12,8 @@ Handles Embedded scripts
 import os
 from typing import Any
 
-from tmux_conf.vers_check import VersionCheck
-
 from ..utils import tilde_home_dir
+from ..vers_check import VersionCheck
 from .config import RunCmdConfig
 from .emitter import ScriptEmitter
 from .registry import ScriptRegistry

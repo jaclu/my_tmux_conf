@@ -58,7 +58,7 @@ from tmux_conf import TmuxConfig
 
 # ruff checks might be relevant F403,F401
 
-TMUX_CONF_NEEDED = "0.21.2"
+TMUX_CONF_NEEDED = "0.22.0"
 
 
 # https://youtu.be/yFLY0SVutgM?si=VoKETDw39BAUHfST&t=420

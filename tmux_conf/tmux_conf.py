@@ -158,7 +158,7 @@ class TmuxConfig:
 
         self.es = EmbeddedScripts(
             conf_file=self.conf_file,
-            vers_class=self.vers,
+            vers_class=self.vers,  # type: ignore
             use_embedded_scripts=self.use_embedded_scripts,
             plugin_handler=self.plugin_handler,
         )
