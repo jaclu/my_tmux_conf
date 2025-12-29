@@ -54,7 +54,7 @@ log_it() {
     [ -n "$f_myt_log" ] && {
         echo "[$(date '+%F %T')] $1" >>"$f_myt_log" || {
             echo "ERROR: Failed to log output to: $f_myt_log" >/dev/stderr
-            exit  "$ERROR_AFTER_DISPLAYING_MSG"
+            exit "$ERROR_AFTER_DISPLAYING_MSG"
         }
     }
 }
@@ -117,7 +117,7 @@ get_tmux_vers() {
 define_socket() {
     [ -n "$socket" ] && {
         lbl_4 "define_socket() - called when already defined: $socket"
-        return  # already assigned
+        return # already assigned
     }
 
     socket="$(id -u)"
@@ -157,7 +157,7 @@ asdf_scan() {
     [ -n "$TMUX_BIN" ] && {
         # some asdf tmux found, try to change it to requested version
         if [ -n "$asdf_version_requested" ]; then
-            $t2_env  || {
+            $t2_env || {
                 error_msg "Changing asdf tmux version can only be done in T2_ENV mode"
             }
 
@@ -168,8 +168,7 @@ asdf_scan() {
                 printf "Continue, first shutting down existing tmux on this socket? [y/N]"
                 IFS= read -r answer
                 case "$answer" in
-                    [yY])
-                        ;;  # continue
+                    [yY]) ;; # continue
                     *)
                         echo "Aborted."
                         exit "$ERROR_AFTER_DISPLAYING_MSG"
@@ -264,8 +263,8 @@ define_tmux_env() {
     #chk_recursive_tmux() {
 
     # shellcheck disable=SC2154
-    if echo "$TMUX" | grep -q "$socket" ||
-        echo "$TMUX_OUTER" | grep -q "$socket"; then
+    if echo "$TMUX" | grep -q "$socket" \
+        || echo "$TMUX_OUTER" | grep -q "$socket"; then
 
         # ensure socket is not used inside itself
         error_msg "Attempt to use '$TMUX_BIN $conf_file' from within itself"
@@ -371,8 +370,8 @@ drop_other_clients() {
         log_it "Detaching other clients currently using:"
         log_it "    $TMUX_BIN [$tmux_vers]"
         log_it "    socket: $socket"
-        $TMUX_BIN -L "$socket" list-clients | cut -d: -f 1 |
-            xargs -I{} "$TMUX_BIN" -L "$socket" detach-client -t {}
+        $TMUX_BIN -L "$socket" list-clients | cut -d: -f 1 \
+            | xargs -I{} "$TMUX_BIN" -L "$socket" detach-client -t {}
     }
     # lbl_3 "detach done"
 }
@@ -436,7 +435,7 @@ kill_tmux() {
     echo "$TMUX" | grep -q "$socket" && {
         error_msg "Trying to kill this tmux - aborted"
     }
-    pgrep  -f "$socket_identifier" > /dev/null || {
+    pgrep -f "$socket_identifier" >/dev/null || {
         error_msg "No tmux found using socket: $socket"
     }
     run_cmd "$TMUX_BIN $socket_identifier kill-server"
@@ -516,9 +515,9 @@ create_tmux_conf() {
                 exit "$ex_code"
                 ;;
             "$ERROR_MISSING_KEY_IN_MUC_KEYS" | \
-            "$ERROR_USER_KEY_NOT_OCTAL" | \
-            "$ERROR_T2_USING_DEF_TMUX_CONF" | \
-            "$ERROR_STYLE_REDEFINED")
+                "$ERROR_USER_KEY_NOT_OCTAL" | \
+                "$ERROR_T2_USING_DEF_TMUX_CONF" | \
+                "$ERROR_STYLE_REDEFINED")
                 # Capture defined errors that have already displayed an error message
                 exit "$ex_code"
                 ;;
@@ -604,7 +603,7 @@ tmux_2() {
 #===============================================================
 
 # d_repo="$(dirname "$0")"
-d_initial="$PWD"                            #  original pwd, will switch back to it before starting tmux
+d_initial="$PWD" #  original pwd, will switch back to it before starting tmux
 d_t2="$HOME/t2"
 
 f_myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log #  Logs how the latest tmux env was setup
@@ -645,32 +644,32 @@ get_location_my_tmux_conf
 
 while [ -n "$1" ]; do
     case "$1" in
-    "-h" | "--help") display_help ;;
-    "-a")
-        [ -z "$2" ] && {
-            error_msg "option -a needs asdf version as param"
-        }
-        asdf_version_requested="$2"
-        shift # shift one extra for param
-        ;;
-    "-c")
-        shift
-        [ -n "$1" ] || {
-            error_msg "option -c needs a tmux bin as param"
-        }
-        tmux_bin="$1"
-        ;;
-    "-k") kill_tmux=true ;;
-    "-q")
-        quick_mode=true
-        ;;
-    "-s") single_session=false ;;
-    "-t") tmate_mode=true ;;
-    "-2") t2_env=true ;;
-    *)
-        [ -n "$profile" ] && errror_msg "profile can only be defined once"
-        profile="$1"
-        ;;
+        "-h" | "--help") display_help ;;
+        "-a")
+            [ -z "$2" ] && {
+                error_msg "option -a needs asdf version as param"
+            }
+            asdf_version_requested="$2"
+            shift # shift one extra for param
+            ;;
+        "-c")
+            shift
+            [ -n "$1" ] || {
+                error_msg "option -c needs a tmux bin as param"
+            }
+            tmux_bin="$1"
+            ;;
+        "-k") kill_tmux=true ;;
+        "-q")
+            quick_mode=true
+            ;;
+        "-s") single_session=false ;;
+        "-t") tmate_mode=true ;;
+        "-2") t2_env=true ;;
+        *)
+            [ -n "$profile" ] && errror_msg "profile can only be defined once"
+            profile="$1"
+            ;;
     esac
 
     shift

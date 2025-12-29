@@ -1,7 +1,7 @@
 #!/bin/sh
 
 error_msg() {
-    printf 'ERROR: %s\n' >/dev/stderr "$1"
+    printf 'ERROR: %s\n' "$1" >/dev/stderr
     exit 1
 }
 
@@ -17,10 +17,9 @@ do_action() {
     $cmd >/dev/null
     ex_cde="$?"
     if [ "$ex_cde" != 0 ]; then
-	error_msg "Cmd failed: $cmd"
+        error_msg "Cmd failed: $cmd"
     fi
 }
-
 
 oldest_first() {
     do_action 0.8
@@ -97,7 +96,5 @@ newest_first() {
     do_action 0.9
     do_action 0.8
 }
-
-
 
 newest_first

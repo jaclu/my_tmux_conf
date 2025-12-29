@@ -43,11 +43,11 @@ echo
 d_venv="$my_tmux_conf_location"/.venv
 while true; do
     if [ -d "$d_venv" ]; then
-	printf "size: %s   -  file count:  %s\n" \
-	       "$(du -sh "$d_venv" | cut -f1)" \
-	       "$(find "$d_venv" | wc -l)"
+        printf "size: %s   -  file count:  %s\n" \
+            "$(du -sh "$d_venv" | cut -f1)" \
+            "$(find "$d_venv" | wc -l)"
     else
-	echo "Not present ATM: $d_venv"
-	fi
+        echo "Not present ATM: $d_venv"
+    fi
     sleep 2
 done
