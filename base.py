@@ -56,11 +56,6 @@ import mtc_utils
 from tablet_kbd import special_consoles_config
 from tmux_conf import TmuxConfig
 
-# ruff checks might be relevant F403,F401
-
-TMUX_CONF_NEEDED = "0.22.0"
-
-
 # https://youtu.be/yFLY0SVutgM?si=VoKETDw39BAUHfST&t=420
 # class Environment(StrEnum):
 #     normal = "normal"
@@ -1935,12 +1930,12 @@ class BaseConfig(TmuxConfig):
             # [:len(TMUX_CONF_NEEDED)]
         except AttributeError:
             print()
-            print(f"ERROR: Needs tmux_conf lib version: {TMUX_CONF_NEEDED}")
+            print(f"ERROR: Needs tmux_conf lib version: {mtc_utils.TMUX_CONF_NEEDED}")
             print("       Failed to read version, probably too old()")
             sys.exit(mtc_utils.ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
 
         maj_vers_found = ".".join(lib_vers_found.split(".")[:2])
-        maj_vers_needed = ".".join(TMUX_CONF_NEEDED.split(".")[:2])
+        maj_vers_needed = ".".join(mtc_utils.TMUX_CONF_NEEDED.split(".")[:2])
 
         if maj_vers_found != maj_vers_needed:
             self.incompatible_tmux_conf(
@@ -1950,7 +1945,7 @@ class BaseConfig(TmuxConfig):
             )
 
         min_vers_found = int(lib_vers_found.split(".")[2])
-        min_vers_needed = int(TMUX_CONF_NEEDED.split(".")[2])
+        min_vers_needed = int(mtc_utils.TMUX_CONF_NEEDED.split(".")[2])
         if min_vers_found < min_vers_needed:
             self.incompatible_tmux_conf(lib_vers_found, "Version to old!")
 
@@ -2208,7 +2203,7 @@ timer_end() {{
             print()
             print(details)
         print()
-        print(f"vers found: {lib_vers_found}   needs: {TMUX_CONF_NEEDED}")
+        print(f"vers found: {lib_vers_found}   needs: {mtc_utils.TMUX_CONF_NEEDED}")
         sys.exit(mtc_utils.ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
 
     def alternate_key_euro(self, sequence: str):
