@@ -29,7 +29,6 @@ import platform
 import random
 import shutil
 import subprocess  # nosec
-from pathlib import Path
 
 #
 # I keep track on if it is a remote session, to be able to figure out if
@@ -72,23 +71,6 @@ IS_DARWIN = platform.system() == "Darwin"
 IS_ISH = os.path.isdir("/proc/ish")
 IS_TERMUX = os.environ.get("TERMUX_VERSION") is not None
 IS_GHOSTTY: bool = os.environ.get("TERM_PROGRAM") == "ghostty"
-
-
-if IS_ISH and os.path.isfile("/etc/debian_version"):
-    # last version compatible with Python 3.7
-    TMUX_CONF_NEEDED = "0.21.0"
-
-    #
-    # Clear out the included tmux_conf if present, and rely on venv
-    #
-    # Construct the path from $HOME
-    path = Path(os.environ["HOME"]) / "git_repos" / "mine" / "my_tmux_conf" / "tmux_conf"
-
-    # Recursively delete if it exists
-    if path.exists() and path.is_dir():
-        shutil.rmtree(path)
-else:
-    TMUX_CONF_NEEDED = "0.22.0"
 
 # muc keys and default values
 K_M_PLUS = "M-+"
