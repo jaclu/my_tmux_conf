@@ -62,7 +62,7 @@ class Hetz2(DefaultPlugins):
         super().local_overrides()
         #  Display what class this override comes from
         self.write("# hetz2.local_overides")
-        log_file = "~/.dotFiles/latest_statuses/hetz2.log"
+        log_file = "~/.dotFiles/latest_statuses/tmux-packet-loss-hetz2.log"
         self.write(
             f"""
             set -g @packet-loss-run_disconnected  yes
