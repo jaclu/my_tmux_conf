@@ -58,36 +58,36 @@ dependent actions.
 
 ### Window handling
 
-| Key                         | No Prefix           | Default | Description               |
-| --------------------------- | ------------------- | ------- | ------------------------- |
-| `<p> -`                     | `M--`               |         | Previously current window |
-| `<p> 9`                     | `M-0` (`C-M-Left`)  | `<p>` p | Previow window            |
-| `<p> 0`                     | `M-9` (`C-M-Right`) | `<p>` n | Next window               |
-| `<p> =`                     | `M-=`               | `<p>` c | New window                |
-| `<p> <`                     | `M-<`               |         | Swap window left          |
-| `<p> >`                     | `M->`               |         | Swap window right         |
-|                             |                     |         |                           |
-| `<p> W`                     |                     | `<p> ,` | Rename window             |
-| `<p> X`                     |                     | `<p> &` | Kill window \*\*          |
-| `<p> *`                     |                     |         | Toggle synchronized tabs  |
-| `<p> e`                     |                     | `<p> E` | Spread panes out evenly.  |
-|                             |                     |         |                           |
-| `<p> M-H`                   |                     |         | Split window left         |
-| `<p> M-J`                   |                     |         | Split window down         |
-| `<p> M-K`                   |                     |         | Split window up           |
-| `<p> M-L`                   |                     |         | Split window right        |
+| Key       | No Prefix           | Default | Description               |
+| --------- | ------------------- | ------- | ------------------------- |
+| `<p> -`   | `M--`               |         | Previously current window |
+| `<p> 9`   | `M-0` (`C-M-Left`)  | `<p>` p | Previow window            |
+| `<p> 0`   | `M-9` (`C-M-Right`) | `<p>` n | Next window               |
+| `<p> =`   | `M-=`               | `<p>` c | New window                |
+| `<p> <`   | `M-<`               |         | Swap window left          |
+| `<p> >`   | `M->`               |         | Swap window right         |
+|           |                     |         |                           |
+| `<p> W`   |                     | `<p> ,` | Rename window             |
+| `<p> X`   |                     | `<p> &` | Kill window \*\*          |
+| `<p> *`   |                     |         | Toggle synchronized tabs  |
+| `<p> e`   |                     | `<p> E` | Spread panes out evenly.  |
+|           |                     |         |                           |
+| `<p> M-H` |                     |         | Split window left         |
+| `<p> M-J` |                     |         | Split window down         |
+| `<p> M-K` |                     |         | Split window up           |
+| `<p> M-L` |                     |         | Split window right        |
 
 ### Session handling (sometimes referred to as clients by tmux man)
 
-| Key       | No Prefix        | Default | Description                |
-| --------- | ---------------- | ------- | -------------------------- |
-| `<p> _`   | `M-_`            |         | Previously current session |
-|           | `C-M-Down`       | `<p> )` | Next session in order      |
-|           | `C-M-Up`         | `<p> (` | Previous session in order  |
-|           |                  |         |                            |
-| `<p> S`   |                  | `<p> $` | Rename session             |
-| `<p> M-x` |                  |         | Kill session               |
-| `<p> +`   | `M-+`            |         | Create named session       |
+| Key       | No Prefix  | Default | Description                |
+| --------- | ---------- | ------- | -------------------------- |
+| `<p> _`   | `M-_`      |         | Previously current session |
+|           | `C-M-Down` | `<p> )` | Next session in order      |
+|           | `C-M-Up`   | `<p> (` | Previous session in order  |
+|           |            |         |                            |
+| `<p> S`   |            | `<p> $` | Rename session             |
+| `<p> M-x` |            |         | Kill session               |
+| `<p> +`   | `M-+`      |         | Create named session       |
 
 ### General environment
 
