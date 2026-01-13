@@ -24,7 +24,7 @@ from sb.sb_cloud import SB  # noqa: E402
 
 
 # pylint: disable=R0903
-class Hetz1(SB):
+class Cx23(SB):
     """hetz1 config"""
 
     # optionals selected
@@ -42,7 +42,7 @@ class Hetz1(SB):
         """
         super().local_overrides()
         #  Display what class this override comes from
-        self.write("# hetz1.local_overides")
+        self.write("# cx23.local_overides")
         log_file = "~/cloud/Dropbox/machines/hetz1/packet-loss/hetz1.log"
         self.write(
             f"""
@@ -53,4 +53,4 @@ class Hetz1(SB):
 
 
 if __name__ == "__main__":
-    Hetz1().run()
+    Cx23().run()
