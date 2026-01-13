@@ -5,7 +5,7 @@
 #
 #  Part of https://github.com/jaclu/my_tmux_conf
 #
-#  Template giving the status bar the colors I use for a cloud host
+#  kajsa - devel server
 #
 
 """host hetz1"""
@@ -24,7 +24,7 @@ from sb.sb_cloud import SB  # noqa: E402
 
 
 # pylint: disable=R0903
-class Cx23(SB):
+class Kajsa(SB):
     """hetz1 config"""
 
     # optionals selected
@@ -42,8 +42,9 @@ class Cx23(SB):
         """
         super().local_overrides()
         #  Display what class this override comes from
-        self.write("# cx23.local_overides")
-        log_file = "~/cloud/Dropbox/machines/hetz1/packet-loss/hetz1.log"
+        self.write("# kajsa.local_overides")
+        # log_file = "~/cloud/Dropbox/machines/kajsa/packet-loss/hetz1.log"
+        log_file = "~/tmp/packet-loss-kajsa/hetz1.log"
         self.write(
             f"""
             set -g @packet-loss-run_disconnected  yes
@@ -53,4 +54,4 @@ class Cx23(SB):
 
 
 if __name__ == "__main__":
-    Cx23().run()
+    Kajsa().run()
