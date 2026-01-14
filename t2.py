@@ -46,10 +46,12 @@ class T2(SB):  # type: ignore
 
     if mtc_utils.HOSTNAME == "JacMac":
         use_plugin_battery = True
+    elif mtc_utils.HOSTNAME == "JacDroid":
+        use_plugin_packet_loss = True
 
     # use_plugin_gentrify = True
 
-    # plugin_handler = "manual"
+    #OB plugin_handler = "manual"
     # plugin_handler: str = "tmux-plugins/tpm"
 
     # use_embedded_scripts = False
