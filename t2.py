@@ -157,7 +157,7 @@ class T2(SB):  # type: ignore
                 # tmux-packet-loss - overrides
                 #
                 # Use a different host vs the outer tmux
-                set -g @packet-loss-ping_host "10.42.49.128"
+                set -g @packet-loss-ping_host "1.1.1.1"
 
                 # set -g @packet-loss-log_file "" # Use this to disable logging
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
