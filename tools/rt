@@ -78,7 +78,7 @@ class Host:
         connection_name="",
         remote_user="",
         remote_command="",
-        myt_cmd="myt",
+        myt_cmd="",
         use_2nd=False,
         use_quick=False,
         use_tmate=False,
@@ -93,6 +93,8 @@ class Host:
         #  if params need to be passed to the cmd bash runs, wrap them inside
         #  the inner quotes, like 'bin/myt -2' instead of 'bin/myt'
         #
+        if not myt_cmd:
+            myt_cmd = self.myt_cmd
         logging.info(f"Got myt_cmd: {myt_cmd}")
         #
         #  Options sent to remote myt
