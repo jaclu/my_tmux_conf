@@ -339,23 +339,23 @@ indicate_tmux_connection_type() {
 }
 
 is_tmux_ses_running() {
-    # lbl_3 "is_tmux_ses_running()"
+    lbl_3 "is_tmux_ses_running()"
     if $TMUX_BIN -L "$socket" list-sessions >/dev/null 2>&1; then
-        # lbl_2 "found sessions"
+        lbl_2 "found sessions"
         return 0
     else
-        # lbl_2 "no sessions"
+        lbl_2 "no sessions"
         return 1
     fi
 }
 
 is_tmux_cli_connected() {
-    # lbl_3 "is_tmux_cli_connected() $TMUX_BIN"
+    lbl_3 "is_tmux_cli_connected() $TMUX_BIN"
     if [ -n "$($TMUX_BIN -L "$socket" list-clients)" ]; then
-        # lbl_2 "was connected"
+        lbl_2 "was connected"
         return 0
     else
-        # lbl_2 "nothing connected"
+        lbl_2 "nothing connected"
         return 1
     fi
 }
