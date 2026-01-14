@@ -631,7 +631,6 @@ ERROR_STYLE_REDEFINED=68
     rm -f "$f_myt_log" # clear log on each run
     lbl_4 "Will log progress to: $f_myt_log"
 }
-log_it "PATH detected by myt: $PATH"
 
 # if [ -f "$f_skip_venv" ]; then
 #     use_python_venv=false
