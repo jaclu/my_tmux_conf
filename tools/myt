@@ -551,6 +551,7 @@ find_host_profile() {
     #  Hostname profiles are named as lowercased hostname -s with suffix .py
     #
     _p="$(hostname -s | tr '[:upper:]' '[:lower:]').py"
+    log_it "will look for profile file: $_p"
 
     #
     #  Step 2 check user supplied hostnames folder
