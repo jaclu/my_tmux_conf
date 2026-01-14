@@ -44,6 +44,15 @@ APP_VERSION = "0.4.4   2024-04-10"
 BOUNCE_KEY = "/"  # separator for bounce hosts
 
 
+import logging
+
+logging.basicConfig(
+    filename="/tmp/rt.log",
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+)
+
+
 # pylint: disable=too-many-instance-attributes
 class Host:
     """Handles one host"""
@@ -354,6 +363,7 @@ def parse_cmd_line():
 
 def main():
     """main function"""
+    logging.info("Starting job")
     args = parse_cmd_line()
     hc = get_host_class(
         server=args.server,
@@ -387,10 +397,10 @@ def main():
         print(msg + " ...")
         h_name = os.getenv("HOSTNAME_SHORT") or ""
         cmd = hc.full_command_line()
-        # print(f"><> will run: {cmd}")
+        logging.info(f"will run: {cmd}")
         proc = subprocess.run(cmd, shell=True, check=False)
         ex_code = proc.returncode
-        # print(f"><> exit code: [{ex_code}]")
+        logging.info(f"exit code: [{ex_code}]")
         if ex_code == 255:
             # remote tmux died, tends to leave the terminal messed up
             # do a reset
@@ -408,6 +418,7 @@ def main():
             print(f"[{h_name}] Unexpected exit code from remote end, exit code:: {ex_code}")
         # else:
         #    print(f"[{h_name}] exit code from remote end: {ex_code}")
+        logging.info("Job finished")
 
 
 #
