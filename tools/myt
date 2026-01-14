@@ -85,6 +85,7 @@ error_msg() {
 
 run_cmd() {
     log_it "run_cmd($*)"
+    log_it "><> will sleep 1"
     sleep 1
     # Used to run a command, log output and report exit code of operation
     _c="$(eval "$1" 2>&1)"
