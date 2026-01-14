@@ -661,7 +661,7 @@ class DefaultPlugins(BaseConfig):
             set -g @packet-loss-display_trend     no
             set -g @packet-loss-hist_avg_display  yes
             set -g @packet-loss-run_disconnected  yes
-
+            set -g @packet-loss-suffix "| "
             set -g @packet-loss-level_disp  5
 
             set -g @packet-loss-level_crit 50
