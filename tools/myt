@@ -84,9 +84,7 @@ error_msg() {
 }
 
 run_cmd() {
-    log_it "run_cmd($*)"
-    log_it "><> will sleep 1"
-    sleep 1
+    # log_it "run_cmd($*)"
     # Used to run a command, log output and report exit code of operation
     _c="$(eval "$1" 2>&1)"
     ex_code="$?"
@@ -339,12 +337,12 @@ indicate_tmux_connection_type() {
 }
 
 is_tmux_ses_running() {
-    lbl_3 "is_tmux_ses_running()"
+    # lbl_3 "is_tmux_ses_running($TMUX_BIN -L $socket)"
     if $TMUX_BIN -L "$socket" list-sessions >/dev/null 2>&1; then
-        lbl_2 "found sessions"
+        # lbl_2 "found sessions"
         return 0
     else
-        lbl_2 "no sessions"
+        # lbl_2 "no sessions"
         return 1
     fi
 }
@@ -415,12 +413,10 @@ start_tmux() {
     cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
 
     if is_tmux_ses_running; then
-        log_it "session was already running"
         $single_session && drop_other_clients
         indicate_tmux_connection_type "Attaching to"
         tmux_params="attach-session -t main"
     else
-        log_it "new session"
         indicate_tmux_connection_type "Starting"
         tmux_params="new-session -s main"
     fi
