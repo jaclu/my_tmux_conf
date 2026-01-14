@@ -34,6 +34,7 @@ select ssh/mosh connection type
 
 import argparse
 import inspect
+import logging
 import os
 import subprocess
 import sys
@@ -42,9 +43,6 @@ APP_VERSION = "0.4.4   2024-04-10"
 
 
 BOUNCE_KEY = "/"  # separator for bounce hosts
-
-
-import logging
 
 logging.basicConfig(
     filename="/tmp/rt.log",
