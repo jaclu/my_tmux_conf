@@ -9,6 +9,27 @@ runs myt on a remote node, unlimittedjumps hosts can be used: rt jumphost/jump2/
 assuming the jump host has this rt installed.
 
 If given, params -2 and -q will be sent through to myt on the destination node
+
+New connection logic
+
+debug cmd: rt -2 -m hetz2/jacdroid/hetz2
+Case: hetz2/jacdroid/hetz2
+
+ ssh
+ single  step
+  ssh -t hetz2 "myt -2"
+ re-bounce
+  ssh -t hetz2 "rt -2 jacdoid/hetz2"
+
+ mosh:
+ single  step
+  mosh hetz2 -- myt -2
+ re-bounce
+  mosh hetz2 -- rt -2 jacdroid/hetz2
+
+1. Find additional steps, here jacdroid/hetz2
+select ssh/mosh connection type
+
 """
 
 import argparse
@@ -30,12 +51,12 @@ class Host:
     connection_name = ""  # A common name for this connection
     server = ""  # server to connect to
     remote_user = ""  # If not given ~/.ssh/config setting will be used
-
+    # options for remote myt
     use_2nd = False
     use_quick = False
-    use_asdf_version = ""
     use_tmate = False
     use_mosh = False
+    # Moosh env
     mosh_client = "mosh"  # local mosh command
     mosh_server = ""  # default: 'mosh-server'
     mosh_ports = ""  # default: '60000:61000'
@@ -49,7 +70,6 @@ class Host:
         remote_command="",
         use_2nd=False,
         use_quick=False,
-        use_asdf_version="",
         use_tmate=False,
         use_mosh=False,
         mosh_client="mosh",
@@ -73,9 +93,6 @@ class Host:
         if use_quick:
             self.use_quick = True
             myt_cmd += " -q"
-        if use_asdf_version:
-            self.use_asdf_version = use_asdf_version
-            myt_cmd += f" -a {use_asdf_version}"
         if use_tmate:
             self.use_tmate = True
             myt_cmd += " -m"
@@ -96,11 +113,11 @@ class Host:
             print("ERROR: remote_command can't be empty!")
             sys.exit(1)
 
-        # if use_mosh:
-        #     self.use_mosh = True
-        #     self.rem_cmd = f"bash -l -i -c '{myt_cmd}'"
-        # else:
-        #     self.rem_cmd = f"\"bash -l -i -c '{myt_cmd}'\""
+        if use_mosh:
+            self.use_mosh = True
+            self.rem_cmd = myt_cmd
+        else:
+            self.rem_cmd = f'"{myt_cmd}"'
         self.rem_cmd = myt_cmd
         if mosh_client:
             self.mosh_client = mosh_client
@@ -128,15 +145,13 @@ class Host:
             rt_cmd += " -q"
         if self.use_2nd:
             rt_cmd += " -2"
-        if self.use_asdf_version:
-            rt_cmd += f" -a {self.use_asdf_version}"
         if self.use_tmate:
             rt_cmd += " -m"
         if self.use_mosh:
             self.rem_cmd = f"{rt_cmd} {bounce_host}"
         else:
             # self.rem_cmd = f"\"bash -l -i -c '{rt_cmd} {bounce_host}'\""
-            self.rem_cmd = f"{rt_cmd} {bounce_host}"
+            self.rem_cmd = f'"{rt_cmd} {bounce_host}"'
 
     def show_info(self):
         """display info about session"""
@@ -181,7 +196,6 @@ def get_host_class(
     remote_command="",
     use_2nd=False,
     use_quick=False,
-    asdf_version="",
     use_tmate=False,
     use_mosh=False,
     mosh_client="",
@@ -206,7 +220,6 @@ def get_host_class(
             remote_user=remote_user,
             use_2nd=use_2nd,
             use_quick=use_quick,
-            asdf_version=asdf_version,
             use_tmate=use_tmate,
             use_mosh=use_mosh,
             mosh_client=mosh_client,
@@ -230,7 +243,6 @@ def get_host_class(
                 remote_command=remote_command,
                 use_2nd=use_2nd,
                 use_quick=use_quick,
-                use_asdf_version=asdf_version,
                 use_tmate=use_tmate,
                 use_mosh=use_mosh,
                 mosh_client=mosh_client,
@@ -249,7 +261,6 @@ def get_host_class(
             remote_command=remote_command,
             use_2nd=use_2nd,
             use_quick=use_quick,
-            use_asdf_version=asdf_version,
             use_tmate=use_tmate,
             use_mosh=use_mosh,
             mosh_client=mosh_client,
@@ -330,13 +341,7 @@ def parse_cmd_line():
         "-q",
         "--quick",
         action="store_true",
-        help="quik connect, don't re-generate tmux.conf on remote\n",
-    )
-    parser.add_argument(
-        "-a",
-        "--asdf_version",
-        help="set asdf tmux version on remote",
-        action="store",
+        help="quick connect, don't re-generate tmux.conf on remote\n",
     )
     parser.add_argument(
         "-t",
@@ -356,7 +361,6 @@ def main():
         remote_command=args.command,
         use_2nd=args.use_2nd,
         use_quick=args.quick,
-        asdf_version=args.asdf_version,
         use_tmate=args.use_tmate,
         use_mosh=args.use_mosh,
         mosh_client=args.mosh_client,
@@ -372,14 +376,12 @@ def main():
         else:
             msg += "ssh"
 
-        if hc.use_2nd or hc.use_quick or hc.use_asdf_version or hc.use_tmate:
+        if hc.use_2nd or hc.use_quick or hc.use_tmate:
             msg += " - myt Options:"
             if hc.use_2nd:
                 msg += " -2"
             if hc.use_quick:
                 msg += " -q"
-            if hc.use_asdf_version:
-                msg += f" -a {hc.use_asdf_version}"
             if hc.use_tmate:
                 msg += " -m"
         print(msg + " ...")
@@ -419,10 +421,6 @@ def main():
 #    tmux = "/home/linuxbrew/.linuxbrew/bin/tmux -u new-session -ADs"
 
 
-# class AsdfHost(Host):
-#    tmux = "/home/jaclu/.asdf/shims/tmux -u new-session -ADs"
-
-
 #
 #  Custom Hosts, to preset some stuff
 #  class name should match hostname you use when connecting
@@ -443,6 +441,12 @@ class Hetz2(Host):
     """definig host hetz2"""
 
     mosh_ports = "60300:60399"
+
+
+class Kajsa(Host):
+    """definig a host kajsa"""
+
+    mosh_ports = "60050:60070"
 
 
 if __name__ == "__main__":
