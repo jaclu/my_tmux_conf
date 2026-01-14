@@ -93,6 +93,7 @@ class Host:
         #  if params need to be passed to the cmd bash runs, wrap them inside
         #  the inner quotes, like 'bin/myt -2' instead of 'bin/myt'
         #
+        logging.info(f"Got myt_cmd: {myt_cmd}")
         #
         #  Options sent to remote myt
         #
