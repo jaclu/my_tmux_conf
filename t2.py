@@ -46,7 +46,7 @@ class T2(SB):  # type: ignore
 
     # use_plugin_gentrify = True
 
-    #OB plugin_handler = "manual"
+    # OB plugin_handler = "manual"
     # plugin_handler: str = "tmux-plugins/tpm"
 
     # use_embedded_scripts = False

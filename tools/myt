@@ -84,7 +84,7 @@ error_msg() {
 }
 
 run_cmd() {
-    # log_it "run_cmd($*)"
+    log_it "run_cmd($*)"
     # Used to run a command, log output and report exit code of operation
     _c="$(eval "$1" 2>&1)"
     ex_code="$?"
@@ -326,15 +326,15 @@ not_source_asdf_if_found() {
     return 1 # false
 }
 
-indicate_tmux_connection_type() {
-    # lbl_3 "indicate_tmux_connection_type()"
-    connect_type="$1"
-    [ -z "$connect_type" ] && {
-        error_msg "indicate_tmux_connection_type() - no param1"
-    }
-    log_it "$connect_type using: $TMUX_BIN [$tmux_vers]"
-    log_it "    socket: $socket - config: $conf_file"
-}
+# indicate_tmux_connection_type() {
+#     # lbl_3 "indicate_tmux_connection_type()"
+#     connect_type="$1"
+#     [ -z "$connect_type" ] && {
+#         error_msg "indicate_tmux_connection_type() - no param1"
+#     }
+#     log_it "$connect_type using: $TMUX_BIN [$tmux_vers]"
+#     log_it "    socket: $socket - config: $conf_file"
+# }
 
 is_tmux_ses_running() {
     # lbl_3 "is_tmux_ses_running($TMUX_BIN -L $socket)"
@@ -414,10 +414,10 @@ start_tmux() {
 
     if is_tmux_ses_running; then
         $single_session && drop_other_clients
-        indicate_tmux_connection_type "attach-session"
+        # indicate_tmux_connection_type "attach-session"
         tmux_params="attach-session -t main"
     else
-        indicate_tmux_connection_type "new-session"
+        # indicate_tmux_connection_type "new-session"
         tmux_params="new-session -s main"
     fi
     run_cmd "$TMUX_BIN -L $socket -f '$conf_file' $tmux_params"
