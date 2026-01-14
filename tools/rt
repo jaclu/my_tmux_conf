@@ -243,8 +243,11 @@ def get_host_class(
     #
     clsmembers = inspect.getmembers(sys.modules[__name__], inspect.isclass)
     host_class = None
+    logging.info("iterating host classes")
     for cls_name, cls in clsmembers:
+        logging.info(f" Comparing [{cls_name}] with [{server}]")
         if cls_name == server:
+            logging.info("  found match!")
             host_class = cls(
                 server=server,
                 connection_name=connection_name,
