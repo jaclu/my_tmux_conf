@@ -8,7 +8,7 @@
 #  kajsa - devel server
 #
 
-"""host hetz1"""
+"""host kajsa"""
 
 import os
 import sys
@@ -25,7 +25,7 @@ from sb.sb_cloud import SB  # noqa: E402
 
 # pylint: disable=R0903
 class Kajsa(SB):
-    """hetz1 config"""
+    """kajsa config"""
 
     # optionals selected
     use_plugin_packet_loss = True
@@ -43,8 +43,7 @@ class Kajsa(SB):
         super().local_overrides()
         #  Display what class this override comes from
         self.write("# kajsa.local_overides")
-        # log_file = "~/cloud/Dropbox/machines/kajsa/packet-loss/hetz1.log"
-        log_file = "~/tmp/packet-loss-kajsa/hetz1.log"
+        log_file = "~/tmp/packet-loss-kajsa.log"
         self.write(
             f"""
             set -g @packet-loss-run_disconnected  yes
