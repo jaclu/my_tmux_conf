@@ -61,6 +61,7 @@ class Host:
     server = ""  # server to connect to
     remote_user = ""  # If not given ~/.ssh/config setting will be used
     # options for remote myt
+    myt_cmd = "myt"
     use_2nd = False
     use_quick = False
     use_tmate = False
@@ -77,6 +78,7 @@ class Host:
         connection_name="",
         remote_user="",
         remote_command="",
+        myt_cmd="myt",
         use_2nd=False,
         use_quick=False,
         use_tmate=False,
@@ -91,8 +93,6 @@ class Host:
         #  if params need to be passed to the cmd bash runs, wrap them inside
         #  the inner quotes, like 'bin/myt -2' instead of 'bin/myt'
         #
-        myt_cmd = "myt"
-
         #
         #  Options sent to remote myt
         #
@@ -442,9 +442,10 @@ class Ubu(Host):
     mosh_ports = "62020:62021"
 
 
-class Win10(Host):
+class Jacdroid(Host):
     """definig a windows host"""
 
+    myt_cmd = "/data/data/com.termux/files/home/.local/bin/myt"
     mosh_ports = "62000:62001"
 
 
