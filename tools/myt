@@ -232,7 +232,7 @@ select_tmux_bin() {
         # lbl_3 "><> tmux found in PATH: $TMUX_BIN"
         return
     fi
-    [ -z "$TMUX_BIN" ] && error_msg "Failed to define TMUX_BIN PATH[$PATH]"
+    [ -z "$TMUX_BIN" ] && error_msg "Failed to find tmux - using PATH: $PATH"
 }
 
 define_tmux_env() {
