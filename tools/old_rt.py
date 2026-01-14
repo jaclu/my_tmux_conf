@@ -9,26 +9,6 @@ runs myt on a remote node, unlimittedjumps hosts can be used: rt jumphost/jump2/
 assuming the jump host has this rt installed.
 
 If given, params -2 and -q will be sent through to myt on the destination node
-
-New connection logic
-
-Case: hetz2/jacdroid/hetz2
-
- ssh
- single  step
-  ssh -t hetz2 "myt -2"
- re-bounce
-  ssh -t hetz2 "rt -2 jacdoid/hetz2"
-
- mosh:
- single  step
-  mosh hetz2 -- myt -2
- re-bounce
-  mosh hetz2 -- rt -2 jacdroid/hetz2
-
-1. Find additional steps, here jacdroid/hetz2
-select ssh/mosh connection type
-
 """
 
 import argparse
@@ -116,12 +96,11 @@ class Host:
             print("ERROR: remote_command can't be empty!")
             sys.exit(1)
 
-        # if use_mosh:
-        #     self.use_mosh = True
-        #     self.rem_cmd = f"bash -l -i -c '{myt_cmd}'"
-        # else:
-        #     self.rem_cmd = f"\"bash -l -i -c '{myt_cmd}'\""
-        self.rem_cmd = myt_cmd
+        if use_mosh:
+            self.use_mosh = True
+            self.rem_cmd = f"bash -l -i -c '{myt_cmd}'"
+        else:
+            self.rem_cmd = f"\"bash -l -i -c '{myt_cmd}'\""
         if mosh_client:
             self.mosh_client = mosh_client
         if mosh_server:
@@ -131,17 +110,9 @@ class Host:
 
     def bounce_to(self, bounce_host):
         """continue to host"""
-        #  ssh
-        #  single  step
-        #   ssh -t hetz2 "myt -2"
-        #  re-bounce
-        #   ssh -t hetz2 "rt -2 jacdroid"
-        #
-        #  mosh:
-        #  single  step
-        #   mosh hetz2 -- myt -2
-        #  re-bounce
-        #   mosh hetz2 -- rt -2 hetz2/jacdroid
+        #  works:
+        #   mosh hetz2 -- bash -l -i -c 'rt jacdroid'
+        #   ssh -t hetz2 "bash -l -i -c 'rt jacdroid'"
 
         rt_cmd = "rt"
         if self.use_quick:
@@ -153,10 +124,9 @@ class Host:
         if self.use_tmate:
             rt_cmd += " -m"
         if self.use_mosh:
-            self.rem_cmd = f"{rt_cmd} {bounce_host}"
+            self.rem_cmd = f"bash -l -i -c '{rt_cmd} {bounce_host}'"
         else:
-            # self.rem_cmd = f"\"bash -l -i -c '{rt_cmd} {bounce_host}'\""
-            self.rem_cmd = f"{rt_cmd} {bounce_host}"
+            self.rem_cmd = f"\"bash -l -i -c '{rt_cmd} {bounce_host}'\""
 
     def show_info(self):
         """display info about session"""

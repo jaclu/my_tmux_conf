@@ -29,7 +29,7 @@
             "request": "launch",
             "program": "tools/rt",
             "console": "integratedTerminal",
-            "args": "-2 -m hetz2/jacdroid"
+            "args": "-2 hetz2/jacdroid/hetz2"
         }
     ]
 }
