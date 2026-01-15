@@ -70,8 +70,8 @@ class Host:
     # pylint: disable=too-many-positional-arguments,too-many-branches,too-many-arguments
     def __init__(
         self,
-        server,
-        connection_name: str = "",
+        server,  # this conection
+        connection_name: str = "",  # remaining steps
         remote_user: str = "",
         remote_command: str = "",  # myt override?
         mosh_client: str = "",
