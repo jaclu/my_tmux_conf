@@ -13,6 +13,7 @@ If given, params -2 and -q will be sent through to myt on the destination node
 
 import argparse
 import inspect
+import logging
 import os
 import subprocess
 import sys
@@ -339,6 +340,17 @@ def parse_cmd_line():
 
 def main():
     """main function"""
+
+    uid = os.getuid()  # current user's UID
+    f_log = f"/tmp/rt-{uid}.log"
+
+    logging.basicConfig(
+        filename=f_log,
+        level=logging.INFO,
+        filemode="w",  # replaces the log file for each call tail -F can deal with that
+        format="%(asctime)s %(levelname)s %(message)s",
+    )
+
     args = parse_cmd_line()
     hc = get_host_class(
         server=args.server,
@@ -375,10 +387,10 @@ def main():
         print(msg + " ...")
         h_name = os.getenv("HOSTNAME_SHORT") or ""
         cmd = hc.full_command_line()
-        # print(f"><> will run: {cmd}")
+        logging.info("will run: %s", cmd)
         proc = subprocess.run(cmd, shell=True, check=False)
         ex_code = proc.returncode
-        # print(f"><> exit code: [{ex_code}]")
+        logging.info("exit code: [%s]", ex_code)
         if ex_code == 255:
             # remote tmux died, tends to leave the terminal messed up
             # do a reset
@@ -396,6 +408,8 @@ def main():
             print(f"[{h_name}] Unexpected exit code from remote end, exit code:: {ex_code}")
         # else:
         #    print(f"[{h_name}] exit code from remote end: {ex_code}")
+
+    logging.info("Job finished")
 
 
 #
