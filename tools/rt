@@ -381,7 +381,7 @@ def main():
     logging.basicConfig(
         filename=f_log,
         level=logging.INFO,
-        filemode="w",
+        # filemode="w", # will clear logfile at init
         format="%(asctime)s %(levelname)s %(message)s",
     )
 
