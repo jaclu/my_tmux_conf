@@ -90,8 +90,7 @@ class Host:
             self.connection_name = connection_name
         else:
             self.connection_name = server
-        if remote_user:
-            self.remote_user = remote_user
+        self.remote_user = remote_user
         #
         #  run dest command as an interactive bash shell in order to pick up
         #  the user environment, since the mosh session itself will not.
@@ -107,27 +106,25 @@ class Host:
             sys.exit(1)
         logging.info("Got myt_cmd: %s", myt_cmd)
 
-        if mosh_client:
-            self.mosh_client = mosh_client
-        if mosh_server:
-            self.mosh_server = mosh_server
-        if mosh_ports:
-            self.mosh_ports = mosh_ports
+        self.mosh_client = mosh_client
+        self.mosh_server = mosh_server
+        self.mosh_ports = mosh_ports
 
         #
         #  Options sent to remote myt
         #
-        if use_2nd:
-            self.use_2nd = True
+        self.use_2nd = use_2nd
+        self.use_quick = use_quick
+        self.use_tmate = use_tmate
+        self.use_mosh = use_mosh
+
+        if self.use_2nd:
             myt_cmd += " -2"
-        if use_quick:
-            self.use_quick = True
+        if self.use_quick:
             myt_cmd += " -q"
         if use_tmate:
-            self.use_tmate = True
             myt_cmd += " -m"
         if use_mosh:
-            self.use_mosh = True
             self.rem_cmd = myt_cmd
         else:
             self.rem_cmd = f'"{myt_cmd}"'
