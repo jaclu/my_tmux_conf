@@ -1,0 +1,462 @@
+#!/usr/bin/env python3
+"""
+Copyright (c) 2022-2025: Jacob.Lundqvist@gmail.com
+License: MIT
+
+Part of https://github.com/jaclu/helpfull_scripts
+
+runs myt on a remote node, unlimittedjumps hosts can be used: rt jumphost/jump2/dest_node
+assuming the jump host has this rt installed.
+
+If given, params -2 and -q will be sent through to myt on the destination node
+
+New connection logic
+
+debug cmd: rt -2 -m hetz2/jacdroid/hetz2
+Case: hetz2/jacdroid/hetz2
+
+ ssh
+ single  step
+  ssh -t hetz2 "myt -2"
+ re-bounce
+  ssh -t hetz2 "rt -2 jacdoid/hetz2"
+
+ mosh:
+ single  step
+  mosh hetz2 -- myt -2
+ re-bounce
+  mosh hetz2 -- rt -2 jacdroid/hetz2
+
+1. Find additional steps, here jacdroid/hetz2
+select ssh/mosh connection type
+
+"""
+
+import argparse
+import inspect
+import logging
+import os
+import subprocess
+import sys
+
+APP_VERSION = "0.4.4   2024-04-10"
+
+
+BOUNCE_KEY = "/"  # separator for bounce hosts
+
+
+# pylint: disable=too-many-instance-attributes
+class Host:
+    """Handles one host"""
+
+    connection_name = ""  # A common name for this connection
+    server = ""  # server to connect to
+    remote_user = ""  # If not given ~/.ssh/config setting will be used
+    # options for remote myt
+    myt_cmd = "myt"
+    use_2nd = False
+    use_quick = False
+    use_tmate = False
+    use_mosh = False
+    # Moosh env
+    mosh_client = "mosh"  # local mosh command
+    mosh_server = ""  # default: 'mosh-server'
+    mosh_ports = ""  # default: '60000:61000'
+
+    # pylint: disable=too-many-positional-arguments,too-many-branches,too-many-arguments
+    def __init__(
+        self,
+        server,
+        connection_name="",
+        remote_user="",
+        remote_command="",
+        myt_cmd="",
+        use_2nd=False,
+        use_quick=False,
+        use_tmate=False,
+        use_mosh=False,
+        mosh_client="mosh",
+        mosh_server="",
+        mosh_ports="",
+    ):
+        #
+        #  run dest command as an interactive bash shell in order to pick up
+        #  the user environment, since the mosh session itself will not.
+        #  if params need to be passed to the cmd bash runs, wrap them inside
+        #  the inner quotes, like 'bin/myt -2' instead of 'bin/myt'
+        #
+        if not myt_cmd:
+            myt_cmd = self.myt_cmd
+        logging.info("Got myt_cmd: %s", myt_cmd)
+        #
+        #  Options sent to remote myt
+        #
+        if use_2nd:
+            self.use_2nd = True
+            myt_cmd += " -2"
+        if use_quick:
+            self.use_quick = True
+            myt_cmd += " -q"
+        if use_tmate:
+            self.use_tmate = True
+            myt_cmd += " -m"
+        if not server:
+            print("ERROR! No server given")
+            sys.exit(1)
+        self.server = server
+
+        if connection_name:
+            self.connection_name = connection_name
+        else:
+            self.connection_name = server
+        if remote_user:
+            self.remote_user = remote_user
+        if remote_command:
+            myt_cmd = remote_command
+        if not myt_cmd:
+            print("ERROR: remote_command can't be empty!")
+            sys.exit(1)
+
+        if use_mosh:
+            self.use_mosh = True
+            self.rem_cmd = myt_cmd
+        else:
+            self.rem_cmd = f'"{myt_cmd}"'
+        self.rem_cmd = myt_cmd
+        if mosh_client:
+            self.mosh_client = mosh_client
+        if mosh_server:
+            self.mosh_server = mosh_server
+        if mosh_ports:
+            self.mosh_ports = mosh_ports
+
+    def bounce_to(self, bounce_host):
+        """continue to host"""
+        #  ssh
+        #  single  step
+        #   ssh -t hetz2 "myt -2"
+        #  re-bounce
+        #   ssh -t hetz2 "rt -2 jacdroid"
+        #
+        #  mosh:
+        #  single  step
+        #   mosh hetz2 -- myt -2
+        #  re-bounce
+        #   mosh hetz2 -- rt -2 hetz2/jacdroid
+
+        rt_cmd = "rt"
+        if self.use_quick:
+            rt_cmd += " -q"
+        if self.use_2nd:
+            rt_cmd += " -2"
+        if self.use_tmate:
+            rt_cmd += " -m"
+        if self.use_mosh:
+            self.rem_cmd = f"{rt_cmd} {bounce_host}"
+        else:
+            # self.rem_cmd = f"\"bash -l -i -c '{rt_cmd} {bounce_host}'\""
+            self.rem_cmd = f'"{rt_cmd} {bounce_host}"'
+
+    def show_info(self):
+        """display info about session"""
+        print("---  session details  ---")
+        if self.connection_name != self.server:
+            print(f"Connection: {self.connection_name}")
+        print(f"server:     {self.server}")
+        if self.remote_user:
+            print(f"remote user:  {self.remote_user}")
+        print(f"rem_cmd:    {self.rem_cmd}")
+
+        print(f"mosh:       {self.mosh_client} - {self.mosh_server} {self.mosh_ports}")
+        print(f"cmd line:   {self.full_command_line()}")
+
+    def full_command_line(self):
+        """expand cmd line"""
+        if self.use_mosh:
+            cmd = f"{self.mosh_client} "
+            if self.mosh_server:
+                cmd += f"--server {self.mosh_server} "
+            if self.mosh_ports:
+                cmd += f"--port={self.mosh_ports} "
+            cmd += f"{self.remote_session()} --"
+        else:
+            cmd = f"ssh -t {self.remote_session()}"
+        return f"{cmd} {self.rem_cmd}"
+
+    def remote_session(self):
+        """remote session identifier"""
+        if self.remote_user:
+            s = f"{self.remote_user}@{self.server}"
+        else:
+            s = self.server
+        return s
+
+
+# pylint: disable=too-many-positional-arguments,too-many-arguments,too-many-locals
+def get_host_class(
+    server,
+    connection_name="",
+    remote_user="",
+    remote_command="",
+    use_2nd=False,
+    use_quick=False,
+    use_tmate=False,
+    use_mosh=False,
+    mosh_client="",
+    mosh_server="",
+    mosh_ports="",
+):
+    """get class defining host"""
+    #
+    #  Handle bounce connections
+    #
+    if server.find(BOUNCE_KEY) > -1:
+        if remote_command:
+            print(f"ERROR: a{BOUNCE_KEY}b and -c param can not be combined!")
+            sys.exit(1)
+
+        parts = server.split(BOUNCE_KEY)
+        host_remainder = BOUNCE_KEY.join(parts[1:])
+        bounce_host = parts[0]
+        bounce_node = get_host_class(
+            server=bounce_host,
+            connection_name=server,
+            remote_user=remote_user,
+            use_2nd=use_2nd,
+            use_quick=use_quick,
+            use_tmate=use_tmate,
+            use_mosh=use_mosh,
+            mosh_client=mosh_client,
+            mosh_server=mosh_server,
+            mosh_ports=mosh_ports,
+        )
+        bounce_node.bounce_to(host_remainder)
+        return bounce_node
+
+    #
+    #  Match host to custom class if any matching
+    #
+    clsmembers = inspect.getmembers(sys.modules[__name__], inspect.isclass)
+    host_class = None
+    # logging.info("iterating host classes")
+    for cls_name, cls in clsmembers:
+        # logging.info(" Comparing [%s] with [%s]", cls_name, server)
+        if cls_name.lower() == server:
+            logging.info("found host classes match: %s", cls_name)
+            host_class = cls(
+                server=server,
+                connection_name=connection_name,
+                remote_user=remote_user,
+                remote_command=remote_command,
+                use_2nd=use_2nd,
+                use_quick=use_quick,
+                use_tmate=use_tmate,
+                use_mosh=use_mosh,
+                mosh_client=mosh_client,
+                mosh_server=mosh_server,
+                mosh_ports=mosh_ports,
+            )
+            break
+    if not host_class:
+        #
+        #  Use the default base class
+        #
+        host_class = Host(
+            server=server,
+            connection_name=connection_name,
+            remote_user=remote_user,
+            remote_command=remote_command,
+            use_2nd=use_2nd,
+            use_quick=use_quick,
+            use_tmate=use_tmate,
+            use_mosh=use_mosh,
+            mosh_client=mosh_client,
+            mosh_server=mosh_server,
+            mosh_ports=mosh_ports,
+        )
+    return host_class
+
+
+def parse_cmd_line():
+    """parse the command line"""
+    parser = argparse.ArgumentParser(
+        description="Main purpose is to make remote tmux connections, "
+        "but you can override the\nremote command. "
+        "If you use -m the connection will be using mosh.\nIt is "
+        "assumed you have set up all needed host details "
+        "like\nhostname/ip#, sshd port etc in ~/.ssh/conf",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+    parser.add_argument(
+        "server",
+        help="connect to this host\n"
+        f"host1{BOUNCE_KEY}host2 will connect to host1 and there run\n"
+        "this command connecting to host2\n"
+        "This can extend multiple jumps: "
+        f"a{BOUNCE_KEY}b{BOUNCE_KEY}c{BOUNCE_KEY}d ...\n"
+        "This command must be present on all jump-hosts.\n"
+        "If -m is used, mosh will be used when connecting to\n"
+        "the first jump-host.\n"
+        f">> a{BOUNCE_KEY}b can not be combined with option -c <<\n",
+    )
+    parser.add_argument(
+        "-v", "--version", action="version", version=f"%(prog)s {APP_VERSION}"
+    )
+    parser.add_argument(
+        "-d",
+        "--display",
+        action="store_true",
+        help="Display what will be done and exit",
+    )
+    parser.add_argument(
+        "-u",
+        "--user",
+        help="User to connect as to the server.\nIf not given, ~/.ssh/config decides",
+    )
+    parser.add_argument(
+        "-c",
+        "--command",
+        help='Command to run on remote host\ndefault: "tmux -u new-session -ADs #SESSION"',
+    )
+    parser.add_argument(
+        "-m",
+        "--use_mosh",
+        action="store_true",
+        help="Connect with mosh, otherwise ssh will be used",
+    )
+    parser.add_argument("-M", "--mosh-client", help="local mosh cmd to use, default: mosh")
+    parser.add_argument(
+        "-p",
+        "--ports",
+        help="port span to use for mosh connection\nexample: 60500:60510",
+    )
+    parser.add_argument(
+        "-S",
+        "--mosh-server",
+        help="mosh server cmd on remote machine, default: mosh-server",
+    )
+    #
+    #  Options sent to remote myt
+    #
+    parser.add_argument(
+        "-2",
+        "--use_2nd",
+        action="store_true",
+        help="use 2nd tmux env on remote\n",
+    )
+    parser.add_argument(
+        "-q",
+        "--quick",
+        action="store_true",
+        help="quick connect, don't re-generate tmux.conf on remote\n",
+    )
+    parser.add_argument(
+        "-t",
+        "--use_tmate",
+        action="store_true",
+        help="use tmate on remote\n",
+    )
+    return parser.parse_args()
+
+
+def main():
+    """main function"""
+
+    uid = os.getuid()  # current user's UID
+    f_log = f"/tmp/rt-{uid}.log"
+
+    logging.basicConfig(
+        filename=f_log,
+        level=logging.INFO,
+        filemode="w",
+        format="%(asctime)s %(levelname)s %(message)s",
+    )
+
+    args = parse_cmd_line()
+    hc = get_host_class(
+        server=args.server,
+        remote_user=args.user,
+        remote_command=args.command,
+        use_2nd=args.use_2nd,
+        use_quick=args.quick,
+        use_tmate=args.use_tmate,
+        use_mosh=args.use_mosh,
+        mosh_client=args.mosh_client,
+        mosh_server=args.mosh_server,
+        mosh_ports=args.ports,
+    )
+    if args.display:
+        hc.show_info()
+    else:
+        msg = f"Connecting to {hc.server} using "
+        if hc.use_mosh:
+            msg += "mosh"
+        else:
+            msg += "ssh"
+
+        if hc.use_2nd or hc.use_quick or hc.use_tmate:
+            msg += " - myt Options:"
+            if hc.use_2nd:
+                msg += " -2"
+            if hc.use_quick:
+                msg += " -q"
+            if hc.use_tmate:
+                msg += " -m"
+        print(msg + " ...")
+        h_name = os.getenv("HOSTNAME_SHORT") or ""
+        cmd = hc.full_command_line()
+        logging.info("will run: %s", cmd)
+        proc = subprocess.run(cmd, shell=True, check=False)
+        ex_code = proc.returncode
+        logging.info("exit code: [%s]", ex_code)
+        if ex_code == 255:
+            # remote tmux died, tends to leave the terminal messed up
+            # do a reset
+            msg = f"[{h_name}] rt: screen reset, since remote end"
+            msg += f" died unexpectedly with exit code: {ex_code}"
+            cmd = f'reset ; echo "{msg}"'
+            subprocess.run(
+                cmd,
+                shell=True,
+                check=False,
+            )
+        elif ex_code == 44:
+            print(f"[{h_name}] remote tmux server was killed, exit code: {ex_code}")
+        elif ex_code not in (0, 1):
+            print(f"[{h_name}] Unexpected exit code from remote end, exit code:: {ex_code}")
+        # else:
+        #    print(f"[{h_name}] exit code from remote end: {ex_code}")
+        logging.info("Job finished")
+
+
+#
+#  Some host types, pre-defining where tmux can be found
+#
+# class HomeBrewHost(Host):
+#    tmux = "/usr/local/bin/tmux -u new-session -ADs"
+
+
+# class LinuxBrewHost(Host):
+#    tmux = "/home/linuxbrew/.linuxbrew/bin/tmux -u new-session -ADs"
+
+
+#
+#  Custom Hosts, to preset some stuff
+#  class name should match hostname you use when connecting
+#
+
+
+class Jacdroid(Host):
+    """This is a Termux so myt is not in system path"""
+
+    myt_cmd = "/data/data/com.termux/files/home/.local/bin/myt"
+
+
+# class Hetz2(Host):
+#     """definig host hetz2"""
+
+#     mosh_ports = "60300:60399"
+
+
+if __name__ == "__main__":
+    main()

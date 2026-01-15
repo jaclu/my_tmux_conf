@@ -1,0 +1,699 @@
+#!/bin/sh
+#
+#  Copyright (c) 2022-2025: Jacob.Lundqvist@gmail.com
+#  License: MIT
+#
+#  Part of https://github.com/jaclu/my_tmux_conf
+#
+#  Auto-generates new tmux conf and starts/attaches tmux
+#  Unless it is already running with a different version of tmux.
+#  In such cases a warning is displayed and a pause of 5 seconds is done,
+#  after which attach is attempted without replacing the tmux conf.
+#
+#  This needs the python module tmux_conf, and by default it will create
+#  its own venv installing this if not found, or of an incompatible version.
+#
+#  If you don't need to use a venv for the python that compiles your tmux conf,
+#  do: touch $HOME/.myt_skip_venv
+#
+
+#---------------------------------------------------------------
+#
+#   notifications
+#
+#---------------------------------------------------------------
+
+display_help() {
+    #region help text
+    cat <<EOF
+Usage: myt [-a ver] [-c tmux] [-k] [-q] [-s] [-t] [-2] [profile]
+
+Generates tmux config and starts tmux
+Default profile is hostname.py
+Options can be given in any order.
+
+Available options:
+
+-h       Print this help and exit
+-a ver   Use asdf tmux version 'ver' (only for T2_ENV mode)
+-c       Use this tmux binary (default tmux)
+-k       Kill running tmux, can be combined with -2
+-q       Dont generate config, start tmux directly
+-s       Share session
+-t       Use tmate
+-2       Run in T2_ENV (inner tmux, other prefix)
+           tmux env based in: $d_t2
+profile  Run using specific profile
+EOF
+    #endregion
+    exit 0
+}
+
+log_it() {
+    echo "$1"
+    [ -n "$f_myt_log" ] && {
+        echo "[$(date '+%F %T')] $1" >>"$f_myt_log" || {
+            echo "ERROR: Failed to log output to: $f_myt_log" >/dev/stderr
+            exit "$ERROR_AFTER_DISPLAYING_MSG"
+        }
+    }
+}
+
+lbl_1() {
+    echo
+    log_it "===  $1"
+}
+
+lbl_2() {
+    log_it "---  $1"
+}
+
+lbl_3() {
+    log_it " --  $1"
+}
+
+lbl_4() {
+    log_it "  -  $1"
+}
+
+error_msg() {
+    echo
+    lbl_1 "ERROR: $1"
+    ex_code="${2:-$ERROR_VIA_ERROR_MSG}"
+    [ "$ex_code" -ge 0 ] && exit "$ex_code"
+}
+
+run_cmd() {
+    log_it "run_cmd($*)"
+    # Used to run a command, log output and report exit code of operation
+    _c="$(eval "$1" 2>&1)"
+    ex_code="$?"
+    log_it "$_c"
+    return "$ex_code"
+}
+
+is_fs_chrooted() {
+    # cmdline check:
+    # grep -qv " / / " /proc/self/mountinfo || echo "is chrooted"
+
+    # this quick and simple check doesn't work on ish
+    # so lets pretend for now chroot does not happen on ish
+    [ -d /proc/ish ] && return 1
+
+    [ "$(uname -s)" != "Linux" ] && return 1 # can only chroot this on Linux
+    ! grep -q " / / " /proc/self/mountinfo
+}
+
+#---------------------------------------------------------------
+#
+#   running tmux
+#
+#---------------------------------------------------------------
+
+get_tmux_vers() {
+    tmux_vers="$($TMUX_BIN -V | cut -d ' ' -f 2)"
+}
+
+define_socket() {
+    [ -n "$socket" ] && {
+        lbl_4 "define_socket() - called when already defined: $socket"
+        return # already assigned
+    }
+
+    socket="$(id -u)"
+    $tmate_mode && socket="$socket-tmate"
+    is_fs_chrooted && socket="${socket}-chr"
+    if $t2_env; then
+        [ -z "$d_t2" ] && error_msg "d_t2 undefined"
+        socket="$socket-serv2"
+        if $tmate_mode; then
+            conf_file="$d_t2/tmate.conf"
+        else
+            conf_file="$d_t2/tmux/tmux.conf"
+        fi
+    else
+        socket="$socket"-default
+        if $tmate_mode; then
+            conf_file="$HOME/.tmate.conf"
+        else
+            conf_file="$HOME/.tmux.conf"
+        fi
+    fi
+
+}
+
+asdf_scan() {
+    command -v asdf >/dev/null || {
+        # asdf not available
+        return 1
+    }
+
+    # if asdf is used expand the shim into the actual tmux  bin
+    [ ! -x "${ASDF_DATA_DIR:-$HOME/.asdf}/shims/tmux" ] && {
+        # asdf tmux not installed
+        return 1
+    }
+    TMUX_BIN="$(asdf which tmux 2>/dev/null)"
+    [ -n "$TMUX_BIN" ] && {
+        # some asdf tmux found, try to change it to requested version
+        if [ -n "$asdf_version_requested" ]; then
+            $t2_env || {
+                error_msg "Changing asdf tmux version can only be done in T2_ENV mode"
+            }
+
+            define_socket
+            # shellcheck disable=SC2009  # in this case ps -e is preferable
+            if ps -e -o args= | grep -q "[t]mux -L $socket"; then
+                log_it "Found tmux using $socket when redefining tmux bin"
+                printf "Continue, first shutting down existing tmux on this socket? [y/N]"
+                IFS= read -r answer
+                case "$answer" in
+                    [yY]) ;; # continue
+                    *)
+                        echo "Aborted."
+                        exit "$ERROR_AFTER_DISPLAYING_MSG"
+                        ;;
+                esac
+                kill_tmux || {
+                    error_msg "Failed to kill existing tmux using socket: $socket"
+                }
+            fi
+
+            [ "$(pwd)" != "$d_t2" ] && {
+                error_msg "asdf_scan() T2_ENV folder not pwd"
+            }
+            asdf set tmux "$asdf_version_requested" || {
+                error_msg "Failed to set asdf tmux version to: $asdf_version_requested"
+            }
+
+            # lbl_3 "><> asdf requested version: $asdf_version_requested"
+            ASDF_DATA_DIR="${ASDF_DATA_DIR:-$HOME/.asdf}"
+            ASDF_BIN_DIR="$ASDF_DATA_DIR/installs/tmux/$asdf_version_requested/bin"
+            _tmux_bin="$ASDF_BIN_DIR"/tmux
+            if [ ! -x "$_tmux_bin" ]; then
+                error_msg "Requested asdf tmux version not installed: $asdf_version_requested"
+            fi
+
+            TMUX_BIN="$_tmux_bin"
+            lbl_4 "option -a changed asdf tmux into version: $asdf_version_requested"
+            return 0
+        fi
+        return 0
+    }
+    error_msg "asdf with tmux defined, but 'asdf which tmux' failed to report path"
+}
+
+select_tmux_bin() {
+    # lbl_3 "select_tmux_bin()"
+    #
+    #  Selects what tmux bin to use
+    #
+    if [ -n "$tmux_bin" ]; then
+        # User defined tmux
+        TMUX_BIN="$tmux_bin"
+        # lbl_2 "><> user defined tmux: $TMUX_BIN"
+        return
+    fi
+    if $tmate_mode; then
+        if command -v tmate >/dev/null; then
+            TMUX_BIN="tmate"
+            # lbl_3 "><> tmate mode - TMUX_BIN=tmate"
+            return
+        else
+            error_msg "tmate not found"
+        fi
+    fi
+    asdf_scan && return
+    [ -n "$asdf_version_requested" ] && {
+        error_msg "Attemptiong to set asdf tmux version, when no asdf env is available"
+    }
+    TMUX_BIN="$(command -v tmux)"
+    if [ -n "$TMUX_BIN" ]; then
+        # lbl_3 "><> tmux found in PATH: $TMUX_BIN"
+        return
+    fi
+    [ -z "$TMUX_BIN" ] && error_msg "Failed to find tmux - using PATH: $PATH"
+}
+
+define_tmux_env() {
+    # lbl_3 "define_tmux_env() - requires d_t2 [$d_t2]"
+
+    # First clear some env variables potentially set by an outer tmux
+    unset TMUX_BIN
+    unset TMUX_CONF
+    unset TMUX_PLUGIN_MANAGER_PATH
+
+    select_tmux_bin
+    #
+    #  To not collide when checking for colliding versions
+    #  add a prefix for chrooted envs, in order for socket
+    #  names not to potentially collide with what is running
+    #  on the host
+    #
+    get_tmux_vers
+    # tmux_vers=${tmux_vers##next-}                 # Remove leading "next-" if present
+    # tmux_vers=${tmux_vers%%-rc*}                  # Remove trailing "-rc" and anything after
+
+    [ -z "$socket" ] && define_socket
+    # lbl_3 "><>   tmux_vers [$tmux_vers]"
+
+    #    chk_incompatible_socket
+    #}
+
+    #chk_recursive_tmux() {
+
+    # shellcheck disable=SC2154
+    if echo "$TMUX" | grep -q "$socket" \
+        || echo "$TMUX_OUTER" | grep -q "$socket"; then
+
+        # ensure socket is not used inside itself
+        error_msg "Attempt to use '$TMUX_BIN $conf_file' from within itself"
+    fi
+    # really old tmux'es < 1.4 complain if TMUX is set,
+    # even if it is using a different socket
+    # This must be done after the TMUX_OUTER check, since it depends on this variable
+    # being present
+    unset TMUX
+}
+
+chk_incompatible_socket() {
+    # lbl_3 "chk_incompatible_socket()"
+    #
+    #  Ensure tmux socket is not used by another running version of tmux
+    #
+    socket_identifier=" -L $socket "
+
+    #
+    # verssion will just be mentioned in the path if it is a asdf tmux or similar
+    # so the typical basic paths are excluded from this check
+    #
+    # ps ax | grep "$socket_identifier" | grep -qv -e /usr/bin/tmux -e /usr/local/bin/tmux -e "$tmux_vers" -e grep && {
+    #
+    #  shellcheck disable=SC2009
+    #ps ax | grep "$socket_identifier" | grep -i asdf | grep -v -e "$tmux_vers" -e grep && {
+    other_versions_running="$(ps ax | grep "$socket_identifier" | grep -v -e " $TMUX_BIN" -e grep -e real/tmux)"
+    if [ -n "$other_versions_running" ]; then
+        #region socket warning
+        #  shellcheck disable=SC2009
+        log_it "
+WARNING: It seems instances for version other than $tmux_vers are using socket: $socket
+
+Intended to use: $TMUX_BIN
+
+Found the following processes:
+
+$other_versions_running
+
+This might not work well, depending on how much the versions differ.
+This tmux will start in five seconds - Press Ctrl-C to abort"
+        #endregion
+        sleep 5
+    fi
+    unset other_versions_running
+}
+
+not_source_asdf_if_found() {
+    # try each param, and source the first found in the FS
+    while [ -n "$1" ]; do
+        if [ -f "$1" ]; then
+            # ASDF_DIR="$(dirname "$(realpath "$1")")"
+            #  shellcheck source=/dev/null
+            . "$1"
+            return 0 # true
+        fi
+        shift
+    done
+    return 1 # false
+}
+
+# indicate_tmux_connection_type() {
+#     # lbl_3 "indicate_tmux_connection_type()"
+#     connect_type="$1"
+#     [ -z "$connect_type" ] && {
+#         error_msg "indicate_tmux_connection_type() - no param1"
+#     }
+#     log_it "$connect_type using: $TMUX_BIN [$tmux_vers]"
+#     log_it "    socket: $socket - config: $conf_file"
+# }
+
+is_tmux_ses_running() {
+    # lbl_3 "is_tmux_ses_running($TMUX_BIN -L $socket)"
+    if $TMUX_BIN -L "$socket" list-sessions >/dev/null 2>&1; then
+        # lbl_2 "found sessions"
+        return 0
+    else
+        # lbl_2 "no sessions"
+        return 1
+    fi
+}
+
+is_tmux_cli_connected() {
+    lbl_3 "is_tmux_cli_connected() $TMUX_BIN"
+    if [ -n "$($TMUX_BIN -L "$socket" list-clients)" ]; then
+        lbl_2 "was connected"
+        return 0
+    else
+        lbl_2 "nothing connected"
+        return 1
+    fi
+}
+
+drop_other_clients() {
+    # lbl_3 "><> drop_other_clients()"
+    # disconnect any other clients
+    is_tmux_cli_connected && {
+        # lbl_2 "doing detach"
+        #
+        #  tmux -d just kills other clients using the same session
+        #  this kills all other clients regardless of session
+        #
+        log_it "Detaching other clients currently using:"
+        log_it "    $TMUX_BIN [$tmux_vers]"
+        log_it "    socket: $socket"
+        $TMUX_BIN -L "$socket" list-clients | cut -d: -f 1 \
+            | xargs -I{} "$TMUX_BIN" -L "$socket" detach-client -t {}
+    }
+    # lbl_3 "detach done"
+}
+
+ensure_cfg_file_present() {
+    # lbl_3 "ensure_cfg_file_present()"
+    if [ -f "$conf_file" ]; then
+        lbl_2 "Using existing config file"
+    else
+        lbl_3 "Conf file not found: $conf_file"
+        lbl_3 "Creating empty one to prevent 'No such file or directory' error"
+        touch "$conf_file"
+    fi
+}
+
+start_tmux() {
+    # lbl_3 "start_tmux()"
+    if [ -z "$profile" ] && ! find_host_profile; then
+        log_it
+        log_it "***  Warning: no profile found  ***"
+        log_it
+        sleep 1
+        profile="$my_tmux_conf_location/default_plugins.py"
+    fi
+
+    define_tmux_env
+    [ -n "$TMUX" ] && {
+        # keep track of this tmux to prevent recursive runs
+        export TMUX_OUTER="$TMUX"
+    }
+
+    if $quick_mode; then
+        # lbl_3 "quick mode ensure config file is there"
+        ensure_cfg_file_present
+    else
+        create_tmux_conf
+    fi
+
+    cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
+
+    if is_tmux_ses_running; then
+        $single_session && drop_other_clients
+        # indicate_tmux_connection_type "attach-session"
+        tmux_params="attach-session -t main"
+    else
+        # indicate_tmux_connection_type "new-session"
+        tmux_params="new-session -s main"
+    fi
+    run_cmd "$TMUX_BIN -L $socket -f '$conf_file' $tmux_params"
+    [ "$ex_code" != 0 ] && error_msg "tmux exit code: $ex_code"
+}
+
+kill_tmux() {
+    [ -z "$TMUX_BIN" ] && [ -z "$socket" ] && {
+        # avoid recursion in the asdf_version_requested case...
+        define_tmux_env
+    }
+
+    socket_identifier=" -L $socket"
+
+    echo "$TMUX" | grep -q "$socket" && {
+        error_msg "Trying to kill this tmux - aborted"
+    }
+    pgrep -f "$socket_identifier" >/dev/null || {
+        error_msg "No tmux found using socket: $socket"
+    }
+    run_cmd "$TMUX_BIN $socket_identifier kill-server"
+
+    # Normally this should be enough, sometimes when there are conflicting
+    # tmux versions present, it can fail reporting lost server,
+    # then use more primitive methods
+    pids="$(pgrep -f "$socket_identifier")"
+    if [ -n "$pids" ]; then
+        lbl_1 "tmux kill-server failed, trying to kill by pid"
+        pgrep -f "$socket_identifier" | xargs kill || {
+            error_msg "Failed to kill tmux using socket: $socket_identifier"
+        }
+        pgrep -f "$socket_identifier" >/dev/null && {
+            lbl_2 "Failed when using normal kill, attempting kill -9"
+            pgrep -f "$socket_identifier" | xargs kill -9 || {
+                error_msg "Failed to kill tmux using socket: $socket_identifier"
+            }
+        }
+        pgrep -f "$socket_identifier" >/dev/null && error_msg "Process remains: $pids"
+        lbl_1 "Killed: $pids"
+    elif [ "$ex_code" = 0 ]; then
+        # tmux kill-server succeeded
+        lbl_1 "killed tmux server using socket: $socket"
+    fi
+}
+
+#---------------------------------------------------------------
+#
+#   Setup tmux env
+#
+#---------------------------------------------------------------
+
+get_location_my_tmux_conf() {
+    # lbl_3 "get_location_my_tmux_conf()"
+    #  where  my_tmux_conf is located
+    f_destination="$HOME"/.config/my_tmux_conf_location
+    [ ! -f "$f_destination" ] && {
+        log_it "Location of my_tmux_conf repo not stored, go to repo folder"
+        log_it "and run ./deploy to solve his"
+        exit "$ERROR_AFTER_DISPLAYING_MSG"
+    }
+
+    my_tmux_conf_location="$(cat "$f_destination")"
+    [ ! -d "$my_tmux_conf_location" ] && {
+        log_it "Location of my_tmux_conf repo incorrect, go to repo folder"
+        log_it "and run ./deploy to solve his"
+        exit "$ERROR_AFTER_DISPLAYING_MSG"
+    }
+    # d_venv="$my_tmux_conf_location"/.venv
+    # scr_venv_activate="$d_venv"/bin/activate
+}
+
+create_tmux_conf() {
+    # lbl_3 "create_tmux_conf() - conf_file [$conf_file]"
+    #
+    #  Generate a new tmux conf file
+    #
+    cd "$my_tmux_conf_location" || error_msg "Failed to cd into: $my_tmux_conf_location"
+
+    lbl_2 "Using tmux: $TMUX_BIN [$tmux_vers]"
+
+    # py_venv_activate
+    lbl_4 "Using Python: $(command -v python3)"
+
+    cmd="$profile -r -t $TMUX_BIN \"$conf_file\""
+    if $t2_env; then
+        cmd="T2_ENV=1 $cmd"
+    fi
+    lbl_2 "Building tmux conf: $cmd"
+    run_cmd "$cmd"
+    [ "$ex_code" != 0 ] && {
+
+        case "$ex_code" in
+            "$ERROR_INCOMPATIBLE_TMUX_CONF_LIB")
+                lbl_1 "Incompatible tmux_conf python module installed!"
+                exit "$ex_code"
+                ;;
+            "$ERROR_MISSING_KEY_IN_MUC_KEYS" | \
+                "$ERROR_USER_KEY_NOT_OCTAL" | \
+                "$ERROR_T2_USING_DEF_TMUX_CONF" | \
+                "$ERROR_STYLE_REDEFINED")
+                # Capture defined errors that have already displayed an error message
+                exit "$ex_code"
+                ;;
+            *) ;;
+        esac
+    }
+    [ "$ex_code" != 0 ] && {
+        error_msg "Failed to build $conf_file - $profile gave error: $ex_code"
+    }
+    lbl_2 "New tmux conf generated!"
+
+    # $use_python_venv && py_venv_deactivate
+    if ! grep -q "Writing tmux" "$f_myt_log"; then
+        error_msg "Python build failed to complete, check: $f_myt_log"
+    fi
+}
+
+find_host_profile() {
+    # lbl_3 "find_host_profile()"
+    $tmate_mode && {
+        profile="${my_tmux_conf_location}/tmate.py"
+        return 0
+    }
+    #
+    #  Step 1 check hardcoded default profile
+    #
+    profile="${my_tmux_conf_location}/hostnames/_def_profile.py"
+    [ -f "$profile" ] && return 0
+
+    # Termux and iSH default hostname just reports localhost,
+    # this allows a user defined hostname to override
+    _p="$(bash -l -i -c 'hostname -s' | tr '[:upper:]' '[:lower:]').py"
+
+    #
+    #  Step 2 check user supplied hostnames folder
+    #
+    profile="${my_tmux_conf_location}/hostnames/$_p"
+    [ -f "$profile" ] && return 0
+    #
+    #  Step 3 check repo supplied hostnames folder
+    #
+    profile="${my_tmux_conf_location}/sample_hosts/$_p"
+    [ -f "$profile" ] && return 0
+
+    # no hostname based profile found
+    profile=""
+    return 1
+}
+
+tmux_2() {
+    # lbl_3 "tmux_2() - defines d_t2"
+    #
+    #  Inner tmux server, uses a separate config and prefix
+    #
+    if [ -z "$profile" ]; then
+        profile="$my_tmux_conf_location/t2.py"
+    fi
+
+    mkdir -p "$d_t2"
+
+    # shellcheck disable=SC2154
+    [ -f "$d_t2"/.tool-versions ] && [ -n "$SSH_CLIENT" ] && {
+        # on ssh/mosh machines with a local tmux version, tmux
+        # instacraches when anything is selected in tmux if clipboard is not off
+        # this is picked up by base.py
+        export TMUX_NO_CLIPBOARD=1
+    }
+
+    profile="$(realpath "$profile")" # make it survive the cd
+
+    #
+    #  run from this location to pick up alternate tmux versions
+    #  defined in this location
+    #
+    cd "$d_t2" || error_msg "Failed to cd into [$d_t2]"
+}
+
+#===============================================================
+#
+#   Main
+#
+#===============================================================
+
+# d_repo="$(dirname "$0")"
+d_initial="$PWD" #  original pwd, will switch back to it before starting tmux
+d_t2="$HOME/t2"
+
+f_myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log #  Logs how the latest tmux env was setup
+# f_skip_venv="$HOME"/.myt_skip_venv
+asdf_version_requested=""
+tmux_bin=""
+kill_tmux=false
+tmate_mode=false
+quick_mode=false
+single_session=true
+t2_env=false
+profile=""
+
+#
+ERROR_AFTER_DISPLAYING_MSG=43
+ERROR_VIA_ERROR_MSG=44
+# align with mtc_utils.ERROR_... codes
+ERROR_INCOMPATIBLE_TMUX_CONF_LIB=64
+ERROR_MISSING_KEY_IN_MUC_KEYS=65
+ERROR_USER_KEY_NOT_OCTAL=65
+ERROR_T2_USING_DEF_TMUX_CONF=67
+ERROR_STYLE_REDEFINED=68
+
+[ -n "$f_myt_log" ] && {
+    rm -f "$f_myt_log" # clear log on each run
+    lbl_4 "Will log progress to: $f_myt_log"
+}
+
+# if [ -f "$f_skip_venv" ]; then
+#     use_python_venv=false
+#     # lbl_2 "use_python_venv=false"
+# else
+#     use_python_venv=true
+# fi
+
+# Find all the tools and host profiles needed to generate a tmux conf
+get_location_my_tmux_conf
+
+while [ -n "$1" ]; do
+    case "$1" in
+        "-h" | "--help") display_help ;;
+        "-a")
+            [ -z "$2" ] && {
+                error_msg "option -a needs asdf version as param"
+            }
+            asdf_version_requested="$2"
+            shift # shift one extra for param
+            ;;
+        "-c")
+            shift
+            [ -n "$1" ] || {
+                error_msg "option -c needs a tmux bin as param"
+            }
+            tmux_bin="$1"
+            ;;
+        "-k") kill_tmux=true ;;
+        "-q")
+            quick_mode=true
+            ;;
+        "-s") single_session=false ;;
+        "-t") tmate_mode=true ;;
+        "-2") t2_env=true ;;
+        *)
+            [ -n "$profile" ] && errror_msg "profile can only be defined once"
+            profile="$1"
+            ;;
+    esac
+
+    shift
+done
+
+# must happen after all params are parsed to know if this should kill
+# main tmux or t2_env
+if $kill_tmux; then
+    kill_tmux
+    exit 0
+fi
+
+# some versions of tmux have trouble on an inner tmux if tmux-256color is set
+[ "$TERM" = "tmux-256color" ] && export TERM=xterm-256color
+
+$quick_mode && [ -n "$profile" ] && error_msg "Can not be combined: -q and $profile"
+if $t2_env; then
+    tmux_2
+else
+    [ -n "$profile" ] && {
+        [ ! -f "$profile" ] && error_msg "Defined profile not found: $profile"
+        # cd will be done when generating the tmux.conf
+        # this ensures the path is still valid
+        profile="$(realpath "$profile")"
+    }
+fi
+
+start_tmux
