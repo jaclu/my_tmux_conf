@@ -44,12 +44,6 @@ APP_VERSION = "0.4.4   2024-04-10"
 
 BOUNCE_KEY = "/"  # separator for bounce hosts
 
-logging.basicConfig(
-    filename="/tmp/rt.log",
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s",
-)
-
 
 # pylint: disable=too-many-instance-attributes
 class Host:
@@ -93,7 +87,7 @@ class Host:
         #
         if not myt_cmd:
             myt_cmd = self.myt_cmd
-        logging.info(f"Got myt_cmd: {myt_cmd}")
+        logging.info("Got myt_cmd: %s", myt_cmd)
         #
         #  Options sent to remote myt
         #
@@ -244,11 +238,11 @@ def get_host_class(
     #
     clsmembers = inspect.getmembers(sys.modules[__name__], inspect.isclass)
     host_class = None
-    logging.info("iterating host classes")
+    # logging.info("iterating host classes")
     for cls_name, cls in clsmembers:
-        logging.info(f" Comparing [{cls_name}] with [{server}]")
+        # logging.info(" Comparing [%s] with [%s]", cls_name, server)
         if cls_name.lower() == server:
-            logging.info("  found match!")
+            logging.info("found host classes match: %s", cls_name)
             host_class = cls(
                 server=server,
                 connection_name=connection_name,
@@ -367,7 +361,17 @@ def parse_cmd_line():
 
 def main():
     """main function"""
-    logging.info("Starting job")
+
+    uid = os.getuid()  # current user's UID
+    f_log = f"/tmp/rt-{uid}.log"
+
+    logging.basicConfig(
+        filename=f_log,
+        level=logging.INFO,
+        filemode="w",
+        format="%(asctime)s %(levelname)s %(message)s",
+    )
+
     args = parse_cmd_line()
     hc = get_host_class(
         server=args.server,
@@ -401,10 +405,10 @@ def main():
         print(msg + " ...")
         h_name = os.getenv("HOSTNAME_SHORT") or ""
         cmd = hc.full_command_line()
-        logging.info(f"will run: {cmd}")
+        logging.info("will run: %s", cmd)
         proc = subprocess.run(cmd, shell=True, check=False)
         ex_code = proc.returncode
-        logging.info(f"exit code: [{ex_code}]")
+        logging.info("exit code: [%s]", ex_code)
         if ex_code == 255:
             # remote tmux died, tends to leave the terminal messed up
             # do a reset
