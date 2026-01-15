@@ -550,7 +550,17 @@ find_host_profile() {
     #
     #  Hostname profiles are named as lowercased hostname -s with suffix .py
     #
-    _p="$(hostname -s | tr '[:upper:]' '[:lower:]').py"
+    # hostname_bin="hostname"
+    # if [ -n "$TERMUX_VERSION" ]; then
+    #     temux_hostname_bin="$HOME"/.local/bin/hostname
+    #     [ -f "$temux_hostname_bin" ] && hostname_bin="$temux_hostname_bin"
+    # fi
+
+    # Termux default hostname just reports localhost, this allows a user defined
+    # hostname to override
+    _p="$(bash -l -i hostname -s | tr '[:upper:]' '[:lower:]').py"
+    # _p="$(hostname -s | tr '[:upper:]' '[:lower:]').py"
+
     log_it "will look for profile file: $_p"
 
     #
