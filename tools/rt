@@ -99,9 +99,9 @@ class Host:
 
         if use_mosh:
             self.use_mosh = True
-            self.rem_cmd = f"bash -lc '{myt_cmd}'"  # trying without -i
+            self.rem_cmd = f"bash -lic '{myt_cmd}'"
         else:
-            self.rem_cmd = f"\"bash -lc '{myt_cmd}'\""  # trying without -i
+            self.rem_cmd = f"\"bash -lic '{myt_cmd}'\""
         if mosh_client:
             self.mosh_client = mosh_client
         if mosh_server:
@@ -125,9 +125,9 @@ class Host:
         if self.use_tmate:
             rt_cmd += " -m"
         if self.use_mosh:
-            self.rem_cmd = f"bash -lc '{rt_cmd} {bounce_host}'"  # trying without -i
+            self.rem_cmd = f"bash -lic '{rt_cmd} {bounce_host}'"
         else:
-            self.rem_cmd = f"\"bash -lc '{rt_cmd} {bounce_host}'\""  # without -i
+            self.rem_cmd = f"\"bash -lic '{rt_cmd} {bounce_host}'\""
 
     def show_info(self):
         """display info about session"""
