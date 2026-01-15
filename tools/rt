@@ -104,10 +104,10 @@ class Host:
             self.myt_cmd = remote_command
         elif myt_cmd:
             self.myt_cmd = myt_cmd
-        if not myt_cmd:
+        logging.info("Got myt_cmd: %s", self.myt_cmd)
+        if not self.myt_cmd:
             print("ERROR: remote_command can't be empty!")
             sys.exit(1)
-        logging.info("Got myt_cmd: %s", myt_cmd)
 
         if mosh_client:
             self.mosh_client = mosh_client
@@ -199,16 +199,16 @@ class Host:
 # pylint: disable=too-many-positional-arguments,too-many-arguments,too-many-locals
 def get_host_class(
     server,
-    connection_name="",
-    remote_user="",
-    remote_command="",
-    mosh_client="",
-    mosh_server="",
-    mosh_ports="",
-    use_2nd=False,
-    use_quick=False,
-    use_tmate=False,
-    use_mosh=False,
+    connection_name: str = "",
+    remote_user: str = "",
+    remote_command: str = "",
+    mosh_client: str = "",
+    mosh_server: str = "",
+    mosh_ports: str = "",
+    use_2nd: bool = False,
+    use_quick: bool = False,
+    use_tmate: bool = False,
+    use_mosh: bool = False,
 ):
     """get class defining host"""
     #
@@ -293,6 +293,7 @@ def parse_cmd_line():
     )
     parser.add_argument(
         "server",
+        default="",
         help="connect to this host\n"
         f"host1{BOUNCE_KEY}host2 will connect to host1 and there run\n"
         "this command connecting to host2\n"
@@ -315,11 +316,13 @@ def parse_cmd_line():
     parser.add_argument(
         "-u",
         "--user",
+        default="",
         help="User to connect as to the server.\nIf not given, ~/.ssh/config decides",
     )
     parser.add_argument(
         "-c",
         "--command",
+        default="",
         help='Command to run on remote host\ndefault: "tmux -u new-session -ADs #SESSION"',
     )
     parser.add_argument(
@@ -328,15 +331,19 @@ def parse_cmd_line():
         action="store_true",
         help="Connect with mosh, otherwise ssh will be used",
     )
-    parser.add_argument("-M", "--mosh-client", help="local mosh cmd to use, default: mosh")
+    parser.add_argument(
+        "-M", "--mosh-client", default="", help="local mosh cmd to use, default: mosh"
+    )
     parser.add_argument(
         "-p",
         "--ports",
+        default="",
         help="port span to use for mosh connection\nexample: 60500:60510",
     )
     parser.add_argument(
         "-S",
         "--mosh-server",
+        default="",
         help="mosh server cmd on remote machine, default: mosh-server",
     )
     #
