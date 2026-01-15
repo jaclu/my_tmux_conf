@@ -43,7 +43,11 @@ update_if_changed() {
         exit 1
     fi
     if ! diff -q "$CURRENT_DIR"/tools/"$item" "$dest/$item" >/dev/null 2>&1; then
-        sudo cp -av "$CURRENT_DIR"/tools/"$item" "$dest/$item"
+        if [ -n "$TERMUX_VERSION" ]; then
+            cp -av "$CURRENT_DIR"/tools/"$item" "$dest/$item"
+        else
+            sudo cp -av "$CURRENT_DIR"/tools/"$item" "$dest/$item"
+        fi
         files_changed=true
     fi
 }
