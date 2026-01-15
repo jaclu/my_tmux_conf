@@ -549,7 +549,7 @@ find_host_profile() {
 
     # Termux and iSH default hostname just reports localhost,
     # this allows a user defined hostname to override
-    _p="$(bash -l -i hostname -s | tr '[:upper:]' '[:lower:]').py"
+    _p="$(bash -l -i -c 'hostname -s' | tr '[:upper:]' '[:lower:]').py"
 
     #
     #  Step 2 check user supplied hostnames folder
