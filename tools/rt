@@ -74,14 +74,14 @@ class Host:
         connection_name: str = "",
         remote_user: str = "",
         remote_command: str = "",  # myt override?
-        myt_cmd: str = "",
         mosh_client: str = "",
         mosh_server: str = "",
         mosh_ports: str = "",
+        use_mosh: bool = False,
+        myt_cmd: str = "",
         use_2nd: bool = False,
         use_quick: bool = False,
         use_tmate: bool = False,
-        use_mosh: bool = False,
     ):
         if not server:
             print("ERROR! No server given")
@@ -98,6 +98,8 @@ class Host:
         #  if params need to be passed to the cmd bash runs, wrap them inside
         #  the inner quotes, like 'bin/myt -2' instead of 'bin/myt'
         #
+        logging.info("Initial  server: %s", server)
+        logging.info("Initial  connection_name: %s", connection_name)
         logging.info("Initial  remote_command: %s", remote_command)
         logging.info("Initial  myt_cmd: %s", myt_cmd)
         if remote_command:
@@ -174,6 +176,14 @@ class Host:
         print(f"mosh:       {self.mosh_client} - {self.mosh_server} {self.mosh_ports}")
         print(f"cmd line:   {self.full_command_line()}")
 
+    def remote_session(self):
+        """server and user if given"""
+        if self.remote_user:
+            s = f"{self.remote_user}@{self.server}"
+        else:
+            s = self.server
+        return s
+
     def full_command_line(self):
         """expand cmd line"""
         if self.use_mosh:
@@ -186,14 +196,6 @@ class Host:
         else:
             cmd = f"ssh -t {self.remote_session()}"
         return f"{cmd} {self.rem_cmd}"
-
-    def remote_session(self):
-        """remote session identifier"""
-        if self.remote_user:
-            s = f"{self.remote_user}@{self.server}"
-        else:
-            s = self.server
-        return s
 
 
 # pylint: disable=too-many-positional-arguments,too-many-arguments,too-many-locals
