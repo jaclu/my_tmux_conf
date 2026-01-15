@@ -49,45 +49,69 @@ BOUNCE_KEY = "/"  # separator for bounce hosts
 class Host:
     """Handles one host"""
 
-    connection_name = ""  # A common name for this connection
-    server = ""  # server to connect to
-    remote_user = ""  # If not given ~/.ssh/config setting will be used
-    # options for remote myt
-    myt_cmd = "myt"
-    use_2nd = False
-    use_quick = False
-    use_tmate = False
-    use_mosh = False
-    # Moosh env
-    mosh_client = "mosh"  # local mosh command
-    mosh_server = ""  # default: 'mosh-server'
-    mosh_ports = ""  # default: '60000:61000'
+    # server = ""  # server to connect to
+    # connection_name = ""  # A common name for this connection
+    # remote_user = ""  # If not given ~/.ssh/config setting will be used
+
+    # # Moosh env
+    # mosh_client = "mosh"  # local mosh command
+    # mosh_server = ""  # default: 'mosh-server'
+    # mosh_ports = ""  # default: '60000:61000'
+
+    # # options for remote myt
+    # myt_cmd = "myt"
+
+    # use_2nd = False
+    # use_quick = False
+    # use_tmate = False
+    # use_mosh = False
 
     # pylint: disable=too-many-positional-arguments,too-many-branches,too-many-arguments
     def __init__(
         self,
         server,
-        connection_name="",
-        remote_user="",
-        remote_command="",
-        myt_cmd="",
-        use_2nd=False,
-        use_quick=False,
-        use_tmate=False,
-        use_mosh=False,
-        mosh_client="mosh",
-        mosh_server="",
-        mosh_ports="",
+        connection_name: str = "",
+        remote_user: str = "",
+        remote_command: str = "",  # myt override?
+        myt_cmd: str = "myt",
+        mosh_client: str = "mosh",
+        mosh_server: str = "",
+        mosh_ports: str = "",
+        use_2nd: bool = False,
+        use_quick: bool = False,
+        use_tmate: bool = False,
+        use_mosh: bool = False,
     ):
+        if not server:
+            print("ERROR! No server given")
+            sys.exit(1)
+        self.server = server
+        if connection_name:
+            self.connection_name = connection_name
+        else:
+            self.connection_name = server
+        if remote_user:
+            self.remote_user = remote_user
         #
         #  run dest command as an interactive bash shell in order to pick up
         #  the user environment, since the mosh session itself will not.
         #  if params need to be passed to the cmd bash runs, wrap them inside
         #  the inner quotes, like 'bin/myt -2' instead of 'bin/myt'
         #
+        if remote_command:
+            myt_cmd = remote_command
         if not myt_cmd:
-            myt_cmd = self.myt_cmd
+            print("ERROR: remote_command can't be empty!")
+            sys.exit(1)
         logging.info("Got myt_cmd: %s", myt_cmd)
+
+        if mosh_client:
+            self.mosh_client = mosh_client
+        if mosh_server:
+            self.mosh_server = mosh_server
+        if mosh_ports:
+            self.mosh_ports = mosh_ports
+
         #
         #  Options sent to remote myt
         #
@@ -100,35 +124,12 @@ class Host:
         if use_tmate:
             self.use_tmate = True
             myt_cmd += " -m"
-        if not server:
-            print("ERROR! No server given")
-            sys.exit(1)
-        self.server = server
-
-        if connection_name:
-            self.connection_name = connection_name
-        else:
-            self.connection_name = server
-        if remote_user:
-            self.remote_user = remote_user
-        if remote_command:
-            myt_cmd = remote_command
-        if not myt_cmd:
-            print("ERROR: remote_command can't be empty!")
-            sys.exit(1)
-
         if use_mosh:
             self.use_mosh = True
             self.rem_cmd = myt_cmd
         else:
             self.rem_cmd = f'"{myt_cmd}"'
         self.rem_cmd = myt_cmd
-        if mosh_client:
-            self.mosh_client = mosh_client
-        if mosh_server:
-            self.mosh_server = mosh_server
-        if mosh_ports:
-            self.mosh_ports = mosh_ports
 
     def bounce_to(self, bounce_host):
         """continue to host"""
@@ -198,13 +199,13 @@ def get_host_class(
     connection_name="",
     remote_user="",
     remote_command="",
+    mosh_client="",
+    mosh_server="",
+    mosh_ports="",
     use_2nd=False,
     use_quick=False,
     use_tmate=False,
     use_mosh=False,
-    mosh_client="",
-    mosh_server="",
-    mosh_ports="",
 ):
     """get class defining host"""
     #
@@ -222,13 +223,13 @@ def get_host_class(
             server=bounce_host,
             connection_name=server,
             remote_user=remote_user,
+            mosh_client=mosh_client,
+            mosh_server=mosh_server,
+            mosh_ports=mosh_ports,
             use_2nd=use_2nd,
             use_quick=use_quick,
             use_tmate=use_tmate,
             use_mosh=use_mosh,
-            mosh_client=mosh_client,
-            mosh_server=mosh_server,
-            mosh_ports=mosh_ports,
         )
         bounce_node.bounce_to(host_remainder)
         return bounce_node
@@ -248,13 +249,13 @@ def get_host_class(
                 connection_name=connection_name,
                 remote_user=remote_user,
                 remote_command=remote_command,
+                mosh_client=mosh_client,
+                mosh_server=mosh_server,
+                mosh_ports=mosh_ports,
                 use_2nd=use_2nd,
                 use_quick=use_quick,
                 use_tmate=use_tmate,
                 use_mosh=use_mosh,
-                mosh_client=mosh_client,
-                mosh_server=mosh_server,
-                mosh_ports=mosh_ports,
             )
             break
     if not host_class:
@@ -266,13 +267,13 @@ def get_host_class(
             connection_name=connection_name,
             remote_user=remote_user,
             remote_command=remote_command,
+            mosh_client=mosh_client,
+            mosh_server=mosh_server,
+            mosh_ports=mosh_ports,
             use_2nd=use_2nd,
             use_quick=use_quick,
             use_tmate=use_tmate,
             use_mosh=use_mosh,
-            mosh_client=mosh_client,
-            mosh_server=mosh_server,
-            mosh_ports=mosh_ports,
         )
     return host_class
 
@@ -377,13 +378,13 @@ def main():
         server=args.server,
         remote_user=args.user,
         remote_command=args.command,
+        mosh_client=args.mosh_client,
+        mosh_server=args.mosh_server,
+        mosh_ports=args.ports,
         use_2nd=args.use_2nd,
         use_quick=args.quick,
         use_tmate=args.use_tmate,
         use_mosh=args.use_mosh,
-        mosh_client=args.mosh_client,
-        mosh_server=args.mosh_server,
-        mosh_ports=args.ports,
     )
     if args.display:
         hc.show_info()
