@@ -463,10 +463,9 @@ class Jacdroid(Host):
 #     mosh_ports = "60300:60399"
 
 
-# class Kajsa(Host):
-#     """definig a host kajsa"""
-
-#     mosh_ports = "60050:60070"
+class Hetz2(Host):
+    """definig a host kajsa"""
+    mosh_ports = "60050:60070"
 
 
 if __name__ == "__main__":
