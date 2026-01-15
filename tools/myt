@@ -84,7 +84,7 @@ error_msg() {
 }
 
 run_cmd() {
-    log_it "run_cmd($*)"
+    # log_it "run_cmd($*)"
     # Used to run a command, log output and report exit code of operation
     _c="$(eval "$1" 2>&1)"
     ex_code="$?"
@@ -232,7 +232,7 @@ select_tmux_bin() {
         # lbl_3 "><> tmux found in PATH: $TMUX_BIN"
         return
     fi
-    [ -z "$TMUX_BIN" ] && error_msg "Failed to find tmux - using PATH: $PATH"
+    [ -z "$TMUX_BIN" ] && error_msg "Failed to define TMUX_BIN PATH[$PATH]"
 }
 
 define_tmux_env() {
@@ -326,18 +326,18 @@ not_source_asdf_if_found() {
     return 1 # false
 }
 
-# indicate_tmux_connection_type() {
-#     # lbl_3 "indicate_tmux_connection_type()"
-#     connect_type="$1"
-#     [ -z "$connect_type" ] && {
-#         error_msg "indicate_tmux_connection_type() - no param1"
-#     }
-#     log_it "$connect_type using: $TMUX_BIN [$tmux_vers]"
-#     log_it "    socket: $socket - config: $conf_file"
-# }
+indicate_tmux_connection_type() {
+    # lbl_3 "indicate_tmux_connection_type()"
+    connect_type="$1"
+    [ -z "$connect_type" ] && {
+        error_msg "indicate_tmux_connection_type() - no param1"
+    }
+    log_it "$connect_type using: $TMUX_BIN [$tmux_vers]"
+    log_it "    socket: $socket - config: $conf_file"
+}
 
 is_tmux_ses_running() {
-    # lbl_3 "is_tmux_ses_running($TMUX_BIN -L $socket)"
+    # lbl_3 "is_tmux_ses_running()"
     if $TMUX_BIN -L "$socket" list-sessions >/dev/null 2>&1; then
         # lbl_2 "found sessions"
         return 0
@@ -348,12 +348,12 @@ is_tmux_ses_running() {
 }
 
 is_tmux_cli_connected() {
-    lbl_3 "is_tmux_cli_connected() $TMUX_BIN"
+    # lbl_3 "is_tmux_cli_connected() $TMUX_BIN"
     if [ -n "$($TMUX_BIN -L "$socket" list-clients)" ]; then
-        lbl_2 "was connected"
+        # lbl_2 "was connected"
         return 0
     else
-        lbl_2 "nothing connected"
+        # lbl_2 "nothing connected"
         return 1
     fi
 }
@@ -414,10 +414,10 @@ start_tmux() {
 
     if is_tmux_ses_running; then
         $single_session && drop_other_clients
-        # indicate_tmux_connection_type "attach-session"
+        indicate_tmux_connection_type "Attaching to"
         tmux_params="attach-session -t main"
     else
-        # indicate_tmux_connection_type "new-session"
+        indicate_tmux_connection_type "Starting"
         tmux_params="new-session -s main"
     fi
     run_cmd "$TMUX_BIN -L $socket -f '$conf_file' $tmux_params"
@@ -547,9 +547,10 @@ find_host_profile() {
     profile="${my_tmux_conf_location}/hostnames/_def_profile.py"
     [ -f "$profile" ] && return 0
 
-    # Termux and iSH default hostname just reports localhost,
-    # this allows a user defined hostname to override
-    _p="$(bash -l -i -c 'hostname -s' | tr '[:upper:]' '[:lower:]').py"
+    #
+    #  Hostname profiles are named as lowercased hostname -s with suffix .py
+    #
+    _p="$(hostname -s | tr '[:upper:]' '[:lower:]').py"
 
     #
     #  Step 2 check user supplied hostnames folder
