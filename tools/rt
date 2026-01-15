@@ -98,6 +98,8 @@ class Host:
         #  if params need to be passed to the cmd bash runs, wrap them inside
         #  the inner quotes, like 'bin/myt -2' instead of 'bin/myt'
         #
+        logging.info("Initial  remote_command: %s", remote_command)
+        logging.info("Initial  myt_cmd: %s", myt_cmd)
         if remote_command:
             myt_cmd = remote_command
         if not myt_cmd:
