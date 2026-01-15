@@ -53,13 +53,14 @@ class Host:
     # connection_name = ""  # A common name for this connection
     # remote_user = ""  # If not given ~/.ssh/config setting will be used
 
+    # # options for remote myt
+    # remote_command = ""
+    myt_cmd = "myt"
+
     # # Moosh env
-    # mosh_client = "mosh"  # local mosh command
+    mosh_client = "mosh"  # local mosh command
     # mosh_server = ""  # default: 'mosh-server'
     # mosh_ports = ""  # default: '60000:61000'
-
-    # # options for remote myt
-    # myt_cmd = "myt"
 
     # use_2nd = False
     # use_quick = False
@@ -73,8 +74,8 @@ class Host:
         connection_name: str = "",
         remote_user: str = "",
         remote_command: str = "",  # myt override?
-        myt_cmd: str = "myt",
-        mosh_client: str = "mosh",
+        myt_cmd: str = "",
+        mosh_client: str = "",
         mosh_server: str = "",
         mosh_ports: str = "",
         use_2nd: bool = False,
@@ -100,13 +101,16 @@ class Host:
         logging.info("Initial  remote_command: %s", remote_command)
         logging.info("Initial  myt_cmd: %s", myt_cmd)
         if remote_command:
-            myt_cmd = remote_command
+            self.myt_cmd = remote_command
+        elif myt_cmd:
+            self.myt_cmd = myt_cmd
         if not myt_cmd:
             print("ERROR: remote_command can't be empty!")
             sys.exit(1)
         logging.info("Got myt_cmd: %s", myt_cmd)
 
-        self.mosh_client = mosh_client
+        if mosh_client:
+            self.mosh_client = mosh_client
         self.mosh_server = mosh_server
         self.mosh_ports = mosh_ports
 
@@ -238,11 +242,11 @@ def get_host_class(
     #
     clsmembers = inspect.getmembers(sys.modules[__name__], inspect.isclass)
     host_class = None
-    # logging.info("iterating host classes")
+    logging.info("Iterating host classes")
     for cls_name, cls in clsmembers:
-        # logging.info(" Comparing [%s] with [%s]", cls_name, server)
+        logging.info(" Comparing [%s] with [%s]", cls_name, server)
         if cls_name.lower() == server:
-            logging.info("found host classes match: %s", cls_name)
+            logging.info("  Found host classes match: %s", cls_name)
             host_class = cls(
                 server=server,
                 connection_name=connection_name,
@@ -446,16 +450,16 @@ def main():
 #
 
 
+class Hetz1(Host):
+    """definig host hetz2"""
+
+    mosh_ports = "60300:60399"
+
+
 class Jacdroid(Host):
     """This is a Termux so myt is not in system path"""
 
     myt_cmd = "/data/data/com.termux/files/home/.local/bin/myt"
-
-
-# class Hetz2(Host):
-#     """definig host hetz2"""
-
-#     mosh_ports = "60300:60399"
 
 
 if __name__ == "__main__":
