@@ -444,28 +444,18 @@ def main():
 #  Custom Hosts, to preset some stuff
 #  class name should match hostname you use when connecting
 #
-class Ubu(Host):
-    """definig an ubuntu host"""
-
-    mosh_ports = "62020:62021"
 
 
 class Jacdroid(Host):
-    """definig a windows host"""
+    """This is a Termux so myt is not in system path"""
 
     myt_cmd = "/data/data/com.termux/files/home/.local/bin/myt"
-    mosh_ports = "62000:62001"
 
 
 # class Hetz2(Host):
 #     """definig host hetz2"""
 
 #     mosh_ports = "60300:60399"
-
-
-class Hetz2(Host):
-    """definig a host kajsa"""
-    mosh_ports = "60050:60070"
 
 
 if __name__ == "__main__":
