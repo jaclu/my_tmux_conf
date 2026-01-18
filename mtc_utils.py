@@ -97,10 +97,14 @@ def _get_short_hostname():
         f"{HOME}/bin/hostname",
         "/usr/local/bin/hostname",
     ]:
+        print(f"><> iterating over {cmd}")
         f_name = Path(cmd)
         if f_name.is_file() and os.access(f_name, os.X_OK):
-            return run_shell(f"{cmd} -s")
-    # no custom hostname found, use the regulat onee
+            h_name = run_shell(f"{cmd} -s")
+            print(f"><> mtc_utils._get_short_hostname() using: {f_name} gpt: {h_name}")
+            return h_name
+    # no custom hostname found, use the regulat one
+    print("><> Using default hostname")
     return run_shell("hostname -s")
 
 
@@ -147,7 +151,8 @@ LC_KEYBOARD = os.getenv("LC_KEYBOARD") or ""
 #
 LC_ORIGIN = os.getenv("LC_ORIGIN") or ""
 
-HOSTNAME = os.getenv("HOSTNAME_SHORT") or _get_short_hostname()
+# HOSTNAME = os.getenv("HOSTNAME_SHORT") or _get_short_hostname()
+HOSTNAME = _get_short_hostname()
 if HOSTNAME:
     HOSTNAME.lower()
 else:
