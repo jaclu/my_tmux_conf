@@ -118,7 +118,11 @@ def _get_short_hostname():
 # ===============================================================
 
 
-HOME = os.getenv("HOME") or sys.exit("env HOME not found")
+HOME = os.getenv("HOME") or ""
+if not HOME:
+    sys.exit("env HOME not found")
+
+
 #
 # I keep track on if it is a remote session, to be able to figure out if
 # this session is using a limited console like if running on an iSH node.
