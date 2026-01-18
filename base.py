@@ -90,7 +90,7 @@ class BaseConfig(TmuxConfig):
     #
     #  This causes most colors on MacOS Term.app to fail
     #
-    use_24bit_color: bool = os.environ.get("TERM_PROGRAM") != "Apple_Terminal"
+    use_24bit_color: bool = os.getenv("TERM_PROGRAM") != "Apple_Terminal"
     #
     #  Tc is more commonly supported by terminals
     #  RGB may provide more accurate color representation
@@ -116,7 +116,7 @@ class BaseConfig(TmuxConfig):
     #  plugin compatibility, and changed settings in a way that does not
     #  interfere with my main environment
     #
-    t2_env: str = os.environ.get("T2_ENV", "")
+    t2_env: str = os.getenv("T2_ENV", "")
     prefix_key_T2: str = "C-b"  # prefix for inner dev environment
 
     # Disables tmux default popup menus, instead relying on the plugin
