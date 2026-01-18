@@ -27,69 +27,8 @@ import json
 import os.path
 import platform
 import random
-import shutil
 import subprocess  # nosec
-
-#
-# I keep track on if it is a remote session, to be able to figure out if
-# this session is using a limited console like if running on an iSH node.
-# It can also be used to disable unintentionally activated multi-media related
-# plugins. not much point trying to stream audio on a cloud hosted node.
-#
-IS_REMOTE = bool(os.getenv("SSH_CLIENT"))
-
-#
-# I often test things out on a separate tmux instance, that can either run
-# standalone or inside the other.
-# TMUX_OUTER indicates that one of my envs runs inside the other. In such cases
-# any attempt to restart the outer inside the inner is refused to avoid
-# bizarre recursive screen updates, and getting disconnected since if the outer
-# disconnects the previously inner normally also disappears.
-#
-IS_INNER_TMUX = bool(os.getenv("TMUX_OUTER"))
-
-#
-#  If the session originated on a "primitive keyboard" console, such as
-#  iSH or Termux, it is indicated in LC_CONSOLE
-#
-LC_CONSOLE = os.getenv("LC_CONSOLE") or ""
-
-#
-#  Hosts with limited consoles should also list what keyboard they are using
-#  in order for tablet_kbd.py to make correct workarounds
-#
-LC_KEYBOARD = os.getenv("LC_KEYBOARD") or ""
-
-#
-#   List hostname where session started, purely informational
-#
-LC_ORIGIN = os.getenv("LC_ORIGIN") or ""
-
-HOSTNAME = os.getenv("HOSTNAME_SHORT") or ""
-
-IS_DARWIN = platform.system() == "Darwin"
-IS_ISH = os.path.isdir("/proc/ish")
-IS_TERMUX = os.environ.get("TERMUX_VERSION") is not None
-IS_GHOSTTY: bool = os.environ.get("TERM_PROGRAM") == "ghostty"
-
-# muc keys and default values
-K_M_PLUS = "M-+"
-K_M_UNDERSCORE = "M-_"
-K_M_P = "M-P"
-K_M_X = "M-X"
-K_M_H = "M-h"
-K_M_J = "M-j"
-K_M_K = "M-k"
-K_M_L = "M-l"
-
-#
-#  Define some error types
-#
-ERROR_INCOMPATIBLE_TMUX_CONF_LIB = 64
-ERROR_MISSING_KEY_IN_MUC_KEYS = 65
-ERROR_USER_KEY_NOT_OCTAL = 65
-ERROR_T2_USING_DEF_TMUX_CONF = 67
-ERROR_STYLE_REDEFINED = 68
+from pathlib import Path
 
 
 #
@@ -153,8 +92,16 @@ def _get_currency_from_ipapi() -> str:
 
 
 def _get_short_hostname():
-    cmd = shutil.which("hostname")
-    return run_shell(f"{cmd} -s").lower()
+    for cmd in [
+        f"{HOME}/.local/bin/hostname",
+        f"{HOME}/bin/hostname",
+        "/usr/local/bin/hostname",
+    ]:
+        f_name = Path(cmd)
+        if f_name.is_file() and os.access(f_name, os.X_OK):
+            return run_shell(f"{cmd} -s")
+    # no custom hostname found, use the regulat onee
+    return run_shell("hostname -s")
 
 
 # ===============================================================
@@ -163,7 +110,70 @@ def _get_short_hostname():
 #
 # ===============================================================
 
+
+HOME = os.getenv("HOME") or ""
+#
+# I keep track on if it is a remote session, to be able to figure out if
+# this session is using a limited console like if running on an iSH node.
+# It can also be used to disable unintentionally activated multi-media related
+# plugins. not much point trying to stream audio on a cloud hosted node.
+#
+IS_REMOTE = bool(os.getenv("SSH_CLIENT"))
+
+#
+# I often test things out on a separate tmux instance, that can either run
+# standalone or inside the other.
+# TMUX_OUTER indicates that one of my envs runs inside the other. In such cases
+# any attempt to restart the outer inside the inner is refused to avoid
+# bizarre recursive screen updates, and getting disconnected since if the outer
+# disconnects the previously inner normally also disappears.
+#
+IS_INNER_TMUX = bool(os.getenv("TMUX_OUTER"))
+
+#
+#  If the session originated on a "primitive keyboard" console, such as
+#  iSH or Termux, it is indicated in LC_CONSOLE
+#
+LC_CONSOLE = os.getenv("LC_CONSOLE") or ""
+
+#
+#  Hosts with limited consoles should also list what keyboard they are using
+#  in order for tablet_kbd.py to make correct workarounds
+#
+LC_KEYBOARD = os.getenv("LC_KEYBOARD") or ""
+
+#
+#   List hostname where session started, purely informational
+#
+LC_ORIGIN = os.getenv("LC_ORIGIN") or ""
+
+HOSTNAME = os.getenv("HOSTNAME_SHORT") or _get_short_hostname()
 if HOSTNAME:
     HOSTNAME.lower()
 else:
-    HOSTNAME = _get_short_hostname()
+    HOSTNAME = "no_host_name"
+
+
+IS_DARWIN = platform.system() == "Darwin"
+IS_ISH = os.path.isdir("/proc/ish")
+IS_TERMUX = os.getenv("TERMUX_VERSION") is not None
+IS_GHOSTTY: bool = os.getenv("TERM_PROGRAM") == "ghostty"
+
+# muc keys and default values
+K_M_PLUS = "M-+"
+K_M_UNDERSCORE = "M-_"
+K_M_P = "M-P"
+K_M_X = "M-X"
+K_M_H = "M-h"
+K_M_J = "M-j"
+K_M_K = "M-k"
+K_M_L = "M-l"
+
+#
+#  Define some error types
+#
+ERROR_INCOMPATIBLE_TMUX_CONF_LIB = 64
+ERROR_MISSING_KEY_IN_MUC_KEYS = 65
+ERROR_USER_KEY_NOT_OCTAL = 65
+ERROR_T2_USING_DEF_TMUX_CONF = 67
+ERROR_STYLE_REDEFINED = 68
