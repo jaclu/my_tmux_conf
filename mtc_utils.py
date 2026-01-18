@@ -28,6 +28,7 @@ import os.path
 import platform
 import random
 import subprocess  # nosec
+import sys
 from pathlib import Path
 
 
@@ -92,19 +93,21 @@ def _get_currency_from_ipapi() -> str:
 
 
 def _get_short_hostname():
+    # print(f"><> HOSTNAME_SHORT: {os.getenv("HOSTNAME_SHORT")}")
     for cmd in [
         f"{HOME}/.local/bin/hostname",
         f"{HOME}/bin/hostname",
         "/usr/local/bin/hostname",
     ]:
-        print(f"><> iterating over {cmd}")
+        # print(f"><> iterating over {cmd}")
         f_name = Path(cmd)
         if f_name.is_file() and os.access(f_name, os.X_OK):
             h_name = run_shell(f"{cmd} -s")
-            print(f"><> mtc_utils._get_short_hostname() using: {f_name} gpt: {h_name}")
+            # print(f"><> mtc_utils._get_short_hostname() using: {f_name} gpt: {h_name}")
             return h_name
+
     # no custom hostname found, use the regulat one
-    print("><> Using default hostname")
+    # print("><> Using default hostname")
     return run_shell("hostname -s")
 
 
@@ -115,7 +118,7 @@ def _get_short_hostname():
 # ===============================================================
 
 
-HOME = os.getenv("HOME") or ""
+HOME = os.getenv("HOME") or sys.exit("env HOME not found")
 #
 # I keep track on if it is a remote session, to be able to figure out if
 # this session is using a limited console like if running on an iSH node.
@@ -151,8 +154,7 @@ LC_KEYBOARD = os.getenv("LC_KEYBOARD") or ""
 #
 LC_ORIGIN = os.getenv("LC_ORIGIN") or ""
 
-# HOSTNAME = os.getenv("HOSTNAME_SHORT") or _get_short_hostname()
-HOSTNAME = _get_short_hostname()
+HOSTNAME = os.getenv("HOSTNAME_SHORT") or _get_short_hostname()
 if HOSTNAME:
     HOSTNAME.lower()
 else:
