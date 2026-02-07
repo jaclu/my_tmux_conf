@@ -191,8 +191,7 @@ class LimitedKbdSpecialHandling:
             print(f"===>  Session for limited console from:  {mtc_utils.LC_ORIGIN}")
         print(f"===>  {self.__class__.__name__}  -  kbd: {mtc_utils.LC_KEYBOARD}")
         print()
-        self.tc.write(
-            f"""
+        self.tc.write(f"""
             #======================================================
             #
             #  Remap keys for limited console at: {mtc_utils.LC_ORIGIN}
@@ -200,8 +199,7 @@ class LimitedKbdSpecialHandling:
             #  {self.__class__.__name__}  -  kbd: {mtc_utils.LC_KEYBOARD}
             #
             #======================================================
-            """
-        )
+            """)
         if mtc_utils.LC_KEYBOARD == KBD_OMNITYPE:
             self.keyb_type_omnitype()
         elif mtc_utils.LC_KEYBOARD == KBD_BLUETOOTH:
@@ -291,12 +289,10 @@ class LimitedKbdSpecialHandling:
 
     def map_m_fn_keys(self) -> None:
         w = self.tc.write
-        w(
-            """
+        w("""
         #
         #  Map M-number to Function keys
-        # """
-        )
+        # """)
         for fn, data in m_fn_keys.items():
             w(f'{self.tc.opt_server}   user-keys[{key_2_uk[fn]}]  "{data[SEQ]}"')
             w(
@@ -307,12 +303,10 @@ class LimitedKbdSpecialHandling:
 
     def map_ms_fn_keys(self) -> None:
         w = self.tc.write
-        w(
-            """
+        w("""
         #
         #  Map M-S-number to Function keys
-        # """
-        )
+        # """)
 
         for fn, data in ms_fn_keys.items():
             if data[KEY] == "M-S-2" and self.has_been_handled[EURO]:
@@ -356,14 +350,12 @@ class LimitedKbdSpecialHandling:
         if comment:
             comment = f"  #  {comment}"
 
-        self.tc.write(
-            f"""#
+        self.tc.write(f"""#
             #  Replacement {key} key
             #
             {self.tc.opt_server} user-keys[{key_2_uk[key]}]  "{sequence}"{comment}
             bind -N "Send key {key}" -n User{key_2_uk[key]}  send-keys {send_str}
-            """
-        )
+            """)
         self.sequence_used.append(sequence)
         self.has_been_handled[key] = True
 
@@ -381,13 +373,11 @@ class LimitedKbdSpecialHandling:
 
     def hash_not_pound(self):
         sequence = "\\302\\243"
-        self.tc.write(
-            f"""
+        self.tc.write(f"""
             # This keyb sends £ when it should send #
             {self.tc.opt_server} user-keys[{key_2_uk["#"]}] "{sequence}"
             bind -N "Send #" -n User{key_2_uk["#"]} send-keys  #
-            """
-        )
+            """)
         self.sequence_used.append(sequence)
 
     def alternate_key_euro(self, sequence):
@@ -510,14 +500,12 @@ class IshConsole(LimitedKbdSpecialHandling):
         if not self.ms_fn_keys_mapped:
             self.alt_upper_case_numbers()
 
-        w(  # not in root 308 310 311 312 316 324
-            """
+        w("""
         #
         #  iSH console doesn't generate the right keys for M-S characters
         #  Here they are interpreted by tmux
         #
-        """
-        )
+        """)  # not in root 308 310 311 312 316 324
         muc_values = set(self.tc.muc_keys.values())
         for key, sequence in self.auk.items():
             if sequence in self.sequence_used:

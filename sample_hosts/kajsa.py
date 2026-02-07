@@ -44,12 +44,10 @@ class Kajsa(SB):
         #  Display what class this override comes from
         self.write("# kajsa.local_overides")
         log_file = "~/tmp/packet-loss-kajsa.log"
-        self.write(
-            f"""
+        self.write(f"""
             set -g @packet-loss-run_disconnected  yes
             set -g @packet-loss-log_file  "{log_file}"
-            """
-        )
+            """)
 
 
 if __name__ == "__main__":

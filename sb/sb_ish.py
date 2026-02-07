@@ -36,12 +36,10 @@ class SB(DefaultPlugins):
         if self.vers_ok("1.9"):
             self.write(f"set -g status-style fg={fg_clr},bg={bg_clr}")
         else:
-            self.write(
-                f"""
+            self.write(f"""
                 set -g status-fg {fg_clr}
                 set -g status-bg {bg_clr}
-                """
-            )
+                """)
         return print_header  # request footer to be printed
 
 

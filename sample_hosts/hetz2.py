@@ -41,12 +41,10 @@ class Hetz2(DefaultPlugins):
         if self.vers_ok("1.9"):
             self.write(f"set -g status-style fg={fg_clr},bg={bg_clr}")
         else:
-            self.write(
-                f"""
+            self.write(f"""
                 set -g status-fg {fg_clr}
                 set -g status-bg {bg_clr}
-                """
-            )
+                """)
         return print_header  # request footer to be printed
 
     def local_overrides(self) -> None:
@@ -63,12 +61,10 @@ class Hetz2(DefaultPlugins):
         #  Display what class this override comes from
         self.write("# hetz2.local_overides")
         log_file = "~/.dotFiles/latest_statuses/tmux-packet-loss-hetz2.log"
-        self.write(
-            f"""
+        self.write(f"""
             set -g @packet-loss-run_disconnected  yes
             set -g @packet-loss-log_file  "{log_file}"
-            """
-        )
+            """)
 
 
 if __name__ == "__main__":

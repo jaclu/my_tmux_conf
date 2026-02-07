@@ -148,14 +148,11 @@ class T2(SB):  # type: ignore
                     "'#{?pane_in_mode,fg=yellow,fg=colour241}'"
                 )
             else:
-                w(
-                    f"""{self.opt_pane} pane-active-border-style fg=colour70
-                {self.opt_pane} pane-border-style fg=colour241"""
-                )
+                w(f"""{self.opt_pane} pane-active-border-style fg=colour70
+                {self.opt_pane} pane-border-style fg=colour241""")
 
         if "tmux-packet-loss" in self.plugins.installed(short_name=True):
-            w(
-                """#
+            w("""#
                 # tmux-packet-loss - overrides
                 #
                 # Use a different host vs the outer tmux
@@ -164,8 +161,7 @@ class T2(SB):  # type: ignore
                 # set -g @packet-loss-log_file "" # Use this to disable logging
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
                 set -g @packet-loss-run_disconnected No
-            """
-            )
+            """)
 
 
 if __name__ == "__main__":

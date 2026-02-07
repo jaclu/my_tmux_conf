@@ -41,12 +41,10 @@ class SB(DefaultPlugins):
             w(f"set -g status-style fg={fg_clr},bg={bg_clr}")
             # w("set -g status-justify centre")
         else:
-            w(
-                f"""
+            w(f"""
                 set -g status-fg {fg_clr}
                 set -g status-bg {bg_clr}
-                """
-            )
+                """)
         return print_header  # request footer to be printed
 
 

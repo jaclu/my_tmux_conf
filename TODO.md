@@ -39,3 +39,7 @@ need to reconfigure vscode so that they work again
 - bandit
 - flake8
 - pylint
+
+## invesigate
+
+set -g @plugin 'YlanAllouche/tmux-task-monitor'

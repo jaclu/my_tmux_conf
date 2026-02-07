@@ -270,12 +270,10 @@ class BaseConfig(TmuxConfig):
         """
         w = self.write
         if print_header:
-            w(
-                """
+            w("""
             #
             #   ======   status_bar_customization()   ======
-            #"""
-            )
+            #""")
 
         return print_header
 
@@ -351,8 +349,7 @@ class BaseConfig(TmuxConfig):
     def remove_unwanted_default_bindings(self):
         w = self.write
         if self.vers_ok(1.1):
-            w(
-                """
+            w("""
                 #======================================================
                 #
                 #   Remove unwanted default bindings
@@ -364,52 +361,41 @@ class BaseConfig(TmuxConfig):
                 #  the layouts directly using <prefix> M-[1-5],
                 #  so the safe bet is to disable
                 #
-                unbind  Space    #  Select next layout"""
-            )
+                unbind  Space    #  Select next layout""")
         else:
             return
 
         if self.skip_default_popups and self.vers_ok(3.0):
-            w(
-                """
+            w("""
                 #
-                #  Remove the default popup menus"""
-            )
+                #  Remove the default popup menus""")
             if "tmux-menus" in self.plugins.installed(short_name=True):
                 w("#  Instead using the plugin jaclu/tmux-menus - <prefix> space")
             w("#")
             if self.vers_ok(3.0):
-                w(
-                    """unbind  -n  MouseDown3Pane
+                w("""unbind  -n  MouseDown3Pane
                     unbind  -n  MouseDown3Status
                     unbind  -n  MouseDown3StatusLeft
-                    unbind  -n  M-MouseDown3Pane"""
-                )
+                    unbind  -n  M-MouseDown3Pane""")
                 if not self.vers_ok(3.1):
                     w("unbind  -n  MouseDown3StatusRight")
             if self.vers_ok("3.0a"):
-                w(
-                    """unbind  <
-                    unbind  >"""
-                )
+                w("""unbind  <
+                    unbind  >""")
             if self.vers_ok(3.4):
-                w(
-                    """unbind  -n  M-MouseDown3Status
-                    unbind  -n  M-MouseDown3StatusLeft"""
-                )
+                w("""unbind  -n  M-MouseDown3Status
+                    unbind  -n  M-MouseDown3StatusLeft""")
         w()  # spacer
 
     def connecting_terminal(self):  # cmd: 2 + optional
         w = self.write
-        w(
-            """
+        w("""
         #======================================================
         #
         #   Connecting terminal
         #
         #======================================================
-        """
-        )
+        """)
 
         # Use tmux-256color if available, otherwise fallback
         # w("if-shell 'infocmp tmux-256color >/dev/null 2>&1' \\")
@@ -453,12 +439,10 @@ class BaseConfig(TmuxConfig):
         #
         if not os.getenv("TMUX_NO_CLIPBOARD"):
             s = f"{self.opt_server} -a terminal-overrides"
-            w(
-                f"""
+            w(f"""
             # Ms modifies OSC52 clipboard handling to work with mosh
             {s} ",*:Ms=\\\\E]52;c%p1%.0s;%p2%s\\\\7"
-            """
-            )
+            """)
 
         if self.vers_ok(1.9):
             #  Enable focus events for terminals that support them to be passed
@@ -496,11 +480,9 @@ class BaseConfig(TmuxConfig):
                 #  not needed for all terminal apps, but since it doesn't hurt,
                 #  it makes sense to always include it
                 #
-                w(
-                    f"""
+                w(f"""
                 {self.opt_server} -a terminal-features 'xterm*:extkeys'
-                {self.opt_server} -a terminal-features ",*:{self.color_tag_24bit}" """
-                )
+                {self.opt_server} -a terminal-features ",*:{self.color_tag_24bit}" """)
             elif self.vers_ok(2.2):
                 if not self.vers_ok(2.7):
                     #  24-bit color on older versions
@@ -508,38 +490,30 @@ class BaseConfig(TmuxConfig):
                     #  so in the unlikely event that is used, disable use_24bit_color
                     #  RGB not supported until 2.7
                     self.color_tag_24bit = "Tc"
-                w(
-                    f"""
-                {self.opt_server} -a terminal-overrides ',*:{self.color_tag_24bit}'"""
-                )
+                w(f"""
+                {self.opt_server} -a terminal-overrides ',*:{self.color_tag_24bit}'""")
             elif self.vers_ok(1.0):
-                w(
-                    """
+                w("""
                 # 24-bit color not supported
-                set-environment -gu COLORTERM"""
-                )
+                set-environment -gu COLORTERM""")
 
     # pylint: disable=too-many-branches,too-many-statements
     def general_environment(self):
         w = self.write
-        w(
-            """
+        w("""
         #======================================================
         #
         #   General environment - global and server options
         #
         #======================================================
-        """
-        )
+        """)
         # escape-time < 3.5 = 500 3.5 = 10
 
         if self.prefix_key.lower() != "c-b":
-            w(
-                f"""# Remove the default prefix, do it before assigning
+            w(f"""# Remove the default prefix, do it before assigning
                 # the selected one, in case it was some variant of C-b
                 unbind  C-b
-                {self.opt_ses} prefix {self.prefix_key}"""
-            )
+                {self.opt_ses} prefix {self.prefix_key}""")
             w(  # double prefix always works
                 f'bind -N "Repeats sends {self.prefix_key} through"  '
                 f"{self.prefix_key}  send-prefix"
@@ -567,11 +541,9 @@ class BaseConfig(TmuxConfig):
             # This allows apps inside tmux to set the terminal title
             w(f"{self.opt_server} allow-set-title on")
 
-        w(
-            f"""{self.opt_server} repeat-time 750
+        w(f"""{self.opt_server} repeat-time 750
         {self.opt_server} history-limit 10000
-        {self.opt_server} status-keys emacs"""
-        )
+        {self.opt_server} status-keys emacs""")
 
         if os.getenv("TMUX_NO_CLIPBOARD"):
             # On ssh/mosh connections, when running an asdf tmux with local
@@ -636,11 +608,9 @@ class BaseConfig(TmuxConfig):
             # for ancient versions
 
             self.mkscript_shlvl_offset()
-            w(
-                f"""# Save correction factor for displaying SHLVL inside tmux
+            w(f"""# Save correction factor for displaying SHLVL inside tmux
             {self.es.run_it(self._fnc_shlvl_offset, in_bg=True)}
-            """
-            )
+            """)
 
         #
         #  Common variable telling plugins if -N notation is wanted
@@ -649,21 +619,17 @@ class BaseConfig(TmuxConfig):
         #  this is a more practical way to instruct them to use it or not.
         #
         if self.vers_ok(3.1):
-            w(
-                f"""# Hint that plugins can check, will only be true if hints
+            w(f"""# Hint that plugins can check, will only be true if hints
                 # are supported by running tmux, so plugins will not need
                 # to check tmux version for this
                 {self.opt_server} @use_bind_key_notes_in_plugins Yes
-                """
-            )
+                """)
 
         if self.vers_ok(2.8):
             msg = "This key is not bound to any action"
-            w(
-                f"""# All keys not bound will display this warning
+            w(f"""# All keys not bound will display this warning
             bind -N "Key not bound"  Any  display-message  "{msg}"
-            """
-            )
+            """)
 
         if self.vers_ok(1.0):
             show_action = f'\\; display-message "{self.conf_file} sourced"'
@@ -674,12 +640,10 @@ class BaseConfig(TmuxConfig):
             f'"{self.conf_file}" {show_action}'
         )
 
-        w(
-            """
+        w("""
         #
         # bindings for display-popup
-        #"""
-        )
+        #""")
         popup_min_vers = 3.2
         key_ipython = "i"
         key_lazygit = "g"
@@ -732,8 +696,7 @@ class BaseConfig(TmuxConfig):
         self.auc_display_plugins_used()
         self.auc_kill_tmux_server()
         if self.use_prefix_arrow_nav_keys:
-            w(
-                """
+            w("""
             #
             #  Due to the limited keyboard handling in iSH, only supporting
             #  unmodified arrorws, here they are used for document navigation.
@@ -745,8 +708,7 @@ class BaseConfig(TmuxConfig):
             bind -N "Page up"    Up     send-key PageUp
             bind -N "Page Down"  Down   send-key PageDown
             bind -N "Home"       Left   send-key Home
-            bind -N "End"        Right  send-key End"""
-            )
+            bind -N "End"        Right  send-key End""")
         w()  # spacer between sections
 
     def remove_prefix(self, s):
@@ -756,15 +718,13 @@ class BaseConfig(TmuxConfig):
 
     def session_handling(self):
         w = self.write
-        w(
-            """
+        w("""
         #======================================================
         #
         #   Session / Client handling  tmux is a bit inconsistent on the terms
         #
         #======================================================
-        """
-        )
+        """)
 
         # Many of these options use -g to set it as a global default despite being
         # thought of as session options by tmux in order to be set for all coming
@@ -808,14 +768,12 @@ class BaseConfig(TmuxConfig):
             # fix a couple of too long lines
             sc_p = "switch-client -p"
             sc_n = "switch-client -n"
-            w(
-                f"""# session navigation
+            w(f"""# session navigation
                 bind -N "Switch to last session"                _         switch-client -l
                 bind -N "Select previous session  - C-M-Up" -r  (         {sc_p}
                 bind -N "Select next session  - C-M-Down"   -r  )         {sc_n}
                 bind -N "Select previous session  - P+("    -n  C-M-Up    {sc_p}
-                bind -N "Select next session  - P+)"        -n  C-M-Down  {sc_n}"""
-            )
+                bind -N "Select next session  - P+)"        -n  C-M-Down  {sc_n}""")
 
         self.auc_meta_ses_handling()  # used by iSH Console
 
@@ -823,8 +781,7 @@ class BaseConfig(TmuxConfig):
 
     def windows_handling(self):
         w = self.write
-        w(
-            f"""
+        w(f"""
         #======================================================
         #
         #   Windows handling
@@ -832,14 +789,11 @@ class BaseConfig(TmuxConfig):
         #======================================================
 
         {self.opt_win} automatic-rename off
-        {self.opt_win} aggressive-resize on"""
-        )
+        {self.opt_win} aggressive-resize on""")
         if self.monitor_activity:
-            w(
-                f"""#  bell + # on window that had activity,
+            w(f"""#  bell + # on window that had activity,
                 # will only trigger once per window
-                {self.opt_win} monitor-activity on"""
-            )
+                {self.opt_win} monitor-activity on""")
             if self.vers_ok(1.9):
                 w(f"{self.opt_win} window-status-activity-style default")
             if self.vers_ok(2.6):
@@ -857,21 +811,17 @@ class BaseConfig(TmuxConfig):
         w(f"bind -N 'Toggle synchronize'  *  {self.opt_win_loc} synchronize-panes")
 
         if self.vers_ok(2.7):
-            w(
-                """
+            w("""
             # the default key is still available: <prefix> E
             # this is quicker to type on a touch screen
-            bind -N "Spread panes out evenly"  e  select-layout -E"""
-            )
+            bind -N "Spread panes out evenly"  e  select-layout -E""")
 
         if self.vers_ok(3.5):
-            w(
-                """
+            w("""
             bind -N "Main vertical - mirrored" "M-\\#" \
                 select-layout main-horizontal-mirrored
             bind -N "Main vertical - mirrored" "M-\\$" \
-                select-layout main-vertical-mirrored"""
-            )
+                select-layout main-vertical-mirrored""")
 
         # if self.vers_ok(1.5):
         #     s = "-I ?"
@@ -886,18 +836,14 @@ class BaseConfig(TmuxConfig):
 
         # for key in ("c", "="):  # c is just for compatibility with default key
         if self.vers_ok(1.0):
-            w(
-                f"""
+            w(f"""
                 bind -N "New window - P+= M-="      c    {cmd_new_win_named}
                 bind -N "New window - P+c M-="      =    {cmd_new_win_named}
-                bind -N "New window  - P+= P+c" -n  M-=  {cmd_new_win_named}"""
-            )
+                bind -N "New window  - P+= P+c" -n  M-=  {cmd_new_win_named}""")
         else:
-            w(
-                """
+            w("""
                 bind -N "New window - P+="  c  new-window
-                bind -N "New window - P+c"  =  new-window"""
-            )
+                bind -N "New window - P+c"  =  new-window""")
         self.windows_navigation()
 
         #
@@ -907,11 +853,9 @@ class BaseConfig(TmuxConfig):
         #  This is also available as no-prefix:  M-<  and  M->
         #  regardless of default popup status.
         #
-        w(
-            """
+        w("""
             bind -N "Swap window left"    -r  <    swap-window -d -t :-1
-            bind -N "Swap window right"   -r  >    swap-window -d -t :+1"""
-        )
+            bind -N "Swap window right"   -r  >    swap-window -d -t :+1""")
 
         s = 'bind -N "Rename current window"   W  command-prompt'
         if self.vers_ok(1.5):
@@ -945,31 +889,25 @@ class BaseConfig(TmuxConfig):
             #  to be 2.4 compatible and this is a 2.3 feature...
             #
             cp = self.current_path_directive
-            w(
-                f"""
+            w(f"""
                 # Split entire window
                 bind -N 'Split window left'   M-H  split-window  -fhb  {cp}
                 bind -N 'Split window down'   M-J  split-window  -fv   {cp}
                 bind -N 'Split window up'     M-K  split-window  -fvb  {cp}
-                bind -N 'Split window right'  M-L  split-window  -fh   {cp}"""
-            )
+                bind -N 'Split window right'  M-L  split-window  -fh   {cp}""")
 
         pref = "bind -N 'Select"
-        w(
-            f"""
+        w(f"""
         # window navigation
         {pref} previously current window - P+-' -r  -  last-window
         {pref} previous window  - P+p M-9 C-M-Left'  -r  p  previous-window
         {pref} next window  - P+n M-0 C-M-Right'     -r  n  next-window
         {pref} previous window  - P+9 M-9 C-M-Left'  -r  9  previous-window
         {pref} next window      - P+0 M-0 C-M-Right' -r  0  next-window
-        """
-        )
+        """)
         if self.vers_ok(1.2):
-            w(
-                f"""{pref}previous window  - P+p P+9 M-9'  -n  C-M-Left   previous-window
-            {pref}next window      - P+n P+0 M-0'  -n  C-M-Right  next-window"""
-            )
+            w(f"""{pref}previous window  - P+p P+9 M-9'  -n  C-M-Left   previous-window
+            {pref}next window      - P+n P+0 M-0'  -n  C-M-Right  next-window""")
 
         #
         #  I tend to bind ^[9 & ^[0 to Alt-Left/Right in my terminal apps
@@ -997,33 +935,27 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(2.1):
             w2 = "window"  # hackish strings to make sure
             cm = "-T copy-mode -n  M-"  # line is not to long
-            w(
-                f"""
+            w(f"""
                 # Override odd behaviour in copy-mode
                 bind -N "Previous {w2}  - P+9" {cm}9  previous-{w2}
-                bind -N "Next {w2} - P+0"      {cm}0  next-{w2}"""
-            )
+                bind -N "Next {w2} - P+0"      {cm}0  next-{w2}""")
 
     def pane_handling(self):
         w = self.write
-        w(
-            """
+        w("""
         #======================================================
         #
         #   Pane handling
         #
         #======================================================
-        """
-        )
+        """)
         if self.vers_ok(1.8):
             w(f"{self.opt_pane} allow-rename off")
 
         if self.vers_ok(1.6):
             #  Set base index for panes to 1 instead of 0
-            w(
-                f"""{self.opt_pane} pane-base-index 1
-              """
-            )
+            w(f"""{self.opt_pane} pane-base-index 1
+              """)
 
         if self.vers_ok(0.9):
             s = 'bind -N "Kill pane in focus"  x  confirm-before'
@@ -1057,12 +989,10 @@ class BaseConfig(TmuxConfig):
             return
 
         w = self.write
-        w(
-            """
+        w("""
         #
         #   ======  Pane frame lines  ======
-        #"""
-        )
+        #""")
         #
         #  If you get frame lines drawn as x and q, you need to set an UTF-8 LANG
         #  sample: export LANG=en_US.UTF-8
@@ -1090,10 +1020,8 @@ class BaseConfig(TmuxConfig):
                     f"'#{{?pane_in_mode,fg=yellow,fg={border_other}}}'"
                 )
             else:
-                w(
-                    f"""{self.opt_pane} pane-active-border-style fg={border_active}
-                {self.opt_pane} pane-border-style fg={border_other}"""
-                )
+                w(f"""{self.opt_pane} pane-active-border-style fg={border_active}
+                {self.opt_pane} pane-border-style fg={border_other}""")
 
         #
         #  Display custom pane borders and label if >= 2.5 / 2.6 not certain
@@ -1132,13 +1060,11 @@ class BaseConfig(TmuxConfig):
             return
 
         w = self.write
-        w(
-            """
+        w("""
         #
         #   ======  Pane Navigation  ======
         #
-        """
-        )
+        """)
 
         if self.vers_ok(1.8):
             # Really nice feature when you are on a small screen,
@@ -1162,13 +1088,11 @@ class BaseConfig(TmuxConfig):
 
         # indicate the right alternate keys
         if self.vers_ok(1.0):
-            w(
-                f"""
+            w(f"""
                 bind -N "Select pane left - M-Left"   -r  h  {pane_left}
                 bind -N "Select pane down - M-Down"   -r  j  {pane_down}
                 bind -N "Select pane up - M-Up"       -r  k  {pane_up}
-                bind -N "Select pane right - M-Right" -r  l  {pane_right}"""
-            )
+                bind -N "Select pane right - M-Right" -r  l  {pane_right}""")
             self.pane_un_zoomed_noprefix_binds.extend(
                 [
                     f"bind -N 'Select pane left - P+h'    -n  M-Left   {pane_left}",
@@ -1178,22 +1102,18 @@ class BaseConfig(TmuxConfig):
                 ]
             )
             if not self.use_prefix_arrow_nav_keys:
-                w(
-                    f"""# No repeats here, since I so often use arrows directly
+                w(f"""# No repeats here, since I so often use arrows directly
                     # after moving to another pane
                     bind -N "Select pane left - P+h M-Left"    Left   {pane_left}
                     bind -N "Select pane down - P+j M-Down"    Down   {pane_down}
                     bind -N "Select pane up - P+k M-Up"        Up     {pane_up}
-                    bind -N "Select pane right - P+l M-Right"  Right  {pane_right}"""
-                )
+                    bind -N "Select pane right - P+l M-Right"  Right  {pane_right}""")
                 if mtc_utils.IS_GHOSTTY:
-                    w(
-                        f"""
+                    w(f"""
                         # Ghostty has pretty good keyboard defs out of the box,
                         # but doesn't generate correct sequences for M Left/Right ...
                         bind -N "Select pane left - P+Left"   -n  M-b  {pane_left}
-                        bind -N "Select pane right - P+Right" -n  M-f  {pane_right}"""
-                    )
+                        bind -N "Select pane right - P+Right" -n  M-f  {pane_right}""")
 
         if self.vers_ok(2.4):
             #
@@ -1201,11 +1121,9 @@ class BaseConfig(TmuxConfig):
             #  to be an important feature.
             #  Better to keep them to their normal setting as per above
             #
-            w(
-                f"""# Ignpre the half-page scroll in copy-mode
+            w(f"""# Ignpre the half-page scroll in copy-mode
                 bind -N "Select pane up"   -T "copy-mode"  M-Up    {pane_up}
-                bind -N "Select pane down" -T "copy-mode"  M-Down  {pane_down}"""
-            )
+                bind -N "Select pane down" -T "copy-mode"  M-Down  {pane_down}""")
 
     def pane_splitting(self):
         #
@@ -1216,13 +1134,11 @@ class BaseConfig(TmuxConfig):
         w = self.write
         cur_path = self.current_path_directive
 
-        w(
-            """
+        w("""
         #
         #   ======  Pane Splitting  ======
         #
-        """
-        )
+        """)
         if not self.vers_ok(1.0):
             w("bind  C-j     split-window -p 50")
             w("bind  M-Down  split-window -p 50")
@@ -1244,13 +1160,11 @@ class BaseConfig(TmuxConfig):
 
     def pane_resizing(self):
         w = self.write
-        w(
-            """
+        w("""
         #
         #   ======  Pane Resizing  ======
         #
-        """
-        )
+        """)
 
         # Defaults 1.0 2.8
         # bind-key -r -T prefix       M-Up              resize-pane -U 5
@@ -1320,11 +1234,9 @@ class BaseConfig(TmuxConfig):
             s2 = "%1"
         else:
             s2 = "$TMPDIR/tmux.history"
-        w(
-            f"""
+        w(f"""
         {s} "capture-pane -S - -E - \\; save-buffer {s2} \\; delete-buffer"
-          """
-        )
+          """)
         if self.vers_ok(1.8):
             w(
                 'bind -N "Save history to prompted file name (includes escapes)"  '
@@ -1338,8 +1250,7 @@ class BaseConfig(TmuxConfig):
             return
 
         w = self.write
-        w(
-            """
+        w("""
         #======================================================
         #
         #   Handle Buffers
@@ -1348,14 +1259,12 @@ class BaseConfig(TmuxConfig):
 
         #  Select, search, delete and even edit(!) paste buffers
         bind -N "Chose paste buffer(-s)"  B  choose-buffer
-        """
-        )
+        """)
 
     def handle_hooks(self):
         w = self.write
 
-        w(
-            """
+        w("""
         #======================================================
         #
         #   Handle Hooks
@@ -1365,17 +1274,14 @@ class BaseConfig(TmuxConfig):
         # General idea is to disable noprefix binds that it makes sense to send
         # through to a potential inner tmux in the case of single or zoomed pane.
         # Stuff like window and pane navigation etc.
-        """
-        )
+        """)
 
         if not self.vers_ok(2.5):
             if not self.vers_ok(2.3) or self.is_tmate():
                 w("# ===  Hooks not supported for tmux < 2.3 or tmate   ===")
-            w(
-                """# None of the hook related features used here exist below 2.4
+            w("""# None of the hook related features used here exist below 2.4
             # and on 2.4 activate_tpm() gets tangled on the hook lines somehow :(
-            # Hardcoding no-prefix nav-keys according to no-zoom state"""
-            )
+            # Hardcoding no-prefix nav-keys according to no-zoom state""")
             for s in self.pane_un_zoomed_noprefix_binds:
                 w(s)
             return
@@ -1383,11 +1289,9 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(3.2):
             binds_s = unbinds_s = ""
         else:
-            w(
-                """# before 3.2 complex if-shell -F conditions could not be used, so we have
+            w("""# before 3.2 complex if-shell -F conditions could not be used, so we have
             # to revert to a more primitive handling of the pass-through binds
-            """
-            )
+            """)
             binds_s, unbinds_s = self.generate_old_style_binds()
         borders_enable = f"set -w pane-border-status top{binds_s}"
         borders_disable = f"set -w pane-border-status off{unbinds_s}"
@@ -1424,16 +1328,14 @@ class BaseConfig(TmuxConfig):
                 delay = "-d 400"
             else:
                 delay = ""
-            w(
-                f"""
+            w(f"""
                 #{
                     (
                         "Displays that tmux picked up clipboard and (hopefully) "
                         "sent it to the terminal"
                     )
                 }
-                set-hook -g pane-set-clipboard{idx} "display-message {delay} '{msg}'" """
-            )
+                set-hook -g pane-set-clipboard{idx} "display-message {delay} '{msg}'" """)
 
         if self.vers_ok(3.2) and not self.is_tmate():
             idx = self.get_next_hook_array_idx()
@@ -1443,36 +1345,30 @@ class BaseConfig(TmuxConfig):
             # 1 - Hook arrays name[index]
             # 2 - #{||:A,B} (logical OR)
             #
-            w(
-                f"""
+            w(f"""
             #
             #   ======  Pane Zoom  ======
             #
 
             # Trigger if layout is changed - panes added/removed/zoomed
-            set-hook -g window-layout-changed{idx} " """
-            )
+            set-hook -g window-layout-changed{idx} " """)
             self.hook_action_zoom_state()
 
-            w(
-                f"""
+            w(f"""
             #
             # To trigger a zoom state check after current window is changed,
             # first set zoom-state to an "invalid" value
             #
-            set-hook -g session-window-changed{idx} " """
-            )
+            set-hook -g session-window-changed{idx} " """)
             w("    set -w @zoom-state 2", trim_ws=False)
             self.hook_action_zoom_state()
 
-            w(
-                f"""
+            w(f"""
             #
             # To trigger a zoom state check after current session is changed,
             # first set zoom-state to an "invalid" value
             #
-            set-hook -g client-session-changed{idx} " """
-            )
+            set-hook -g client-session-changed{idx} " """)
             w("    set -w @zoom-state 2", trim_ws=False)
             self.hook_action_zoom_state()
         else:
@@ -1481,15 +1377,13 @@ class BaseConfig(TmuxConfig):
                 idx = self.get_next_hook_array_idx()
                 is_zoomed = "if-shell -F '#{==:#{window_zoomed_flag},1}' \\"
                 single_pane = """ 'if-shell -F \\"#{==:#{window_panes},1}\\" """
-                w(
-                    f"""
+                w(f"""
                 # Trigger if layout is changed - panes added/removed/zoomed
                 #   If zoomed, disable border status & unbind all pass through keystrokes,
                 #   otherwise check if more than one pane.
                 #   multi - display frame lines and bind all pass-through keys
                 #   single - same as for zoomed
-                set-hook -g window-layout-changed{idx} "{is_zoomed}"""
-                )
+                set-hook -g window-layout-changed{idx} "{is_zoomed}""")
                 w(f"    '{borders_disable}' \\")
                 w(f"""{single_pane}\\"{borders_disable}\\" \\"{borders_enable}\\"'\"""")
 
@@ -1590,15 +1484,13 @@ class BaseConfig(TmuxConfig):
 
     def mouse_handling(self):
         w = self.write
-        w(
-            """
+        w("""
         #======================================================
         #
         #   Mouse handling
         #
         #======================================================
-        """
-        )
+        """)
         if self.vers_ok(2.1):
             w(f"{self.opt_ses} mouse on\n")
             self.mkscript_toggle_mouse()
@@ -1634,15 +1526,13 @@ class BaseConfig(TmuxConfig):
     # pylint: disable=too-many-branches
     def status_bar_prepare(self):
         w = self.write
-        w(
-            """
+        w("""
         #======================================================
         #
         #   Status bar
         #
         #======================================================
-        """
-        )
+        """)
         w(f"{self.opt_ses} status-interval {self.status_interval}")
 
         if self.is_tmate():
@@ -1661,11 +1551,9 @@ class BaseConfig(TmuxConfig):
         else:
             unlimited = 999
         if self.vers_ok(1.0):
-            w(  # both are ses opts
-                f"""{self.opt_ses} status-left-length  {unlimited}
+            w(f"""{self.opt_ses} status-left-length  {unlimited}
                 {self.opt_ses} status-right-length  {unlimited}
-                """
-            )
+                """)  # both are ses opts
         else:
             # For pre 1.0 it needs to be set to something >10
             w(f"{self.opt_ses} status-left-length 30")
@@ -1785,14 +1673,12 @@ class BaseConfig(TmuxConfig):
             # setting colors in status line not supported
             self.sb_left = re.sub(r"#\[.*?\]", "", self.sb_left)
             self.sb_right = re.sub(r"#\[.*?\]", "", self.sb_right)
-        w(
-            f"""
+        w(f"""
         {self.opt_ses} status-left "{self.sb_left}"
         {self.opt_ses} status-right "{self.sb_right}"
 
         bind -N "Toggle status bar"  T  {self.opt_ses} status
-        """
-        )
+        """)
 
     def filter_me_from_sb_right(self):
         """Don't display my primary username."""
@@ -1868,12 +1754,10 @@ class BaseConfig(TmuxConfig):
         # It won't be over-written!
         #
         repo_dir = os.path.dirname(__file__)
-        w(
-            """
+        w("""
           # auc_display_plugins_used()
           #   Displays defined plugins by calling app defining this env with -p2
-          #   First enabling my_tmux_conf venv if present"""
-        )
+          #   First enabling my_tmux_conf venv if present""")
         w(
             f'bind -N "{self.muc_non_default_value(mtc_utils.K_M_P)}'
             f'List all plugins defined"  {self.muc_keys[mtc_utils.K_M_P]}  '
@@ -1916,11 +1800,9 @@ class BaseConfig(TmuxConfig):
             s += " (y/N)"
         else:
             s += " (Esc to abort)"
-        w(
-            f"""
+        w(f"""
         # auc_kill_tmux_server()
-        {s}" kill-server"""
-        )
+        {s}" kill-server""")
 
     #
     #  Utility methods
@@ -1973,8 +1855,7 @@ class BaseConfig(TmuxConfig):
     def mkscript_toggle_mouse(self):
         """Toggles mouse handling on/off"""
         #  The {} encapsulating the script needs to be doubled to escape them
-        toggle_mouse_sh = [
-            f"""
+        toggle_mouse_sh = [f"""
 {self._fnc_toggle_mouse}() {{
     #  This is so much easier to do in a proper script...
     old_state=$($TMUX_BIN show -gv mouse)
@@ -1985,8 +1866,7 @@ class BaseConfig(TmuxConfig):
     fi
     $TMUX_BIN {self.opt_ses} mouse $new_state
     $TMUX_BIN display-message "mouse: $new_state"
-}}"""
-        ]
+}}"""]
         self.es.create(self._fnc_toggle_mouse, toggle_mouse_sh)
 
     def mkscript_shlvl_offset(self):
@@ -2153,8 +2033,7 @@ timer_end() {{
         # self.sb_purge_tpm_running = f"$TMUX_BIN {self.opt_ses} -q status-right "
         # \\"$($TMUX_BIN display-message -p '#{{status-right}}' | sed 's/{purge_seq}//')\\"
 
-        clear_tpm_init_sh = [
-            f"""
+        clear_tpm_init_sh = [f"""
 {self._fnc_tpm_indicator}() {{
     #
     # Function that turns on/off self.tpm_initializing addition to status-right
@@ -2192,8 +2071,7 @@ timer_end() {{
         $TMUX_BIN setenv -gu {self.tpm_working_incicator}
     fi
 }}
-"""
-        ]
+"""]
         self.es.create(self._fnc_tpm_indicator, clear_tpm_init_sh)
 
     def incompatible_tmux_conf(self, lib_vers_found: str, reason: str, details: str = ""):
@@ -2223,19 +2101,15 @@ timer_end() {{
         currency = mtc_utils.get_currency()
         if currency == "EUR":
             # print("><> Wiill write euro workaround")
-            w(
-                f"""# M-S-2 should be €
+            w(f"""# M-S-2 should be €
                 set -s user-keys[180] "{sequence}"
-                bind -N "Send €" -n User180 send "€" """
-            )
+                bind -N "Send €" -n User180 send "€" """)
         elif currency:
-            w(
-                f"""
+            w(f"""
                 # When checking EUR was not reported as local currency where this node is
                 # located, so no EUR fix applied. This node reports currency: {currency}.
                 #
-                """
-            )
+                """)
         else:
             w(
                 "# No default currency could be retrieved for this node - "

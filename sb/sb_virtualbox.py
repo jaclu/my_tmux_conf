@@ -39,12 +39,10 @@ class SB(DefaultPlugins):
             self.write(f"set -g status-style fg={fg_clr},bg={bg_clr}")
             self.write(self.es.run_it(self.fnc_rev_sb_color))
         else:
-            self.write(
-                f"""
+            self.write(f"""
                 set -g status-fg {fg_clr}
                 set -g status-bg {bg_clr}
-                """
-            )
+                """)
         return print_header  # request footer to be printed
 
     def mkscript_rev_sb_color(self):
