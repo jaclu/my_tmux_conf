@@ -169,7 +169,7 @@ class DefaultPlugins(BaseConfig):
             # pylint: disable=W0201
             self.sb_right = "#[bg=colour28]#(tmux-spotify-info)#[default] " + self.sb_right
 
-        if "tmux-packet-loss" in used_plugins:
+        if "tmux-packet-loss" in used_plugins and mtc_utils.HOSTNAME != "hetz2":
             # pylint: disable=W0201
             self.sb_right = "#{packet_loss}" + self.sb_right
 
