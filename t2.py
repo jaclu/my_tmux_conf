@@ -27,7 +27,7 @@
 #  out.
 import mtc_utils
 
-if mtc_utils.HOSTNAME == "ish-hetz1":
+if mtc_utils.HOSTNAME == "chrooted-iSH":
     from sb.sb_acceptance import SB
 else:
     from sb.sb_t2 import SB  # type: ignore
