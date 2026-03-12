@@ -1007,17 +1007,23 @@ class BaseConfig(TmuxConfig):
             #
             border_active = "colour136"  # orange
             border_other = "colour31"  # pale blue
-            sync_colors = f"#{{?synchronize-panes,fg=red,fg={border_active}}}"
 
             if self.vers_ok(3.2):
                 # supports #{? notation in this context
+                in_mode_color = "yellow" # scrollback etc
+                sync_color = "red" # only for current pane in sync mode
+
+                # split to avoid excessive line length
+                indicate_sync_state = "#{{?synchronize-panes,"
+                indicate_sync_state += f"fg={sync_color},fg={border_active}}}"
+
                 w(
                     f"{self.opt_pane} pane-active-border-style "
-                    f"'#{{?pane_in_mode,fg=yellow,{sync_colors}}}'"
+                    f"'#{{?pane_in_mode,fg={in_mode_color},{indicate_sync_state}}}'"
                 )
                 w(
                     f"{self.opt_pane} pane-border-style "
-                    f"'#{{?pane_in_mode,fg=yellow,fg={border_other}}}'"
+                    f"'#{{?pane_in_mode,fg={in_mode_color},fg={border_other}}}'"
                 )
             else:
                 w(f"""{self.opt_pane} pane-active-border-style fg={border_active}
