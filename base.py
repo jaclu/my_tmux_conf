@@ -1010,8 +1010,8 @@ class BaseConfig(TmuxConfig):
 
             if self.vers_ok(3.2):
                 # supports #{? notation in this context
-                in_mode_color = "yellow" # scrollback etc
-                sync_color = "red" # only for current pane in sync mode
+                in_mode_color = "yellow"  # scrollback etc
+                sync_color = "red"  # only for current pane in sync mode
 
                 # split to avoid excessive line length
                 indicate_sync_state = "#{{?synchronize-panes,"
