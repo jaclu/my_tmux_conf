@@ -1,5 +1,9 @@
 # TODO
 
+## rt new option
+
+-s for shared session
+
 ## 25-04-30 Clear pane shortcut issue
 
 the root bind overrides the prefix bind as is, Consider to use something that can be done
