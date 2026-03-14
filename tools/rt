@@ -375,7 +375,7 @@ def main():
         remote_command=args.command,
         use_2nd=args.use_2nd,
         asdf_version=args.asdf_version,
-        use_share=args.use_share,
+        use_share=args.share,
         use_tmate=args.use_tmate,
         use_quick=args.quick2,
         use_mosh=args.use_mosh,
