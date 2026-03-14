@@ -377,7 +377,7 @@ def main():
         asdf_version=args.asdf_version,
         use_share=args.share,
         use_tmate=args.use_tmate,
-        use_quick=args.quick2,
+        use_quick=args.quick,
         use_mosh=args.use_mosh,
         mosh_client=args.mosh_client,
         mosh_server=args.mosh_server,
