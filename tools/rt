@@ -33,9 +33,10 @@ class Host:
     remote_user = ""  # If not given ~/.ssh/config setting will be used
 
     use_2nd = False
-    use_quick = False
     use_asdf_version = ""
+    use_share = False
     use_tmate = False
+    use_quick = False
     use_mosh = False
     mosh_client = "mosh"  # local mosh command
     mosh_server = ""  # default: 'mosh-server'
@@ -49,9 +50,10 @@ class Host:
         remote_user="",
         remote_command="",
         use_2nd=False,
-        use_quick=False,
         use_asdf_version="",
+        use_share=False,
         use_tmate=False,
+        use_quick=False,
         use_mosh=False,
         mosh_client="mosh",
         mosh_server="",
@@ -71,15 +73,18 @@ class Host:
         if use_2nd:
             self.use_2nd = True
             myt_cmd += " -2"
-        if use_quick:
-            self.use_quick = True
-            myt_cmd += " -q"
         if use_asdf_version:
             self.use_asdf_version = use_asdf_version
             myt_cmd += f" -a {use_asdf_version}"
+        if use_share:
+            self.use_share = True
+            myt_cmd += " -s"
         if use_tmate:
             self.use_tmate = True
             myt_cmd += " -m"
+        if use_quick:
+            self.use_quick = True
+            myt_cmd += " -q"
         if not server:
             print("ERROR! No server given")
             sys.exit(1)
@@ -116,14 +121,16 @@ class Host:
         #   ssh -t hetz2 "bash -l -i -c 'rt jacdroid'"
 
         rt_cmd = "rt"
-        if self.use_quick:
-            rt_cmd += " -q"
         if self.use_2nd:
             rt_cmd += " -2"
         if self.use_asdf_version:
             rt_cmd += f" -a {self.use_asdf_version}"
+        if self.use_share:
+            rt_cmd += " -s"
         if self.use_tmate:
             rt_cmd += " -m"
+        if self.use_quick:
+            rt_cmd += " -q"
         if self.use_mosh:
             self.rem_cmd = f"bash -lic '{rt_cmd} {bounce_host}'"
         else:
@@ -171,9 +178,10 @@ def get_host_class(
     remote_user="",
     remote_command="",
     use_2nd=False,
-    use_quick=False,
     asdf_version="",
+    use_share=False,
     use_tmate=False,
+    use_quick=False,
     use_mosh=False,
     mosh_client="",
     mosh_server="",
@@ -196,9 +204,10 @@ def get_host_class(
             connection_name=server,
             remote_user=remote_user,
             use_2nd=use_2nd,
-            use_quick=use_quick,
             asdf_version=asdf_version,
+            use_share=use_share,
             use_tmate=use_tmate,
+            use_quick=use_quick,
             use_mosh=use_mosh,
             mosh_client=mosh_client,
             mosh_server=mosh_server,
@@ -220,9 +229,10 @@ def get_host_class(
                 remote_user=remote_user,
                 remote_command=remote_command,
                 use_2nd=use_2nd,
-                use_quick=use_quick,
                 use_asdf_version=asdf_version,
+                use_share=use_share,
                 use_tmate=use_tmate,
+                use_quick=use_quick,
                 use_mosh=use_mosh,
                 mosh_client=mosh_client,
                 mosh_server=mosh_server,
@@ -239,9 +249,10 @@ def get_host_class(
             remote_user=remote_user,
             remote_command=remote_command,
             use_2nd=use_2nd,
-            use_quick=use_quick,
             use_asdf_version=asdf_version,
+            use_share=use_share,
             use_tmate=use_tmate,
+            use_quick=use_quick,
             use_mosh=use_mosh,
             mosh_client=mosh_client,
             mosh_server=mosh_server,
@@ -315,13 +326,7 @@ def parse_cmd_line():
         "-2",
         "--use_2nd",
         action="store_true",
-        help="use 2nd tmux env on remote\n",
-    )
-    parser.add_argument(
-        "-q",
-        "--quick",
-        action="store_true",
-        help="quik connect, don't re-generate tmux.conf on remote\n",
+        help="use 2nd tmux env on remote",
     )
     parser.add_argument(
         "-a",
@@ -330,10 +335,22 @@ def parse_cmd_line():
         action="store",
     )
     parser.add_argument(
+        "-s",
+        "--share",
+        action="store_true",
+        help="share session with other clients",
+    )
+    parser.add_argument(
         "-t",
         "--use_tmate",
         action="store_true",
         help="use tmate on remote\n",
+    )
+    parser.add_argument(
+        "-q",
+        "--quick",
+        action="store_true",
+        help="quik connect, don't re-generate tmux.conf on remote\n",
     )
     return parser.parse_args()
 
@@ -357,9 +374,10 @@ def main():
         remote_user=args.user,
         remote_command=args.command,
         use_2nd=args.use_2nd,
-        use_quick=args.quick,
         asdf_version=args.asdf_version,
+        use_share=args.use_share,
         use_tmate=args.use_tmate,
+        use_quick=args.quick2,
         use_mosh=args.use_mosh,
         mosh_client=args.mosh_client,
         mosh_server=args.mosh_server,
@@ -374,16 +392,24 @@ def main():
         else:
             msg += "ssh"
 
-        if hc.use_2nd or hc.use_quick or hc.use_asdf_version or hc.use_tmate:
+        if (
+            hc.use_2nd
+            or hc.use_asdf_version
+            or hc.use_share
+            or hc.use_tmate
+            or hc.use_quick
+        ):
             msg += " - myt Options:"
             if hc.use_2nd:
                 msg += " -2"
-            if hc.use_quick:
-                msg += " -q"
             if hc.use_asdf_version:
                 msg += f" -a {hc.use_asdf_version}"
+            if hc.use_share:
+                msg += " -s"
             if hc.use_tmate:
                 msg += " -m"
+            if hc.use_quick:
+                msg += " -q"
         print(msg + " ...")
         h_name = os.getenv("HOSTNAME_SHORT") or ""
         cmd = hc.full_command_line()
