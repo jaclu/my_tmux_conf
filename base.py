@@ -2052,7 +2052,7 @@ timer_end() {{
         $TMUX_BIN display-message -p "{self._fnc_tpm_indicator}($1) bad param"
         exit 1
     esac
-        
+
     sb_r_now="$($TMUX_BIN display-message -p '#{{status-right}}')"
     if [ -n "$($TMUX_BIN display-message -p '#{{{self.tpm_working_incicator}}}')" ]; then
         tpm_running=1
