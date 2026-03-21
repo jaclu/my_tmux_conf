@@ -1014,12 +1014,12 @@ class BaseConfig(TmuxConfig):
                 sync_color = "red"  # only for current pane in sync mode
 
                 # split to avoid excessive line length
-                indicate_sync_state = "#{{?synchronize-panes,"
+                indicate_sync_state = "#{?synchronize-panes,"
                 indicate_sync_state += f"fg={sync_color},fg={border_active}}}"
 
                 w(
                     f"{self.opt_pane} pane-active-border-style "
-                    f"'#{{?pane_in_mode,fg={in_mode_color},{indicate_sync_state}}}'"
+                    f"'#{{?pane_in_mode,fg={in_mode_color},{indicate_sync_state}'"
                 )
                 w(
                     f"{self.opt_pane} pane-border-style "
@@ -2052,7 +2052,7 @@ timer_end() {{
         $TMUX_BIN display-message -p "{self._fnc_tpm_indicator}($1) bad param"
         exit 1
     esac
-
+        
     sb_r_now="$($TMUX_BIN display-message -p '#{{status-right}}')"
     if [ -n "$($TMUX_BIN display-message -p '#{{{self.tpm_working_incicator}}}')" ]; then
         tpm_running=1
@@ -2071,7 +2071,7 @@ timer_end() {{
         #
         #  Remove tpm init from SB-right
         #
-        sb_r_filtered="$(echo $sb_r_now | sed 's/{purge_seq}//')"
+        sb_r_filtered="$(printf '%s\n' "$sb_r_now" | sed 's/{purge_seq}//')"
         $TMUX_BIN {self.opt_ses} status-right "$sb_r_filtered"
 
         $TMUX_BIN setenv -gu {self.tpm_working_incicator}
