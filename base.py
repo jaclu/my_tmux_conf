@@ -1005,8 +1005,8 @@ class BaseConfig(TmuxConfig):
             #
             #  Works both on bright and dark backgrounds
             #
-            border_active = "colour136"  # orange
-            border_other = "colour31"  # pale blue
+            border_other = "colour136"  # orange
+            border_active = "colour31"  # pale blue
 
             if self.vers_ok(3.2):
                 # supports #{? notation in this context
@@ -1015,7 +1015,7 @@ class BaseConfig(TmuxConfig):
 
                 # split to avoid excessive line length
                 indicate_sync_state = "#{?synchronize-panes,"
-                indicate_sync_state += f"fg={sync_color},fg={border_active}}}"
+                indicate_sync_state += f"fg={sync_color},fg={border_active}}}}}"
 
                 w(
                     f"{self.opt_pane} pane-active-border-style "
