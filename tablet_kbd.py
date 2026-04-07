@@ -251,8 +251,10 @@ class LimitedKbdSpecialHandling:
         #
         #  Logitech Combo Touch
         #
-        self.alternate_key_escape("\\302\\247")
-        self.alternate_key_backtick("\\033")  # sends Esc by default
+        # self.alternate_key_escape("\\302\\247")
+        # self.alternate_key_backtick("\\033")  # sends Esc by default
+        self.tc.write("# This keyb handles Escape and tilde in a usable manner")
+        # self.tc.write()  # spacer line
 
     def keyb_type_touch(self):
         #
