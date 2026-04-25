@@ -646,9 +646,11 @@ class BaseConfig(TmuxConfig):
         #""")
         popup_min_vers = 3.2
         key_lazygit = "g"
+        # key_yazi = "u"
         key_scrpad = "O"  # P being taken this is pOpup :)
         if self.vers_ok(popup_min_vers):
             dp_lazygit = "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E lazygit"
+            # dp_yazi ="display-popup -d '#{pane_current_path}' -w 90% -h 90% -E yazi"
             dp_scrpad = "display-popup -w 70% -h 70% -E"
 
             if self.vers_ok(3.3):
@@ -662,6 +664,15 @@ class BaseConfig(TmuxConfig):
                     f'bind -N "lazygit not available msg"  {key_lazygit}  '
                     f'display-message "lazygit not available"'
                 )
+
+            # if shutil.which("yazi"):
+            #     w(f'bind -N "popup yazi"  {key_yazi}  {dp_yazi}')
+            # else:
+            #     w(
+            #         f'bind -N "yazi not available msg"  {key_yazi}  '
+            #         f'display-message "yazi not available"'
+            #     )
+
             w(
                 f'bind -N "pOpup scratchpad session"  {key_scrpad}  '
                 f'{dp_scrpad} "$TMUX_BIN -u new-session -ADs scratch"'
