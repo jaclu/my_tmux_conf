@@ -645,11 +645,9 @@ class BaseConfig(TmuxConfig):
         # bindings for display-popup
         #""")
         popup_min_vers = 3.2
-        key_ipython = "i"
         key_lazygit = "g"
         key_scrpad = "O"  # P being taken this is pOpup :)
         if self.vers_ok(popup_min_vers):
-            dp_ipython = "display-popup -E ipython"
             dp_lazygit = "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E lazygit"
             dp_scrpad = "display-popup -w 70% -h 70% -E"
 
@@ -657,13 +655,6 @@ class BaseConfig(TmuxConfig):
                 dp_scrpad += ' -T "#[align=centre] pOpup Scratchpad Session " '
                 w(f"{self.opt_win} popup-border-lines rounded")
 
-            if shutil.which("ipython"):
-                w(f'bind -N "popup ipython"  {key_ipython}  {dp_ipython}')
-            else:
-                w(
-                    f'bind -N "ipython not available msg"  {key_ipython}  '
-                    f'display-message "ipython not available"'
-                )
             if shutil.which("lazygit"):
                 w(f'bind -N "popup lazygit"  {key_lazygit}  {dp_lazygit}')
             else:
@@ -679,10 +670,6 @@ class BaseConfig(TmuxConfig):
             #
             # Indicate feature not available
             #
-            w(
-                f'bind -N "ipython popup not available msg"  {key_ipython}  '
-                f'display-message "ipython popup needs tmux {popup_min_vers}"'
-            )
             w(
                 f'bind -N "lazygit popup not available msg"  {key_lazygit}  '
                 f'display-message "lazygit popup needs tmux {popup_min_vers}"'
