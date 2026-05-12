@@ -415,7 +415,7 @@ start_tmux() {
     if is_tmux_ses_running; then
         $single_session && drop_other_clients
         indicate_tmux_connection_type "Attaching to"
-        tmux_params="attach-session -t main"
+        tmux_params="attach-session"
     else
         indicate_tmux_connection_type "Starting"
         tmux_params="new-session -s main"
