@@ -80,6 +80,21 @@ If you want to you can use the version controlled plugin handling, replacing it
 with the plugins you use. Otherwise just drop your current plugin handling
 into the content method along the rest of your current setup.
 
+## Use this as a framework, not a starting template
+
+Your tmux.conf is personal—keep what works for you. The value here is using
+the framework selectively, adopting pieces as they seem useful.
+
+You don't need to use everything at once. Start with your current config as-is:
+
+- **Wrap in a Python class** inheriting from `BaseConfig` — get version-aware generation
+- **Extract plugins gradually** — define `plugin_*` methods with per-plugin version requirements
+- **Add status bar customization** — build your status bar based on what's actually enabled
+- **Platform variants** — define separate SB classes if you use multiple systems
+- **Auto-installation** — let tpm and plugins install on first run
+
+This framework works at any level of complexity. Use what's helpful, ignore the rest.
+
 ## Test/Devel env
 
 if a session is started using `myt -2` or with the env variable `T2_ENV=1` set,
