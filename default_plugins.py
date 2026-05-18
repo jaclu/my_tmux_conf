@@ -35,7 +35,7 @@ import mtc_utils
 from base import BaseConfig
 
 
-class DefaultPlugins(BaseConfig):
+class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
     """
     Any method starting with plugin_ will be assumed to be a plugin
     definition, and handled as such by the TmuxConfig class.
@@ -106,6 +106,7 @@ class DefaultPlugins(BaseConfig):
     use_plugin_packet_loss = False
     use_plugin_which_key = False
     use_plugin_yank = False
+    use_plugin_claude = False
 
     #
     #  The default is to use jaclu/tpm, with built in support for
@@ -172,6 +173,10 @@ class DefaultPlugins(BaseConfig):
         if "tmux-packet-loss" in used_plugins and mtc_utils.HOSTNAME != "hetz2":
             # pylint: disable=W0201
             self.sb_right = "#{packet_loss}" + self.sb_right
+
+        if "tmux-claude-usage" in used_plugins:
+            s = "#{claude_model} #{claude_5h_color}#{claude_5h_percent}%%#[default] | %H:%M"
+            self.sb_right = s
 
         return True  # request footer to be printed
 
@@ -709,6 +714,32 @@ class DefaultPlugins(BaseConfig):
             min_vers,
             """#  Default trigger: <prefix> y
             # seems to only work on local system
+            """,
+        ]
+
+    def plugin_claude_usage(self) -> list:
+        """plugin displaying claude usage"""
+        if self.use_plugin_claude:
+            min_vers = 1.8
+        else:
+            min_vers = -1.0  # Don't use
+
+        return [
+            "robhurring/tmux-claude-usage",
+            min_vers,
+            """
+            # Color thresholds for #{claude_*_color} tokens
+            set -g @claude_usage_threshold_mid "50"   # yellow above this (default: 50)
+            set -g @claude_usage_threshold_high "80"  # red above this (default: 80)
+            set -g @claude_usage_color_low "colour2"  # green (default: colour2)
+            set -g @claude_usage_color_mid "colour3"  # yellow (default: colour3)
+            set -g @claude_usage_color_high "colour1" # red (default: colour1)
+
+            # What to show when context exceeds 200k tokens (default: "200k+")
+            set -g @claude_usage_over_200k "⚠ "
+
+            # What to show when context is under 200k tokens (default: empty/hidden)
+            set -g @claude_usage_under_200k ""
             """,
         ]
 

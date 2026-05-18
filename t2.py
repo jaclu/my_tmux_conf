@@ -61,6 +61,7 @@ class T2(SB):  # type: ignore
     use_plugin_session_wizard = False
     use_plugin_suspend = False
     use_plugin_resurrect = False
+    use_plugin_claude = True
 
     if mtc_utils.HOSTNAME == "JacMac":
         use_plugin_battery = True
