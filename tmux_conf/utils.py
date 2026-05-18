@@ -124,8 +124,7 @@ def tilde_home_dir(path: str) -> str:
     config file, to keep it generic"""
     path = os.path.expanduser(path)
     home_dir = os.path.expanduser("~")
-    # pylint: disable=compare-to-zero
-    if path.find(home_dir) == 0:
+    if path.startswith(home_dir):
         r = path.replace(home_dir, "~")
     else:
         r = path
