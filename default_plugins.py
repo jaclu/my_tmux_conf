@@ -25,6 +25,7 @@
 """Defines default plugins"""
 
 import os
+from pathlib import Path
 
 #
 #  Since I often run this on iSH, this class will bind missing keys in the
@@ -106,7 +107,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
     use_plugin_packet_loss = False
     use_plugin_which_key = False
     use_plugin_yank = False
-    use_plugin_claude = False
+    use_plugin_claude = True
 
     #
     #  The default is to use jaclu/tpm, with built in support for
@@ -115,6 +116,14 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
     #  If you prefer to use the original uncomment this
     #
     # plugin_handler = "tmux-plugins/tpm"
+
+    def pre_plugin_checks(self) -> None:
+        """Disable claude plugin if ~/.claude is not present."""
+        super().pre_plugin_checks()
+        # Claude env is a directory structure
+        if self.use_plugin_claude and not (Path.home() / ".claude").is_dir():
+            print("OVERRIDE: Disabling claude plugin due to no claude env!")
+            self.use_plugin_claude = False
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """This is called just before the status bar is rendered,
@@ -175,8 +184,9 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             self.sb_right = "#{packet_loss}" + self.sb_right
 
         if "tmux-claude-usage" in used_plugins:
-            s = "#{claude_model} #{claude_5h_color}#{claude_5h_percent}%%#[default] | %H:%M"
-            self.sb_right = s
+            s = "☍#{claude_5h_color}#{claude_5h_percent}%%#[default]/"
+            s += "#{claude_7d_color}#{claude_7d_percent}%%#[default]#{claude_exceeds_200k}"
+            self.sb_right = s + self.sb_right
 
         return True  # request footer to be printed
 

@@ -172,6 +172,7 @@ class TmuxConfig:
             # this is set to manual
             self.plugin_handler = "manual"
 
+        self.pre_plugin_checks()
         self.plugins = Plugins(
             conf_file=self.conf_file,
             vers_class=self.vers,
@@ -200,6 +201,14 @@ class TmuxConfig:
     #  Optional overloading
     #
     # ================================================================
+
+    def pre_plugin_checks(self) -> None:
+        """
+        Environment checks before plugin discovery.
+        For example, disable the claude plugin if no ~/.claude environment is present.
+        Override to add additional checks. Call super().pre_plugin_checks() if base
+        class logic should be preserved.
+        """
 
     def local_overrides(self) -> None:
         """
