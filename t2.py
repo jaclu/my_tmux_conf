@@ -61,11 +61,11 @@ class T2(SB):  # type: ignore
     use_plugin_session_wizard = False
     use_plugin_suspend = False
     use_plugin_resurrect = False
-    use_plugin_claude = True
 
     if mtc_utils.HOSTNAME == "JacMac":
         use_plugin_battery = True
         use_plugin_packet_loss = True
+        use_plugin_claude = True
     elif mtc_utils.HOSTNAME == "JacDroid":
         use_plugin_packet_loss = True
         force_plugin_continuum = True
