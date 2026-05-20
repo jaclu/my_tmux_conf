@@ -181,7 +181,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
 
         if "tmux-claude-usage" in used_plugins:
             s = "☍#{claude_5h_color}#{claude_5h_percent}%%#[default]/"
-            s += "#{claude_7d_color}#{claude_7d_percent}%%#[default]#{claude_exceeds_200k}"
+            s += "#{claude_7d_color}#{claude_7d_percent}%%#[default]#{claude_exceeds_200k} "
             self.sb_right = s + self.sb_right
 
         if "tmux-packet-loss" in used_plugins and mtc_utils.HOSTNAME != "hetz2":

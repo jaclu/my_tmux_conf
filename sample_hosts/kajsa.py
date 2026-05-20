@@ -45,9 +45,11 @@ class Kajsa(SB):
         self.write("# kajsa.local_overides")
         log_file = "~/tmp/packet-loss-kajsa.log"
         self.write(f"""
-            set -g @packet-loss-run_disconnected  yes
-            set -g @packet-loss-log_file  "{log_file}"
-            """)
+        set -g @packet-loss-run_disconnected  yes
+        set -g @packet-loss-log_file  "{log_file}"
+
+        set -g @claude_usage_color_low "colour0" # black
+        """)
 
 
 if __name__ == "__main__":
