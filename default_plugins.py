@@ -156,16 +156,24 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         #
         used_plugins = self.plugins.installed(short_name=True)
 
-        #  Consider adding placement for
+        if "tmux-mullvad" in used_plugins:
+            # pylint: disable=E1101
+            self.sb_left += "#{mullvad_city}#{mullvad_country}"
+            self.sb_left += "#{mullvad_status}"
 
         if "tmux-suspend" in used_plugins:
             # pylint: disable=E0203,W0201
             self.sb_right += "#{@mode_indicator_custom_prompt}"
 
-        if "tmux-mullvad" in used_plugins:
-            # pylint: disable=E1101
-            self.sb_left += "#{mullvad_city}#{mullvad_country}"
-            self.sb_left += "#{mullvad_status}"
+        if "tmux-claude-usage" in used_plugins:
+            s = "☍#{claude_5h_color}#{claude_5h_percent}%%#[default]/"
+            s += "#{claude_7d_color}#{claude_7d_percent}%%#[default]"
+            s += "#{claude_exceeds_200k}"
+            self.sb_right = s + self.sb_right
+
+        if "tmux-spotify-info" in used_plugins:
+            # pylint: disable=W0201
+            self.sb_right = "#[bg=colour28]#(tmux-spotify-info)#[default]" + self.sb_right
 
         if "tmux-keyboard-type" in used_plugins:
             # pylint: disable=W0201
@@ -173,16 +181,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
 
         if "tmux-battery" in used_plugins:
             # pylint: disable=W0201
-            self.sb_right = "#{battery_smart} " + self.sb_right
-
-        if "tmux-spotify-info" in used_plugins:
-            # pylint: disable=W0201
-            self.sb_right = "#[bg=colour28]#(tmux-spotify-info)#[default] " + self.sb_right
-
-        if "tmux-claude-usage" in used_plugins:
-            s = "☍#{claude_5h_color}#{claude_5h_percent}%%#[default]/"
-            s += "#{claude_7d_color}#{claude_7d_percent}%%#[default]#{claude_exceeds_200k} "
-            self.sb_right = s + self.sb_right
+            self.sb_right = "#{battery_smart}" + self.sb_right
 
         if "tmux-packet-loss" in used_plugins and mtc_utils.HOSTNAME != "hetz2":
             # pylint: disable=W0201
