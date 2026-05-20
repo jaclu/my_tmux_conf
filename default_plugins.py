@@ -179,14 +179,14 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             # pylint: disable=W0201
             self.sb_right = "#[bg=colour28]#(tmux-spotify-info)#[default] " + self.sb_right
 
-        if "tmux-packet-loss" in used_plugins and mtc_utils.HOSTNAME != "hetz2":
-            # pylint: disable=W0201
-            self.sb_right = "#{packet_loss}" + self.sb_right
-
         if "tmux-claude-usage" in used_plugins:
             s = "☍#{claude_5h_color}#{claude_5h_percent}%%#[default]/"
             s += "#{claude_7d_color}#{claude_7d_percent}%%#[default]#{claude_exceeds_200k}"
             self.sb_right = s + self.sb_right
+
+        if "tmux-packet-loss" in used_plugins and mtc_utils.HOSTNAME != "hetz2":
+            # pylint: disable=W0201
+            self.sb_right = "#{packet_loss}" + self.sb_right
 
         return True  # request footer to be printed
 
@@ -735,7 +735,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             min_vers = -1.0  # Don't use
 
         return [
-            "robhurring/tmux-claude-usage",
+            "jaclu/tmux-claude-usage",
             min_vers,
             """
             # Color thresholds for #{claude_*_color} tokens
