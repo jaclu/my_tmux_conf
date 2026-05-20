@@ -22,6 +22,8 @@ __pycache__/
 # Ignore all local history of files
 **/.history
 
+.claude/base.md
+
 ### linting
 # mypy
 .mypy_cache/
