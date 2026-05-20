@@ -168,7 +168,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         if "tmux-claude-usage" in used_plugins:
             s = "☍#{claude_5h_color}#{claude_5h_percent}%%#[default]/"
             s += "#{claude_7d_color}#{claude_7d_percent}%%#[default]"
-            s += "#{claude_exceeds_200k}"
+            s += "#{claude_exceeds_200k} "
             self.sb_right = s + self.sb_right
 
         if "tmux-spotify-info" in used_plugins:

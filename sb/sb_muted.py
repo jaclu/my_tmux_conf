@@ -45,7 +45,7 @@ class SB(DefaultPlugins):
         # pylint: disable=W0201
         self.hostname_template = f"#[fg={THEME_TEXT}]{mtc_utils.HOSTNAME}#[default]"
 
-        self.sb_right = self.sb_right.replace("%a %h", f"#[fg={MUTED_TEXT}] %a %h")
+        self.sb_right = self.sb_right.replace("%a %h", f"#[fg={MUTED_TEXT}]%a %h")
         w(
             f'set -g window-status-format "#[fg={MUTED_TEXT}]'
             '#I:#W#{?window_flags,#{window_flags}, }#[default]"'
