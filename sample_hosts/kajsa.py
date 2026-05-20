@@ -47,7 +47,7 @@ class Kajsa(SB):
         set -g @packet-loss-run_disconnected  yes
         set -g @packet-loss-log_file  "{log_file}"
 
-        set -g @claude_usage_color_low "colour0" # black
+        set -g @claude_usage_color_low "colour22" # pale green
         """)
 
 
