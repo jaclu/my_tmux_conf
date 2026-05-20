@@ -60,10 +60,11 @@ class JacMacConfig(SB):
         """
         super().local_overrides()
         #  Display what class this override comes from
-        self.write("# JacMac.local_overides")
-        self.write("""
-            # set -g @packet-loss-ping_host 8.8.8.8
-            """)
+        self.write("""# ---  JacMac.local_overides()
+        # set -g @packet-loss-ping_host 8.8.8.8
+
+        set -g @claude_usage_color_low "colour22" # pale green
+        """)
 
 
 if __name__ == "__main__":
