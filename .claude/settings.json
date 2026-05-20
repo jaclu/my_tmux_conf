@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(.claude/base.md)",
+      "Read(.claude/project.md)"
+    ]
+  }
+}
