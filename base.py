@@ -252,7 +252,7 @@ class BaseConfig(TmuxConfig):
 
     def status_bar_customization(self, print_header: bool = True) -> bool:
         """This is called just before the status bar is rendered,
-        local_overides() is called later so that can not modify status bar
+        local_overrides() is called later so that can not modify status bar
         left & right without a pointless reassignment.
 
         I use this to modify status bar colors in subclasses and adding hooks
@@ -290,7 +290,7 @@ class BaseConfig(TmuxConfig):
         super().local_overrides()
         w = self.write
         #  Display what class this override comes from
-        w("# ---  BaseConfig.local_overides()")
+        w("# ---  BaseConfig.local_overrides()")
 
         if not self.tablet_keyb and self.vers_ok(2.6):
             # Tablet keyb configs handle their own euro rempaping
@@ -1626,7 +1626,7 @@ class BaseConfig(TmuxConfig):
 
         #
         #  Add this after status_bar_customization() to make it
-        #  non-obvious to override it - hint local_overides()
+        #  non-obvious to override it - hint local_overrides()
         #
         if self.show_prefix_n_vers_in_sb_colors:
             if self.display_prefix:

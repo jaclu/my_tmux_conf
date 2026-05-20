@@ -38,7 +38,7 @@ class Tmate(SB):
 
         #  First mention what class this override comes from
         self.write("""
-        # --- Tmate.local_overides()
+        # --- Tmate.local_overrides()
         # Get rid of tmate occupying status-line forever...
         run-shell -b "sleep 1; $TMUX_BIN display 'Press Enter to clear status-line'"
         """)

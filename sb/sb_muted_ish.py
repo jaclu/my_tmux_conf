@@ -52,7 +52,7 @@ class SB(DefaultPlugins):
         w("set -g status-justify centre")
 
         if self.vers_ok("1.9"):
-            # medium wihte on grey
+            # medium white on grey
             w('set -g message-style "fg=colour251,bg=colour8"')
             w('set -g mode-style "fg=colour251,bg=colour8"')
             w(f"set -g status-style fg={MUTED_TEXT},bg=default")

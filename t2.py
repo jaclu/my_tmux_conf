@@ -128,7 +128,7 @@ class T2(SB):  # type: ignore
         super().local_overrides()
         w = self.write
         #  Display what class this override comes from
-        w("# ---  T2.local_overides()")
+        w("# ---  T2.local_overrides()")
         w("set -g @claude_usage_color_low colour29")
         if self.vers_ok(1.9):
             #
