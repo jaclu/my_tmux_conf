@@ -42,9 +42,8 @@ class Kajsa(SB):
         """
         super().local_overrides()
         #  Display what class this override comes from
-        self.write("# kajsa.local_overides")
         log_file = "~/tmp/packet-loss-kajsa.log"
-        self.write(f"""
+        self.write(f"""# ---  kajsa.local_overides()
         set -g @packet-loss-run_disconnected  yes
         set -g @packet-loss-log_file  "{log_file}"
 
