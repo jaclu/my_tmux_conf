@@ -212,7 +212,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
 
         if not self.use_plugin_better_mouse_mode or self.is_tmate():
             # Is needed also in an inner tmux!
-            vers_min = -1.0  # Dont use
+            vers_min = -1.0  # Don't use
         else:
             vers_min = 2.1
 
@@ -278,7 +278,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         if not self.use_plugin_jump or mtc_utils.IS_ISH or mtc_utils.IS_TERMUX:
             # it seems Termux fails to handle ttys
             # it works on iSH, but soo slow it is of no practical usage
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
         else:
             min_vers = 2.4
 
@@ -302,7 +302,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             min_vers = 1.5
         else:
             # it works on iSH, but soo slow it is of no practical usage
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
 
         return [
             "jaclu/tmux-menus",
@@ -336,7 +336,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
     def plugin_mouse_swipe(self) -> list:  # 3.0
         """right-click & swipe switches Windows / Sessions"""
         if not self.use_plugin_mouse_swipe or self.is_limited_host:
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
         else:
             min_vers = 3.0
 
@@ -353,7 +353,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         Default trigger: <prefix> Z
         """
         if not self.use_plugin_power_zoom or self.is_tmate():
-            vers_min = -1.0  # Dont use
+            vers_min = -1.0  # Don't use
         else:
             vers_min = 2.0
 
@@ -379,7 +379,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         devices. so no point enabling tmux-resurrect & tmux-continuum
         on iSH"""
         if not self.use_plugin_resurrect or mtc_utils.IS_ISH or self.is_tmate():
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
         else:
             min_vers = 1.9
 
@@ -445,7 +445,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             min_vers = 2.4
         else:
             # it works on iSH, but soo slow it is of no practical usage
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
 
         #  {@mode_indicator_custom_prompt}
         return [
@@ -629,7 +629,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         if self.use_plugin_gentrify:
             min_vers = 3.0
         else:
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
         return ["kristopolous/tmux-gentrify", min_vers, ""]
 
     def plugin_keyboard_type(self):  # 1.9

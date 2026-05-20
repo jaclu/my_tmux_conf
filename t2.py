@@ -74,7 +74,7 @@ class T2(SB):  # type: ignore
         #  Tested down to vers 1.5
         if not self.use_plugin_menus:
             # it works on iSH, but soo slow it is of no practical usage
-            min_vers = -1.0  # Dont use
+            min_vers = -1.0  # Don't use
         else:
             min_vers = 1.5
 

@@ -12,7 +12,7 @@
 #  Some of the lines in the resulting tmux.conf will be really long...
 #
 #  The generated config is not really meant to be used as a primary
-#  sourceof the setup it will include group headers and some comments
+#  source of the setup it will include group headers and some comments
 #  suck in from here, but this is the canonical place to observe the
 #  code.
 #
@@ -921,7 +921,7 @@ class BaseConfig(TmuxConfig):
             s = "bind -N 'Select"
             self.pane_un_zoomed_noprefix_binds.extend(
                 # This is kind of odd, if I use tmux-keybtest my iSH node generates
-                # M-9 & M-0, yet they dont trigger inside my tmux
+                # M-9 & M-0, yet they don't trigger inside my tmux
                 [
                     f"{s} previously current window - P+-'    -n  M--  last-window",
                     f"{s} previous window - P+p P+9 C-M-Left' -n  M-9  previous-window",
