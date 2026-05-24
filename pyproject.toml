@@ -40,14 +40,3 @@ plugins.md033.allowed_elements = "nbsp,prefix"
 exclude = [".venv", "**/__pycache__"]
 reportMissingImports = "error"
 reportMissingTypeStubs = false
-
-[tool.ruff]
-line-length = 92
-exclude = ["**/.venv"]
-fix = false
-# Uncomment as needed:
-# target-version = "py312"
-
-[tool.ruff.lint]
-# select = ["E", "F"]
-# ignore = ["I001"]
