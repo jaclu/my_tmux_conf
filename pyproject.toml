@@ -12,7 +12,7 @@ exclude = '''
 
 [tool.isort]
 profile = "black"
-line_length = 92
+#line_length = 92
 combine_as_imports = true
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
