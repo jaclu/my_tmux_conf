@@ -51,7 +51,6 @@ import shutil
 import sys
 
 import __main__
-
 import mtc_utils
 from tablet_kbd import special_consoles_config
 from tmux_conf import TmuxConfig

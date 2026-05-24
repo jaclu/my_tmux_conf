@@ -71,7 +71,7 @@ class PluginDeployment:
         #  First ensure that plugin code that needs to process the
         #  environment is done and output is written to config.
         #
-        for name, info in used_plugins.items():
+        for _, info in used_plugins.items():
             plugin_method = info[PLUGIN_MTHD]
             plugin_method()  # type: ignore[operator]
 
