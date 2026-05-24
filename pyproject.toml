@@ -2,7 +2,6 @@
 requires-python = ">=3.11"
 
 [tool.black]
-line-length = 92
 include = '\.pyi?$'
 exclude = '''
 /(
@@ -12,7 +11,6 @@ exclude = '''
 
 [tool.isort]
 profile = "black"
-#line_length = 92
 combine_as_imports = true
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
@@ -44,9 +42,9 @@ exclude = [".venv", "**/__pycache__"]
 reportMissingImports = "error"
 reportMissingTypeStubs = false
 
-# [tool.ruff]
+#[tool.ruff]
 # target-version inferred automatically
-# line-length = 92
+#line-length = 92
 
 [tool.ruff.lint]
 
