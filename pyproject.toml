@@ -1,3 +1,6 @@
+[project]
+requires-python = ">=3.11"
+
 [tool.black]
 line-length = 92
 include = '\.pyi?$'
@@ -40,3 +43,43 @@ plugins.md033.allowed_elements = "nbsp,prefix"
 exclude = [".venv", "**/__pycache__"]
 reportMissingImports = "error"
 reportMissingTypeStubs = false
+
+# [tool.ruff]
+# target-version inferred automatically
+# line-length = 92
+
+[tool.ruff.lint]
+
+# more opinionated and modernization-oriented
+# select = [
+#     "E",
+#     "F",
+#     "W",
+#     "I",
+#     "UP",
+# ]
+
+# more conservative selections
+select = [
+    "E4",
+    "E7",
+    "E9",
+    "F",
+    "I",
+    "B",
+    "UP",
+]
+
+fixable = [
+    "I",
+    "UP",
+]
+
+ignore = [
+    "E501",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
