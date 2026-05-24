@@ -163,9 +163,9 @@ def verify_conf_file_usable(conf_file: str) -> str:
     try:
         with open(conf_file, "a", encoding="utf-8") as _:
             pass
-    except IOError as error:
+    except OSError as error:
         print(f"ERROR: Could not write to config file: {conf_file}")
-        raise IOError from error
+        raise OSError from error
 
     #  If it didn't exist, we just created an empty file, get rid of it
     if os.stat(conf_file).st_size < 1:
