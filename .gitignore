@@ -29,6 +29,8 @@ __pycache__/
 .mypy_cache/
 # olint
 .cache.olint
+# vulture
+whitelist.py
 
 # Used by tool-versioning stuff like asdf
 .tool-versions
