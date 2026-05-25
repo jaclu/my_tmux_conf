@@ -317,7 +317,9 @@ class TmuxConfig:
         #
         self.plugins.set_limited_host(self.is_limited_host)
 
-        self.write_enable(False)  # ensure config file is not written to during plugin scan
+        self.write_enable(
+            False
+        )  # ensure config file is not written to during plugin scan
         if self.plugin_handler:
             self.plugins.scan(self.list_plugin_methods())
             if self.plugins_display == 3:
@@ -568,7 +570,9 @@ class TmuxConfig:
 
     def check_replace_default_config(self) -> None:
         if os.path.isfile(self.conf_file) or os.path.islink(self.conf_file):
-            confirmation = input("Do you wish to replace the default config file (y/n)?")
+            confirmation = input(
+                "Do you wish to replace the default config file (y/n)?"
+            )
         else:
             confirmation = input("Do you wish to create a default config file (y/n)?")
         if confirmation not in ("y", "Y"):

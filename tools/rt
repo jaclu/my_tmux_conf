@@ -15,7 +15,7 @@ import argparse
 import inspect
 import logging
 import os
-import subprocess
+import subprocess  # nosec B404 - internal command generation, no user input
 import sys
 
 APP_VERSION = "0.4.4   2024-04-10"
@@ -308,7 +308,9 @@ def parse_cmd_line():
         action="store_true",
         help="Connect with mosh, otherwise ssh will be used",
     )
-    parser.add_argument("-M", "--mosh-client", help="local mosh cmd to use, default: mosh")
+    parser.add_argument(
+        "-M", "--mosh-client", help="local mosh cmd to use, default: mosh"
+    )
     parser.add_argument(
         "-p",
         "--ports",
@@ -355,11 +357,11 @@ def parse_cmd_line():
     return parser.parse_args()
 
 
-def main():
+def main():  # pylint: disable=too-many-branches
     """main function"""
 
     uid = os.getuid()  # current user's UID
-    f_log = f"/tmp/rt-{uid}.log"
+    f_log = f"/tmp/rt-{uid}.log"  # nosec B108 - namespaced by UID, logging only
 
     logging.basicConfig(
         filename=f_log,
@@ -431,7 +433,9 @@ def main():
         elif ex_code == 44:
             print(f"[{h_name}] remote tmux server was killed, exit code: {ex_code}")
         elif ex_code not in (0, 1):
-            print(f"[{h_name}] Unexpected exit code from remote end, exit code:: {ex_code}")
+            print(
+                f"[{h_name}] Unexpected exit code from remote end, exit code:: {ex_code}"
+            )
         # else:
         #    print(f"[{h_name}] exit code from remote end: {ex_code}")
 

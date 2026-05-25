@@ -529,11 +529,17 @@ class IshConsole(LimitedKbdSpecialHandling):
                 #    Special case to avoid cutof at second -N
                 w("# tmux < 3.1 Fails to handle Meta N - so it is skipped")
             elif key == 'M-"':
-                w(f"bind -N 'Send {key}' -n User{key_2_uk[key]}     send-keys     '{key}'")
+                w(
+                    f"bind -N 'Send {key}' -n User{key_2_uk[key]}     send-keys     '{key}'"
+                )
             elif key == "M-}":
-                w(f'bind -N "Send {key}" -n User{key_2_uk[key]}     send-keys     "{key}"')
+                w(
+                    f'bind -N "Send {key}" -n User{key_2_uk[key]}     send-keys     "{key}"'
+                )
             else:
-                w(f'bind -N "Send {key}" -n User{key_2_uk[key]}     send-keys     {key}')
+                w(
+                    f'bind -N "Send {key}" -n User{key_2_uk[key]}     send-keys     {key}'
+                )
         w()  # spacer line
 
         # if any("User" in value for value in self.tc.muc_keys.values()):

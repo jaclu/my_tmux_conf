@@ -88,7 +88,9 @@ def parse_cmdline(args: list[str]) -> argparse.Namespace:
         help="1=Used plugins 2=also ignored plugins 3=show config",
     )
 
-    parser.add_argument("-t", "--tmux_bin", help="Force usage of this tmux bin", default="")
+    parser.add_argument(
+        "-t", "--tmux_bin", help="Force usage of this tmux bin", default=""
+    )
 
     parser.add_argument(
         "-V",

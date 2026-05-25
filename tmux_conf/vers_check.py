@@ -32,7 +32,9 @@ class VersionCheck:
             vers_filtered = vers_detected.split("rc-")[0].split("-git")[0]
 
         if vers_detected != vers_filtered:
-            print(f"Relabeling detected tmux version: {vers_detected} -> {vers_filtered}")
+            print(
+                f"Relabeling detected tmux version: {vers_detected} -> {vers_filtered}"
+            )
         self._vers_actual = self.normalize_vers(vers_filtered)
         if vers_requested:
             self._vers = self.normalize_vers(vers_requested)
