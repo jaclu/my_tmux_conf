@@ -1,3 +1,0 @@
-[bandit]
-skips = B602
-exclude_dirs = tools/dead-code
