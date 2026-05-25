@@ -51,6 +51,7 @@ import shutil
 import sys
 
 import __main__
+
 import mtc_utils
 from tablet_kbd import special_consoles_config
 from tmux_conf import TmuxConfig
@@ -648,7 +649,9 @@ class BaseConfig(TmuxConfig):
         # key_yazi = "u"
         key_scrpad = "O"  # P being taken this is pOpup :)
         if self.vers_ok(popup_min_vers):
-            dp_lazygit = "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E lazygit"
+            dp_lazygit = (
+                "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E lazygit"
+            )
             # dp_yazi ="display-popup -d '#{pane_current_path}' -w 90% -h 90% -E yazi"
             dp_scrpad = "display-popup -w 70% -h 70% -E"
 
@@ -1136,6 +1139,7 @@ class BaseConfig(TmuxConfig):
         #
         w = self.write
         cur_path = self.current_path_directive
+        pref = "bind -N 'Split pane"
 
         w("""
         #
@@ -1148,18 +1152,18 @@ class BaseConfig(TmuxConfig):
             return
 
         if self.vers_ok(1.0):
-            w(f"bind -N 'Split pane down - P+M-Down'    C-j  split-window       {cur_path}")
-            w(f"bind -N 'Split pane right - P+M-Right'  C-l  split-window  -h   {cur_path}")
+            w(f"{pref} down - P+M-Down'    C-j  split-window       {cur_path}")
+            w(f"{pref} right - P+M-Right'  C-l  split-window  -h   {cur_path}")
         if self.vers_ok(2.0):
-            w(f"bind -N 'Split pane left - P+M-Left'    C-h  split-window  -hb  {cur_path}")
-            w(f"bind -N 'Split pane up - P+M-Up'        C-k  split-window  -vb  {cur_path}")
+            w(f"{pref} left - P+M-Left'    C-h  split-window  -hb  {cur_path}")
+            w(f"{pref} pane up - P+M-Up'        C-k  split-window  -vb  {cur_path}")
         w()  # spacer
         if self.vers_ok(1.0):
-            w(f"bind -N 'Split pane down - P+C-j'   M-Down   split-window       {cur_path}")
-            w(f"bind -N 'Split pane right - P+C-l'  M-Right  split-window  -h   {cur_path}")
+            w(f"{pref} down - P+C-j'   M-Down   split-window       {cur_path}")
+            w(f"{pref} right - P+C-l'  M-Right  split-window  -h   {cur_path}")
         if self.vers_ok(2.0):
-            w(f"bind -N 'Split pane left - P+C-h'   M-Left   split-window  -hb  {cur_path}")
-            w(f"bind -N 'Split pane up - P+C-k'     M-Up     split-window  -vb  {cur_path}")
+            w(f"{pref} left - P+C-h'   M-Left   split-window  -hb  {cur_path}")
+            w(f"{pref} up - P+C-k'     M-Up     split-window  -vb  {cur_path}")
 
     def pane_resizing(self):
         w = self.write
@@ -1292,9 +1296,11 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(3.2):
             binds_s = unbinds_s = ""
         else:
-            w("""# before 3.2 complex if-shell -F conditions could not be used, so we have
+            w(
+                """# before 3.2 complex if-shell -F conditions could not be used, so we have
             # to revert to a more primitive handling of the pass-through binds
-            """)
+            """
+            )
             binds_s, unbinds_s = self.generate_old_style_binds()
         borders_enable = f"set -w pane-border-status top{binds_s}"
         borders_disable = f"set -w pane-border-status off{unbinds_s}"
@@ -1338,7 +1344,9 @@ class BaseConfig(TmuxConfig):
                     "sent it to the terminal"
                 )
             }
-                set-hook -g pane-set-clipboard{idx} "display-message {delay} '{msg}'" """)
+                set-hook -g pane-set-clipboard{idx} "display-message {delay} '{
+                msg
+            }'" """)
 
         if self.vers_ok(3.2) and not self.is_tmate():
             idx = self.get_next_hook_array_idx()
@@ -1497,7 +1505,8 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(2.1):
             w(f"{self.opt_ses} mouse on\n")
             self.mkscript_toggle_mouse()
-            w(f'bind -N "Toggle mouse on/off"  M  {self.es.run_it(self._fnc_toggle_mouse)}')
+            tgl_code = self.es.run_it(self._fnc_toggle_mouse)
+            w(f'bind -N "Toggle mouse on/off"  M  {tgl_code}')
         else:
             w(f"{self.opt_win} mode-mouse on")
             if self.vers_ok(1.1):
@@ -2077,7 +2086,9 @@ timer_end() {{
 """]
         self.es.create(self._fnc_tpm_indicator, clear_tpm_init_sh)
 
-    def incompatible_tmux_conf(self, lib_vers_found: str, reason: str, details: str = ""):
+    def incompatible_tmux_conf(
+        self, lib_vers_found: str, reason: str, details: str = ""
+    ):
         print()
         print("ERROR: Incompatible tmux-conf package")
         print()
@@ -2097,7 +2108,9 @@ timer_end() {{
             return  # user keys not yet available
         if sequence[:1] != "\\":
             print()
-            print(f"ERROR: alternate_key_euro({sequence}) must be given in octal notation")
+            print(
+                f"ERROR: alternate_key_euro({sequence}) must be given in octal notation"
+            )
             sys.exit(mtc_utils.ERROR_USER_KEY_NOT_OCTAL)
 
         w = self.write
