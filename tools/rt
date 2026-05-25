@@ -416,7 +416,9 @@ def main():  # pylint: disable=too-many-branches
         h_name = os.getenv("HOSTNAME_SHORT") or ""
         cmd = hc.full_command_line()
         logging.info("will run: %s", cmd)
-        proc = subprocess.run(cmd, shell=True, check=False)
+        proc = subprocess.run(
+            cmd, shell=True, check=False
+        )  # nosec: cmd from internal full_command_line()
         ex_code = proc.returncode
         logging.info("exit code: [%s]", ex_code)
         if ex_code == 255:
@@ -425,7 +427,7 @@ def main():  # pylint: disable=too-many-branches
             msg = f"[{h_name}] rt: screen reset, since remote end"
             msg += f" died unexpectedly with exit code: {ex_code}"
             cmd = f'reset ; echo "{msg}"'
-            subprocess.run(
+            subprocess.run(  # nosec: shell needed for semicolon; msg is internal
                 cmd,
                 shell=True,
                 check=False,
