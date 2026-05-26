@@ -296,7 +296,9 @@ def parse_cmd_line():
         action="store_true",
         help="Connect with mosh, otherwise ssh will be used",
     )
-    parser.add_argument("-M", "--mosh-client", help="local mosh cmd to use, default: mosh")
+    parser.add_argument(
+        "-M", "--mosh-client", help="local mosh cmd to use, default: mosh"
+    )
     parser.add_argument(
         "-p",
         "--ports",
@@ -393,7 +395,9 @@ def main():
         elif ex_code == 44:
             print(f"[{h_name}] remote tmux server was killed, exit code: {ex_code}")
         elif ex_code not in (0, 1):
-            print(f"[{h_name}] Unexpected exit code from remote end, exit code:: {ex_code}")
+            print(
+                f"[{h_name}] Unexpected exit code from remote end, exit code:: {ex_code}"
+            )
         # else:
         #    print(f"[{h_name}] exit code from remote end: {ex_code}")
 
