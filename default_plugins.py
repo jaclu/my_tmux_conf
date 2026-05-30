@@ -222,9 +222,6 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             "jaclu/tmux-better-mouse-mode",
             vers_min,
             """
-            #  Scroll events are sent to moused-over pane.
-            set -g @scroll-without-changing-pane  on
-
             #  Scroll speed, lines per tic
             set -g @scroll-speed-num-lines-per-scroll  1
 
