@@ -1360,8 +1360,12 @@ class BaseConfig(TmuxConfig):
             #
             #   ======  Pane Zoom  ======
             #
-
+            # If pane is zoomed, ignore pane navigation etc and send it through
+            # to a potential inner tmux to parse.
+            #
             # Trigger if layout is changed - panes added/removed/zoomed
+            #
+
             set-hook -g window-layout-changed{idx} " """)
             self.hook_action_zoom_state()
 
@@ -1459,36 +1463,37 @@ class BaseConfig(TmuxConfig):
         #
         w(
             """
-    if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-state}}}' {
-        if-shell -F '#{||:#{==:#{window_panes},1},#{==:#{window_zoomed_flag},1}}' {
-            # Set zoomed state
-            set -w @zoom-state 1
-            set -w pane-border-status off""",
+if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-state}}}' \\
+{
+    if-shell -F '#{||:#{==:#{window_panes},1},#{==:#{window_zoomed_flag},1}}' {
+        # Set zoomed state
+        set -w @zoom-state 1
+        set -w pane-border-status off""",
             trim_ws=False,
         )
 
         # unbind no-prefix pane nav keys
         for s in self.pane_un_zoomed_noprefix_binds:
-            w(f"            unbind -n {shlex.split(s)[4]}", trim_ws=False)
+            w(f"        unbind -n {shlex.split(s)[4]}", trim_ws=False)
 
         # Debug helper add for each hook and state...
         # msg = "hook set zoom-state = #{@zoom-state}"
         # w(f"display-message -d 0 'window-layout-changed {msg}'")
         w(
-            """        } {
-            # Set un-zoomed state
-            set -w @zoom-state 0
-            set -w pane-border-status top""",
+            """    } {
+        # Set un-zoomed state
+        set -w @zoom-state 0
+        set -w pane-border-status top""",
             trim_ws=False,
         )
 
         # bind no-prefix pane nav keys
         for s in self.pane_un_zoomed_noprefix_binds:
-            w(f"            {s}", trim_ws=False)
+            w(f"        {s}", trim_ws=False)
 
         w(
-            """        }
-    }""",
+            """    }
+}""",
             trim_ws=False,
         )
         w('"')
