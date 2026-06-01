@@ -52,7 +52,7 @@ class T2(SB):  # type: ignore
     # use_embedded_scripts = False
     # is_limited_host = True
 
-    # use_plugin_battery = False
+    use_plugin_battery = True  # Will disabled if not on MacOS
     use_plugin_extrakto = False
     use_plugin_jump = False
     # use_plugin_menus = False
@@ -63,7 +63,6 @@ class T2(SB):  # type: ignore
     use_plugin_resurrect = False
 
     if mtc_utils.HOSTNAME == "JacMac":
-        use_plugin_battery = True
         use_plugin_packet_loss = True
     elif mtc_utils.HOSTNAME == "JacDroid":
         use_plugin_packet_loss = True

@@ -120,6 +120,11 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
     def pre_plugin_checks(self) -> None:
         """Disable claude plugin if ~/.claude is not present."""
         super().pre_plugin_checks()
+
+        # For now only use the battery plugin on MacOS
+        if not mtc_utils.IS_DARWIN:
+            self.use_plugin_battery = False
+
         # Claude env is a directory structure
         if self.use_plugin_claude and not (Path.home() / ".claude").is_dir():
             print("OVERRIDE: Disabling claude plugin due to no claude env!")
@@ -181,7 +186,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             # pylint: disable=W0201
             self.sb_right = "#{keyboard_type}" + self.sb_right
 
-        if "tmux-battery" in used_plugins:
+        if "tmux-battery-old" in used_plugins:
             # pylint: disable=W0201
             self.sb_right = "#{battery_smart}" + self.sb_right
 
