@@ -1,5 +1,13 @@
 # TODO
 
+## inner tmux navigation
+
+outer tmux pane zoomed
+
+inner tmux w1 has two panes w2 has one
+
+if on w1 M-0 goes to w2, but then M-9, M-0 & M-- gets disabled
+
 ## rt new option
 
 -s for shared session
