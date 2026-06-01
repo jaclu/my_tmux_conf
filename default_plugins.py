@@ -519,7 +519,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             min_vers = -1.0  # don't use this one
 
         return [
-            "jaclu/tmux-battery",
+            "jaclu/tmux-battery-old",
             min_vers,
             """
             set -g @batt_remain_short true
