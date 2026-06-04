@@ -62,8 +62,10 @@ class T2(SB):  # type: ignore
     use_plugin_suspend = False
     use_plugin_resurrect = False
 
-    if mtc_utils.HOSTNAME == "JacMac":
+    if mtc_utils.HOSTNAME in ("JacMac", "JacPad"):
         use_plugin_packet_loss = True
+        use_plugin_battery = False
+        use_plugin_claude = False
     elif mtc_utils.HOSTNAME == "JacDroid":
         use_plugin_packet_loss = True
         force_plugin_continuum = True
