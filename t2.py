@@ -162,7 +162,7 @@ class T2(SB):  # type: ignore
 
                 # set -g @packet-loss-log_file "" # Use this to disable logging
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
-                set -g @packet-loss-run_disconnected No
+                set -g @packet-loss-run_disconnected Yes
             """)
 
 
