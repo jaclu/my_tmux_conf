@@ -190,7 +190,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             # pylint: disable=W0201
             self.sb_right = "#{battery_smart}" + self.sb_right
 
-        if "tmux-packet-loss" in used_plugins and mtc_utils.HOSTNAME != "hetz2":
+        if "tmux-packet-loss" in used_plugins:
             # pylint: disable=W0201
             self.sb_right = "#{packet_loss}" + self.sb_right
 
