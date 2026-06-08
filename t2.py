@@ -66,7 +66,7 @@ class T2(SB):  # type: ignore
         use_plugin_packet_loss = True
         use_plugin_battery = False
         use_plugin_claude = False
-    elif mtc_utils.HOSTNAME in ("JacDroid", "hetz2"):
+    elif mtc_utils.HOSTNAME in ("JacDroid",):
         use_plugin_packet_loss = True
         force_plugin_continuum = True
         use_plugin_resurrect = True
