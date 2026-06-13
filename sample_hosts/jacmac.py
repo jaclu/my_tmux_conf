@@ -47,6 +47,7 @@ class JacMacConfig(SB):
     # use_plugin_spotify_info = True
     # use_plugin_which_key = True
     # use_plugin_yank = True
+    use_plugin_claude = False
 
     def local_overrides(self) -> None:
         """
