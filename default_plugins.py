@@ -118,7 +118,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
     # plugin_handler = "tmux-plugins/tpm"
 
     def pre_plugin_checks(self) -> None:
-        """Disable claude plugin if ~/.claude is not present."""
+        """Disable plugins based on local env."""
         super().pre_plugin_checks()
 
         # For now only use the battery plugin on MacOS
