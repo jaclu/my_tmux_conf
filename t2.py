@@ -62,15 +62,15 @@ class T2(SB):  # type: ignore
     use_plugin_suspend = False
     use_plugin_resurrect = False
 
-    if mtc_utils.HOSTNAME in ("JacMac", "JacPad", "Pad5"):
+    if mtc_utils.HOSTNAME in ("JacMac", "JacMac-iSH", "JacPad", "Pad5", "Pad7"):
         use_plugin_packet_loss = True
         use_plugin_battery = False
         use_plugin_claude = False
     elif mtc_utils.HOSTNAME in ("JacDroid",):
         use_plugin_packet_loss = True
+        # Can be used on Termux but NOT on iSH
         force_plugin_continuum = True
         use_plugin_resurrect = True
-
     def plugin_menus(self) -> list:  # 1.5
         #  Tested down to vers 1.5
         if not self.use_plugin_menus:
