@@ -156,14 +156,17 @@ class T2(SB):  # type: ignore
 
         if "tmux-packet-loss" in self.plugins.installed(short_name=True):
             w("""#
-                # tmux-packet-loss - overrides
-                #
-                # Use a different host vs the outer tmux
-                set -g @packet-loss-ping_host "1.1.1.1"
+            # tmux-packet-loss - overrides
+            #
+            # Use a different host vs the outer tmux
+            # set -g @packet-loss-ping_host "1.1.1.1"
+            set -g @packet-loss-ping_count 3
+            set -g @packet-loss-history_size 15
+            set -g @packet-loss-level_alert 34
 
-                # set -g @packet-loss-log_file "" # Use this to disable logging
-                set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
-                set -g @packet-loss-run_disconnected Yes
+            # set -g @packet-loss-log_file "" # Use this to disable logging
+            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
+            set -g @packet-loss-run_disconnected Yes
             """)
 
 
