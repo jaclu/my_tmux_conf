@@ -71,6 +71,7 @@ class T2(SB):  # type: ignore
         # Can be used on Termux but NOT on iSH
         force_plugin_continuum = True
         use_plugin_resurrect = True
+
     def plugin_menus(self) -> list:  # 1.5
         #  Tested down to vers 1.5
         if not self.use_plugin_menus:
