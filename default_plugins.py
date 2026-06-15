@@ -665,17 +665,16 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             min_vers = 1.9
         else:
             min_vers = -1.0  # Don't use
-            # 1.1.1.1 - stopped responding 250715
         return [
             "jaclu/tmux-packet-loss",
             min_vers,
             """
             set -g @packet-loss-hist_avg_display  yes
             set -g @packet-loss-run_disconnected  yes
-            set -g @packet-loss-level_disp  5
             set -g @packet-loss-color_alert  colour21
             set -g @packet-loss-color_bg     colour226
             set -g @packet-loss-suffix "| "
+
             set -g @packet-loss-log_file  "$HOME/tmp/tmux-packet-loss.log"
             """,
         ]
