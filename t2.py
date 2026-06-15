@@ -167,9 +167,14 @@ class T2(SB):  # type: ignore
             # Use a different host vs the outer tmux
             set -g @packet-loss-ping_host "1.1.1.1"
 
+            # using reactive no point going beyond 8
+            set -g @packet-loss-history_size 8
+
             set -g @packet-loss-level_alert 34
             set -g @packet-loss-ping_count 3
-            set -g @packet-loss-history_size 15
+
+            # set -g @packet-loss-level_alert 26
+            # set -g @packet-loss-ping_count 4
 
             # set -g @packet-loss-log_file "" # Use this to disable logging
             set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
