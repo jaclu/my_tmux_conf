@@ -789,8 +789,10 @@ class BaseConfig(TmuxConfig):
         #======================================================
 
         {self.opt_win} automatic-rename off
-        {self.opt_win} aggressive-resize on
-        {self.opt_win} window-size smallest""")
+        {self.opt_win} aggressive-resize on""")
+
+        if self.vers_ok(2.9):
+            w(f"{self.opt_win} window-size smallest")
         if self.monitor_activity:
             w(f"""#  bell + # on window that had activity,
                 # will only trigger once per window
