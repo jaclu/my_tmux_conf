@@ -136,8 +136,8 @@ class T2(SB):  # type: ignore
         super().local_overrides()
         w = self.write
         #  Display what class this override comes from
-        w("# ---  T2.local_overrides()")
-        w("set -g @claude_usage_color_low colour29")
+        w("# ---  T2.local_overrides() - to adjust for the t2 styling")
+
         if self.vers_ok(1.9):
             #
             #  Works both on bright and dark backgrounds
@@ -160,25 +160,31 @@ class T2(SB):  # type: ignore
                 w(f"""{self.opt_pane} pane-active-border-style fg=colour70
                 {self.opt_pane} pane-border-style fg=colour241""")
 
-        if "tmux-packet-loss" in self.plugins.installed(short_name=True):
-            w("""#
-            # tmux-packet-loss - overrides
-            #
-            # Use a different host vs the outer tmux
-            set -g @packet-loss-ping_host "1.1.1.1"
+        if self.vers_ok(1.8):
+            # User variables not present before 1.8
+            used_plugins = self.plugins.installed(short_name=True)
+            if "tmux-claude-usage" in used_plugins:
+                w("set -g @claude_usage_color_low colour29")
 
-            # using reactive no point going beyond 8
-            set -g @packet-loss-history_size 8
+            if "tmux-packet-loss" in used_plugins:
+                w("""#
+                # tmux-packet-loss - overrides
+                #
+                # Use a different host vs the outer tmux
+                set -g @packet-loss-ping_host "1.1.1.1"
 
-            set -g @packet-loss-level_alert 34
-            set -g @packet-loss-ping_count 3
+                # using reactive no point going beyond 8
+                set -g @packet-loss-history_size 8
 
-            # set -g @packet-loss-level_alert 26
-            # set -g @packet-loss-ping_count 4
+                set -g @packet-loss-level_alert 34
+                set -g @packet-loss-ping_count 3
 
-            # set -g @packet-loss-log_file "" # Use this to disable logging
-            set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
-            """)
+                # set -g @packet-loss-level_alert 26
+                # set -g @packet-loss-ping_count 4
+
+                # set -g @packet-loss-log_file "" # Use this to disable logging
+                set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
+                """)
 
 
 if __name__ == "__main__":
