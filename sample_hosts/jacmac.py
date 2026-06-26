@@ -59,13 +59,15 @@ class JacMacConfig(SB):
         `super().local_overrides()` is called first, to retain any overrides
         defined by parent classes before applying additional customizations.
         """
+        w = self.write
         super().local_overrides()
         #  Display what class this override comes from
-        self.write("""# ---  JacMac.local_overides()
-        # set -g @packet-loss-ping_host 8.8.8.8
-
-        set -g @claude_usage_color_low "colour22" # pale green
-        """)
+        w("# ---  JacMac.local_overides()")
+        if self.vers_ok(1.8):  # below this user params not supported
+            w("""
+                set -g @packet-loss-ping_host 8.8.8.8
+                set -g @claude_usage_color_low "colour22" # pale green
+            """)
 
 
 if __name__ == "__main__":
