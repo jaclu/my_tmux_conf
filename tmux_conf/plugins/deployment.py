@@ -111,7 +111,9 @@ class PluginDeployment:
             #  plugin and install if missing
             #
             output.extend(self.mkscript_manual_deploy())
-            output.append(self._es.run_it(self._fnc_activate_manually, in_bg=True))
+            output.append(
+                self._es.run_it(self._fnc_activate_manually, use_bash=True, in_bg=True)
+            )
         elif self._plugin_handler:
             #
             #  For any other _plugin_handler setting, assume it is tpm

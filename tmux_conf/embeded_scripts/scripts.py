@@ -67,9 +67,9 @@ class EmbeddedScripts:
 
         self._emitter.emit(spec)
 
-    def run_it(self, scr_name: str, in_bg: bool = False) -> str:
+    def run_it(self, scr_name: str, use_bash: bool = False, in_bg: bool = False) -> str:
         """Generate run-it line"""
-        spec = ScriptSpec(scr_name, [], False, False)  # dummy, only for name
+        spec = ScriptSpec(scr_name, [], use_bash, False)  # dummy, only for name
         return self._emitter.run_cmd(spec, in_bg)
 
     def call_script(self, scr_name: str) -> str | Any:
