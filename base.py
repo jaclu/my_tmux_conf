@@ -819,17 +819,6 @@ class BaseConfig(TmuxConfig):
             # this is quicker to type on a touch screen
             bind -N "Spread panes out evenly"  e  select-layout -E""")
 
-        if self.vers_ok(3.5):
-            w("""
-            bind -N "Main vertical - mirrored" "M-\\#" \
-                select-layout main-horizontal-mirrored
-            bind -N "Main vertical - mirrored" "M-\\$" \
-                select-layout main-vertical-mirrored""")
-
-        # if self.vers_ok(1.5):
-        #     s = "-I ?"
-        # else:
-        #     s = ""
         cmd_new_win_named = (
             f'command-prompt -p "Name of new window: "'
             ' "'  # wrap cmd in "
