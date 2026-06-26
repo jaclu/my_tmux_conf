@@ -649,14 +649,16 @@ class TmuxConfig:
         self.vers = vers
         return True
 
-    def full_path_cmd(self, cmd: str = "tmux") -> str:
+    def full_path_cmd(self, cmd: str = "tmux", shim_expand_recursion=False) -> str:
         # returns full path of cmd if found
         c = run_shell(f"command -v {cmd}")
         if c and c.lower().find("not found") > -1:
             raise TmuxConfNotTmuxCommand(f"Not found: {cmd}")
-        if c.find(".asdf/shims") > -1:
-            cmd = self.full_path_cmd(c)
-        print(f"found {cmd} in PATH")
+        if not shim_expand_recursion and c.find(".asdf/shims") > -1:
+            cmd = self.full_path_cmd(c, True)
+        else:
+            # Only print it once
+            print(f"found {cmd} in PATH")
         return cmd
 
     def is_tmate(self) -> bool:
