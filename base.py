@@ -792,13 +792,15 @@ class BaseConfig(TmuxConfig):
         {self.opt_win} aggressive-resize on""")
 
         if self.vers_ok(2.9):
+            # When multiple clients connect, use the smaller size
             w(f"{self.opt_win} window-size smallest")
         if self.monitor_activity:
             w(f"""#  bell + # on window that had activity,
                 # will only trigger once per window
                 {self.opt_win} monitor-activity on""")
-            if self.vers_ok(1.9):
-                w(f"{self.opt_win} window-status-activity-style default")
+            # if self.vers_ok(1.9):
+            #     # Don't think this is needed
+            #     w(f"{self.opt_win} window-status-activity-style default")
             if self.vers_ok(2.6):
                 w(f"{self.opt_win} monitor-bell on")
         else:
@@ -1329,16 +1331,16 @@ class BaseConfig(TmuxConfig):
                 delay = "-d 400"
             else:
                 delay = ""
-            w(f"""
+            w(
+                f"""
                 #{
                 (
                     "Displays that tmux picked up clipboard and (hopefully) "
                     "sent it to the terminal"
                 )
             }
-                set-hook -g pane-set-clipboard{idx} "display-message {delay} '{
-                msg
-            }'" """)
+                set-hook -g pane-set-clipboard{idx} "display-message {delay} '{msg}'" """
+            )
 
         if self.vers_ok(3.2) and not self.is_tmate():
             idx = self.get_next_hook_array_idx()
