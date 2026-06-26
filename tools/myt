@@ -36,6 +36,7 @@ Available options:
 
 -h       Print this help and exit
 -a ver   Use asdf tmux version 'ver' (only for T2_ENV mode)
+         to return to default version use '-a -'
 -c       Use this tmux binary (default tmux)
 -k       Kill running tmux, can be combined with -2
 -q       Dont generate config, start tmux directly
@@ -182,20 +183,28 @@ asdf_scan() {
             [ "$(pwd)" != "$d_t2" ] && {
                 error_msg "asdf_scan() T2_ENV folder not pwd"
             }
-            asdf set tmux "$asdf_version_requested" || {
-                error_msg "Failed to set asdf tmux version to: $asdf_version_requested"
-            }
+            case "$asdf_version_requested" in
+                -)
+                    rm -f ~/t2/.tool-versions
+                    TMUX_BIN="$(asdf which tmux 2>/dev/null)"
+                    lbl_4 "option '-a -' changed asdf tmux into default version"
+                    ;;
+                *)
+                    asdf set tmux "$asdf_version_requested" || {
+                        error_msg "Failed to set asdf tmux version to: $asdf_version_requested"
+                    }
+                    # lbl_3 "><> asdf requested version: $asdf_version_requested"
+                    ASDF_DATA_DIR="${ASDF_DATA_DIR:-$HOME/.asdf}"
+                    ASDF_BIN_DIR="$ASDF_DATA_DIR/installs/tmux/$asdf_version_requested/bin"
+                    _tmux_bin="$ASDF_BIN_DIR"/tmux
+                    if [ ! -x "$_tmux_bin" ]; then
+                        error_msg "Requested asdf tmux version not installed: $asdf_version_requested"
+                    fi
 
-            # lbl_3 "><> asdf requested version: $asdf_version_requested"
-            ASDF_DATA_DIR="${ASDF_DATA_DIR:-$HOME/.asdf}"
-            ASDF_BIN_DIR="$ASDF_DATA_DIR/installs/tmux/$asdf_version_requested/bin"
-            _tmux_bin="$ASDF_BIN_DIR"/tmux
-            if [ ! -x "$_tmux_bin" ]; then
-                error_msg "Requested asdf tmux version not installed: $asdf_version_requested"
-            fi
-
-            TMUX_BIN="$_tmux_bin"
-            lbl_4 "option -a changed asdf tmux into version: $asdf_version_requested"
+                    TMUX_BIN="$_tmux_bin"
+                    lbl_4 "option -a changed asdf tmux into version: $asdf_version_requested"
+                    ;;
+            esac
             return 0
         fi
         return 0
