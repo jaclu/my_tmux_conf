@@ -308,9 +308,7 @@ def parse_cmd_line():
         action="store_true",
         help="Connect with mosh, otherwise ssh will be used",
     )
-    parser.add_argument(
-        "-M", "--mosh-client", help="local mosh cmd to use, default: mosh"
-    )
+    parser.add_argument("-M", "--mosh-client", help="local mosh cmd to use, default: mosh")
     parser.add_argument(
         "-p",
         "--ports",
@@ -371,6 +369,10 @@ def main():  # pylint: disable=too-many-branches
     )
 
     args = parse_cmd_line()
+    if args.quick and args.asdf_version:
+        print("ERROR! -a & -q Can not be combined")
+        sys.exit(1)
+
     hc = get_host_class(
         server=args.server,
         remote_user=args.user,
@@ -433,9 +435,7 @@ def main():  # pylint: disable=too-many-branches
         elif ex_code == 44:
             print(f"[{h_name}] remote tmux server was killed, exit code: {ex_code}")
         elif ex_code not in (0, 1):
-            print(
-                f"[{h_name}] Unexpected exit code from remote end, exit code:: {ex_code}"
-            )
+            print(f"[{h_name}] Unexpected exit code from remote end, exit code:: {ex_code}")
         # else:
         #    print(f"[{h_name}] exit code from remote end: {ex_code}")
 

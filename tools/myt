@@ -655,6 +655,7 @@ while [ -n "$1" ]; do
     case "$1" in
         "-h" | "--help") display_help ;;
         "-a")
+            $quick_mode && error_msg "'-q' and '-a ver' Can not be combined"
             [ -z "$2" ] && {
                 error_msg "option -a needs asdf version as param"
             }
@@ -670,6 +671,7 @@ while [ -n "$1" ]; do
             ;;
         "-k") kill_tmux=true ;;
         "-q")
+            [ -n "$asdf_version_requested" ] && error_msg "'-a ver' and '-q' Can not be combined"
             quick_mode=true
             ;;
         "-s") single_session=false ;;
