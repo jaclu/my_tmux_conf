@@ -747,12 +747,12 @@ class BaseConfig(TmuxConfig):
         w("")  # spacer
 
         if self.vers_ok(0.9):
-            s = 'bind -N "Kill session in focus"         M-x  confirm-before'
+            s = 'bind -N "Kill session in focus"      M-x  confirm-before'
             if self.vers_ok(1.5):
                 s += ' -p "Kill session: #{session_name}? (y/n)"'
             w(f"{s} kill-session")
 
-        s = 'bind -N "Create new session  - M-+"     +    command-prompt'
+        s = 'bind -N "Create new session  - M-+"  +    command-prompt'
         if self.vers_ok(1.5):
             s += ' -I "?"'
         if self.vers_ok(1.0):
