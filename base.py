@@ -52,7 +52,6 @@ import sys
 
 # Ruff import ordering is authoritative here; no blank line after __main__
 import __main__
-
 import mtc_utils
 from tablet_kbd import special_consoles_config
 from tmux_conf import TmuxConfig
@@ -653,7 +652,9 @@ class BaseConfig(TmuxConfig):
         # key_yazi = "u"
         key_scrpad = "O"  # P being taken this is pOpup :)
         if self.vers_ok(popup_min_vers):
-            dp_lazygit = "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E lazygit"
+            dp_lazygit = (
+                "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E lazygit"
+            )
             # dp_yazi ="display-popup -d '#{pane_current_path}' -w 90% -h 90% -E yazi"
             dp_scrpad = "display-popup -w 70% -h 70% -E"
 
@@ -769,12 +770,13 @@ class BaseConfig(TmuxConfig):
             # fix a couple of too long lines
             sc_p = "switch-client -p"
             sc_n = "switch-client -n"
+            s = "bind -N 'Select"
             w(f"""# session navigation
                 bind -N "Switch to last session"                _         switch-client -l
-                bind -N "Select previous session  - C-M-Up" -r  (         {sc_p}
-                bind -N "Select next session  - C-M-Down"   -r  )         {sc_n}
-                bind -N "Select previous session  - P+("    -n  C-M-Up    {sc_p}
-                bind -N "Select next session  - P+)"        -n  C-M-Down  {sc_n}""")
+                {s} previous session  - C-M-Up' -r  (         {sc_p}
+                {s} next session  - C-M-Down'   -r  )         {sc_n}
+                {s} previous session  - P+('    -n  C-M-Up    {sc_p}
+                {s} next session  - P+)'        -n  C-M-Down  {sc_n}""")
 
         self.auc_meta_ses_handling()  # used by iSH Console
 
@@ -829,16 +831,17 @@ class BaseConfig(TmuxConfig):
             '"'  # wrap cmd in "
         )
 
+        s = "bind -N 'New window -"
         # for key in ("c", "="):  # c is just for compatibility with default key
         if self.vers_ok(1.0):
             w(f"""
-                bind -N "New window - P+= M-="      c    {cmd_new_win_named}
-                bind -N "New window - P+c M-="      =    {cmd_new_win_named}
-                bind -N "New window  - P+= P+c" -n  M-=  {cmd_new_win_named}""")
+                {s} P+= M-='      c   {cmd_new_win_named}
+                {s} P+c M-='      =   {cmd_new_win_named}
+                {s} P+= P+c' -n  M-=  {cmd_new_win_named}""")
         else:
-            w("""
-                bind -N "New window - P+="  c  new-window
-                bind -N "New window - P+c"  =  new-window""")
+            w(f"""
+                {s} P+='  c  new-window
+                {s} P+c'  =  new-window""")
         self.windows_navigation()
 
         #
@@ -849,10 +852,10 @@ class BaseConfig(TmuxConfig):
         #  regardless of default popup status.
         #
         w("""
-            bind -N "Swap window left"    -r  <    swap-window -d -t :-1
-            bind -N "Swap window right"   -r  >    swap-window -d -t :+1""")
+            bind -N "Swap window left"      -r  <  swap-window -d -t :-1
+            bind -N "Swap window right"     -r  >  swap-window -d -t :+1""")
 
-        s = 'bind -N "Rename current window"   W  command-prompt'
+        s = 'bind -N "Rename current window"     W  command-prompt'
         if self.vers_ok(1.5):
             s += ' -I "#W"'
         w(f'{s} "rename-window -- \\"%%\\""')
@@ -895,7 +898,7 @@ class BaseConfig(TmuxConfig):
         pref = "bind -N 'Select"
         w(f"""
         # Window navigation
-        {pref} previously current window - P+-' -r  -  last-window
+        {pref} previously current window - P+-'      -r  -  last-window
         {pref} previous window  - P+p M-9 C-M-Left'  -r  p  previous-window
         {pref} next window  - P+n M-0 C-M-Right'     -r  n  next-window
         {pref} previous window  - P+9 M-9 C-M-Left'  -r  9  previous-window
@@ -955,7 +958,7 @@ class BaseConfig(TmuxConfig):
               """)
 
         if self.vers_ok(0.9):
-            s = 'bind -N "Kill pane in focus"  x  confirm-before'
+            s = 'bind -N "Kill pane in focus"      x    confirm-before'
             if self.vers_ok(1.5):
                 s += ' -p "kill-pane #T (#P)? (y/n)"'
             w(f"{s} kill-pane")
@@ -1870,8 +1873,7 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
     def mkscript_toggle_mouse(self):
         """Toggles mouse handling on/off"""
         #  The {} encapsulating the script needs to be doubled to escape them
-        toggle_mouse_sh = [
-            f"""
+        toggle_mouse_sh = [f"""
 {self._fnc_toggle_mouse}() {{
     #  This is so much easier to do in a proper script...
     old_state=$($TMUX_BIN show -gv mouse)
@@ -1882,8 +1884,7 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
     fi
     $TMUX_BIN {self.opt_ses} mouse $new_state
     $TMUX_BIN display-message "mouse: $new_state"
-}}"""
-        ]
+}}"""]
         self.es.create(self._fnc_toggle_mouse, toggle_mouse_sh)
 
     def mkscript_shlvl_offset(self):
@@ -2050,8 +2051,7 @@ timer_end() {{
         # self.sb_purge_tpm_running = f"$TMUX_BIN {self.opt_ses} -q status-right "
         # \\"$($TMUX_BIN display-message -p '#{{status-right}}' | sed 's/{purge_seq}//')\\"
 
-        clear_tpm_init_sh = [
-            f"""
+        clear_tpm_init_sh = [f"""
 {self._fnc_tpm_indicator}() {{
     #
     # Function that turns on/off self.tpm_initializing addition to status-right
@@ -2089,11 +2089,12 @@ timer_end() {{
         $TMUX_BIN setenv -gu {self.tpm_working_incicator}
     fi
 }}
-"""
-        ]
+"""]
         self.es.create(self._fnc_tpm_indicator, clear_tpm_init_sh)
 
-    def incompatible_tmux_conf(self, lib_vers_found: str, reason: str, details: str = ""):
+    def incompatible_tmux_conf(
+        self, lib_vers_found: str, reason: str, details: str = ""
+    ):
         print()
         print("ERROR: Incompatible tmux-conf package")
         print()
@@ -2113,7 +2114,9 @@ timer_end() {{
             return  # user keys not yet available
         if sequence[:1] != "\\":
             print()
-            print(f"ERROR: alternate_key_euro({sequence}) must be given in octal notation")
+            print(
+                f"ERROR: alternate_key_euro({sequence}) must be given in octal notation"
+            )
             sys.exit(mtc_utils.ERROR_USER_KEY_NOT_OCTAL)
 
         w = self.write
