@@ -1220,29 +1220,35 @@ class BaseConfig(TmuxConfig):
         #
         #  Save history for current pane, prompts for filename
         #
-        #  Save as text              <prefix> M-H
-        #  Save with escape codes    <prefix> M-E
+        #  Save as text              <prefix> M-h
+        #  Save with escape codes    <prefix> M-e
         #
         #  When saved with escape code, less/most fails to display
-        #  cat history-file will display the included colors correctly.
+        #  cat/bat history-file will display the included colors correctly.
         #
         w = self.write
-        s = 'bind -N "Save history to prompted file name (no escapes)"  M-h  command-prompt'
-        if self.vers_ok(1.0):
-            s += ' -p "save history (no escapes) to:"'
-            if self.vers_ok(1.5):
-                s += ' -I "$TMPDIR"/tmux.history'
-            s2 = "%1"
+
+        if self.vers_ok(2.0):  # define -S param for capture-pane
+            scroll_back = "-"
+        elif self.vers_ok(1.6):
+            scroll_back = "-999999999"
         else:
-            s2 = "$TMPDIR/tmux.history"
-        w(f"""
-        {s} "capture-pane -S - -E - \\; save-buffer {s2} \\; delete-buffer"
-          """)
+            scroll_back = "-32768"  # max scrollback for 1.5
+
+        if self.vers_ok(1.5):
+            # capture-pane in 1.4 can't save the history, so not used
+            s = 'bind -N "Save history to prompted file name (no escapes)"  M-h  '
+            s += 'command-prompt -p "save history (no escapes) to:" '
+            s += '-I "$TMPDIR"/tmux.history'
+            w(f"""
+            {s} "capture-pane -S {scroll_back} \\; save-buffer %1 \\; delete-buffer"
+              """)
+
         if self.vers_ok(1.8):
             w(
                 'bind -N "Save history to prompted file name (includes escapes)"  '
-                'M-E  command-prompt -p "save history (includes escapes) to:" '
-                '-I "$TMPDIR/tmux-e.history" "capture-pane -S - -E - -e \\; '
+                'M-e  command-prompt -p "save history (includes escapes) to:" '
+                f'-I "$TMPDIR/tmux-e.history" "capture-pane -S {scroll_back} -e \\; '
                 'save-buffer %1 \\; delete-buffer"'
             )
 
