@@ -52,6 +52,7 @@ import sys
 
 # Ruff import ordering is authoritative here; no blank line after __main__
 import __main__
+
 import mtc_utils
 from tablet_kbd import special_consoles_config
 from tmux_conf import TmuxConfig
@@ -188,8 +189,11 @@ class BaseConfig(TmuxConfig):
             plugins_display=plugins_display,
         )
         self.tablet_keyb = None
-        self.pane_un_zoomed_noprefix_binds: list[str] = []
         self.hook_array_index = 0  # used to group hooks
+        # Will be unbound when only one pane in current window, in order
+        # to allow send-through to potential inner tmux
+        self.pane_un_zoomed_noprefix_binds: list[str] = []
+
         self.define_opt_params()
 
         if self.vers_ok(1.9):
@@ -432,6 +436,8 @@ class BaseConfig(TmuxConfig):
             else:
                 w(f"{self.opt_server} default-terminal tmux-256color")
 
+        self.true_color()
+
         #
         #  Making OSC 52 work on mosh connections.
         #  For this to work the term name used must match, hence * :)
@@ -460,8 +466,6 @@ class BaseConfig(TmuxConfig):
         #
         if not self.vers_ok(2.4):
             w(f"{self.opt_win} xterm-keys on")
-
-        self.true_color()
 
         w()  # spacer between sections
 
@@ -649,9 +653,7 @@ class BaseConfig(TmuxConfig):
         # key_yazi = "u"
         key_scrpad = "O"  # P being taken this is pOpup :)
         if self.vers_ok(popup_min_vers):
-            dp_lazygit = (
-                "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E lazygit"
-            )
+            dp_lazygit = "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E lazygit"
             # dp_yazi ="display-popup -d '#{pane_current_path}' -w 90% -h 90% -E yazi"
             dp_scrpad = "display-popup -w 70% -h 70% -E"
 
@@ -698,8 +700,7 @@ class BaseConfig(TmuxConfig):
         if self.use_prefix_arrow_nav_keys:
             w("""
             #
-            #  Due to the limited keyboard handling in iSH, only supporting
-            #  unmodified arrorws, here they are used for document navigation.
+            #  For limited keyboards without Home/End/PgUp/PgDn Prefix-arrows can be used
             #
             #  <prefix> <arrow> generates: PageUp, PageDown, Home, End
             #
@@ -883,16 +884,17 @@ class BaseConfig(TmuxConfig):
             #  to be 2.4 compatible and this is a 2.3 feature...
             #
             cp = self.current_path_directive
+            pref = "bind -N 'Split window"
             w(f"""
                 # Split entire window
-                bind -N 'Split window left'   M-H  split-window  -fhb  {cp}
-                bind -N 'Split window down'   M-J  split-window  -fv   {cp}
-                bind -N 'Split window up'     M-K  split-window  -fvb  {cp}
-                bind -N 'Split window right'  M-L  split-window  -fh   {cp}""")
+                {pref} left'   M-H  split-window  -fhb  {cp}
+                {pref} down'   M-J  split-window  -fv   {cp}
+                {pref} up'     M-K  split-window  -fvb  {cp}
+                {pref} right'  M-L  split-window  -fh   {cp}""")
 
         pref = "bind -N 'Select"
         w(f"""
-        # window navigation
+        # Window navigation
         {pref} previously current window - P+-' -r  -  last-window
         {pref} previous window  - P+p M-9 C-M-Left'  -r  p  previous-window
         {pref} next window  - P+n M-0 C-M-Right'     -r  n  next-window
@@ -909,15 +911,16 @@ class BaseConfig(TmuxConfig):
         #  to bind to in terminal apps
         #
 
-        # if self.vers_ok(1.0) and not self.tablet_keyb:
-        #     s = "bind -N 'Select"
-        #     self.pane_un_zoomed_noprefix_binds.extend([])
-
         if self.vers_ok(1.0):
             s = "bind -N 'Select"
             self.pane_un_zoomed_noprefix_binds.extend(
+                #
+                # Let some window navigation pass through in full page panes
+                # the others operate on the outer tmux env
+                #
                 # This is kind of odd, if I use tmux-keybtest my iSH node generates
                 # M-9 & M-0, yet they don't trigger inside my tmux
+                #
                 [
                     f"{s} previously current window - P+-'    -n  M--  last-window",
                     f"{s} previous window - P+p P+9 C-M-Left' -n  M-9  previous-window",
@@ -1088,32 +1091,41 @@ class BaseConfig(TmuxConfig):
 
         # indicate the right alternate keys
         if self.vers_ok(1.0):
+            s = "bind -N 'Select pane"
+
             w(f"""
-                bind -N "Select pane left - M-Left"   -r  h  {pane_left}
-                bind -N "Select pane down - M-Down"   -r  j  {pane_down}
-                bind -N "Select pane up - M-Up"       -r  k  {pane_up}
-                bind -N "Select pane right - M-Right" -r  l  {pane_right}""")
+                {s} left - M-Left'   -r  h  {pane_left}
+                {s} down - M-Down'   -r  j  {pane_down}
+                {s} pane up - M-Up'  -r  k  {pane_up}
+                {s} right - M-Right' -r  l  {pane_right}
+            """)
+
             self.pane_un_zoomed_noprefix_binds.extend(
                 [
-                    f"bind -N 'Select pane left - P+h'    -n  M-Left   {pane_left}",
-                    f"bind -N 'Select pane down - P+j'    -n  M-Down   {pane_down}",
-                    f"bind -N 'Select pane up - P+k'      -n  M-Up     {pane_up}",
-                    f"bind -N 'Select pane right - P+l'   -n  M-Right  {pane_right}",
+                    f"{s} left - P+h'               -n  M-Left     {pane_left}",
+                    f"{s} down - P+j'               -n  M-Down     {pane_down}",
+                    f"{s} up - P+k'                 -n  M-Up       {pane_up}",
+                    f"{s} right - P+l'              -n  M-Right    {pane_right}",
                 ]
             )
             if not self.use_prefix_arrow_nav_keys:
                 w(f"""# No repeats here, since I so often use arrows directly
                     # after moving to another pane
-                    bind -N "Select pane left - P+h M-Left"    Left   {pane_left}
-                    bind -N "Select pane down - P+j M-Down"    Down   {pane_down}
-                    bind -N "Select pane up - P+k M-Up"        Up     {pane_up}
-                    bind -N "Select pane right - P+l M-Right"  Right  {pane_right}""")
+                    {s} left - P+h M-Left'    Left   {pane_left}
+                    {s} down - P+j M-Down'    Down   {pane_down}
+                    {s} up - P+k M-Up'        Up     {pane_up}
+                    {s} right - P+l M-Right'  Right  {pane_right}
+                """)
+
                 if mtc_utils.IS_GHOSTTY:
-                    w(f"""
-                        # Ghostty has pretty good keyboard defs out of the box,
-                        # but doesn't generate correct sequences for M Left/Right ...
-                        bind -N "Select pane left - P+Left"   -n  M-b  {pane_left}
-                        bind -N "Select pane right - P+Right" -n  M-f  {pane_right}""")
+                    # Ghostty has pretty good keyboard defs out of the box,
+                    # but doesn't generate correct sequences for M Left/Right ...
+                    self.pane_un_zoomed_noprefix_binds.extend(
+                        [
+                            f"{s} left - P+Left'   -n  M-b  {pane_left}",
+                            f"{s} right - P+Right' -n  M-f  {pane_right}",
+                        ]
+                    )
 
         if self.vers_ok(2.4):
             #
@@ -1146,14 +1158,14 @@ class BaseConfig(TmuxConfig):
             return
 
         if self.vers_ok(1.0):
-            w(f"{pref} down - P+M-Down'    C-j  split-window       {cur_path}")
+            w(f"{pref} down - P+M-Down'    C-j  split-window  -v   {cur_path}")
             w(f"{pref} right - P+M-Right'  C-l  split-window  -h   {cur_path}")
         if self.vers_ok(2.0):
             w(f"{pref} left - P+M-Left'    C-h  split-window  -hb  {cur_path}")
-            w(f"{pref} pane up - P+M-Up'        C-k  split-window  -vb  {cur_path}")
+            w(f"{pref} pane up - P+M-Up'   C-k  split-window  -vb  {cur_path}")
         w()  # spacer
         if self.vers_ok(1.0):
-            w(f"{pref} down - P+C-j'   M-Down   split-window       {cur_path}")
+            w(f"{pref} down - P+C-j'   M-Down   split-window  -v   {cur_path}")
             w(f"{pref} right - P+C-l'  M-Right  split-window  -h   {cur_path}")
         if self.vers_ok(2.0):
             w(f"{pref} left - P+C-h'   M-Left   split-window  -hb  {cur_path}")
@@ -1164,57 +1176,39 @@ class BaseConfig(TmuxConfig):
         w("""
         #
         #   ======  Pane Resizing  ======
-        #
-        """)
-
-        # Defaults 1.0 2.8
-        # bind-key -r -T prefix       M-Up              resize-pane -U 5
-        # bind-key -r -T prefix       M-Down            resize-pane -D 5
-        # bind-key -r -T prefix       M-Left            resize-pane -L 10
-        # bind-key -r -T prefix       M-Right           resize-pane -R 10
-
+        #""")
+        s = "bind -N 'Resize pane"
         if self.vers_ok(1.0):
-            w("bind -N 'Resize pane 1 left - C-S-Left'   -r  H  resize-pane -L")
+            w(f"""
+                {s} 1 left - C-S-Left'       -r  H        resize-pane -L
+                {s} 1 right - C-S-Right'     -r  L        resize-pane -R
+                {s} 1 left -  P+H C-S-Left'  -r  C-Left   resize-pane -L
+                {s} 1 right - P+L C-S-Right' -r  C-Right  resize-pane -R
+            """)
         if self.vers_ok(0.9):
-            w("bind -N 'Resize pane 1 down - C-S-Down'   -r  J  resize-pane -D")
+            w(f"""{s} 1 down - C-S-Down'      -r  J       resize-pane -D
+                {s} 1 up - C-S-Up'          -r  K       resize-pane -U
+                {s} 1 down -  P+J C-S-Down' -r  C-Down  resize-pane -D
+                {s} 1 up -    P+K C-S-Up'   -r  C-Up    resize-pane -U
+            """)
         else:
             w("bind -r  J  resize-pane-down")
-
-        if self.vers_ok(0.9):
-            w("bind -N 'Resize pane 1 up - C-S-Up'       -r  K  resize-pane -U")
-        else:
             w("bind -r  K  resize-pane-up")
-        if self.vers_ok(1.0):
-            w("bind -N 'Resize pane 1 right - C-S-Right' -r  L  resize-pane -R")
-        w()
+
         if self.vers_ok(1.2):
-            # keys without prefix never needs repeat set
+            # Prior to 1.2  S- and multiple modifiers not supported
             self.pane_un_zoomed_noprefix_binds.extend(
                 [
-                    "bind -N 'Resize pane 1 left  - P+H' -n  C-S-Left   resize-pane -L",
-                    "bind -N 'Resize pane 1 down  - P+J' -n  C-S-Down   resize-pane -D",
-                    "bind -N 'Resize pane 1 up    - P+K' -n  C-S-Up     resize-pane -U",
-                    "bind -N 'Resize pane 1 right - P+L' -n  C-S-Right  resize-pane -R",
-                    "bind -N 'Resize pane 10 left'       -n  M-S-Left   resize-pane -L 10",
-                    "bind -N 'Resize pane 5 down'        -n  M-S-Down   resize-pane -D 5",
-                    "bind -N 'Resize pane 5 up'          -n  M-S-Up     resize-pane -U 5",
-                    "bind -N 'Resize pane 10 right'      -n  M-S-Right  resize-pane -R 10",
+                    f"{s}  1 left  - P+H P+C-Left'  -n  C-S-Left   resize-pane -L",
+                    f"{s}  1 down  - P+J P+C-Down'  -n  C-S-Down   resize-pane -D",
+                    f"{s}  1 up    - P+K P+C-Up'    -n  C-S-Up     resize-pane -U",
+                    f"{s}  1 right - P+L P+C-Right' -n  C-S-Right  resize-pane -R",
+                    f"{s} 10 left'                  -n  M-S-Left   resize-pane -L 10",
+                    f"{s}  5 down'                  -n  M-S-Down   resize-pane -D 5",
+                    f"{s}  5 up'                    -n  M-S-Up     resize-pane -U 5",
+                    f"{s} 10 right'                 -n  M-S-Right  resize-pane -R 10",
                 ]
             )
-
-            # w("bind -N 'Resize pane 1 left  - P+H' -n  C-S-Left   resize-pane -L")
-            # w("bind -N 'Resize pane 1 down  - P+J' -n  C-S-Down   resize-pane -D")
-            # w("bind -N 'Resize pane 1 up    - P+K' -n  C-S-Up     resize-pane -U")
-            # w("bind -N 'Resize pane 1 right - P+L' -n  C-S-Right  resize-pane -R")
-            # w()
-            # w(
-            #     """# For larger changes M-S Arrows scale by 5/10
-            # bind -N 'Resize pane 10 left'       -n  M-S-Left   resize-pane -L 10
-            # bind -N 'Resize pane 5 down'        -n  M-S-Down   resize-pane -D 5
-            # bind -N 'Resize pane 5 up'          -n  M-S-Up     resize-pane -U 5
-            # bind -N 'Resize pane 10 right'      -n  M-S-Right  resize-pane -R 10
-            # """
-            # )
 
     def save_history(self):
         #
@@ -1277,22 +1271,27 @@ class BaseConfig(TmuxConfig):
         #   Handle Hooks
         #
         #======================================================
-
-        # General idea is to disable noprefix binds that it makes sense to send
-        # through to a potential inner tmux in the case of single or zoomed pane.
-        # Stuff like window and pane navigation etc.
         """)
 
         if not self.vers_ok(2.5):
-            if not self.vers_ok(2.3) or self.is_tmate():
-                w("# ===  Hooks not supported for tmux < 2.3 or tmate   ===")
-            w("""# None of the hook related features used here exist below 2.4
-            # and on 2.4 activate_tpm() gets tangled on the hook lines somehow :(
-            # Hardcoding no-prefix nav-keys according to no-zoom state""")
+            if self.is_tmate():
+                w("# ===  Hooks not supported for tmate   ===")
+            elif not self.vers_ok(2.4):
+                w("# ===  Hooks not supported for tmux < 2.4   ===")
+            elif self.vers_ok(2.4):
+                w("""# On 2.4 activate_tpm() gets tangled on the hook lines somehow :(
+                  # Thus skipping hook handling
+                """)
+            w("# Hardcoding no-prefix nav-keys according to no-zoom state")
             for s in self.pane_un_zoomed_noprefix_binds:
                 w(s)
             return
 
+        w("""
+        # General idea is to disable noprefix binds that it makes sense to send
+        # through to a potential inner tmux in the case of single or zoomed pane.
+        # Stuff like pane navigation & resize etc.
+        """)
         if self.vers_ok(3.2):
             binds_s = unbinds_s = ""
         else:
@@ -1472,7 +1471,6 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
             trim_ws=False,
         )
 
-        # unbind no-prefix pane nav keys
         for s in self.pane_un_zoomed_noprefix_binds:
             w(f"        unbind -n {shlex.split(s)[4]}", trim_ws=False)
 
@@ -1872,7 +1870,8 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
     def mkscript_toggle_mouse(self):
         """Toggles mouse handling on/off"""
         #  The {} encapsulating the script needs to be doubled to escape them
-        toggle_mouse_sh = [f"""
+        toggle_mouse_sh = [
+            f"""
 {self._fnc_toggle_mouse}() {{
     #  This is so much easier to do in a proper script...
     old_state=$($TMUX_BIN show -gv mouse)
@@ -1883,7 +1882,8 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
     fi
     $TMUX_BIN {self.opt_ses} mouse $new_state
     $TMUX_BIN display-message "mouse: $new_state"
-}}"""]
+}}"""
+        ]
         self.es.create(self._fnc_toggle_mouse, toggle_mouse_sh)
 
     def mkscript_shlvl_offset(self):
@@ -2050,7 +2050,8 @@ timer_end() {{
         # self.sb_purge_tpm_running = f"$TMUX_BIN {self.opt_ses} -q status-right "
         # \\"$($TMUX_BIN display-message -p '#{{status-right}}' | sed 's/{purge_seq}//')\\"
 
-        clear_tpm_init_sh = [f"""
+        clear_tpm_init_sh = [
+            f"""
 {self._fnc_tpm_indicator}() {{
     #
     # Function that turns on/off self.tpm_initializing addition to status-right
@@ -2088,12 +2089,11 @@ timer_end() {{
         $TMUX_BIN setenv -gu {self.tpm_working_incicator}
     fi
 }}
-"""]
+"""
+        ]
         self.es.create(self._fnc_tpm_indicator, clear_tpm_init_sh)
 
-    def incompatible_tmux_conf(
-        self, lib_vers_found: str, reason: str, details: str = ""
-    ):
+    def incompatible_tmux_conf(self, lib_vers_found: str, reason: str, details: str = ""):
         print()
         print("ERROR: Incompatible tmux-conf package")
         print()
@@ -2113,9 +2113,7 @@ timer_end() {{
             return  # user keys not yet available
         if sequence[:1] != "\\":
             print()
-            print(
-                f"ERROR: alternate_key_euro({sequence}) must be given in octal notation"
-            )
+            print(f"ERROR: alternate_key_euro({sequence}) must be given in octal notation")
             sys.exit(mtc_utils.ERROR_USER_KEY_NOT_OCTAL)
 
         w = self.write
