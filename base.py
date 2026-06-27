@@ -818,7 +818,7 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(2.7):
             w("""
             # the default key is still available: <prefix> E
-            # this is quicker to type on a touch screen
+            # e is quicker to type on a touch keyb
             bind -N "Spread panes out evenly"  e  select-layout -E""")
 
         cmd_new_win_named = (
@@ -1340,11 +1340,11 @@ class BaseConfig(TmuxConfig):
             w(
                 f"""
                 #{
-                (
-                    "Displays that tmux picked up clipboard and (hopefully) "
-                    "sent it to the terminal"
-                )
-            }
+                    (
+                        "Displays that tmux picked up clipboard and (hopefully) "
+                        "sent it to the terminal"
+                    )
+                }
                 set-hook -g pane-set-clipboard{idx} "display-message {delay} '{msg}'" """
             )
 
