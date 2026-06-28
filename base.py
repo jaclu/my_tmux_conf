@@ -1070,7 +1070,10 @@ class BaseConfig(TmuxConfig):
                     '"Pane label: " "select-pane -T \\"%%\\""'
                 )
             elif self.vers_ok(2.3) and not self.is_tmate():
-                w("bind  P  display-message 'Pane label setting needs 2.6'")
+                w(
+                    "bind -N 'Pane label unavailable'  P  display-message"
+                    "'Pane label setting needs 2.6'"
+                )
 
     def pane_navigation(self):
         if not self.vers_ok(1.0):
@@ -1206,8 +1209,8 @@ class BaseConfig(TmuxConfig):
                 {s} 1 up -    P+K C-S-Up'   -r  C-Up    resize-pane -U
             """)
         else:
-            w("bind -r  J  resize-pane-down")
-            w("bind -r  K  resize-pane-up")
+            w("bind -N Resize pane down' -r  J  resize-pane-down")
+            w("bind -N Resize pane up'   -r  K  resize-pane-up")
 
         if self.vers_ok(1.2):
             # Prior to 1.2  S- and multiple modifiers not supported
