@@ -147,11 +147,6 @@ asdf_tmux_find() {
     # lbl_3 "asdf_tmux_find()"
     command -v asdf >/dev/null || error_msg "asdf not available"
 
-    # if asdf is used expand the shim into the actual tmux  bin
-    [ ! -x "${ASDF_DATA_DIR:-$HOME/.asdf}/shims/tmux" ] && {
-        lvl_4 "asdf tmux not installed"
-        return 1
-    }
     TMUX_BIN="$(asdf which tmux 2>/dev/null)"
     case "$TMUX_BIN" in
         "$HOME/.asdf/"*)
@@ -168,6 +163,12 @@ asdf_tmux_find() {
 
 asdf_scan() {
     # lbl_3 "asdf_scan()"
+
+    # if asdf is used expand the shim into the actual tmux  bin
+    [ ! -x "${ASDF_DATA_DIR:-$HOME/.asdf}/shims/tmux" ] && {
+        # lbl_4 "asdf tmux not installed"
+        return 1
+    }
 
     define_socket
     # some asdf tmux found, try to change it to requested version
@@ -428,7 +429,7 @@ start_tmux() {
     # head back to initial folder
     cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
 
-    if [ "$t2_env" = 1 ]; then
+    if [ "$t2_env" = 1 ] && [ -n "$tmux_dir" ]; then
         # case $d_initial in
         #     *"$d_t2"*)
         #         cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
@@ -439,7 +440,6 @@ start_tmux() {
         # esac
         #
         # cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
-
         run_cmd "PATH=$tmux_dir:$PATH $TMUX_BIN -L $socket -f '$conf_file' $tmux_params"
     else
         run_cmd "$TMUX_BIN -L $socket -f '$conf_file' $tmux_params"
