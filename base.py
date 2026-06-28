@@ -652,9 +652,7 @@ class BaseConfig(TmuxConfig):
         # key_yazi = "u"
         key_scrpad = "O"  # P being taken this is pOpup :)
         if self.vers_ok(popup_min_vers):
-            dp_lazygit = (
-                "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E lazygit"
-            )
+            dp_lazygit = "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E lazygit"
             # dp_yazi ="display-popup -d '#{pane_current_path}' -w 90% -h 90% -E yazi"
             dp_scrpad = "display-popup -w 70% -h 70% -E"
 
@@ -1873,7 +1871,8 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
     def mkscript_toggle_mouse(self):
         """Toggles mouse handling on/off"""
         #  The {} encapsulating the script needs to be doubled to escape them
-        toggle_mouse_sh = [f"""
+        toggle_mouse_sh = [
+            f"""
 {self._fnc_toggle_mouse}() {{
     #  This is so much easier to do in a proper script...
     old_state=$($TMUX_BIN show -gv mouse)
@@ -1884,7 +1883,8 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
     fi
     $TMUX_BIN {self.opt_ses} mouse $new_state
     $TMUX_BIN display-message "mouse: $new_state"
-}}"""]
+}}"""
+        ]
         self.es.create(self._fnc_toggle_mouse, toggle_mouse_sh)
 
     def mkscript_shlvl_offset(self):
@@ -2051,7 +2051,8 @@ timer_end() {{
         # self.sb_purge_tpm_running = f"$TMUX_BIN {self.opt_ses} -q status-right "
         # \\"$($TMUX_BIN display-message -p '#{{status-right}}' | sed 's/{purge_seq}//')\\"
 
-        clear_tpm_init_sh = [f"""
+        clear_tpm_init_sh = [
+            f"""
 {self._fnc_tpm_indicator}() {{
     #
     # Function that turns on/off self.tpm_initializing addition to status-right
@@ -2089,12 +2090,11 @@ timer_end() {{
         $TMUX_BIN setenv -gu {self.tpm_working_incicator}
     fi
 }}
-"""]
+"""
+        ]
         self.es.create(self._fnc_tpm_indicator, clear_tpm_init_sh)
 
-    def incompatible_tmux_conf(
-        self, lib_vers_found: str, reason: str, details: str = ""
-    ):
+    def incompatible_tmux_conf(self, lib_vers_found: str, reason: str, details: str = ""):
         print()
         print("ERROR: Incompatible tmux-conf package")
         print()
@@ -2114,9 +2114,7 @@ timer_end() {{
             return  # user keys not yet available
         if sequence[:1] != "\\":
             print()
-            print(
-                f"ERROR: alternate_key_euro({sequence}) must be given in octal notation"
-            )
+            print(f"ERROR: alternate_key_euro({sequence}) must be given in octal notation")
             sys.exit(mtc_utils.ERROR_USER_KEY_NOT_OCTAL)
 
         w = self.write
