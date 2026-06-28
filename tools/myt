@@ -425,20 +425,23 @@ start_tmux() {
         tmux_params="new-session -s main"
     fi
 
+    # head back to initial folder
+    cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
+
     if [ "$t2_env" = 1 ]; then
-        case $d_initial in
-            *"$d_t2"*)
-                cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
-                ;;
-            *)
-                cd "$d_t2" || error_msg "Failed to mkdir $d_t2"
-                ;;
-        esac
+        # case $d_initial in
+        #     *"$d_t2"*)
+        #         cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
+        #         ;;
+        #     *)
+        #         cd "$d_t2" || error_msg "Failed to mkdir $d_t2"
+        #         ;;
+        # esac
         #
+        # cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
+
         run_cmd "PATH=$tmux_dir:$PATH $TMUX_BIN -L $socket -f '$conf_file' $tmux_params"
     else
-        # head back to initial folder
-        cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
         run_cmd "$TMUX_BIN -L $socket -f '$conf_file' $tmux_params"
     fi
 
