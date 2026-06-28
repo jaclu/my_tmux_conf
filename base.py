@@ -1345,6 +1345,9 @@ class BaseConfig(TmuxConfig):
                 set-hook -g after-split-window{idx} "{borders_enable} {cmd_2}" """
             )
 
+        if self.vers_ok(3.6):
+            w(f"{self.opt_server} clock-mode-style 24-with-seconds")
+
         if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
             idx = self.get_next_hook_array_idx()
             msg = "terminal clipboard is set"
