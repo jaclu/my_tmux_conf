@@ -1071,7 +1071,7 @@ class BaseConfig(TmuxConfig):
                 )
             elif self.vers_ok(2.3) and not self.is_tmate():
                 w(
-                    "bind -N 'Pane label unavailable'  P  display-message"
+                    "bind -N 'Pane label unavailable'  P  display-message "
                     "'Pane label setting needs 2.6'"
                 )
 
