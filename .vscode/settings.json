@@ -1,7 +1,4 @@
 {
-    "python.pythonPath": "./.venv/bin/python",
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
     "workbench.colorCustomizations": {
         "titleBar.activeBackground": "#a74b00"
     },
