@@ -426,7 +426,15 @@ start_tmux() {
     fi
 
     if [ "$t2_env" = 1 ]; then
-        cd "$d_t2" || error_msg "Failed to mkdir $d_t2"
+        case $d_initial in
+            *"$d_t2"*)
+                cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
+                ;;
+            *)
+                cd "$d_t2" || error_msg "Failed to mkdir $d_t2"
+                ;;
+        esac
+        #
         run_cmd "PATH=$tmux_dir:$PATH $TMUX_BIN -L $socket -f '$conf_file' $tmux_params"
     else
         # head back to initial folder
