@@ -643,59 +643,7 @@ class BaseConfig(TmuxConfig):
             f'"{self.conf_file}" {show_action}'
         )
 
-        w("""
-        #
-        # bindings for display-popup
-        #""")
-        popup_min_vers = 3.2
-        key_lazygit = "g"
-        # key_yazi = "u"
-        key_scrpad = "O"  # P being taken this is pOpup :)
-        if self.vers_ok(popup_min_vers):
-            dp_lazygit = (
-                "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E lazygit"
-            )
-            # dp_yazi ="display-popup -d '#{pane_current_path}' -w 90% -h 90% -E yazi"
-            dp_scrpad = "display-popup -w 70% -h 70% -E"
-
-            if self.vers_ok(3.3):
-                dp_scrpad += ' -T "#[align=centre] pOpup Scratchpad Session " '
-                w(f"{self.opt_win} popup-border-lines rounded")
-
-            if shutil.which("lazygit"):
-                w(f'bind -N "popup lazygit"  {key_lazygit}  {dp_lazygit}')
-            elif self.vers_ok(1.0):
-                w(
-                    f'bind -N "lazygit not available msg"  {key_lazygit}  '
-                    f'display-message "lazygit not available"'
-                )
-
-            # if shutil.which("yazi"):
-            #     w(f'bind -N "popup yazi"  {key_yazi}  {dp_yazi}')
-            # elif self.vers_ok(1.0):
-            #     w(
-            #         f'bind -N "yazi not available msg"  {key_yazi}  '
-            #         f'display-message "yazi not available"'
-            #     )
-
-            w(
-                f'bind -N "pOpup scratchpad session"  {key_scrpad}  '
-                f'{dp_scrpad} "$TMUX_BIN -u new-session -ADs scratch"'
-            )
-        elif self.vers_ok(1.0):
-            #
-            # Indicate feature not available
-            #
-            w(
-                f'bind -N "lazygit popup not available msg"  {key_lazygit}  '
-                f'display-message "lazygit popup needs tmux {popup_min_vers}"'
-            )
-            w(
-                f'bind -N "pOpup scratchpad not available msg"  {key_scrpad}  '
-                f'display-message "pOpup scratchpad session needs tmux {popup_min_vers}"'
-            )
-        w()  # spacer
-
+        self.popups_and_floats(key_floating_pane="*", key_lazygit="g", key_yazi="y")
         self.auc_display_plugins_used()
         self.auc_kill_tmux_server()
         if self.use_prefix_arrow_nav_keys:
@@ -712,6 +660,86 @@ class BaseConfig(TmuxConfig):
             bind -N "Home"       Left   send-key Home
             bind -N "End"        Right  send-key End""")
         w()  # spacer between sections
+
+    def popups_and_floats(self, key_floating_pane="", key_lazygit="", key_yazi=""):
+        """Define a key for each item wanted"""
+
+        min_vers_display_message = 1.0
+        min_vers_popup = 3.2
+        min_vers_popup_style = 3.3
+        min_vers_floating_pane = 3.7
+        used_any_popups = False
+        w = self.write
+
+        w("""
+        #
+        # bindings for display-popup and Floating panes
+        #""")
+
+        if key_floating_pane:
+            if self.vers_ok(min_vers_floating_pane):
+                # create a floating pane, only modifiably by mouse: new-pane
+                w(
+                    f"bind -N 'New floating pane'  {key_floating_pane}  new-pane -c "
+                    "'#{pane_current_path}'"
+                )
+            elif self.vers_ok(min_vers_popup):
+                dp = "display-popup -w 70% -h 70% -E"
+                if self.vers_ok(min_vers_popup_style):
+                    dp += ' -T "#[align=centre] PopUp Scratchpad Session " '
+                w(
+                    f'bind -N "PopUp scratchpad session"  {key_floating_pane}  '
+                    f'{dp} "$TMUX_BIN -u new-session -ADs scratch"'
+                )
+                used_any_popups = True
+            elif self.vers_ok(min_vers_display_message):
+                w(
+                    f'bind -N "floating panes not available msg"  {key_floating_pane}  '
+                    'display-message "Floating panes not available for '
+                    f'tmux < {min_vers_floating_pane}"'
+                )
+
+        if key_lazygit:
+            if shutil.which("lazygit"):
+                if self.vers_ok(min_vers_popup):
+                    dp = "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E"
+                    if self.vers_ok(min_vers_popup_style):
+                        dp += ' -T "#[align=centre] LazyGit " '
+                    w(f'bind -N "popup lazygit"      {key_lazygit}  {dp} lazygit')
+                    used_any_popups = True
+                elif self.vers_ok(min_vers_display_message):
+                    w(
+                        f'bind -N "lazygit popup not available msg"  {key_lazygit}  '
+                        f'display-message "lazygit popup needs tmux {min_vers_popup}"'
+                    )
+            elif self.vers_ok(min_vers_display_message):
+                w(
+                    f'bind -N "lazygit not available msg"  {key_lazygit}  '
+                    f'display-message "lazygit not available"'
+                )
+
+        if key_yazi:
+            if shutil.which("yazi"):
+                if self.vers_ok(min_vers_popup):
+                    dp = "display-popup -d '#{pane_current_path}' -w 90% -h 90% -E"
+                    if self.vers_ok(min_vers_popup_style):
+                        dp += ' -T "#[align=centre] yazi " '
+                    w(f'bind -N "popup yazi"         {key_yazi}  {dp} yazi')
+                    used_any_popups = True
+                elif self.vers_ok(min_vers_display_message):
+                    w(
+                        f'bind -N "yazi popup not available msg"  {key_yazi}  '
+                        f'display-message "yazi popup needs tmux {min_vers_popup}"'
+                    )
+            elif self.vers_ok(min_vers_display_message):
+                w(
+                    f'bind -N "yazi not available msg"  {key_yazi}  '
+                    f'display-message "yazi not available"'
+                )
+
+        if used_any_popups and self.vers_ok(min_vers_popup_style):
+            w(f"{self.opt_win} popup-border-lines rounded")
+        w()  # spacer
 
     def remove_prefix(self, s):
         if s.lower().startswith("c-"):
@@ -949,16 +977,6 @@ class BaseConfig(TmuxConfig):
         #
         #======================================================
         """)
-
-        key_floating_pane = "*"
-        if self.vers_ok(3.7):
-            # create a floating pane, only modifiably by mouse: new-pane
-            w(f"bind -N 'New floating pane'  {key_floating_pane}  new-pane")
-        elif self.vers_ok(1.0):
-            w(
-                f'bind -N "floating panes not available msg"  {key_floating_pane}  '
-                f'display-message "Floating panes not available for tmux < 3.7"'
-            )
 
         if self.vers_ok(1.8):
             w(f"{self.opt_pane} allow-rename off")
@@ -1783,15 +1801,13 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
             # There is no plugin support...
             return
 
-        w()
         #
         # The conf_file needs to be mentioned below to make sure
         # the -p2 run-shell doesn't complain if a non-standard config is used.
         # It won't be over-written!
         #
         repo_dir = os.path.dirname(__file__)
-        w("""
-          # auc_display_plugins_used()
+        w("""# auc_display_plugins_used()
           #   Displays defined plugins by calling app defining this env with -p2
           #   First enabling my_tmux_conf venv if present""")
         w(
