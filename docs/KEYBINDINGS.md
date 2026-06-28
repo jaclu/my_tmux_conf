@@ -41,6 +41,7 @@ dependent actions.
 | `<p> M-l`           |             |               | Clear history & screen              |
 | `<p> s`             |             |               | Set pane size (w x h)               |
 |                     |             |               |                                     |
+| `<p> *`             |             |               | Create floating pane (3.7)          |
 | `<p> C-h` `M-Left`  |             |               | Split pane to the left              |
 | `<p> C-j` `M-Down`  |             | `<p> %`       | Split pane below                    |
 | `<p> C-k` `M-Up`    |             |               | Split pane above                    |
@@ -69,7 +70,7 @@ dependent actions.
 |           |                     |         |                           |
 | `<p> W`   |                     | `<p> ,` | Rename window             |
 | `<p> X`   |                     | `<p> &` | Kill window \*\*          |
-| `<p> *`   |                     |         | Toggle synchronized tabs  |
+| `<p> M-s` |                     |         | Toggle synchronized tabs  |
 | `<p> e`   |                     | `<p> E` | Spread panes out evenly.  |
 |           |                     |         |                           |
 | `<p> M-H` |                     |         | Split window left         |

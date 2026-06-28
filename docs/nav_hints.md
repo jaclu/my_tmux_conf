@@ -15,6 +15,7 @@ For actions not available without the M-key, use tmux-menus
 ### Pane
 
 - pane navigate : Prefix hjkl (r)
+- Create floating pane : Prefix \*
 - pane split : Prefix C-hjkl
 - pane resize : Prefix HJKL (r)
 - pane swap : Prefix {}

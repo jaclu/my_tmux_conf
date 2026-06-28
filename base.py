@@ -949,6 +949,17 @@ class BaseConfig(TmuxConfig):
         #
         #======================================================
         """)
+
+        key_floating_pane = "*"
+        if self.vers_ok(3.7):
+            # create a floating pane, only modifiably by mouse: new-pane
+            w(f"bind -N 'New floating pane'  {key_floating_pane}  new-pane")
+        else:
+            w(
+                f'bind -N "floating panes not available msg"  {key_floating_pane}  '
+                f'display-message "Floating panes not available for tmux < 3.7"'
+            )
+
         if self.vers_ok(1.8):
             w(f"{self.opt_pane} allow-rename off")
 
