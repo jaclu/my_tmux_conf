@@ -124,7 +124,7 @@ define_socket() {
     socket="$(id -u)"
     $tmate_mode && socket="$socket-tmate"
     is_fs_chrooted && socket="${socket}-chr"
-    if $t2_env; then
+    if [ "$t2_env" = 1 ]; then
         [ -z "$d_t2" ] && error_msg "d_t2 undefined"
         socket="$socket-serv2"
         if $tmate_mode; then
@@ -143,86 +143,78 @@ define_socket() {
 
 }
 
-asdf_scan() {
-    # lbl_3 "asdf_scan()"
-    command -v asdf >/dev/null || {
-        # asdf not available
-        return 1
-    }
+asdf_tmux_find() {
+    # lbl_3 "asdf_tmux_find()"
+    command -v asdf >/dev/null || error_msg "asdf not available"
 
     # if asdf is used expand the shim into the actual tmux  bin
     [ ! -x "${ASDF_DATA_DIR:-$HOME/.asdf}/shims/tmux" ] && {
-        # asdf tmux not installed
+        lvl_4 "asdf tmux not installed"
         return 1
     }
     TMUX_BIN="$(asdf which tmux 2>/dev/null)"
-    [ -n "$TMUX_BIN" ] && {
-        #
-        case "$TMUX_BIN" in
-            "$HOME/.asdf/"*)
-                tmux_dir=${TMUX_BIN%/*}
-                if [ -n "$tmux_dir" ] && [ -x "$TMUX_BIN" ] && [ -d "$tmux_dir" ]; then
-                    # if tmux was a asdf tmux, prepend its folder to PATH in this env
-                    PATH="$tmux_dir:$PATH" # will only be used when starting tmux
-                fi
-                ;;
-            *) return 1 ;; # asdf pointed to a system tmux, no asdf handling needed
-        esac
-        [ -d "$tmux_dir" ] || tmux_dir=""
-        # some asdf tmux found, try to change it to requested version
-        if [ -n "$asdf_version_requested" ]; then
-            $t2_env || {
-                error_msg "Changing asdf tmux version can only be done in T2_ENV mode"
-            }
-
-            define_socket
-            # shellcheck disable=SC2009  # in this case ps -e is preferable
-            if ps -e -o args= | grep -q "[t]mux -L $socket"; then
-                log_it "Found tmux using $socket when redefining tmux bin"
-                printf "Continue, first shutting down existing tmux on this socket? [y/N]"
-                IFS= read -r answer
-                case "$answer" in
-                    [yY]) ;; # continue
-                    *)
-                        echo "Aborted."
-                        exit "$ERROR_AFTER_DISPLAYING_MSG"
-                        ;;
-                esac
-                kill_tmux || {
-                    error_msg "Failed to kill existing tmux using socket: $socket"
-                }
+    case "$TMUX_BIN" in
+        "$HOME/.asdf/"*)
+            _tmux_dir=${TMUX_BIN%/*}
+            if [ -n "$_tmux_dir" ] && [ -x "$TMUX_BIN" ] && [ -d "$_tmux_dir" ]; then
+                # if tmux was a asdf tmux, prepend its folder to PATH in this env
+                tmux_dir="$_tmux_dir"
             fi
+            # define_socket
+            ;;
+        *) error_msg "Found asdf env but system tmux" ;;
+    esac
+}
 
-            [ "$(pwd)" != "$d_t2" ] && {
-                error_msg "asdf_scan() T2_ENV folder not pwd"
-            }
-            case "$asdf_version_requested" in
-                -)
-                    rm -f ~/t2/.tool-versions
-                    TMUX_BIN="$(asdf which tmux 2>/dev/null)"
-                    lbl_4 "option '-a -' changed asdf tmux into default version"
-                    ;;
+asdf_scan() {
+    # lbl_3 "asdf_scan()"
+
+    define_socket
+    # some asdf tmux found, try to change it to requested version
+    if [ -n "$asdf_version_requested" ]; then
+        [ "$t2_env" = 1 ] || {
+            error_msg "Changing asdf tmux version can only be done in T2_ENV mode"
+        }
+        [ "$(pwd)" != "$d_t2" ] && {
+            error_msg "asdf_scan() T2_ENV folder not pwd"
+        }
+
+        # shellcheck disable=SC2009  # in this case ps -e is preferable
+        if ps -e -o args= | grep -q "[t]mux -L $socket"; then
+            log_it "Found tmux using $socket when redefining tmux bin"
+            printf "Continue, first shutting down existing tmux on this socket? [y/N]"
+            IFS= read -r answer
+            case "$answer" in
+                [yY]) ;; # continue
                 *)
-                    asdf set tmux "$asdf_version_requested" || {
-                        error_msg "Failed to set asdf tmux version to: $asdf_version_requested"
-                    }
-                    # lbl_3 "><> asdf requested version: $asdf_version_requested"
-                    ASDF_DATA_DIR="${ASDF_DATA_DIR:-$HOME/.asdf}"
-                    ASDF_BIN_DIR="$ASDF_DATA_DIR/installs/tmux/$asdf_version_requested/bin"
-                    _tmux_bin="$ASDF_BIN_DIR"/tmux
-                    if [ ! -x "$_tmux_bin" ]; then
-                        error_msg "Requested asdf tmux version not installed: $asdf_version_requested"
-                    fi
-
-                    TMUX_BIN="$_tmux_bin"
-                    lbl_4 "option -a changed asdf tmux into version: $asdf_version_requested"
+                    echo "Aborted."
+                    exit "$ERROR_AFTER_DISPLAYING_MSG"
                     ;;
             esac
-            return 0
+            kill_tmux || {
+                error_msg "Failed to kill existing tmux using socket: $socket"
+            }
         fi
-        return 0
-    }
-    error_msg "asdf with tmux defined, but 'asdf which tmux' failed to report path"
+
+        [ "$asdf_version_requested" = "-" ] && {
+            rm -f ~/t2/.tool-versions
+            asdf_version_requested=""
+            lbl_4 "option '-a -' changed asdf tmux into default version"
+        }
+
+        [ -n "$asdf_version_requested" ] && {
+            asdf set tmux "$asdf_version_requested" || {
+                error_msg "Failed to set asdf tmux version to: $asdf_version_requested"
+            }
+            ASDF_DATA_DIR="${ASDF_DATA_DIR:-$HOME/.asdf}"
+            ASDF_BIN_DIR="$ASDF_DATA_DIR/installs/tmux/$asdf_version_requested/bin"
+            _tmux_bin="$ASDF_BIN_DIR"/tmux
+            if [ ! -x "$_tmux_bin" ]; then
+                error_msg "Requested asdf tmux version not installed: $asdf_version_requested"
+            fi
+        }
+    fi
+    asdf_tmux_find
 }
 
 select_tmux_bin() {
@@ -233,13 +225,11 @@ select_tmux_bin() {
     if [ -n "$tmux_bin" ]; then
         # User defined tmux
         TMUX_BIN="$tmux_bin"
-        # lbl_2 "><> user defined tmux: $TMUX_BIN"
         return
     fi
     if $tmate_mode; then
         if command -v tmate >/dev/null; then
             TMUX_BIN="tmate"
-            # lbl_3 "><> tmate mode - TMUX_BIN=tmate"
             return
         else
             error_msg "tmate not found"
@@ -251,7 +241,6 @@ select_tmux_bin() {
     }
     TMUX_BIN="$(command -v tmux)"
     if [ -n "$TMUX_BIN" ]; then
-        # lbl_3 "><> tmux found in PATH: $TMUX_BIN"
         return
     fi
     [ -z "$TMUX_BIN" ] && error_msg "Failed to define TMUX_BIN PATH[$PATH]"
@@ -259,6 +248,11 @@ select_tmux_bin() {
 
 define_tmux_env() {
     # lbl_3 "define_tmux_env() - requires d_t2 [$d_t2]"
+
+    [ -n "$TMUX" ] && {
+        # keep track of this tmux to prevent recursive runs
+        export TMUX_OUTER="$TMUX"
+    }
 
     # First clear some env variables potentially set by an outer tmux
     unset TMUX_BIN
@@ -277,12 +271,6 @@ define_tmux_env() {
     # tmux_vers=${tmux_vers%%-rc*}                  # Remove trailing "-rc" and anything after
 
     [ -z "$socket" ] && define_socket
-    # lbl_3 "><>   tmux_vers [$tmux_vers]"
-
-    #    chk_incompatible_socket
-    #}
-
-    #chk_recursive_tmux() {
 
     # shellcheck disable=SC2154
     if echo "$TMUX" | grep -q "$socket" \
@@ -420,10 +408,6 @@ start_tmux() {
     fi
 
     define_tmux_env
-    [ -n "$TMUX" ] && {
-        # keep track of this tmux to prevent recursive runs
-        export TMUX_OUTER="$TMUX"
-    }
 
     if $quick_mode; then
         # lbl_3 "quick mode ensure config file is there"
@@ -441,10 +425,24 @@ start_tmux() {
         tmux_params="new-session -s main"
     fi
 
-    # head back to initial folder
-    cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
+    if [ "$t2_env" = 1 ]; then
+        cd "$d_t2" || error_msg "Failed to mkdir $d_t2"
+        run_cmd "PATH=$tmux_dir:$PATH $TMUX_BIN -L $socket -f '$conf_file' $tmux_params"
+    else
+        # head back to initial folder
+        cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
+        run_cmd "$TMUX_BIN -L $socket -f '$conf_file' $tmux_params"
+    fi
 
-    run_cmd "$TMUX_BIN -L $socket -f '$conf_file' $tmux_params"
+    # lbl_1 "><> will run $TMUX_BIN"
+    # # shellcheck disable=SC2086
+    # _c="$(eval "$TMUX_BIN" -L "$socket" -f "$conf_file" $tmux_params 2>&1)"
+
+    # # shellcheck disable=SC2086
+    # # _c="$(PATH="$tmux_dir:$PATH" eval "$TMUX_BIN" -L "$socket" -f "$conf_file" $tmux_params 2>&1)"
+
+    # ex_code="$?"
+    # log_it "$_c"
     [ "$ex_code" != 0 ] && error_msg "tmux exit code: $ex_code"
 }
 
@@ -457,7 +455,7 @@ kill_tmux() {
     socket_identifier=" -L $socket"
 
     echo "$TMUX" | grep -q "$socket" && {
-        error_msg "Trying to kill this tmux - aborted"
+        error_msg "Trying to kill this tmux - aborted TMUX [$TMUX] socket [$socket]"
     }
     pgrep -f "$socket_identifier" >/dev/null || {
         error_msg "No tmux found using socket: $socket"
@@ -526,10 +524,7 @@ create_tmux_conf() {
     lbl_4 "Using Python: $(command -v python3)"
 
     cmd="$profile -r -t $TMUX_BIN \"$conf_file\""
-    if $t2_env; then
-        cmd="T2_ENV=1 $cmd"
-    fi
-    lbl_2 "Building tmux conf: $cmd"
+    [ "$t2_env" = 1 ] && cmd="T2_ENV=1 $cmd"
     run_cmd "$cmd"
     [ "$ex_code" != 0 ] && {
 
@@ -639,7 +634,7 @@ kill_tmux=false
 tmate_mode=false
 quick_mode=false
 single_session=true
-t2_env=false
+t2_env=0
 profile=""
 
 #
@@ -692,7 +687,7 @@ while [ -n "$1" ]; do
             ;;
         "-s") single_session=false ;;
         "-t") tmate_mode=true ;;
-        "-2") t2_env=true ;;
+        "-2") t2_env=1 ;;
         *)
             [ -n "$profile" ] && errror_msg "profile can only be defined once"
             profile="$1"
@@ -713,7 +708,7 @@ fi
 [ "$TERM" = "tmux-256color" ] && export TERM=xterm-256color
 
 $quick_mode && [ -n "$profile" ] && error_msg "Can not be combined: -q and $profile"
-if $t2_env; then
+if [ "$t2_env" = 1 ]; then
     tmux_2
 else
     [ -n "$profile" ] && {
