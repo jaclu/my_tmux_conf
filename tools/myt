@@ -144,6 +144,7 @@ define_socket() {
 }
 
 asdf_scan() {
+    # lbl_3 "asdf_scan()"
     command -v asdf >/dev/null || {
         # asdf not available
         return 1
@@ -156,6 +157,18 @@ asdf_scan() {
     }
     TMUX_BIN="$(asdf which tmux 2>/dev/null)"
     [ -n "$TMUX_BIN" ] && {
+        #
+        case "$TMUX_BIN" in
+            "$HOME/.asdf/"*)
+                tmux_dir=${TMUX_BIN%/*}
+                if [ -n "$tmux_dir" ] && [ -x "$TMUX_BIN" ] && [ -d "$tmux_dir" ]; then
+                    # if tmux was a asdf tmux, prepend its folder to PATH in this env
+                    PATH="$tmux_dir:$PATH" # will only be used when starting tmux
+                fi
+                ;;
+            *) return 1 ;; # asdf pointed to a system tmux, no asdf handling needed
+        esac
+        [ -d "$tmux_dir" ] || tmux_dir=""
         # some asdf tmux found, try to change it to requested version
         if [ -n "$asdf_version_requested" ]; then
             $t2_env || {
@@ -419,8 +432,6 @@ start_tmux() {
         create_tmux_conf
     fi
 
-    cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
-
     if is_tmux_ses_running; then
         $single_session && drop_other_clients
         indicate_tmux_connection_type "Attaching to"
@@ -429,6 +440,10 @@ start_tmux() {
         indicate_tmux_connection_type "Starting"
         tmux_params="new-session -s main"
     fi
+
+    # head back to initial folder
+    cd "$d_initial" || error_msg "Failed to cd back to [$d_initial]"
+
     run_cmd "$TMUX_BIN -L $socket -f '$conf_file' $tmux_params"
     [ "$ex_code" != 0 ] && error_msg "tmux exit code: $ex_code"
 }
@@ -586,7 +601,8 @@ tmux_2() {
         profile="$my_tmux_conf_location/t2.py"
     fi
 
-    mkdir -p "$d_t2"
+    # Ensure base folder for t2 env exists
+    mkdir -p "$d_t2" || error_msg "Failed to mkdir $d_t2"
 
     # shellcheck disable=SC2154
     [ -f "$d_t2"/.tool-versions ] && [ -n "$SSH_CLIENT" ] && {
