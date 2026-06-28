@@ -664,7 +664,7 @@ class BaseConfig(TmuxConfig):
 
             if shutil.which("lazygit"):
                 w(f'bind -N "popup lazygit"  {key_lazygit}  {dp_lazygit}')
-            else:
+            elif self.vers_ok(1.0):
                 w(
                     f'bind -N "lazygit not available msg"  {key_lazygit}  '
                     f'display-message "lazygit not available"'
@@ -672,7 +672,7 @@ class BaseConfig(TmuxConfig):
 
             # if shutil.which("yazi"):
             #     w(f'bind -N "popup yazi"  {key_yazi}  {dp_yazi}')
-            # else:
+            # elif self.vers_ok(1.0):
             #     w(
             #         f'bind -N "yazi not available msg"  {key_yazi}  '
             #         f'display-message "yazi not available"'
@@ -954,7 +954,7 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(3.7):
             # create a floating pane, only modifiably by mouse: new-pane
             w(f"bind -N 'New floating pane'  {key_floating_pane}  new-pane")
-        else:
+        elif self.vers_ok(1.0):
             w(
                 f'bind -N "floating panes not available msg"  {key_floating_pane}  '
                 f'display-message "Floating panes not available for tmux < 3.7"'
@@ -1534,7 +1534,8 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
             if self.vers_ok(1.5):
                 w(f"{self.opt_ses} mouse-select-window on")
                 w(f"{self.opt_ses} mouse-resize-pane on")
-            w('bind  M  display-message "mouse toggle needs 2.1"')
+            if self.vers_ok(1.0):
+                w('bind  M  display-message "mouse toggle needs 2.1"')
 
         #
         #  If enabled, request mouse input as UTF-8 on UTF-8 terminals
