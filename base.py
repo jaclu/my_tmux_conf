@@ -816,7 +816,7 @@ class BaseConfig(TmuxConfig):
 
         w()  # spacer
 
-        w(f"bind -N 'Toggle synchronize'  *  {self.opt_win_loc} synchronize-panes")
+        w(f"bind -N 'Toggle synchronize'  M-s  {self.opt_win_loc} synchronize-panes")
 
         if self.vers_ok(2.7):
             w("""
