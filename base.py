@@ -1312,6 +1312,10 @@ class BaseConfig(TmuxConfig):
     def handle_hooks(self):
         w = self.write
 
+        if not self.vers_ok(1.0):
+            # Nothing hook related can be done, so abort
+            return
+
         w("""
         #======================================================
         #
