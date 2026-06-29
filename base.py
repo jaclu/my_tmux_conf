@@ -643,7 +643,7 @@ class BaseConfig(TmuxConfig):
             f'"{self.conf_file}" {show_action}'
         )
 
-        self.popups_and_floats(key_floating_pane="*", key_lazygit="g", key_yazi="y")
+        self.floats_and_popups(key_floating_pane="*", key_lazygit="g", key_yazi="y")
         self.auc_display_plugins_used()
         self.auc_kill_tmux_server()
         if self.use_prefix_arrow_nav_keys:
@@ -661,8 +661,12 @@ class BaseConfig(TmuxConfig):
             bind -N "End"        Right  send-key End""")
         w()  # spacer between sections
 
-    def popups_and_floats(self, key_floating_pane="", key_lazygit="", key_yazi=""):
-        """Define a key for each item wanted"""
+    def floats_and_popups(self, key_floating_pane="", key_lazygit="", key_yazi=""):
+        """Define a key for each item, reasonable bindings would be something like
+        key_floating_pane="*"
+        key_lazygit="g"
+        key_yazi="y"
+        """
 
         min_vers_display_message = 1.0
         min_vers_popup = 3.2
@@ -673,17 +677,21 @@ class BaseConfig(TmuxConfig):
 
         w("""
         #
-        # bindings for display-popup and Floating panes
+        # bindings for Floating Panes and display-popup
         #""")
 
         if key_floating_pane:
             if self.vers_ok(min_vers_floating_pane):
                 # create a floating pane, only modifiably by mouse: new-pane
                 w(
-                    f"bind -N 'New floating pane'  {key_floating_pane}  new-pane -c "
+                    f"bind -N 'New Floating Pane'  {key_floating_pane}  new-pane -c "
                     "'#{pane_current_path}'"
                 )
             elif self.vers_ok(min_vers_popup):
+                w(
+                    "# Using a display-popup as fallback for Floating Panes on "
+                    f"tmux < {min_vers_floating_pane}"
+                )
                 dp = "display-popup -w 70% -h 70% -E"
                 if self.vers_ok(min_vers_popup_style):
                     dp += ' -T "#[align=centre] PopUp Scratchpad Session " '
@@ -694,8 +702,8 @@ class BaseConfig(TmuxConfig):
                 used_any_popups = True
             elif self.vers_ok(min_vers_display_message):
                 w(
-                    f'bind -N "floating panes not available msg"  {key_floating_pane}  '
-                    'display-message "Floating panes not available for '
+                    f'bind -N "Floating Panes not available msg"  {key_floating_pane}  '
+                    'display-message "Floating Panes not available for '
                     f'tmux < {min_vers_floating_pane}"'
                 )
 
@@ -705,12 +713,12 @@ class BaseConfig(TmuxConfig):
                     dp = "display-popup -d '#{pane_current_path}' -w 80% -h 80% -E"
                     if self.vers_ok(min_vers_popup_style):
                         dp += ' -T "#[align=centre] LazyGit " '
-                    w(f'bind -N "popup lazygit"      {key_lazygit}  {dp} lazygit')
+                    w(f'bind -N "PopUp lazygit"      {key_lazygit}  {dp} lazygit')
                     used_any_popups = True
                 elif self.vers_ok(min_vers_display_message):
                     w(
-                        f'bind -N "lazygit popup not available msg"  {key_lazygit}  '
-                        f'display-message "lazygit popup needs tmux {min_vers_popup}"'
+                        f'bind -N "lazygit PopUp not available msg"  {key_lazygit}  '
+                        f'display-message "lazygit PopUp needs tmux {min_vers_popup}"'
                     )
             elif self.vers_ok(min_vers_display_message):
                 w(
@@ -724,12 +732,12 @@ class BaseConfig(TmuxConfig):
                     dp = "display-popup -d '#{pane_current_path}' -w 90% -h 90% -E"
                     if self.vers_ok(min_vers_popup_style):
                         dp += ' -T "#[align=centre] yazi " '
-                    w(f'bind -N "popup yazi"         {key_yazi}  {dp} yazi')
+                    w(f'bind -N "PopUp yazi"         {key_yazi}  {dp} yazi')
                     used_any_popups = True
                 elif self.vers_ok(min_vers_display_message):
                     w(
-                        f'bind -N "yazi popup not available msg"  {key_yazi}  '
-                        f'display-message "yazi popup needs tmux {min_vers_popup}"'
+                        f'bind -N "yazi PopUp not available msg"  {key_yazi}  '
+                        f'display-message "yazi PopUp needs tmux {min_vers_popup}"'
                     )
             elif self.vers_ok(min_vers_display_message):
                 w(
