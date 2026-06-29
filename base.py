@@ -383,8 +383,8 @@ class BaseConfig(TmuxConfig):
                 if not self.vers_ok(3.1):
                     w("unbind  -n  MouseDown3StatusRight")
             if self.vers_ok("3.0a"):
-                w("""unbind  <
-                    unbind  >""")
+                w("""unbind      <
+                    unbind      >""")
             if self.vers_ok(3.4):
                 w("""unbind  -n  M-MouseDown3Status
                     unbind  -n  M-MouseDown3StatusLeft""")
