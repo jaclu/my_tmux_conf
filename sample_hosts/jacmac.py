@@ -65,7 +65,8 @@ class JacMacConfig(SB):
         w("# ---  JacMac.local_overides()")
         if self.vers_ok(1.8):  # below this user params not supported
             w("""
-                set -g @packet-loss-ping_host 8.8.8.8
+                # set -g @packet-loss-ping_host 8.8.8.8
+                set -g @packet-loss-ping_host 1.1.1.1
                 set -g @claude_usage_color_low "colour22" # pale green
             """)
 
