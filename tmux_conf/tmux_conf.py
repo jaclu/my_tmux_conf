@@ -447,14 +447,19 @@ class TmuxConfig:
         # self.debug_log(f"><> [single line] {cmd}")
         with open(self.conf_file, "a", encoding="utf-8") as f:
             if trim_ws:
-                l123 = cmd.strip()
-                self.debug_log(l123)
-                f.write(f"{l123}{eol}")  # use strip to get rid of indentions
+                s_trimmed = cmd.strip()
+                self.debug_log(s_trimmed)
+                f.write(f"{s_trimmed}{eol}")  # use strip to get rid of indentions
                 #  f.write(f"{cmd}{eol}")
             else:
                 f.write(f"{cmd}{eol}")
 
-    def filter_note(self, line: str, trim_ws: bool = True) -> list[str]:
+    def filter_note(
+        self,
+        line: str,
+        trim_ws: bool = True,
+        use_notes: bool = True,  # Use notes in the first place
+    ) -> list[str]:
         """Handles notes, if tmux notes are not supported by running tmux
         generates:
           - the note as a comment (if self.use_notes_as_comments is True)
@@ -465,7 +470,7 @@ class TmuxConfig:
             not line
             or line[0] == "#"
             or line.find("-N") < 0
-            or (self.vers_ok("3.1") and self.use_notes_as_comments)
+            or (self.vers_ok("3.1") and use_notes)
         ):
             return [line]
         parts = line.split("-N")
@@ -492,7 +497,7 @@ class TmuxConfig:
         while post.find("   ") == 0:
             post = post[1:]
         new_line = pre + post
-        if self.use_notes_as_comments:
+        if use_notes and self.use_notes_as_comments:
             return ["", f"# -N {note}", new_line]
 
         return [new_line]

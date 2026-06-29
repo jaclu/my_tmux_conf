@@ -1451,7 +1451,8 @@ class BaseConfig(TmuxConfig):
         w()  # spacer
 
     def generate_old_style_binds(self):
-        # pre 3.2 all binds/unbinds must be given as a single ; separated string
+        """pre 3.2 all binds/unbinds must be given as a single ; separated string"""
+
         unbinds_l = []
         for line in self.pane_un_zoomed_noprefix_binds:
             unbinds_l.append(f"unbind -n {shlex.split(line)[4]}")
@@ -1460,12 +1461,8 @@ class BaseConfig(TmuxConfig):
         binds_l = []
         # in this usage case we will ignore bind notes, we only care about the
         # actual bind, including notes would make a ridiculously long line twice as long
-        # save org state and restore it
-        org_notes_state = self.use_notes_as_comments
-        self.use_notes_as_comments = False
         for line in self.pane_un_zoomed_noprefix_binds:
-            binds_l.extend(self.filter_note(line))
-        self.use_notes_as_comments = org_notes_state
+            binds_l.extend(self.filter_note(line, use_notes=False))
 
         binds_s = " ; " + " ; ".join(binds_l)
         return binds_s, unbinds_s
@@ -1478,26 +1475,22 @@ class BaseConfig(TmuxConfig):
         return rslt
 
     def hook_action_zoom_state(self):
-        #
-        #  This expands to quite a bit of code, but by doing it inside tmux if-shell
-        #  conditions, it is ridiculously much faster,
-        #  compared to do the same via run-shell scripts
-        #
-        # If only one pane is present in the window, treat it as in zoomed state
-        #
+        """This expands to quite a bit of code, but by doing it inside tmux if-shell
+        conditions, it is ridiculously much faster,
+        compared to do the same via run-shell scripts
+        If only one pane is present in the window, treat it as in zoomed state
+        compare zoom flag with zoom state, use quick outer check to avoid
+        excessive processing every time a pane is resized etc.
+
+        If changed check zoom state, store new state and do relevant actions
+
+        If only one pane is present, always set it to its "zoomed" state
+        A single pane will not receive any window-layout-changed events due to
+        pane resizing, so should not trigger any noticeable overhead.
+        """
 
         w = self.write
 
-        #
-        # compare zoom flag with zoom state, use quick outer check to avoid
-        # excessive processing every time a pane is resized etc.
-        #
-        # If changed check zoom state, store new state and do relevant actions
-        #
-        # If only one pane is present, always set it to its "zoomed" state
-        # A single pane will not receive any window-layout-changed events due to
-        # pane resizing, so should not trigger any noticeable overhead.
-        #
         w(
             """
 if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-state}}}' \\
