@@ -666,7 +666,8 @@ class BaseConfig(TmuxConfig):
             bind -N "Page up"    Up     send-key PageUp
             bind -N "Page Down"  Down   send-key PageDown
             bind -N "Home"       Left   send-key Home
-            bind -N "End"        Right  send-key End""")
+            bind -N "End"        Right  send-key End
+            """)
         w()  # spacer between sections
 
     def floats_and_popups(self, key_floating_pane="", key_lazygit="", key_yazi=""):
