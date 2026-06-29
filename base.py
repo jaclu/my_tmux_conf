@@ -1075,12 +1075,10 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(2.3) and not self.is_tmate():
             pane_label = ""
             if self.vers_ok(2.6) and self.show_pane_label:
-                pane_label += "#T "
+                pane_label += " #{?pane_active,#[reverse],}#T#[default] "
             if self.show_pane_size:
                 pane_label += "(#{pane_width}x#{pane_height}) "
             if pane_label:
-                # set initial spacer
-                pane_label = " " + pane_label
                 w(f'{self.opt_pane} pane-border-format "{pane_label}"')
 
         if self.vers_ok(3.2):
