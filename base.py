@@ -1812,8 +1812,7 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
         # It won't be over-written!
         #
         repo_dir = os.path.dirname(__file__)
-        w("""# auc_display_plugins_used()
-          #   Displays defined plugins by calling app defining this env with -p2
+        w("""#   Displays defined plugins by calling app defining this env with -p2
           #   First enabling my_tmux_conf venv if present""")
         w(
             f'bind -N "{self.muc_non_default_value(mtc_utils.K_M_P)}'
@@ -1860,7 +1859,6 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
         else:
             s += " (Esc to abort)"
         w(f"""
-        # auc_kill_tmux_server()
         {s}" kill-server""")
 
     #
