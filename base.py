@@ -839,13 +839,6 @@ class BaseConfig(TmuxConfig):
         {self.opt_win} automatic-rename off
         {self.opt_win} aggressive-resize on""")
 
-        if self.vers_ok(0.8):  # ok: 1.9
-            # This makes the C-b w tree mode binding only show windows in the attached session.
-            # source: https://github.com/tmux/tmux/wiki/Recipes
-            w(
-                "bind w run 'tmux choose-tree -Nwf\"##{==:##{session_name},#{session_name}}\"'"
-            )
-
         if self.vers_ok(2.9):
             # When multiple clients connect, use the smaller size
             w(f"{self.opt_win} window-size smallest")
