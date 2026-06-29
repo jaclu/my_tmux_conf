@@ -605,6 +605,8 @@ class BaseConfig(TmuxConfig):
         if self.vers_ok(3.6):
             w(f"{self.opt_server} clock-mode-style 24-with-seconds")
 
+        w()  # spacer between sections
+
         if os.getenv("SHLVL") and self.vers_ok(2.2):
             # SHLVL is an env hint I use in my env to detect depth of subshells
             # and for subshells its displayed in the prompt.
@@ -637,8 +639,7 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(2.8):
             msg = "This key is not bound to any action"
-            w(f"""
-            # All keys not bound will display this warning
+            w(f"""# All keys not bound will display this warning
             bind -N "Key not bound"  Any  display-message  "{msg}"
             """)
 
@@ -655,8 +656,7 @@ class BaseConfig(TmuxConfig):
         self.auc_display_plugins_used()
         self.auc_kill_tmux_server()
         if self.use_prefix_arrow_nav_keys:
-            w("""
-            #
+            w("""#
             #  For limited keyboards without Home/End/PgUp/PgDn Prefix-arrows can be used
             #
             #  <prefix> <arrow> generates: PageUp, PageDown, Home, End
