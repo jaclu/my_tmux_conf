@@ -954,8 +954,8 @@ class BaseConfig(TmuxConfig):
         {pref} next window      - P+0 M-0 C-M-Right' -r  0  next-window
         """)
         if self.vers_ok(1.2):
-            w(f"""{pref}previous window  - P+p P+9 M-9'  -n  C-M-Left   previous-window
-            {pref}next window      - P+n P+0 M-0'  -n  C-M-Right  next-window""")
+            w(f"""{pref} previous window  - P+p P+9 M-9'  -n  C-M-Left   previous-window
+            {pref} next window      - P+n P+0 M-0'  -n  C-M-Right  next-window""")
 
         #
         #  I tend to bind ^[9 & ^[0 to Alt-Left/Right in my terminal apps
