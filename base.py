@@ -511,7 +511,6 @@ class BaseConfig(TmuxConfig):
         #
         #======================================================
         """)
-        # escape-time < 3.5 = 500 3.5 = 10
 
         if self.prefix_key.lower() != "c-b":
             w(f"""# Remove the default prefix, do it before assigning
@@ -530,6 +529,23 @@ class BaseConfig(TmuxConfig):
                     f"{self.remove_prefix(self.prefix_key)}  send-keys {self.prefix_key}"
                 )
             w()  # spacer
+
+        w(f"""{self.opt_server} repeat-time 750
+        {self.opt_server} history-limit 10000
+        {self.opt_server} status-keys emacs""")
+
+        if os.getenv("TMUX_NO_CLIPBOARD"):
+            # On ssh/mosh connections, when running an asdf tmux with local
+            # version changed.
+            # tmux instacraches when anything is selected in a tmux buffer
+            # if set-clipboard is not off
+            if self.vers_ok(1.5):
+                w(f"{self.opt_server} set-clipboard off  # TMUX_NO_CLIPBOARD")
+        else:
+            # using external on the outer, prevents inner tmux from setting
+            # terminal clipboard
+            if self.vers_ok(1.5):
+                w(f"{self.opt_server} set-clipboard on")
 
         if self.allow_set_titles:
             # This allows tmux to update the terminal title according to set-titles-string
@@ -563,23 +579,6 @@ class BaseConfig(TmuxConfig):
             #
             w(f"{self.opt_server} allow-passthrough off")
 
-        w(f"""{self.opt_server} repeat-time 750
-        {self.opt_server} history-limit 10000
-        {self.opt_server} status-keys emacs""")
-
-        if os.getenv("TMUX_NO_CLIPBOARD"):
-            # On ssh/mosh connections, when running an asdf tmux with local
-            # version changed.
-            # tmux instacraches when anything is selected in a tmux buffer
-            # if set-clipboard is not off
-            if self.vers_ok(1.5):
-                w(f"{self.opt_server} set-clipboard off  # TMUX_NO_CLIPBOARD")
-        else:
-            # using external on the outer, prevents inner tmux from setting
-            # terminal clipboard
-            if self.vers_ok(1.5):
-                w(f"{self.opt_server} set-clipboard on")
-
         # This prevents path_helper and similar tools from messing up PATH
         # inside tmux. On MacOS it is used by default,
         # maybe also on other platforms?
@@ -592,16 +591,17 @@ class BaseConfig(TmuxConfig):
         if not mtc_utils.IS_ISH:
             if not self.selected_shell:
                 self.selected_shell = os.getenv("SHELL")
-            if self.vers_ok(0.1):  # was 1.0
-                # prevents /usr/libexec/path_helper from messing up PATH
-                w(f'{self.opt_server} default-command "{self.selected_shell}"')
-            else:
-                w(
-                    f'{self.opt_server} default-command "export '
-                    f'TERM=screen-256color \\; {self.selected_shell}"'
-                )
 
-        w()  # spacer
+            # prevents /usr/libexec/path_helper from messing up PATH
+            w(f'{self.opt_server} default-command "{self.selected_shell}"')
+            # else:
+            #     w(
+            #         f'{self.opt_server} default-command "export '
+            #         f'TERM=screen-256color \\; {self.selected_shell}"'
+            #     )
+
+        if self.vers_ok(3.6):
+            w(f"{self.opt_server} clock-mode-style 24-with-seconds")
 
         if os.getenv("SHLVL") and self.vers_ok(2.2):
             # SHLVL is an env hint I use in my env to detect depth of subshells
@@ -635,7 +635,8 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(2.8):
             msg = "This key is not bound to any action"
-            w(f"""# All keys not bound will display this warning
+            w(f"""
+            # All keys not bound will display this warning
             bind -N "Key not bound"  Any  display-message  "{msg}"
             """)
 
@@ -1398,9 +1399,6 @@ class BaseConfig(TmuxConfig):
                 # For additional panes in same window
                 set-hook -g after-split-window{idx} "{borders_enable} {cmd_2}" """
             )
-
-        if self.vers_ok(3.6):
-            w(f"{self.opt_server} clock-mode-style 24-with-seconds")
 
         if self.vers_ok(2.6) and not os.getenv("TMUX_NO_CLIPBOARD"):
             idx = self.get_next_hook_array_idx()
