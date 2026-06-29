@@ -675,6 +675,10 @@ class BaseConfig(TmuxConfig):
         used_any_popups = False
         w = self.write
 
+        if not self.vers_ok(min_vers_display_message):
+            # Nothing will be generated, so might as well abort
+            return
+
         w("""
         #
         # bindings for Floating Panes and display-popup
