@@ -850,7 +850,7 @@ class BaseConfig(TmuxConfig):
             w("""
             # the default key is still available: <prefix> E
             # e is quicker to type on a touch keyb
-            bind -N "Spread panes out evenly"  e  select-layout -E""")
+            bind -N "Spread panes out evenly"  e    select-layout -E""")
 
         cmd_new_win_named = (
             f'command-prompt -p "Name of new window: "'
@@ -863,8 +863,8 @@ class BaseConfig(TmuxConfig):
         # for key in ("c", "="):  # c is just for compatibility with default key
         if self.vers_ok(1.0):
             w(f"""
-                {s} P+= M-='      c   {cmd_new_win_named}
-                {s} P+c M-='      =   {cmd_new_win_named}
+                {s} P+= M-='     c    {cmd_new_win_named}
+                {s} P+c M-='     =    {cmd_new_win_named}
                 {s} P+= P+c' -n  M-=  {cmd_new_win_named}""")
         else:
             w(f"""
@@ -880,10 +880,10 @@ class BaseConfig(TmuxConfig):
         #  regardless of default popup status.
         #
         w("""
-            bind -N "Swap window left"      -r  <  swap-window -d -t :-1
-            bind -N "Swap window right"     -r  >  swap-window -d -t :+1""")
+            bind -N "Swap window left"   -r  <  swap-window -d -t :-1
+            bind -N "Swap window right"  -r  >  swap-window -d -t :+1""")
 
-        s = 'bind -N "Rename current window"     W  command-prompt'
+        s = 'bind -N "Rename current window"  W  command-prompt'
         if self.vers_ok(1.5):
             s += ' -I "#W"'
         w(f'{s} "rename-window -- \\"%%\\""')
@@ -896,7 +896,7 @@ class BaseConfig(TmuxConfig):
         for c in ("&", "X"):
             if self.vers_ok(1.5):
                 w(
-                    f'bind -N "Kill window in focus"    {c}  confirm-before -p '
+                    f'bind -N "Kill window in focus"  {c}  confirm-before -p '
                     '"kill current window \\"#W\\"? (y/n)" "kill-window"'
                 )
             elif self.vers_ok(0.9):
@@ -1775,8 +1775,8 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
             s = (
                 'bind -N "'
                 f"{self.muc_non_default_value(mtc_utils.K_M_PLUS)}"
-                'Create new session  - P++" '
-                f"-n  {self.muc_keys[mtc_utils.K_M_PLUS]}  command-prompt "
+                'Create new session  - P++"         '
+                f"-n  {self.muc_keys[mtc_utils.K_M_PLUS]}       command-prompt "
             )
             if self.vers_ok(1.5):
                 s += ' -I "?"'
