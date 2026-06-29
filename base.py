@@ -132,6 +132,8 @@ class BaseConfig(TmuxConfig):
     # If colors for this is defined, it will be displayed, if "" it is not
     show_prefix_n_vers_in_sb_colors = "fg=green,bg=black"
 
+    use_notes_as_comments = False
+
     #
     #  Some devices are unable to generate the nav keys -
     #    PageUp, PageDown, Home, and End
