@@ -1324,6 +1324,8 @@ class BaseConfig(TmuxConfig):
     def handle_hooks(self):
         w = self.write
 
+        v_min_smart_hooks = 3.2
+
         if not self.vers_ok(1.0):
             # Nothing hook related can be done, so abort
             return
@@ -1335,6 +1337,9 @@ class BaseConfig(TmuxConfig):
         #
         #======================================================
         """)
+
+        # potential option to handle it on all versions, via an inline script
+        # set-hook -g window-layout-changed 'run-shell "$HOME/.tmux/layout-handler.sh"'
 
         if not self.vers_ok(2.5):
             if self.is_tmate():
@@ -1355,7 +1360,7 @@ class BaseConfig(TmuxConfig):
         # through to a potential inner tmux in the case of single or zoomed pane.
         # Stuff like pane navigation & resize etc.
         """)
-        if self.vers_ok(3.2):
+        if self.vers_ok(v_min_smart_hooks):
             binds_s = unbinds_s = ""
         else:
             w(
@@ -1398,7 +1403,7 @@ class BaseConfig(TmuxConfig):
             idx = self.get_next_hook_array_idx()
             msg = "terminal clipboard is set"
 
-            if self.vers_ok(3.2):
+            if self.vers_ok(v_min_smart_hooks):
                 delay = "-d 400"
             else:
                 delay = ""
@@ -1413,7 +1418,7 @@ class BaseConfig(TmuxConfig):
                 set-hook -g pane-set-clipboard{idx} "display-message {delay} '{msg}'" """
             )
 
-        if self.vers_ok(3.2) and not self.is_tmate():
+        if self.vers_ok(v_min_smart_hooks) and not self.is_tmate():
             idx = self.get_next_hook_array_idx()
 
             #
