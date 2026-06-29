@@ -1127,21 +1127,24 @@ class BaseConfig(TmuxConfig):
                 "last-pane \\; resize-pane -Z"
             )
 
-        if self.vers_ok(2.6):
-            # This stops the pane movement keys wrapping around
-            # at the top, bottom, left and right.
-            # source: https://github.com/tmux/tmux/wiki/Recipes
-            pane_left = "if -F '#{pane_at_left}' '' 'select-pane -L'"
-            pane_up = "if -F '#{pane_at_top}' '' 'select-pane -U'"
-            pane_right = "if -F '#{pane_at_right}' '' 'select-pane -R'"
-            pane_down = "if -F '#{pane_at_bottom}' '' 'select-pane -D'"
+        if self.vers_ok(3.2):
+            # This stops the pane movement keys wrapping around at the top, bottom,
+            # left and right.
+            # This code in-it-self works down to 3.0, but since this is also
+            # used in the hook handling for M-arrows, and there this code
+            # will be to deeply quoted if < 3.2, causing string failures
+
+            pane_left = "if -F '#{!=:#{pane_at_left},1}'   { select-pane -L }"
+            pane_up = "if -F '#{!=:#{pane_at_top},1}'    { select-pane -U }"
+            pane_right = "if -F '#{!=:#{pane_at_right},1}'  { select-pane -R }"
+            pane_down = "if -F '#{!=:#{pane_at_bottom},1}' { select-pane -D }"
         elif self.vers_ok(1.2):
             pane_left = "select-pane -L"
             pane_up = "select-pane -U"
             pane_right = "select-pane -R"
             pane_down = "select-pane -D"
         else:
-            # Really old tmuxes can only navigate[<0;105;38M up/down by pane index
+            # Really old tmuxes can only navigate up/down by pane index
             pane_left = "up-pane"
             pane_up = "up-pane"
             pane_right = "down-pane"
