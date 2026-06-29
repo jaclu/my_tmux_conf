@@ -80,6 +80,10 @@ class BaseConfig(TmuxConfig):
 
     status_interval: int = 5  # How often the status bar should be updated
 
+    allow_set_titles: bool = (
+        False  #  Allow apps inside tmux to set the client terminal title
+    )
+
     monitor_activity: bool = False  # Notification when other windows change state
 
     show_pane_label: bool = True  # If enabled, Set pane label with <P> P
@@ -529,19 +533,37 @@ class BaseConfig(TmuxConfig):
                 )
             w()  # spacer
 
-        # This allows tmux to update the terminal title according to set-titles-string
-        w(f"{self.opt_server} set-titles on")
-        if self.vers_ok(1.0):
-            # String used to set the client terminal title if set-titles is on
-            w(
-                f"{self.opt_server} set-titles-string "
-                '"#{host_short} - '
-                f"tmux {self.vers.get()}"
-                ' - #{session_name}:#{window_name}:#T"'
-            )
-        if self.vers_ok(3.5):
-            # This allows apps inside tmux to set the terminal title
-            w(f"{self.opt_server} allow-set-title on")
+        if self.allow_set_titles:
+            # This allows tmux to update the terminal title according to set-titles-string
+            w(f"{self.opt_server} set-titles on")
+            if self.vers_ok(1.0):
+                # String used to set the client terminal title if set-titles is on
+                w(
+                    f"{self.opt_server} set-titles-string "
+                    '"#{host_short} - '
+                    f"tmux {self.vers.get()}"
+                    ' - #{session_name}:#{window_name}:#T"'
+                )
+            if self.vers_ok(3.5):
+                w(f"{self.opt_server} allow-set-title on")
+        else:
+            w(f"{self.opt_server} set-titles off")
+            if self.vers_ok(3.5):
+                w(f"{self.opt_server} allow-set-title off")
+
+        if self.vers_ok(3.3):
+            #
+            # Allow yazi and similar apps to send binary data like images/audio
+            # to the terminal using binary OSC transfer.
+            # Be aware that even if this is off, yazi will silently run
+            #    tmux set -g allow-passthrough on
+            # thereby ignoring a clear user preference, so this setting has no effect
+            # in preventing yazi from binary transfers
+            # This is a clear security hole, that might unintentionally lead to
+            # prosecution if yazi is run on a folder containing non public binary data
+            # So on a server containing sensitive data DO NOT USE yazi!
+            #
+            w(f"{self.opt_server} allow-passthrough off")
 
         w(f"""{self.opt_server} repeat-time 750
         {self.opt_server} history-limit 10000
@@ -559,20 +581,6 @@ class BaseConfig(TmuxConfig):
             # terminal clipboard
             if self.vers_ok(1.5):
                 w(f"{self.opt_server} set-clipboard on")
-
-        if self.vers_ok(3.3):
-            #
-            # Allow yazi and similar apps to send binary data like images/audio
-            # to the terminal using binary OSC transfer.
-            # Be aware that even if this is off, yazi will silently run
-            #    tmux set -g allow-passthrough on
-            # thereby ignoring a clear user preference, so this setting has no effect
-            # in preventing yazi from binary transfers
-            # This is a clear security hole, that might unintentionally lead to
-            # prosecution if yazi is run on a folder containing non public binary data
-            # So on a server containing sensitive data DO NOT USE yazi!
-            #
-            w(f"{self.opt_server} allow-passthrough off")
 
         # This prevents path_helper and similar tools from messing up PATH
         # inside tmux. On MacOS it is used by default,
