@@ -323,8 +323,7 @@ class BaseConfig(TmuxConfig):
         self.pane_handling()
         self.handle_buffers()
         self.handle_hooks()
-        if self.vers_ok(1.0):
-            self.mouse_handling()
+        self.mouse_handling()
         self.status_bar()
 
         self.__base_overrides()
@@ -1295,6 +1294,7 @@ class BaseConfig(TmuxConfig):
 
     def handle_buffers(self):
         if not self.vers_ok(1.2):
+            # Buffers not supported, so abort
             return
 
         w = self.write
@@ -1545,6 +1545,11 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
 
     def mouse_handling(self):
         w = self.write
+
+        if not self.vers_ok(1.0):
+            # mouse not supported, so abort
+            return
+
         w("""
         #======================================================
         #
