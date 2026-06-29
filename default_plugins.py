@@ -368,7 +368,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             #  Using mouse in this plugin doesn't work on old versions
             conf += """
             # it seems mouse events can't use any combination of S-
-            set -g @power_zoom_mouse_action "C-DoubleClick3Pane"
+            # set -g @power_zoom_mouse_action "C-DoubleClick3Pane"
             """
         return ["jaclu/tmux-power-zoom", vers_min, conf]
 
