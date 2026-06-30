@@ -361,7 +361,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             or self.is_tmate()
             or (self.vers_ok(3.7) and not self.vers_ok("3.7a"))
         ):
-            # plugin fail in 3.7
+            # on 3.7 using break-pane crashes tmux...
             vers_min = -1.0  # Don't use
         else:
             vers_min = 2.0
