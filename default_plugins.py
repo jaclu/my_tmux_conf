@@ -74,8 +74,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
     use_plugin_jump = True
     use_plugin_menus = True
     use_plugin_mouse_swipe = True
-    # use_plugin_power_zoom = True
-    use_plugin_power_zoom = False
+    use_plugin_power_zoom = True
     use_plugin_resurrect = True
     use_plugin_session_wizard = True
     use_plugin_suspend = True
@@ -357,7 +356,11 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         """Zooms to separate Window, to allow for adding support panes
         Default trigger: <prefix> Z
         """
-        if not self.use_plugin_power_zoom or self.is_tmate():  # or self.vers_ok(3.7):
+        if (
+            not self.use_plugin_power_zoom
+            or self.is_tmate()
+            or (self.vers_ok(3.7) and not self.vers_ok("3.7a"))
+        ):
             # plugin fail in 3.7
             vers_min = -1.0  # Don't use
         else:
