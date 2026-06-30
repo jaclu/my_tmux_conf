@@ -42,22 +42,9 @@ class T2(SB):  # type: ignore
 
     t2_env = "1"
 
-    # show_prefix_n_vers_in_sb_colors = ""
-
-    # use_plugin_gentrify = True
-
-    # OB plugin_handler = "manual"
-    # plugin_handler: str = "tmux-plugins/tpm"
-
-    # use_embedded_scripts = False
-    # is_limited_host = True
-
     use_plugin_battery = True  # Will disabled if not on MacOS
     use_plugin_extrakto = False
     use_plugin_jump = False
-    # use_plugin_menus = False
-    # use_plugin_mouse_swipe = False
-    # use_plugin_power_zoom = False
     use_plugin_session_wizard = False
     use_plugin_suspend = False
     use_plugin_resurrect = False
