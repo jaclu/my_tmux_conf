@@ -101,6 +101,12 @@ class BaseConfig(TmuxConfig):
     #
     color_tag_24bit: str = "RGB"
 
+    pane_border_active_color = "colour136"  # orange
+    pane_border_other_color = "colour241"  # low intensity grey
+    # pane_border_other_color = "colour31"  # pale blue
+    pane_in_mode_color = "yellow"  # scrollback etc
+    pane_sync_mode_color = "red"  # only for current pane in sync mode
+
     #
     #  Default templates for the status bar, so that they can easily be
     #  modified using status_bar_customization()
@@ -1036,7 +1042,7 @@ class BaseConfig(TmuxConfig):
 
     def pane_frame_lines(self):
         if not self.vers_ok(1.9):
-            return
+            return  # nothing will be set, might as well abort
 
         w = self.write
         w("""
@@ -1053,34 +1059,30 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.9):
             #
-            #  Works both on bright and dark backgrounds
+            #  Colorize frame lines
             #
-            border_other = "colour31"  # pale blue
-            border_active = "colour136"  # orange
-
             if self.vers_ok(3.2):
-                # supports #{? notation in this context
-                in_mode_color = "yellow"  # scrollback etc
-                sync_color = "red"  # only for current pane in sync mode
-
-                # split to avoid excessive line length
-                indicate_sync_state = "#{?synchronize-panes,"
-                indicate_sync_state += f"fg={sync_color},fg={border_active}}}}}"
-
-                w(
-                    f"{self.opt_pane} pane-active-border-style "
-                    f"'#{{?pane_in_mode,fg={in_mode_color},{indicate_sync_state}'"
+                pane_active_border_style = (
+                    "#{?pane_in_mode,fg="
+                    f"{self.pane_in_mode_color}"
+                    ",#{?pane_synchronized,fg="
+                    f"{self.pane_sync_mode_color},fg={self.pane_border_active_color}"
+                    "}}"
                 )
-                w(
-                    f"{self.opt_pane} pane-border-style "
-                    f"'#{{?pane_in_mode,fg={in_mode_color},fg={border_other}}}'"
+                pane_border_style = (
+                    "#{?pane_in_mode,"
+                    f"fg={self.pane_in_mode_color},"
+                    f"fg={self.pane_border_other_color}}}"
                 )
             else:
-                w(f"""{self.opt_pane} pane-active-border-style fg={border_active}
-                {self.opt_pane} pane-border-style fg={border_other}""")
+                # 3.1 doesn't do format expansion of styles...
+                pane_active_border_style = f"fg={self.pane_border_active_color}"
+                pane_border_style = f"fg={self.pane_border_other_color}"
 
+            w(f"{self.opt_pane} pane-active-border-style '{pane_active_border_style}'")
+            w(f"{self.opt_pane} pane-border-style '{pane_border_style}'")
         #
-        #  Display custom pane borders and label if >= 2.5 / 2.6 not certain
+        #  Display custom pane borders and label
         #
         if self.vers_ok(2.3) and not self.is_tmate():
             pane_label = ""
@@ -1089,7 +1091,7 @@ class BaseConfig(TmuxConfig):
             if self.show_pane_size:
                 pane_label += "(#{pane_width}x#{pane_height}) "
             if pane_label:
-                w(f'{self.opt_pane} pane-border-format "{pane_label}"')
+                w(f"{self.opt_pane} pane-border-format '{pane_label}'")
 
         if self.vers_ok(3.2):
             w(f"{self.opt_pane} pane-border-lines single")
@@ -1114,7 +1116,7 @@ class BaseConfig(TmuxConfig):
 
     def pane_navigation(self):
         if not self.vers_ok(1.0):
-            return
+            return  # nothing will be set, might as well abort
 
         w = self.write
         w("""
@@ -1137,7 +1139,6 @@ class BaseConfig(TmuxConfig):
             # This code in-it-self works down to 3.0, but since this is also
             # used in the hook handling for M-arrows, and there this code
             # will be to deeply quoted if < 3.2, causing string failures
-
             pane_left = "if -F '#{!=:#{pane_at_left},1}'   { select-pane -L }"
             pane_up = "if -F '#{!=:#{pane_at_top},1}'    { select-pane -U }"
             pane_right = "if -F '#{!=:#{pane_at_right},1}'  { select-pane -R }"

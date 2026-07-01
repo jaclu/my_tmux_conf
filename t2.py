@@ -40,7 +40,7 @@ else:
 class T2(SB):  # type: ignore
     """Normally the Inner tmux session"""
 
-    t2_env = "1"
+    pane_border_active_color = "colour70"  # pale green
 
     use_plugin_battery = True  # Will disabled if not on MacOS
     use_plugin_extrakto = False
@@ -124,28 +124,6 @@ class T2(SB):  # type: ignore
         w = self.write
         #  Display what class this override comes from
         w("# ---  T2.local_overrides() - to adjust for the t2 styling")
-
-        if self.vers_ok(1.9):
-            #
-            #  Works both on bright and dark backgrounds
-            #  this makes it easier to see if a pane is part of a t2 env
-            #
-            # border_active = "colour70"    # pale green
-            # border_other = "colour241"  # low intensity grey
-
-            if self.vers_ok(3.2):
-                w(
-                    f"{self.opt_pane} pane-active-border-style "
-                    "'#{?pane_in_mode,fg=yellow,"
-                    "#{?synchronize-panes,fg=red,fg=colour70}}'"
-                )
-                w(
-                    f"{self.opt_pane} pane-border-style "
-                    "'#{?pane_in_mode,fg=yellow,fg=colour241}'"
-                )
-            else:
-                w(f"""{self.opt_pane} pane-active-border-style fg=colour70
-                {self.opt_pane} pane-border-style fg=colour241""")
 
         if self.vers_ok(1.8):
             # User variables not present before 1.8
