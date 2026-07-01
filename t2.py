@@ -137,7 +137,7 @@ class T2(SB):  # type: ignore
                 # Use a different host vs the outer tmux
                 set -g @packet-loss-ping_host "1.1.1.1"
 
-                set -g @packet-loss-history_size 11 # approx 20s
+                set -g @packet-loss-history_size 10 # approx 20s
 
                 set -g @packet-loss-level_alert 34
                 set -g @packet-loss-ping_count 3
