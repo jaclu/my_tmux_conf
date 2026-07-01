@@ -55,10 +55,9 @@ class T2(SB):  # type: ignore
         use_plugin_claude = False
     elif mtc_utils.HOSTNAME in ("JacMac",):
         use_plugin_claude = False
-        # use_plugin_packet_loss = True
-        # Can be used on Termux but NOT on iSH
-        # force_plugin_continuum = True
-        # use_plugin_resurrect = True
+        use_plugin_packet_loss = True
+        force_plugin_continuum = True
+        use_plugin_resurrect = True
     elif mtc_utils.HOSTNAME in ("JacDroid",):
         use_plugin_packet_loss = True
         # Can be used on Termux but NOT on iSH
