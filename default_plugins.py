@@ -674,7 +674,12 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             "jaclu/tmux-packet-loss",
             min_vers,
             """
-            set -g @packet-loss-ping_host "1.1.1.1"
+            # set -g @packet-loss-ping_host "1.1.1.1"
+
+            set -g @packet-loss-ping_count 3
+            set -g @packet-loss-history_size 10 # approx 18-21s depending on cpu
+            set -g @packet-loss-level_alert 34
+
             set -g @packet-loss-hist_avg_display  yes
             set -g @packet-loss-run_disconnected  yes
             set -g @packet-loss-color_alert  colour21
