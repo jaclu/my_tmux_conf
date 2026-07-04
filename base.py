@@ -80,7 +80,7 @@ class BaseConfig(TmuxConfig):
 
     status_interval: int = 5  # How often the status bar should be updated
 
-    allow_set_titles: bool = False  #  Apps inside tmux can set the terminal title
+    allow_set_titles: bool = False  # Apps inside tmux can set the terminal title
 
     monitor_activity: bool = False  # Notification when other windows change state
 
