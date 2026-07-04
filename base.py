@@ -301,15 +301,15 @@ class BaseConfig(TmuxConfig):
         defined by parent classes before applying additional customizations.
         """
         super().local_overrides()
-        w = self.write
-        #  Display what class this override comes from
-        w("# ---  BaseConfig.local_overrides()")
 
         if not self.tablet_keyb and self.vers_ok(2.6):
+            w = self.write
+            #  Display what class this override comes from
+            w("# ---  BaseConfig.local_overrides()")
             # Tablet keyb configs handle their own euro rempaping
             eur_sequence = "\\033\\100"  # Darwin keyboards, is pc different?
             self.alternate_key_euro(eur_sequence)
-        w()  # Spacer after this local override section
+            w()  # Spacer after this local override section
 
     def content(self) -> None:
         """This generates the majority of the tmux.conf.

@@ -61,6 +61,21 @@ class SB(DefaultPlugins):
 
         return True  # request footer to be printed
 
+    def local_overrides(self) -> None:
+        super().local_overrides()
+
+        if self.vers_ok(1.8):
+            # User variables not present before 1.8
+            used_plugins = self.plugins.installed(short_name=True)
+            if "tmux-claude-usage" in used_plugins:
+                w = self.write
+                #  Display what class this override comes from
+                w("# ---  sb_muted.py:local_overides()")
+
+                w("""# Using colors matching this theme
+                set -g @claude_usage_color_low 'colour22' # pale green
+                """)
+
 
 if __name__ == "__main__":
     SB().run()

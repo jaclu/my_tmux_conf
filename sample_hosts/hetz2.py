@@ -58,14 +58,18 @@ class Hetz2(DefaultPlugins):
         defined by parent classes before applying additional customizations.
         """
         super().local_overrides()
-        #  Display what class this override comes from
-        self.write("# hetz2.local_overides")
-        if self.vers_ok(1.8):  # below this user params not supported
-            log_file = "~/.dotFiles/latest_statuses/tmux-packet-loss-hetz2.log"
-            self.write(f"""
-                set -g @packet-loss-run_disconnected  yes
-                set -g @packet-loss-log_file  "{log_file}"
-                """)
+        if self.vers_ok(1.8):
+            # User variables not present before 1.8
+            used_plugins = self.plugins.installed(short_name=True)
+            if "tmux-packet-loss" in used_plugins:
+                w = self.write
+                #  Display what class this override comes from
+                w("# ---  Hetz2.local_overrides() - to adjust for the t2 styling")
+                log_file = "~/.dotFiles/latest_statuses/tmux-packet-loss-hetz2.log"
+                self.write(f"""
+                    set -g @packet-loss-run_disconnected  yes
+                    set -g @packet-loss-log_file  "{log_file}"
+                    """)
 
 
 if __name__ == "__main__":

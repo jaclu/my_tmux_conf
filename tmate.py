@@ -36,9 +36,9 @@ class Tmate(SB):
         """overrides of general config"""
         super().local_overrides()
 
-        #  First mention what class this override comes from
+        #  Display what class this override comes from
         self.write("""
-        # --- Tmate.local_overrides()
+        # ---  Tmate.local_overrides()
         # Get rid of tmate occupying status-line forever...
         run-shell -b "sleep 1; $TMUX_BIN display 'Press Enter to clear status-line'"
         """)

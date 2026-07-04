@@ -40,18 +40,22 @@ class Kajsa(SB):
         `super().local_overrides()` is called first, to retain any overrides
         defined by parent classes before applying additional customizations.
         """
-        w = self.write
         super().local_overrides()
-        #  Display what class this override comes from
-        w("# ---  kajsa.local_overides()")
-        if self.vers_ok(1.8):  # below this user params not supported
-            log_file = "~/tmp/packet-loss-kajsa.log"
-            self.write(f"""
-                set -g @packet-loss-run_disconnected  yes
-                set -g @packet-loss-log_file  "{log_file}"
-
-                set -g @claude_usage_color_low "colour22" # pale green
-            """)
+        if self.vers_ok(1.8):
+            # User variables not present before 1.8
+            w = self.write
+            #  Display what class this override comes from
+            w("# ---  Kajsa.local_overides()")
+            used_plugins = self.plugins.installed(short_name=True)
+            if "tmux-packet-loss" in used_plugins:
+                log_file = "~/tmp/packet-loss-kajsa.log"
+                self.write(f"""
+                    set -g @packet-loss-run_disconnected  yes
+                    set -g @packet-loss-log_file  "{log_file}"
+                """)
+            if "tmux-claude-usage" in used_plugins:
+                w("""set -g @claude_usage_color_low "colour22" # pale green
+                  """)
 
 
 if __name__ == "__main__":

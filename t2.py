@@ -111,21 +111,18 @@ class T2(SB):  # type: ignore
 
     def local_overrides(self) -> None:
         """
-        Applies local configuration overrides, executed after all other
-        configuration steps. These overrides do not affect the status bar
-        configuration (see `status_bar_customization()` for that).
-
         When overriding this method in a subclass, ensure that
         super().local_overrides() is called first, to retain any overrides
-        defined by parent classes before applying additional customizations.
+        defined by parent classes in the correct order, before applying
+        additional customizations.
         """
         super().local_overrides()
-        w = self.write
-        #  Display what class this override comes from
-        w("# ---  T2.local_overrides() - to adjust for the t2 styling")
 
         if self.vers_ok(1.8):
             # User variables not present before 1.8
+            w = self.write
+            #  Display what class this override comes from
+            w("# ---  T2.local_overrides()")
             used_plugins = self.plugins.installed(short_name=True)
             if "tmux-claude-usage" in used_plugins:
                 w("set -g @claude_usage_color_low colour29")
