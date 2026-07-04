@@ -290,27 +290,6 @@ class BaseConfig(TmuxConfig):
 
         return print_header
 
-    def local_overrides(self) -> None:
-        """
-        Applies local configuration overrides, executed after all other
-        configuration steps. These overrides do not affect the status bar
-        configuration (see `status_bar_customization()` for that).
-
-        When overriding this method in a subclass, ensure that
-        `super().local_overrides()` is called first, to retain any overrides
-        defined by parent classes before applying additional customizations.
-        """
-        super().local_overrides()
-
-        if not self.tablet_keyb and self.vers_ok(2.6):
-            w = self.write
-            #  Display what class this override comes from
-            w("# ---  BaseConfig.local_overrides()")
-            # Tablet keyb configs handle their own euro rempaping
-            eur_sequence = "\\033\\100"  # Darwin keyboards, is pc different?
-            self.alternate_key_euro(eur_sequence)
-            w()  # Spacer after this local override section
-
     def content(self) -> None:
         """This generates the majority of the tmux.conf.
 
@@ -648,6 +627,9 @@ class BaseConfig(TmuxConfig):
             w(f"""# All keys not bound will display this warning
             bind -N "Key not bound"  Any  display-message  "{msg}"
             """)
+
+        if not self.tablet_keyb and self.vers_ok(2.6):
+            self.alternate_key_euro()
 
         if self.vers_ok(1.0):
             show_action = f'\\; display-message "{self.conf_file} sourced"'
@@ -2176,11 +2158,10 @@ timer_end() {{
         print(f"vers found: {lib_vers_found}   needs: {TMUX_CONF_NEEDED}")
         sys.exit(mtc_utils.ERROR_INCOMPATIBLE_TMUX_CONF_LIB)
 
-    def alternate_key_euro(self, sequence: str):
+    def alternate_key_euro(self, sequence: str = "\\033\\100"):
         """Some keybs fail to render the Euro sign for M-S-2
         Only do this if local currency is EUR"""
         if not self.vers_ok(2.6):
-            print("ERROR: alternate_key_euro({sequence}) - called for tmux < 2.6")
             return  # user keys not yet available
         if sequence[:1] != "\\":
             print()
@@ -2197,11 +2178,11 @@ timer_end() {{
                 set -s user-keys[180] "{sequence}"
                 bind -N "Send €" -n User180 send "€" """)
         elif currency:
-            w(f"""
-                # When checking EUR was not reported as local currency where this node is
+            w(
+                f"""# When checking EUR was not reported as local currency where this node is
                 # located, so no EUR fix applied. This node reports currency: {currency}.
-                #
-                """)
+                """
+            )
         else:
             w(
                 "# No default currency could be retrieved for this node - "
