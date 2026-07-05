@@ -2183,7 +2183,7 @@ timer_end() {{
             # print("><> Wiill write euro workaround")
             w(f"""# M-S-2 mapped to €
                 set -s user-keys[180] "{sequence}"
-                bind -N "Send €" -n User180 send "€" """)
+                bind -N "Send €" -n User180 send-keys "€" """)
         elif currency:
             w("# When checking EUR was not reported as local currency where this node")
             w(
