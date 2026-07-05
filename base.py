@@ -119,6 +119,7 @@ class BaseConfig(TmuxConfig):
 
     handle_iterm2: bool = True  # Select screen-256color for iTerm2
 
+    use_eur_workarround = True  # Map Eur to M-S-2
     #
     #  Indicates this is a separate tmux env, I use it for testing
     #  plugin compatibility, and changed settings in a way that does not
@@ -622,14 +623,14 @@ class BaseConfig(TmuxConfig):
                 {self.opt_server} @use_bind_key_notes_in_plugins Yes
                 """)
 
+        if not self.tablet_keyb and self.vers_ok(2.6):
+            self.alternate_key_euro()
+
         if self.vers_ok(2.8):
             msg = "This key is not bound to any action"
             w(f"""# All keys not bound will display this warning
             bind -N "Key not bound"  Any  display-message  "{msg}"
             """)
-
-        if not self.tablet_keyb and self.vers_ok(2.6):
-            self.alternate_key_euro()
 
         if self.vers_ok(1.0):
             show_action = f'\\; display-message "{self.conf_file} sourced"'
@@ -2172,22 +2173,23 @@ timer_end() {{
 
         w = self.write
         currency = mtc_utils.get_currency()
-        if currency == "EUR":
+        if self.use_eur_workarround or currency == "EUR":
             # print("><> Wiill write euro workaround")
             w(f"""# M-S-2 should be €
                 set -s user-keys[180] "{sequence}"
                 bind -N "Send €" -n User180 send "€" """)
         elif currency:
+            w("# When checking EUR was not reported as local currency where this node")
             w(
-                f"""# When checking EUR was not reported as local currency where this node is
-                # located, so no EUR fix applied. This node reports currency: {currency}.
-                """
+                "# is located, so no EUR fix applied. "
+                f"This node reports currency: {currency}."
             )
         else:
             w(
                 "# No default currency could be retrieved for this node - "
                 "alternate_key_euro() ignored"
             )
+        w()  # spacer
 
 
 if __name__ == "__main__":

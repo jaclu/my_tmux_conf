@@ -47,9 +47,8 @@ def run_shell(_cmd: str) -> str:
 def get_currency() -> str:
     """Since these resources are rate limited, use multiple, oredering by random"""
     currency_functions = [
-        _get_currency_from_geoplugin,
-        _get_currency_from_ipapi,
         _get_currency_from_ipwhois,
+        # _get_currency_from_ipapi, # quickly gets rate limited
     ]
 
     # Shuffle the list to call the functions in random order
@@ -77,13 +76,6 @@ def _currency_request(url, tag="currency") -> str:
     else:
         currency = ""
     return currency
-
-
-def _get_currency_from_geoplugin():
-    """retrieving currency"""
-    return _currency_request(
-        "http://www.geoplugin.net/json.gp", "geoplugin_currencyCode"
-    )
 
 
 def _get_currency_from_ipwhois():

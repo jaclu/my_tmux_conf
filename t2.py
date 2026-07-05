@@ -110,12 +110,6 @@ class T2(SB):  # type: ignore
         return ["jaclu/tmux-menus", min_vers, conf]
 
     def local_overrides(self) -> None:
-        """
-        When overriding this method in a subclass, ensure that
-        super().local_overrides() is called first, to retain any overrides
-        defined by parent classes in the correct order, before applying
-        additional customizations.
-        """
         super().local_overrides()
 
         if self.vers_ok(1.8):
