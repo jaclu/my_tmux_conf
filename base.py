@@ -623,14 +623,14 @@ class BaseConfig(TmuxConfig):
                 {self.opt_server} @use_bind_key_notes_in_plugins Yes
                 """)
 
-        if not self.tablet_keyb and self.vers_ok(2.6):
-            self.alternate_key_euro()
-
         if self.vers_ok(2.8):
             msg = "This key is not bound to any action"
             w(f"""# All keys not bound will display this warning
             bind -N "Key not bound"  Any  display-message  "{msg}"
             """)
+
+        if not self.tablet_keyb:  # tablet keyboards has their own euro key handling
+            self.alternate_key_euro()
 
         if self.vers_ok(1.0):
             show_action = f'\\; display-message "{self.conf_file} sourced"'
