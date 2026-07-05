@@ -2162,8 +2162,10 @@ timer_end() {{
     def alternate_key_euro(self, sequence: str = "\\033\\100"):
         """Some keybs fail to render the Euro sign for M-S-2
         Only do this if local currency is EUR"""
+        w = self.write
         if not self.vers_ok(2.6):
-            return  # user keys not yet available
+            return  # user-keys not supported
+
         if sequence[:1] != "\\":
             print()
             print(
@@ -2171,11 +2173,15 @@ timer_end() {{
             )
             sys.exit(mtc_utils.ERROR_USER_KEY_NOT_OCTAL)
 
-        w = self.write
         currency = mtc_utils.get_currency()
-        if self.use_eur_workarround or currency == "EUR":
+        if sequence == "\\033\\100" and not self.vers_ok(3.0):
+            # user-keys were introduced in 2.6, but until 3.0
+            # tmux fails to handle the default sequence for this key, Esc-@
+            # getting confused by the short escape sequence and fails to recognize it
+            w("# tmux < 3.0 fails to parse Esc-@ as a user-key for the Euro symbol")
+        elif self.use_eur_workarround or currency == "EUR":
             # print("><> Wiill write euro workaround")
-            w(f"""# M-S-2 should be €
+            w(f"""# M-S-2 mapped to €
                 set -s user-keys[180] "{sequence}"
                 bind -N "Send €" -n User180 send "€" """)
         elif currency:
