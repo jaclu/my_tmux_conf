@@ -180,8 +180,8 @@ class LimitedKbdSpecialHandling:
         #     2) LC_KEYBOARD is set
         #
         if not self.tc.vers_ok(2.6):
-            msg = """WARNING: tmux < 2.6 does not support user-keys, thus handling
-            keyboard adaptions not supported on this version"""
+            msg = """# WARNING: tmux < 2.6 does not support user-keys, thus handling
+            # keyboard adaptions not supported on this version"""
             print(msg)
             self.tc.write(msg)
             return False
