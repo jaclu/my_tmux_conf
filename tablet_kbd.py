@@ -532,7 +532,7 @@ class IshConsole(LimitedKbdSpecialHandling):
                 w(
                     f"bind -N 'Send {key}' -n User{key_2_uk[key]}     send-keys     '{key}'"
                 )
-            elif key in ("M-}", "M-{"):
+            elif key in ("M-}", "M-{", "M-$"):
                 w(
                     f'bind -N "Send {key}" -n User{key_2_uk[key]}     send-keys     "{key}"'
                 )
