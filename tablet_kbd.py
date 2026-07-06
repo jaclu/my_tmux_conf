@@ -179,19 +179,14 @@ class LimitedKbdSpecialHandling:
         #     1) tmux >= 2.6
         #     2) LC_KEYBOARD is set
         #
-        if not self.tc.vers_ok(2.6):
-            msg = """# WARNING: tmux < 2.6 does not support user-keys, thus handling
-            # keyboard adaptions not supported on this version"""
-            print(msg)
-            self.tc.write(msg)
-            return False
+        w = self.tc.write
 
         print()
         if mtc_utils.LC_ORIGIN:
             print(f"===>  Session for limited console from:  {mtc_utils.LC_ORIGIN}")
         print(f"===>  {self.__class__.__name__}  -  kbd: {mtc_utils.LC_KEYBOARD}")
         print()
-        self.tc.write(f"""
+        w(f"""
             #======================================================
             #
             #  Remap keys for limited console at: {mtc_utils.LC_ORIGIN}
@@ -200,6 +195,11 @@ class LimitedKbdSpecialHandling:
             #
             #======================================================
             """)
+        if not self.tc.vers_ok(2.6):
+            w("# WARNING: tmux < 2.6 does not support user-keys, thus handling")
+            w("# keyboard adaptions not supported on this version")
+            return False
+
         if mtc_utils.LC_KEYBOARD == KBD_OMNITYPE:
             self.keyb_type_omnitype()
         elif mtc_utils.LC_KEYBOARD == KBD_BLUETOOTH:
@@ -216,8 +216,8 @@ class LimitedKbdSpecialHandling:
             return False
         else:
             msg = f"# Unrecognized iSH LC_KEYBOARD: {mtc_utils.LC_KEYBOARD}"
-            self.tc.write(msg)
             print(msg)
+            w(msg)
             return False
 
         self.alternate_key_euro("\\342\\202\\254")
@@ -254,14 +254,14 @@ class LimitedKbdSpecialHandling:
         # self.alternate_key_escape("\\302\\247")
         # self.alternate_key_backtick("\\033")  # sends Esc by default
         self.tc.write("# This keyb handles Escape and tilde in a usable manner")
-        # self.tc.write()  # spacer line
 
     def keyb_type_touch(self):
+        w = self.tc.write
         #
         #  Built in touch-keyb
         #
-        self.tc.write("# No adaptations available for the touch keyboard")
-        self.tc.write()  # spacer line
+        w("# No adaptations available for the touch keyboard")
+        w()  # spacer line
 
     # ======================================================
     #
@@ -281,13 +281,15 @@ class LimitedKbdSpecialHandling:
             sys.exit(err_msg)
 
     def map_fn_keys(self):
+        w = self.tc.write
+
         #
         #  For keybs that already handles M-#
         #  this just binds them to send F# and swaps M-0 -> F10
         #
         for i in range(1, 10):
-            self.tc.write(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
-        self.tc.write('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
+            w(f'bind -N "M-{i} -> F{i}"  -n  M-{i}  send-keys  F{i}')
+        w('bind -N "M-0 -> F10" -n  M-0  send-keys  F10')
 
     def map_m_fn_keys(self) -> None:
         w = self.tc.write
