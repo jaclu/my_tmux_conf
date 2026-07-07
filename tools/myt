@@ -157,7 +157,10 @@ asdf_tmux_find() {
             fi
             # define_socket
             ;;
-        *) error_msg "Found asdf env but system tmux" ;;
+        *)
+            [ -x "$TMUX_BIN" ] && return # System tmux found
+            error_msg "Found asdf env but no system tmux"
+            ;;
     esac
 }
 
@@ -207,12 +210,14 @@ asdf_scan() {
             asdf set tmux "$asdf_version_requested" || {
                 error_msg "Failed to set asdf tmux version to: $asdf_version_requested"
             }
-            ASDF_DATA_DIR="${ASDF_DATA_DIR:-$HOME/.asdf}"
-            ASDF_BIN_DIR="$ASDF_DATA_DIR/installs/tmux/$asdf_version_requested/bin"
-            _tmux_bin="$ASDF_BIN_DIR"/tmux
-            if [ ! -x "$_tmux_bin" ]; then
-                error_msg "Requested asdf tmux version not installed: $asdf_version_requested"
-            fi
+            [ "$asdf_version_requested" != "system" ] && {
+                ASDF_DATA_DIR="${ASDF_DATA_DIR:-$HOME/.asdf}"
+                ASDF_BIN_DIR="$ASDF_DATA_DIR/installs/tmux/$asdf_version_requested/bin"
+                _tmux_bin="$ASDF_BIN_DIR"/tmux
+                if [ ! -x "$_tmux_bin" ]; then
+                    error_msg "Requested asdf tmux version not installed: $asdf_version_requested"
+                fi
+            }
         }
     fi
     asdf_tmux_find
