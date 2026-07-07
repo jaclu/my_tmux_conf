@@ -530,12 +530,12 @@ class IshConsole(LimitedKbdSpecialHandling):
             elif key == "M-N" and not self.tc.vers_ok(3.1):
                 #    Special case to avoid cutof at second -N
                 w("# tmux < 3.1 Fails to handle Meta N - so it is skipped")
-            # elif key == "M-$":  # and not self.tc.vers_ok(3.0):
-            #     #     #    Special case to avoid cutof at second -N
-            #     #     w("# tmux < 3.0 Fails to handle M-$ - so it is skipped")
-            #     w(
-            #         f"bind -N 'Send {key}' -n User{key_2_uk[key]}     send-keys     'M-$'"
-            #     )
+            elif key == "M-$":  # and not self.tc.vers_ok(3.0):
+                #     #    Special case to avoid cutof at second -N
+                #     w("# tmux < 3.0 Fails to handle M-$ - so it is skipped")
+                w(
+                    f"bind -N 'Send {key}' -n User{key_2_uk[key]}     send-keys     'M-$'"
+                )
             elif key == 'M-"':
                 w(
                     f"bind -N 'Send {key}' -n User{key_2_uk[key]}     send-keys     '{key}'"
