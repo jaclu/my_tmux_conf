@@ -207,8 +207,9 @@ asdf_scan() {
         }
 
         [ -n "$asdf_version_requested" ] && {
+            # shellcheck disable=SC2154  # ASDF_OLD_STYLE defined in dot-files
             if [ "$ASDF_OLD_STYLE" = 1 ]; then
-                asdf local tmux "$asdf_version_requested"  || {
+                asdf local tmux "$asdf_version_requested" || {
                     error_msg "Failed to set old style asdf tmux version to: $asdf_version_requested"
                 }
             else
