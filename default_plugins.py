@@ -88,7 +88,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
 
     if mtc_utils.IS_INNER_TMUX:
         #  Doesn't make much sense in an inner tmux
-        use_plugin_mouse_swipe = False
+        use_plugin_mouse_swipe = True
         # use_plugin_power_zoom = False
         # use_plugin_session_wizard = False
 

@@ -48,6 +48,7 @@ class T2(SB):  # type: ignore
     use_plugin_session_wizard = False
     use_plugin_suspend = False
     use_plugin_resurrect = False
+    use_plugin_mouse_swipe = True
 
     if mtc_utils.HOSTNAME in ("JacMac-iSH", "JacPad", "Pad5", "Pad7"):
         use_plugin_packet_loss = True
@@ -130,6 +131,14 @@ class T2(SB):  # type: ignore
 
                 # set -g @packet-loss-log_file "" # Use this to disable logging
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
+                """)
+
+            if "tmux-mouse-swipe" in used_plugins:
+                w("""#
+                # tmux-mouse-swipe - overrides
+                #
+                set -g @mouse_swipe_start "C-MouseDrag3Pane"
+                set -g @mouse_swipe_end   "C-MouseDragEnd3Pane"
                 """)
 
 
