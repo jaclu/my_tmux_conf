@@ -312,8 +312,8 @@ class BaseConfig(TmuxConfig):
         self.windows_handling()
         self.pane_handling()
         self.handle_buffers()
-        self.handle_hooks()
         self.mouse_handling()
+        self.handle_hooks()
         self.status_bar()
 
         self.__base_overrides()
@@ -804,6 +804,10 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.2):
             # before 1.2 there was no relative switch-client
+            if mtc_utils.IS_INNER_TMUX:
+                mod = "S-C-M"
+            else:
+                mod = "C-M"
 
             # fix a couple of too long lines
             sc_p = "switch-client -p"
@@ -811,10 +815,10 @@ class BaseConfig(TmuxConfig):
             s = "bind -N 'Select"
             w(f"""# session navigation
                 bind -N "Switch to last session"                _         switch-client -l
-                {s} previous session  - C-M-Up' -r  (         {sc_p}
-                {s} next session  - C-M-Down'   -r  )         {sc_n}
-                {s} previous session  - P+('    -n  C-M-Up    {sc_p}
-                {s} next session  - P+)'        -n  C-M-Down  {sc_n}""")
+                {s} previous session  - {mod}-Up' -r  (         {sc_p}
+                {s} next session  - {mod}-Down'   -r  )         {sc_n}
+                {s} previous session  - P+('    -n  {mod}-Up    {sc_p}
+                {s} next session  - P+)'        -n  {mod}-Down  {sc_n}""")
 
         self.auc_meta_ses_handling()  # used by iSH Console
 
@@ -934,17 +938,23 @@ class BaseConfig(TmuxConfig):
                 {pref} right'  M-L  split-window  -fh   {cp}""")
 
         pref = "bind -N 'Select"
+        if mtc_utils.IS_INNER_TMUX:
+            mod = "S-C-M"
+        else:
+            mod = "C-M"
         w(f"""
         # Window navigation
         {pref} previously current window - P+-'      -r  -  last-window
-        {pref} previous window  - P+p M-9 C-M-Left'  -r  p  previous-window
-        {pref} next window  - P+n M-0 C-M-Right'     -r  n  next-window
-        {pref} previous window  - P+9 M-9 C-M-Left'  -r  9  previous-window
-        {pref} next window      - P+0 M-0 C-M-Right' -r  0  next-window
+        {pref} previous window  - P+p M-9 {mod}-Left'  -r  p  previous-window
+        {pref} next window  - P+n M-0 {mod}-Right'     -r  n  next-window
+        {pref} previous window  - P+9 M-9 {mod}-Left'  -r  9  previous-window
+        {pref} next window      - P+0 M-0 {mod}-Right' -r  0  next-window
         """)
         if self.vers_ok(1.2):
-            w(f"""{pref} previous window  - P+p P+9 M-9'  -n  C-M-Left   previous-window
-            {pref} next window      - P+n P+0 M-0'  -n  C-M-Right  next-window""")
+            w(
+                f"""{pref} previous window  - P+p P+9 M-9'  -n  {mod}-Left   previous-window
+            {pref} next window      - P+n P+0 M-0'  -n  {mod}-Right  next-window"""
+            )
 
         #
         #  I tend to bind ^[9 & ^[0 to Alt-Left/Right in my terminal apps
@@ -954,21 +964,11 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.0):
             s = "bind -N 'Select"
-            self.pane_un_zoomed_noprefix_binds.extend(
-                #
-                # Let some window navigation pass through in full page panes
-                # the others operate on the outer tmux env
-                #
-                # This is kind of odd, if I use tmux-keybtest my iSH node generates
-                # M-9 & M-0, yet they don't trigger inside my tmux
-                #
-                [
-                    f"{s} previously current window - P+-'    -n  M--  last-window",
-                    f"{s} previous window - P+p P+9 C-M-Left' -n  M-9  previous-window",
-                    f"{s} next window - P+n P+0 C-M-Right'    -n  M-0  next-window",
-                ]
-            )
-            # w(f"{s} next window - P+n P+0 C-M-Right'    -n  M-0  next-window")
+            w(f"""
+            {s} previously current window - P+-'    -n  M--  last-window
+            {s} previous window - P+p P+9 C-M-Left' -n  M-9  previous-window
+            {s} next window - P+n P+0 C-M-Right'    -n  M-0  next-window
+            """)
 
         if self.vers_ok(2.1):
             w2 = "window"  # hackish strings to make sure
@@ -1157,6 +1157,7 @@ class BaseConfig(TmuxConfig):
                     f"{s} right - P+l'              -n  M-Right    {pane_right}",
                 ]
             )
+
             if not self.use_prefix_arrow_nav_keys:
                 w(f"""# No repeats here, since I so often use arrows directly
                     # after moving to another pane
