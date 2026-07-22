@@ -133,14 +133,6 @@ class T2(SB):  # type: ignore
                 set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
                 """)
 
-            if "tmux-mouse-swipe" in used_plugins:
-                w("""#
-                # tmux-mouse-swipe - overrides
-                #
-                set -g @mouse_swipe_start "C-MouseDrag3Pane"
-                set -g @mouse_swipe_end   "C-MouseDragEnd3Pane"
-                """)
-
 
 if __name__ == "__main__":
     T2().run()

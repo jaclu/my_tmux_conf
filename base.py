@@ -304,6 +304,12 @@ class BaseConfig(TmuxConfig):
         terminals.
         """
         self.tablet_keyb = special_consoles_config(self)
+        if mtc_utils.IS_INNER_TMUX:
+            self.write("""#
+            #  This is configured as an INNER tmux, remapping some key binds
+            #  to reduce colliding with the outer tmux over keys without prefix
+            #
+            """)
         self.remove_unwanted_default_bindings()
         self.check_all_muc_keys_are_defined()
         self.connecting_terminal()
@@ -661,7 +667,7 @@ class BaseConfig(TmuxConfig):
 
     def floats_and_popups(self, key_floating_pane="", key_lazygit="", key_yazi=""):
         """Define a key for each item, reasonable bindings would be something like
-        key_floating_pane="*"
+        key_floating_pane="*" - the default
         key_lazygit="g"
         key_yazi="y"
         """
@@ -684,7 +690,7 @@ class BaseConfig(TmuxConfig):
 
         if key_floating_pane:
             if self.vers_ok(min_vers_floating_pane):
-                # create a floating pane, only modifiably by mouse: new-pane
+                # create a floating pane, only reshapable by mouse: new-pane
                 w(
                     f"bind -N 'New Floating Pane'  {key_floating_pane}  new-pane -c "
                     "'#{pane_current_path}'"
@@ -1591,8 +1597,12 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
         #  Zooms pane by right double click
         #
         if self.vers_ok(2.4) and not self.is_tmate():
+            if mtc_utils.IS_INNER_TMUX:
+                mod = "C-"
+            else:
+                mod = ""
             w(
-                'bind -N "Toggle zoom for mouseovered pane" -n  DoubleClick3Pane'
+                f'bind -N "Toggle zoom for mouseovered pane" -n  {mod}DoubleClick3Pane'
                 ' resize-pane -Z -t= "{mouse}"'
             )
         w()  # spacer

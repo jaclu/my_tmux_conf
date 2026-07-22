@@ -343,11 +343,24 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         else:
             min_vers = 3.0
 
+        if mtc_utils.IS_INNER_TMUX:
+            #
+            # It seems tmux-mouse events can't use any combination of S-
+            # on many terminals, since they consume them.
+            # Such as Kitty, Ghostty
+            #
+            mod = "C-"
+        else:
+            mod = ""
         return [
             "jaclu/tmux-mouse-swipe",
             min_vers,
-            """
-            #  right-click & swipe switches Windows / Sessions
+            f"""
+            #
+            #  {mod}right-click & swipe switches Windows / Sessions
+            #
+            set -g @mouse_swipe_start "{mod}MouseDrag3Pane"
+            set -g @mouse_swipe_end   "{mod}MouseDragEnd3Pane"
             """,
         ]
 
@@ -369,10 +382,18 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         set -g @power_zoom_trigger  Z
         """
         if self.vers_ok(3.0):
+            if mtc_utils.IS_INNER_TMUX:
+                mod = "M-S"
+            else:
+                mod = "M"
+
             #  Using mouse in this plugin doesn't work on old versions
-            conf += """
-            # it seems mouse events can't use any combination of S-
-            # set -g @power_zoom_mouse_action "C-DoubleClick3Pane"
+            conf += f"""#
+            # It seems tmux-mouse events can't use any combination of S-
+            # on many terminals, since they consume them.
+            # Such as Kitty, Ghostty
+            #
+            set -g @power_zoom_mouse_action "{mod}-DoubleClick3Pane"
             """
         return ["jaclu/tmux-power-zoom", vers_min, conf]
 
