@@ -815,8 +815,10 @@ class BaseConfig(TmuxConfig):
             sc_n = "switch-client -n"
             s = "bind -N 'Select"
 
+            w()
             if mtc_utils.IS_INNER_TMUX:
                 mod = "S-C-M"
+                w("# IS_INNER_TMUX - S-C-M")
             else:
                 mod = "C-M"
 
@@ -945,12 +947,13 @@ class BaseConfig(TmuxConfig):
                 {pref} right'  M-L  split-window  -fh   {cp}""")
 
         pref = "bind -N 'Select"
+        w()
         if mtc_utils.IS_INNER_TMUX:
             mod = "S-C-M"
+            w("# IS_INNER_TMUX S-C-M")
         else:
             mod = "C-M"
-        w(f"""
-        # Window navigation
+        w(f"""# Window navigation
         {pref} previously current window - P+-'      -r  -  last-window
         {pref} previous window  - P+p M-9 {mod}-Left'  -r  p  previous-window
         {pref} next window  - P+n M-0 {mod}-Right'     -r  n  next-window
@@ -1600,6 +1603,7 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
         if self.vers_ok(2.4) and not self.is_tmate():
             if mtc_utils.IS_INNER_TMUX:
                 mod = "C-"
+                w("# IS_INNER_TMUX C-")
             else:
                 mod = ""
             w(
