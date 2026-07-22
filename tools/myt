@@ -728,7 +728,7 @@ if $kill_tmux; then
 fi
 
 # some versions of tmux have trouble on an inner tmux if tmux-256color is set
-[ "$TERM" = "tmux-256color" ] && export TERM=xterm-256color
+#[ "$TERM" = "tmux-256color" ] && export TERM=xterm-256color
 
 $quick_mode && [ -n "$profile" ] && error_msg "Can not be combined: -q and $profile"
 if [ "$t2_env" = 1 ]; then
