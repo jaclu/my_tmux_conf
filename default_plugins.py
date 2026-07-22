@@ -383,7 +383,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         """
         if self.vers_ok(3.0):
             if mtc_utils.IS_INNER_TMUX:
-                mod = "M-S"
+                mod = "C-M"
             else:
                 mod = "M"
 
