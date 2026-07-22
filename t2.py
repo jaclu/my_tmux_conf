@@ -42,23 +42,18 @@ class T2(SB):  # type: ignore
 
     pane_border_active_color = "colour70"  # pale green
 
-    use_plugin_battery = True  # Will disabled if not on MacOS
+    use_plugin_continuum = False
     use_plugin_extrakto = False
     use_plugin_jump = False
+    use_plugin_resurrect = False
     use_plugin_session_wizard = False
     use_plugin_suspend = False
-    use_plugin_resurrect = False
-    use_plugin_mouse_swipe = True
 
-    if mtc_utils.HOSTNAME in ("JacMac-iSH", "JacPad", "Pad5", "Pad7"):
-        use_plugin_packet_loss = True
-        use_plugin_battery = False
+    if mtc_utils.HOSTNAME in ("JacMac",):
+        use_plugin_battery = True
         use_plugin_claude = False
-    elif mtc_utils.HOSTNAME in ("JacMac",):
+    elif mtc_utils.HOSTNAME in ("JacMac-iSH"):
         use_plugin_claude = False
-        use_plugin_packet_loss = True
-        force_plugin_continuum = True
-        use_plugin_resurrect = True
     elif mtc_utils.HOSTNAME in ("JacDroid",):
         use_plugin_packet_loss = True
         # Can be used on Termux but NOT on iSH
