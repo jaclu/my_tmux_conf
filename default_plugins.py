@@ -86,11 +86,10 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
     # Replaced by corresponding use_plugin variables
     #
 
-    if mtc_utils.IS_INNER_TMUX:
-        #  Doesn't make much sense in an inner tmux
-        use_plugin_mouse_swipe = True
-        # use_plugin_power_zoom = False
-        # use_plugin_session_wizard = False
+    # if mtc_utils.IS_INNER_TMUX:
+    #  Doesn't make much sense in an inner tmux
+    # use_plugin_power_zoom = False
+    # use_plugin_session_wizard = False
 
     #
     #  Optional plugins, need to be enabled. Be aware since they are
@@ -178,9 +177,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
 
         if "tmux-spotify-info" in used_plugins:
             # pylint: disable=W0201
-            self.sb_right = (
-                "#[bg=colour28]#(tmux-spotify-info)#[default]" + self.sb_right
-            )
+            self.sb_right = "#[bg=colour28]#(tmux-spotify-info)#[default]" + self.sb_right
 
         if "tmux-keyboard-type" in used_plugins:
             # pylint: disable=W0201
