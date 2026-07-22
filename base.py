@@ -810,15 +810,16 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok(1.2):
             # before 1.2 there was no relative switch-client
+            # fix a couple of too long lines
+            sc_p = "switch-client -p"
+            sc_n = "switch-client -n"
+            s = "bind -N 'Select"
+
             if mtc_utils.IS_INNER_TMUX:
                 mod = "S-C-M"
             else:
                 mod = "C-M"
 
-            # fix a couple of too long lines
-            sc_p = "switch-client -p"
-            sc_n = "switch-client -n"
-            s = "bind -N 'Select"
             w(f"""# session navigation
                 bind -N "Switch to last session"                _         switch-client -l
                 {s} previous session  - {mod}-Up' -r  (         {sc_p}
@@ -972,8 +973,8 @@ class BaseConfig(TmuxConfig):
             s = "bind -N 'Select"
             w(f"""
             {s} previously current window - P+-'    -n  M--  last-window
-            {s} previous window - P+p P+9 C-M-Left' -n  M-9  previous-window
-            {s} next window - P+n P+0 C-M-Right'    -n  M-0  next-window
+            {s} previous window - P+p P+9 {mod}-Left' -n  M-9  previous-window
+            {s} next window - P+n P+0 {mod}-Right'    -n  M-0  next-window
             """)
 
         if self.vers_ok(2.1):
