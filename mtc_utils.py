@@ -135,7 +135,8 @@ IS_REMOTE = bool(os.getenv("SSH_CLIENT"))
 # bizarre recursive screen updates, and getting disconnected since if the outer
 # disconnects the previously inner normally also disappears.
 #
-IS_INNER_TMUX = bool(os.getenv("TMUX_OUTER"))
+term = os.getenv("TERM") or ""
+IS_INNER_TMUX = bool(os.getenv("TMUX_OUTER")) or term.find("tmux") > -1
 
 #
 #  If the session originated on a "primitive keyboard" console, such as
