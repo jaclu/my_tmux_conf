@@ -310,6 +310,7 @@ class BaseConfig(TmuxConfig):
             #  to reduce colliding with the outer tmux over keys without prefix
             #
             """)
+
         self.remove_unwanted_default_bindings()
         self.check_all_muc_keys_are_defined()
         self.connecting_terminal()
@@ -809,18 +810,17 @@ class BaseConfig(TmuxConfig):
         w(f'{s} "rename-session -- \\"%%\\""')
 
         if self.vers_ok(1.2):
-            # before 1.2 there was no relative switch-client
-            # fix a couple of too long lines
-            sc_p = "switch-client -p"
-            sc_n = "switch-client -n"
-            s = "bind -N 'Select"
-
             w()
             if mtc_utils.IS_INNER_TMUX:
                 mod = "S-C-M"
                 w("# IS_INNER_TMUX - S-C-M")
             else:
                 mod = "C-M"
+
+            # fix a couple of too long lines
+            sc_p = "switch-client -p"
+            sc_n = "switch-client -n"
+            s = "bind -N 'Select"
 
             w(f"""# session navigation
                 bind -N "Switch to last session"                _         switch-client -l
@@ -946,13 +946,13 @@ class BaseConfig(TmuxConfig):
                 {pref} up'     M-K  split-window  -fvb  {cp}
                 {pref} right'  M-L  split-window  -fh   {cp}""")
 
-        pref = "bind -N 'Select"
         w()
         if self.vers_ok(1.2) and mtc_utils.IS_INNER_TMUX:
             mod = "S-C-M"
             w("# IS_INNER_TMUX S-C-M")
         else:
             mod = "C-M"
+        pref = "bind -N 'Select"
         w(f"""# Window navigation
         {pref} previously current window - P+-'      -r  -  last-window
         {pref} previous window  - P+p M-9 {mod}-Left'  -r  p  previous-window
