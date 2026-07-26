@@ -948,7 +948,7 @@ class BaseConfig(TmuxConfig):
 
         pref = "bind -N 'Select"
         w()
-        if mtc_utils.IS_INNER_TMUX:
+        if self.vers_ok(1.2) and mtc_utils.IS_INNER_TMUX:
             mod = "S-C-M"
             w("# IS_INNER_TMUX S-C-M")
         else:
