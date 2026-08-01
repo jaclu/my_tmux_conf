@@ -470,7 +470,7 @@ start_tmux() {
 }
 
 kill_tmux() {
-    [ -z "$TMUX_BIN" ] && [ -z "$socket" ] && {
+    [ -z "$TMUX_BIN" ] || [ -z "$socket" ] && {
         # avoid recursion in the asdf_version_requested case...
         define_tmux_env
     }
