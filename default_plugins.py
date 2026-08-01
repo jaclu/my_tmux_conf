@@ -338,20 +338,19 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
 
     def plugin_mouse_swipe(self) -> list:  # 3.0
         """right-click & swipe switches Windows / Sessions"""
+        mod = ""
         if not self.use_plugin_mouse_swipe or self.is_limited_host:
             min_vers = -1.0  # Don't use
         else:
             min_vers = 3.0
-
-        if mtc_utils.IS_INNER_TMUX:
-            #
-            # It seems tmux-mouse events can't use any combination of S-
-            # on many terminals, since they consume them.
-            # Such as Kitty, Ghostty
-            #
-            mod = "C-"
-        else:
-            mod = ""
+            if mtc_utils.IS_INNER_TMUX:
+                #
+                # It seems tmux-mouse events can't use any combination of S-
+                # on many terminals, since they consume them.
+                # Such as Kitty, Ghostty
+                #
+                mod = "C-"
+                min_vers = 3.1  # MouseDragEnd didn't support modifiers prior to this
         return [
             "jaclu/tmux-mouse-swipe",
             min_vers,
