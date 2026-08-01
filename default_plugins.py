@@ -356,7 +356,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             min_vers,
             f"""
             #
-            #  {mod}right-click & swipe switches Windows / Sessions
+            #  {mod}right-click & swipe switches Window / Session
             #
             set -g @mouse_swipe_start "{mod}MouseDrag3Pane"
             set -g @mouse_swipe_end   "{mod}MouseDragEnd3Pane"
