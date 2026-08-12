@@ -17,6 +17,7 @@ import logging
 import os
 import subprocess  # nosec B404 - internal command generation, no user input
 import sys
+import tempfile
 
 APP_VERSION = "0.4.4   2024-04-10"
 
@@ -359,7 +360,8 @@ def main():  # pylint: disable=too-many-branches
     """main function"""
 
     uid = os.getuid()  # current user's UID
-    f_log = f"/tmp/rt-{uid}.log"  # nosec B108 - namespaced by UID, logging only
+    tmp_dir = tempfile.gettempdir()
+    f_log = os.path.join(tmp_dir, f"rt-{uid}.log")  # nosec B108 - namespaced by UID, logging only
 
     logging.basicConfig(
         filename=f_log,
