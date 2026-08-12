@@ -72,6 +72,8 @@ class T2(SB):  # type: ignore
             """
         set -g @menus_trigger Space
 
+        # set -g @menus_without_prefix Yes
+
         # set -g @menus_display_commands "No"
         # set -g @menus_display_cmds_cols 95
 
