@@ -2040,6 +2040,10 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
             exit 20
         fi
 
+        $TMUX_BIN set -g status-right "$($TMUX_BIN show-option -gv status-right)" || {{
+            echo "Failed to re-define status-right"
+            exit 19
+        }}
         timer_end "Completed tpm"
         {self.es.call_script(self._fnc_tpm_indicator)} clear
         exit 0
