@@ -1842,7 +1842,7 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
             '$TMUX_BIN display-message \\"Generating plugin list\\" \\; '
             # 1st load venv if used
             f"[ -d {repo_dir}/.venv ] && . {repo_dir}/.venv/bin/activate \\; "
-            f"{__main__.__file__} -t {self.tmux_bin} -p2 '{self.conf_file}'"
+            f"{__main__.__file__} -t $TMUX_BIN -p2 '{self.conf_file}'"
             '"'
         )
 
