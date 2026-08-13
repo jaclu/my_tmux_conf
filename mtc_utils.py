@@ -45,22 +45,60 @@ def run_shell(_cmd: str) -> str:
 
 
 def get_currency() -> str:
-    """Since these resources are rate limited, use multiple, oredering by random"""
+    """Get local currency, cached permanently since it's tied to keyboard layout.
+
+    Performs a one-time network lookup on first run, then caches the result
+    indefinitely. Since currency preference is tied to keyboard layout
+    (not location), it doesn't change over time.
+
+    To refresh: rm ~/.cache/tmux_conf_currency
+    """
+    cache_file = Path.home() / ".cache" / "tmux_conf_currency"
+
+    # Try cache first (persistent, no TTL)
+    if cache_file.exists():
+        try:
+            cached = cache_file.read_text().strip()
+            if cached:
+                return cached
+        except (OSError, IOError):
+            pass  # Ignore cache read errors, fall through to fetch
+
+    # Fetch from API on first run
+    currency = _get_currency_with_fallback()
+
+    # Cache the result permanently
+    if currency:
+        try:
+            cache_file.parent.mkdir(parents=True, exist_ok=True)
+            cache_file.write_text(currency)
+        except (OSError, IOError):
+            pass  # Ignore cache write errors
+
+    return currency
+
+
+def _get_currency_with_fallback() -> str:
+    """Fetch currency from APIs with fallback, order randomized."""
     currency_functions = [
         _get_currency_from_ipwhois,
         # _get_currency_from_ipapi, # quickly gets rate limited
     ]
 
-    # Shuffle the list to call the functions in random order
+    # Shuffle to distribute load across endpoints
     random.shuffle(currency_functions)
 
-    # Call each function in random order until a non-empty string is returned
+    # Try each function until one succeeds
     for func in currency_functions:
-        # print(f"using: {func}")
-        result = func()
-        if result:
-            return result
-    return ""  # Return empty string if no function returns a non-empty string
+        try:
+            result = func()
+            if result:
+                return result
+        except Exception:
+            # Network error, try next function
+            continue
+
+    return ""  # All attempts failed or no currency detected
 
 
 #
@@ -68,14 +106,14 @@ def get_currency() -> str:
 #
 def _currency_request(url, tag="currency") -> str:
     """Returns currency for device location, or "" if not detected"""
-    result = run_shell(f"curl -s {url}")
-    # Parse the JSON output
-    if result.strip():  # Ensure the command ran successfully
-        data = json.loads(result)
-        currency = data.get(tag, "Unknown")
-    else:
-        currency = ""
-    return currency
+    try:
+        result = run_shell(f"curl -s --max-time 2 {url}")
+        if result.strip():
+            data = json.loads(result)
+            return data.get(tag, "")
+    except (json.JSONDecodeError, OSError, Exception):
+        pass  # Network error or parsing error
+    return ""
 
 
 def _get_currency_from_ipwhois():
