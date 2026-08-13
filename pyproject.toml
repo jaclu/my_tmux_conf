@@ -2,7 +2,7 @@
 requires-python = ">=3.11"
 
 [tool.black]
-target-version = ["py314"]
+target-version = ["py311"]
 include = '\.pyi?$'
 exclude = '''
 /(
@@ -18,7 +18,7 @@ combine_as_imports = true
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.11"                   # Matches requires-python = ">=3.11"
 exclude = [".venv", "stuff/dead_code.py"]
 # strict = true
 # ignore_missing_imports = true
@@ -45,20 +45,13 @@ exclude = [".venv", "**/__pycache__"]
 reportMissingImports = "error"
 reportMissingTypeStubs = false
 
-#[tool.ruff]
-# target-version inferred automatically
-#line-length = 92
+# [tool.ruff]
+# target-version = "py311"
 
 [tool.ruff.lint]
 
 # more opinionated and modernization-oriented
-select = [
-    "E",
-    "F",
-    "W",
-    "I",
-    "UP",
-]
+select = ["E", "F", "W", "I", "UP"]
 
 # more conservative selections
 # select = [
@@ -71,14 +64,9 @@ select = [
 #     "UP",
 # ]
 
-fixable = [
-    "I",
-    "UP",
-]
+fixable = ["I", "UP"]
 
-ignore = [
-    "E501",
-]
+ignore = ["E501"]
 
 [tool.ruff.format]
 quote-style = "double"

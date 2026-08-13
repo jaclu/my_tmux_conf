@@ -61,7 +61,7 @@ def get_currency() -> str:
             cached = cache_file.read_text().strip()
             if cached:
                 return cached
-        except (OSError, IOError):
+        except OSError:
             pass  # Ignore cache read errors, fall through to fetch
 
     # Fetch from API on first run
@@ -72,7 +72,7 @@ def get_currency() -> str:
         try:
             cache_file.parent.mkdir(parents=True, exist_ok=True)
             cache_file.write_text(currency)
-        except (OSError, IOError):
+        except OSError:
             pass  # Ignore cache write errors
 
     return currency
@@ -94,8 +94,8 @@ def _get_currency_with_fallback() -> str:
             result = func()
             if result:
                 return result
-        except Exception:
-            # Network error, try next function
+        except (json.JSONDecodeError, OSError):
+            # Network error or API parsing failed, try next function
             continue
 
     return ""  # All attempts failed or no currency detected
