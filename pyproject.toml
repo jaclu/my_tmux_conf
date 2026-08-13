@@ -51,7 +51,7 @@ reportMissingTypeStubs = false
 [tool.ruff.lint]
 
 # more opinionated and modernization-oriented
-select = ["E", "F", "W", "I", "UP"]
+select = ["E", "F", "W", "I", "UP", "BLE"]
 
 # more conservative selections
 # select = [

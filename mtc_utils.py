@@ -111,7 +111,7 @@ def _currency_request(url, tag="currency") -> str:
         if result.strip():
             data = json.loads(result)
             return data.get(tag, "")
-    except (json.JSONDecodeError, OSError, Exception):
+    except (json.JSONDecodeError, OSError):
         pass  # Network error or parsing error
     return ""
 
