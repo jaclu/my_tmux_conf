@@ -17,9 +17,8 @@ import sys
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root_dir)
 
-# flake8: noqa: E402
 # pylint: disable=wrong-import-position, import-error
-from default_plugins import DefaultPlugins  # noqa: E402
+from default_plugins import DefaultPlugins  # noqa: E402 # can't be at top
 
 
 # pylint: disable=R0903

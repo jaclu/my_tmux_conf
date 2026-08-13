@@ -18,10 +18,9 @@ import sys
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root_dir)
 
-# flake8: noqa: E402
 # pylint: disable=wrong-import-position,import-error
 import mtc_utils  # noqa: E402
-from default_plugins import DefaultPlugins  # noqa: E402
+from default_plugins import DefaultPlugins  # noqa: E402 # can't be at top
 
 THEME_TEXT = "colour186"  # green with a yellowish tint
 MUTED_TEXT = "colour242"  # dark grey

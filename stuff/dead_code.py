@@ -18,7 +18,7 @@ root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root_dir)
 
 # pylint: disable=wrong-import-position,import-error
-from base import BaseConfig  # noqa: E402
+from base import BaseConfig  # noqa: E402 # can't be at top
 
 
 class NotUsedtPlugins(BaseConfig):

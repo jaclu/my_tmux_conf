@@ -18,9 +18,8 @@ root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root_dir)
 
 
-# flake8: noqa: E402
 # pylint: disable=E0401, C0413
-from sb.sb_cloud import SB  # noqa: E402
+from sb.sb_cloud import SB  # noqa: E402 # can't be at top
 
 
 # pylint: disable=R0903
