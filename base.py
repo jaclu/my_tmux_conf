@@ -1214,22 +1214,13 @@ class BaseConfig(TmuxConfig):
         """)
         if not self.vers_ok(1.0):
             w("bind  C-j     split-window -p 50")
-            w("bind  M-Down  split-window -p 50")
-            return
-
-        if self.vers_ok(1.0):
+        else:
             w(f"{pref} down - P+M-Down'    C-j  split-window  -v   {cur_path}")
             w(f"{pref} right - P+M-Right'  C-l  split-window  -h   {cur_path}")
         if self.vers_ok(2.0):
             w(f"{pref} left - P+M-Left'    C-h  split-window  -hb  {cur_path}")
             w(f"{pref} pane up - P+M-Up'   C-k  split-window  -vb  {cur_path}")
         w()  # spacer
-        if self.vers_ok(1.0):
-            w(f"{pref} down - P+C-j'   M-Down   split-window  -v   {cur_path}")
-            w(f"{pref} right - P+C-l'  M-Right  split-window  -h   {cur_path}")
-        if self.vers_ok(2.0):
-            w(f"{pref} left - P+C-h'   M-Left   split-window  -hb  {cur_path}")
-            w(f"{pref} up - P+C-k'     M-Up     split-window  -vb  {cur_path}")
 
     def pane_resizing(self):
         w = self.write
