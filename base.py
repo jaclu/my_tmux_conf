@@ -2040,10 +2040,17 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
             exit 20
         fi
 
-        $TMUX_BIN set -g status-right "$($TMUX_BIN show-option -gv status-right)" || {{
-            echo "Failed to re-define status-right"
+        # Attempt to self correct status line errors in tmux on slow systems where
+        # it might have been displayed before proper interpollation completed
+        $TMUX_BIN set -g status-left "$($TMUX_BIN show-option -gv status-left)" || {{
+            echo "Failed to re-define status-left"
             exit 19
         }}
+        $TMUX_BIN set -g status-right "$($TMUX_BIN show-option -gv status-right)" || {{
+            echo "Failed to re-define status-right"
+            exit 18
+        }}
+
         timer_end "Completed tpm"
         {self.es.call_script(self._fnc_tpm_indicator)} clear
         exit 0
