@@ -52,7 +52,6 @@ import sys
 
 # Ruff import ordering is authoritative here; no blank line after __main__
 import __main__
-
 import mtc_utils
 from tablet_kbd import special_consoles_config
 from tmux_conf import TmuxConfig
