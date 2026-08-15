@@ -52,6 +52,8 @@ class T2(SB):  # type: ignore
     if mtc_utils.HOSTNAME in ("JacMac",):
         use_plugin_battery = True
         use_plugin_claude = False
+    elif mtc_utils.HOSTNAME in ("JacPad"):
+        use_plugin_packet_loss = True
     elif mtc_utils.HOSTNAME in ("JacMac-iSH"):
         use_plugin_claude = False
     elif mtc_utils.HOSTNAME in ("JacDroid",):
