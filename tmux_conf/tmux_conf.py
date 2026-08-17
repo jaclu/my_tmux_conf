@@ -529,7 +529,7 @@ class TmuxConfig:
         #  This config was created using
         #      https://github.com/jaclu/tmux-conf
         #
-        #      Creation time: {datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S")}
+        #      Creation time: {datetime.datetime.now().strftime("%F %T")}
         #          tmux-conf: {self.lib_version}
         #         Created on: {run_shell("hostname").strip()}""")
         if self.vers.get() != self.vers.get_actual():
