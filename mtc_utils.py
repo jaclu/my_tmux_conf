@@ -38,9 +38,7 @@ from pathlib import Path
 def run_shell(_cmd: str) -> str:
     """Run a command in a shell"""
     # pylint: disable=subprocess-run-check
-    result = subprocess.run(
-        _cmd, capture_output=True, text=True, shell=True
-    )  # nosec: B602
+    result = subprocess.run(_cmd, capture_output=True, text=True, shell=True)  # nosec: B602
     return result.stdout.strip()
 
 
