@@ -58,11 +58,13 @@ class ScriptEmitter:
         if not (self._builder.cfg.use_embedded and self._embedded_text):
             return []
 
-        out = ["""
+        out = [
+            """
         #======================================================
         #
         # EMBEDDED-SCRIPTS-STARTING-POINT
-        #"""]
+        #"""
+        ]
         out.extend(self._embedded_text)
         out.append('# "$@" #  This triggers the embedded script')
         return out
