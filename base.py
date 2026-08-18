@@ -1405,7 +1405,9 @@ class BaseConfig(TmuxConfig):
                         "sent it to the terminal"
                     )
                 }
-                set-hook -g pane-set-clipboard{idx} "display-message {delay} '{msg}'" """
+                set-hook -g pane-set-clipboard{idx} "display-message {delay} '{
+                    msg
+                }'" """
             )
 
         if self.vers_ok(v_min_smart_hooks) and not self.is_tmate():
@@ -1933,7 +1935,8 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
     def mkscript_toggle_mouse(self):
         """Toggles mouse handling on/off"""
         #  The {} encapsulating the script needs to be doubled to escape them
-        toggle_mouse_sh = [f"""
+        toggle_mouse_sh = [
+            f"""
 {self._fnc_toggle_mouse}() {{
     #  This is so much easier to do in a proper script...
     old_state=$($TMUX_BIN show -gv mouse)
@@ -1944,7 +1947,8 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
     fi
     $TMUX_BIN {self.opt_ses} mouse $new_state
     $TMUX_BIN display-message "mouse: $new_state"
-}}"""]
+}}"""
+        ]
         self.es.create(self._fnc_toggle_mouse, toggle_mouse_sh)
 
     def mkscript_shlvl_offset(self):
@@ -2111,7 +2115,8 @@ timer_end() {{
         # self.sb_purge_tpm_running = f"$TMUX_BIN {self.opt_ses} -q status-right "
         # \\"$($TMUX_BIN display-message -p '#{{status-right}}' | sed 's/{purge_seq}//')\\"
 
-        clear_tpm_init_sh = [f"""
+        clear_tpm_init_sh = [
+            f"""
 {self._fnc_tpm_indicator}() {{
     #
     # Function that turns on/off self.tpm_initializing addition to status-right
@@ -2149,7 +2154,8 @@ timer_end() {{
         $TMUX_BIN setenv -gu {self.tpm_working_incicator}
     fi
 }}
-"""]
+"""
+        ]
         self.es.create(self._fnc_tpm_indicator, clear_tpm_init_sh)
 
     def incompatible_tmux_conf(
