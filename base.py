@@ -1399,7 +1399,8 @@ class BaseConfig(TmuxConfig):
                 delay = ""
             w(
                 f"""
-                # Displays that tmux picked up clipboard and (hopefully) sent it to the terminal
+                # Displays that tmux picked up clipboard and (hopefully)
+                # sent it to the terminal
                 set-hook -g pane-set-clipboard{idx} "display-message {delay} '{msg}'" """
             )
 
