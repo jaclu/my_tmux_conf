@@ -121,6 +121,17 @@ class T2(SB):  # type: ignore
             if "tmux-claude-usage" in used_plugins:
                 w("set -g @claude_usage_color_low colour29")
 
+            if "tmux-menus" in used_plugins:
+                w("""#
+                # tmux-menus - overrides
+                #
+                #set -g @menus_format_title ""
+                set -g @menus_config_file "$HOME/t2/tmux/tmux.conf"
+                set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
+                set -g @menus_show_key_hints no
+                set -g @menus_simple_style_border default
+
+                """)
             if "tmux-packet-loss" in used_plugins:
                 w("""#
                 # tmux-packet-loss - overrides
