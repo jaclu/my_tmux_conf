@@ -22,6 +22,7 @@ class VersionCheck:
     def __init__(self, vers_detected: str, vers_requested: str = ""):
         # Remove subversion prefix/suffix
 
+        self._vers_detected = vers_detected
         v_next = re.match(r"^next-(\d+)\.(\d+)$", vers_detected)
         if v_next:
             # if next- prefix found, label the version as one subversion lower
@@ -62,6 +63,10 @@ class VersionCheck:
     def get(self) -> str:
         """The version used for generating the config"""
         return self._vers
+
+    def get_reported(self) -> str:
+        """The version used for generating the config"""
+        return self._vers_detected
 
     def get_actual(self) -> str:
         """The version of the tmux bin"""

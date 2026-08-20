@@ -15,13 +15,14 @@
         },
 
         {
-            "name": "Python Debugger: Build tmux.conf",
+            "name": "Build tmux.conf",
             "type": "debugpy",
             "request": "launch",
             "program": "t2.py",
             "console": "integratedTerminal",
             "env": "T2_ENV=1",
-            "args": "-r '/home/jaclu/t2/tmux/tmux.conf' -t /home/jaclu/.asdf/installs/tmux/3.6b/bin/tmux"
+            // "args": "-r '/home/jaclu/t2/tmux/tmux.conf' -t /home/jaclu/.asdf/installs/tmux/3.6b/bin/tmux "
+            "args": "-t /Users/jaclu/git_repos/others/tmux/tmux"
         },
 
         {

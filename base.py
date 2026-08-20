@@ -1714,7 +1714,7 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
                 if self.is_tmate():
                     vers = "tmate"
                 else:
-                    vers = f"{self.vers.get()[:6]}"
+                    vers = f"{self.vers.get_reported()}"
                 if env_tag:
                     env_tag = f"{env_tag}{vers} "
                 else:
