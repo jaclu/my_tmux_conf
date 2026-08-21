@@ -146,7 +146,7 @@ class TmuxConfig:
                     + " than the one used to generate this.\n"
                     + "Since the config file will point to the tmux used, "
                     + "this might cause problems\n"
-                    + f"\ttmux vers is:    {self.vers.get_actual()}\n"
+                    + f"\ttmux vers is:    {self.vers.get_reported()}\n"
                     + f"\trequested vers:  {self.vers.get()}"
                 )
                 print()
@@ -532,9 +532,12 @@ class TmuxConfig:
         #      Creation time: {datetime.datetime.now().strftime("%F %T")}
         #          tmux-conf: {self.lib_version}
         #         Created on: {run_shell("hostname").strip()}""")
-        if self.vers.get() != self.vers.get_actual():
-            w(f"#     actual version: ({self.vers.get_actual()})")
-        w(f"#   For tmux version: {self.vers.get()}")
+        if self.is_tmate():
+            w(f"#   For tmate version: {self.vers.get_reported()}")
+        else:
+            w(f"#   For tmux version: {self.vers.get()}")
+            if self.vers.get() != self.vers.get_actual():
+                w(f"#     actual version: ({self.vers.get_reported()})")
         w(f"""#
         #
         #  Three env variables defining this instance of tmux:
