@@ -1404,7 +1404,7 @@ class BaseConfig(TmuxConfig):
                 set-hook -g pane-set-clipboard{idx} "display-message {delay} '{msg}'" """
             )
 
-        if self.vers_ok(v_min_smart_hooks) and not self.is_tmate():
+        if self.vers_ok(v_min_smart_hooks):
             idx = self.get_next_hook_array_idx()
 
             #
