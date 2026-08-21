@@ -62,53 +62,6 @@ class T2(SB):  # type: ignore
         force_plugin_continuum = True
         use_plugin_resurrect = True
 
-    def plugin_menus(self) -> list:  # 1.5
-        #  Tested down to vers 1.5
-        if not self.use_plugin_menus:
-            # it works on iSH, but soo slow it is of no practical usage
-            min_vers = -1.0  # Don't use
-        else:
-            min_vers = 1.5
-
-        conf = (
-            """
-        set -g @menus_trigger Space
-
-        # set -g @menus_without_prefix Yes
-
-        # set -g @menus_display_commands "No"
-        # set -g @menus_display_cmds_cols 95
-
-        set -g @menus_simple_style_border default
-        set -g @menus_simple_style_selected default
-        set -g @menus_simple_style default
-        set -g @menus_nav_next "#[fg=colour220]-->"
-        set -g @menus_nav_prev "#[fg=colour71]<--"
-        set -g @menus_nav_home "#[fg=colour84]<=="
-        set -g @menus_border_type 'rounded'
-
-        set -g @menus_log_file '~/tmp/tmux-menus-t2.log'
-        # set -g @menus_use_cache  No
-        set -g @menus_config_file "$TMUX_CONF"
-
-        set -g @menus_use_hint_overlays no
-        set -g @menus_show_key_hints no
-
-        # set -g @menus_location_x W
-        # set -g @menus_location_y C
-
-        # set -g @menus_main_menu '~/tmp/alt_menu/alt_main.sh'
-        # set -g @menus_main_menu "~/my_tmux_menus/main.sh"
-        # set -g @menus_main_menu '~/git_repos/mine/tmux-menus/custom_items/_index.sh'
-        """
-            f"""
-        # Hint needed for menus to find the right plugin path
-        set-environment -g TMUX_PLUGIN_MANAGER_PATH  "{self.plugins.get_env()[0]}"
-        """
-        )
-
-        return ["jaclu/tmux-menus", min_vers, conf]
-
     def local_overrides(self) -> None:
         super().local_overrides()
 
@@ -125,13 +78,29 @@ class T2(SB):  # type: ignore
                 w("""#
                 # tmux-menus - overrides
                 #
-                #set -g @menus_format_title ""
-                set -g @menus_config_file "$HOME/t2/tmux/tmux.conf"
-                set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log"
-                set -g @menus_show_key_hints no
-                set -g @menus_simple_style_border default
+                #set -g @menus_border_type FORCE-UNSET
+                # set -g @menus_config_file FORCE-UNSET ##
+                # set -g @menus_display_cmds_cols FORCE-UNSET ##
+                # set -g @menus_display_commands FORCE-UNSET ##
+                set -g @menus_format_title FORCE-UNSET
+                # set -g @menus_location_x FORCE-UNSET ##
+                # set -g @menus_location_y FORCE-UNSET ##
+                set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log" ##
 
-                """)
+                # set -g @menus_main_menu "~/tmp/alt_menu/alt_main.sh" ##
+                # set -g @menus_main_menu "~/my_tmux_menus/main.sh" ##
+                # set -g @menus_main_menu "~/git_repos/mine/tmux-menus/custom_items/" ##
+
+                #set -g @menus_nav_home FORCE-UNSET
+                #set -g @menus_nav_next FORCE-UNSET
+                #set -g @menus_nav_prev FORCE-UNSET
+                #set -g @menus_use_hint_overlays FORCE-UNSET
+                # set -g @menus_show_key_hints FORCE-UNSET ##
+                set -g @menus_simple_style_border FORCE-UNSET
+                # set -g @menus_trigger FORCE-UNSET
+                # set -g @menus_use_cache FORCE-UNSET
+                # set -g @menus_without_prefix FORCE-UNSET
+                 """)
             if "tmux-packet-loss" in used_plugins:
                 w("""#
                 # tmux-packet-loss - overrides
