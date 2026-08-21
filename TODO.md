@@ -52,6 +52,16 @@ need to reconfigure vscode so that they work again
 - flake8
 - pylint
 
+## version parsing
+
+Should be:
+get_reported() - as stated by -V
+get() - normalized to string, modified as
+  `next-` one subvers lower since all features might not be in
+  '-rc' simply stripped
+get_actual() - should probably be replaced by get_reported
+  and self._vers_actial can then be gone
+
 ## invesigate
 
 set -g @plugin 'YlanAllouche/tmux-task-monitor'
