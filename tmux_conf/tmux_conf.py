@@ -535,11 +535,14 @@ class TmuxConfig:
         if self.is_tmate():
             w(f"#   For tmate version: {self.vers.get_reported()}")
         else:
-            w(f"#   For tmux version: {self.vers.get()}")
-            if self.vers.get() != self.vers.get_actual():
-                w(f"#     actual version: ({self.vers.get_reported()})")
+            if self.vers.get() == self.vers.get_reported():
+                s_vers = f"{self.vers.get()}"
+            else:
+                s_vers = f"{self.vers.get_reported()} - treaded as: {self.vers.get()} for compatibility checks"
+            w(f"""#   For tmux version: {s_vers}
+            #
+            """)
         w(f"""#
-        #
         #  Three env variables defining this instance of tmux:
         #
 
