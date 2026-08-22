@@ -542,11 +542,14 @@ class TmuxConfig:
             w(f"""#   For tmux version: {s_vers}
             #
             """)
+        w("""
+        #======================================================
+        #
+        #   Three env variables defining this instance of tmux
+        #
+        #======================================================
+        """)
         w(f"""#
-        #  Three env variables defining this instance of tmux:
-        #
-
-        #
         #  When you might use various tmux instances or tmux is not in
         #  path, the safe bet is to always use $TMUX_BIN in a shell, not tmux!
         #
