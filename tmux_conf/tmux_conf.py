@@ -540,9 +540,9 @@ class TmuxConfig:
             else:
                 s_vers = f"{self.vers.get_reported()} - treaded as: {self.vers.get()} for compatibility checks"
             w(f"""#   For tmux version: {s_vers}
-            #
-            """)
+            #""")
         w("""
+
         #======================================================
         #
         #   Three env variables defining this instance of tmux
