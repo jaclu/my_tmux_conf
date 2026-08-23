@@ -538,7 +538,11 @@ class TmuxConfig:
             if self.vers.get() == self.vers.get_reported():
                 s_vers = f"{self.vers.get()}"
             else:
-                s_vers = f"{self.vers.get_reported()} - treaded as: {self.vers.get()} for compatibility checks"
+                s_vers = (
+                    f"{self.vers.get_reported()} "
+                    f"- treaded as: {self.vers.get()} "
+                    "for compatibility checks"
+                )
             w(f"""#   For tmux version: {s_vers}
             #""")
         w("""
