@@ -1,5 +1,9 @@
 # TODO
 
+## maintain env variables inside tmux
+
+set-option -ga update-environment "GARDIBAL"
+
 ## inner tmux navigation
 
 outer tmux pane zoomed
