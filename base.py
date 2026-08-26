@@ -525,6 +525,13 @@ class BaseConfig(TmuxConfig):
                 )
             w()  # spacer
 
+        w(f"""
+        # Maintain some env variables into tmux
+        {self.opt_server} -a update-environment LC_CONSOLE
+        {self.opt_server} -a update-environment LC_KEYBOARD
+        {self.opt_server} -a update-environment LC_ORIGIN
+        """)
+
         w(f"""{self.opt_server} repeat-time 750
         {self.opt_server} history-limit 10000
         {self.opt_server} status-keys emacs""")
@@ -1047,7 +1054,7 @@ class BaseConfig(TmuxConfig):
         #  sample: export LANG=en_US.UTF-8
         #  You should also be able to solve it by starting tmux with param -u
         #  Finally here is an in tmux hack to solve the pane border issue
-        #  set -ga terminal-overrides ',*:enacs@:smacs@:rmacs@:acsc@'
+        #  set-options -ga terminal-overrides ',*:enacs@:smacs@:rmacs@:acsc@'
         #
 
         if self.vers_ok(1.9):
