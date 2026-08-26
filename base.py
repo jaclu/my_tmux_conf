@@ -525,12 +525,13 @@ class BaseConfig(TmuxConfig):
                 )
             w()  # spacer
 
-        w(f"""
-        # Maintain some env variables into tmux
-        {self.opt_server} -a update-environment LC_CONSOLE
-        {self.opt_server} -a update-environment LC_KEYBOARD
-        {self.opt_server} -a update-environment LC_ORIGIN
-        """)
+        if self.vers_ok(1.0):
+            w(f"""
+            # Maintain some env variables into tmux
+            {self.opt_server} -a update-environment LC_CONSOLE
+            {self.opt_server} -a update-environment LC_KEYBOARD
+            {self.opt_server} -a update-environment LC_ORIGIN
+            """)
 
         w(f"""{self.opt_server} repeat-time 750
         {self.opt_server} history-limit 10000
