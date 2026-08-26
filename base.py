@@ -1804,11 +1804,13 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
                 s += ' -I "?"'
             w(f'{s} -p "Name of new session: " "new-session -s \\"%%\\""')
 
-        if self.vers_ok(1.2) and not self.vers_ok(3.7):
-            # Causes odd yazi shell error in 3.7
-            s = f"bind -N '{self.muc_non_default_value(mtc_utils.K_M_UNDERSCORE)}"
-            s += "Switch to last session  - P+_'     -n  "
-            s += f"{self.muc_keys[mtc_utils.K_M_UNDERSCORE]}       switch-client -l"
+        if self.vers_ok(1.2):
+            if self.vers_ok(3.7) and shutil.which("yazi"):
+                s = "# binding M-_ to switch-client -l in 3.7 causes odd yazi shell error"
+            else:
+                s = f"bind -N '{self.muc_non_default_value(mtc_utils.K_M_UNDERSCORE)}"
+                s += "Switch to last session  - P+_'     -n  "
+                s += f"{self.muc_keys[mtc_utils.K_M_UNDERSCORE]}       switch-client -l"
             w(s)
 
     def auc_display_plugins_used(self):  # used by iSH Console
