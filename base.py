@@ -656,7 +656,7 @@ class BaseConfig(TmuxConfig):
             f'"{self.conf_file}" {show_action}'
         )
 
-        self.floats_and_popups(key_floating_pane="*", key_lazygit="g", key_yazi="y")
+        self.floats_and_popups(key_floating_pane="*", key_lazygit="G", key_yazi="Y")
         self.auc_display_plugins_used()
         self.auc_kill_tmux_server()
         if self.use_prefix_arrow_nav_keys:
