@@ -27,7 +27,9 @@ class VersionCheck:
         if v_next:
             # if next- prefix found, label the version as one subversion lower
             major, minor = map(int, v_next.groups())
-            vers_filtered = f"{major}.{minor - 1}"
+            # make it the fictive last sub_vers of the prior by suffixing it
+            # with 'z'
+            vers_filtered = f"{major}.{minor - 1}z"
         else:
             # skip suffixes rc-  &  -git
             vers_filtered = vers_detected.split("rc-")[0].split("-git")[0]
