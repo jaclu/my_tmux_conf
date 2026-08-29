@@ -331,10 +331,10 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             # set -g @menus_without_prefix No
             """
         if mtc_utils.IS_ISH:
-            conf += """
-            set -g @menus_floating_pane_incr_horizontal 10
+            conf += """set -g @menus_floating_pane_incr_horizontal 10
             set -g @menus_floating_pane_incr_vertical 5
             """
+            print("Added iSH settings for @menus_floating_pane_incr_")
         else:
             conf += """set -g @menus_floating_pane_incr_horizontal 5
             set -g @menus_floating_pane_incr_vertical 2
