@@ -525,15 +525,18 @@ class BaseConfig(TmuxConfig):
                 )
             w()  # spacer
 
+        if self.vers_ok("3.7z"):
+            w(f"{self.opt_server} theme terminal")
+
         if self.vers_ok(1.0):
             w(f"""
             # Maintain some env variables into tmux
             {self.opt_server} -a update-environment LC_CONSOLE
             {self.opt_server} -a update-environment LC_KEYBOARD
-            {self.opt_server} -a update-environment LC_ORIGIN
-            """)
+            {self.opt_server} -a update-environment LC_ORIGIN""")
 
-        w(f"""{self.opt_server} repeat-time 750
+        w(f"""
+        {self.opt_server} repeat-time 750
         {self.opt_server} history-limit 10000
         {self.opt_server} status-keys emacs""")
 
@@ -870,8 +873,10 @@ class BaseConfig(TmuxConfig):
             if self.vers_ok(2.6):
                 w(f"{self.opt_win} monitor-bell off")
 
-        # if self.vers_ok(3.6):
-        #    w(f"{self.opt_win} pane-scrollbars modal")
+        if self.vers_ok("3.7z"):
+            w(f"{self.opt_win} pane-scrollbars auto-hide")
+        # elif self.vers_ok(3.6):
+        #     w(f"{self.opt_win} pane-scrollbars modal")
 
         w()  # spacer
 
