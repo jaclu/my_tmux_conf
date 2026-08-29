@@ -106,9 +106,6 @@ class T2(SB):  # type: ignore
                 set -g @menus_floating_pane_incr_horizontal FORCE-UNSET
                 set -g @menus_floating_pane_incr_vertical FORCE-UNSET
                     """)
-                    print(
-                        "><> Added none-iSH t2 settings for @menus_floating_pane_incr_"
-                    )
 
             if "tmux-packet-loss" in used_plugins:
                 w("""#

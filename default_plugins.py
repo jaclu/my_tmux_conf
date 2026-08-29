@@ -334,12 +334,10 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             conf += """set -g @menus_floating_pane_incr_horizontal 10
             set -g @menus_floating_pane_incr_vertical 5
             """
-            print("><> Added iSH settings for @menus_floating_pane_incr_")
         else:
             conf += """set -g @menus_floating_pane_incr_horizontal 5
             set -g @menus_floating_pane_incr_vertical 2
             """
-            print("><> Added normal settings for @menus_floating_pane_incr_")
 
         return ["jaclu/tmux-menus", min_vers, conf]
 
