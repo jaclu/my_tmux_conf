@@ -313,7 +313,6 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             min_vers = -1.0  # Don't use
 
         conf = """
-            set -g @menus_border_type 'rounded'
             # set -g @menus_display_cmds_cols 170
             # set -g @menus_display_commands No
             set -g @menus_format_title "'#[fg=yellow,align=left] #{@menu_name} '"
@@ -325,19 +324,28 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             set -g @menus_nav_prev '#[fg=colour71]<--'
             set -g @menus_use_hint_overlays No
             # set -g @menus_show_key_hints Yes
-            set -g @menus_simple_style_border 'fg=green,bg=default'
             set -g @menus_trigger Space
             # set -g @menus_use_cache no
             # set -g @menus_without_prefix No
             """
-        if mtc_utils.IS_ISH:
-            conf += """set -g @menus_floating_pane_incr_horizontal 10
-            set -g @menus_floating_pane_incr_vertical 5
+        if self.vers_ok("3.4"):
+            conf += """# tmux >= 3.4
+            set -g @menus_border_type 'rounded'
+            # set -g @menus_simple_style_selected
+            # set -g @menus_simple_style
+            set -g @menus_simple_style_border 'fg=green,bg=default'
             """
-        else:
-            conf += """set -g @menus_floating_pane_incr_horizontal 5
-            set -g @menus_floating_pane_incr_vertical 2
-            """
+        if self.vers_ok("3.7z"):
+            if mtc_utils.IS_ISH:
+                conf += """# tmux >= 3.8 - iSH adopted
+                set -g @menus_floating_pane_incr_horizontal 10
+                set -g @menus_floating_pane_incr_vertical 5
+                """
+            else:
+                conf += """# tmux >= 3.8 - regular
+                set -g @menus_floating_pane_incr_horizontal 5
+                set -g @menus_floating_pane_incr_vertical 2
+                """
 
         return ["jaclu/tmux-menus", min_vers, conf]
 

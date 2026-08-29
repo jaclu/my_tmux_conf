@@ -78,10 +78,9 @@ class T2(SB):  # type: ignore
                 w("""#
                 # tmux-menus - overrides
                 #
-                #set -g @menus_border_type FORCE-UNSET
-                # set -g @menus_config_file FORCE-UNSET ##
-                # set -g @menus_display_cmds_cols FORCE-UNSET ##
-                # set -g @menus_display_commands FORCE-UNSET ##
+                ## set -g @menus_config_file FORCE-UNSET ##
+                ## set -g @menus_display_cmds_cols FORCE-UNSET ##
+                ## set -g @menus_display_commands FORCE-UNSET ##
                 set -g @menus_format_title FORCE-UNSET
                 # set -g @menus_location_x FORCE-UNSET ##
                 # set -g @menus_location_y FORCE-UNSET ##
@@ -95,16 +94,22 @@ class T2(SB):  # type: ignore
                 set -g @menus_nav_next FORCE-UNSET
                 set -g @menus_nav_prev FORCE-UNSET
                 set -g @menus_use_hint_overlays FORCE-UNSET
-                # set -g @menus_show_key_hints FORCE-UNSET ##
-                set -g @menus_simple_style_border FORCE-UNSET
+                ## set -g @menus_show_key_hints FORCE-UNSET ##
                 #set -g @menus_trigger FORCE-UNSET
                 set -g @menus_use_cache FORCE-UNSET
                 set -g @menus_without_prefix FORCE-UNSET
                 """)
-                if not mtc_utils.IS_ISH:
-                    w("""
-                set -g @menus_floating_pane_incr_horizontal FORCE-UNSET
-                set -g @menus_floating_pane_incr_vertical FORCE-UNSET
+                if self.vers_ok(3.4):
+                    w("""# tmux >= 3.4
+                    set -g @menus_border_type  FORCE-UNSET
+                    ## set -g @menus_simple_style_selected FORCE-UNSET ##
+                    ## set -g @menus_simple_style FORCE-UNSET ##
+                    set -g @menus_simple_style_border FORCE-UNSET
+                    """)
+                if self.vers_ok("3.7z") and not mtc_utils.IS_ISH:
+                    w("""# tmux >= 3.8 - non-iSH
+                    set -g @menus_floating_pane_incr_horizontal FORCE-UNSET
+                    set -g @menus_floating_pane_incr_vertical FORCE-UNSET
                     """)
 
             if "tmux-packet-loss" in used_plugins:
