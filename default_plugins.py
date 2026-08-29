@@ -312,10 +312,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Don't use
 
-        return [
-            "jaclu/tmux-menus",
-            min_vers,
-            """
+        conf = """
             set -g @menus_border_type 'rounded'
             # set -g @menus_display_cmds_cols 170
             # set -g @menus_display_commands No
@@ -332,8 +329,18 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             set -g @menus_trigger Space
             # set -g @menus_use_cache no
             # set -g @menus_without_prefix No
-            """,
-        ]
+            """
+        if mtc_utils.IS_ISH:
+            conf += """
+            set -g @menus_floating_pane_incr_horizontal 10
+            set -g @menus_floating_pane_incr_vertical 5
+            """
+        else:
+            conf += """set -g @menus_floating_pane_incr_horizontal 5
+            set -g @menus_floating_pane_incr_vertical 2
+            """
+
+        return ["jaclu/tmux-menus", min_vers, conf]
 
     def plugin_mouse_swipe(self) -> list:  # 3.0
         """right-click & swipe switches Windows / Sessions"""

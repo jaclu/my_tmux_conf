@@ -82,7 +82,7 @@ class T2(SB):  # type: ignore
                 # set -g @menus_config_file FORCE-UNSET ##
                 # set -g @menus_display_cmds_cols FORCE-UNSET ##
                 # set -g @menus_display_commands FORCE-UNSET ##
-                #set -g @menus_format_title FORCE-UNSET
+                set -g @menus_format_title FORCE-UNSET
                 # set -g @menus_location_x FORCE-UNSET ##
                 # set -g @menus_location_y FORCE-UNSET ##
                 set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log" ##
@@ -91,16 +91,22 @@ class T2(SB):  # type: ignore
                 # set -g @menus_main_menu "~/my_tmux_menus/main.sh" ##
                 # set -g @menus_main_menu "~/git_repos/mine/tmux-menus/custom_items/" ##
 
-                #set -g @menus_nav_home FORCE-UNSET
-                #set -g @menus_nav_next FORCE-UNSET
-                #set -g @menus_nav_prev FORCE-UNSET
-                #set -g @menus_use_hint_overlays FORCE-UNSET
+                set -g @menus_nav_home FORCE-UNSET
+                set -g @menus_nav_next FORCE-UNSET
+                set -g @menus_nav_prev FORCE-UNSET
+                set -g @menus_use_hint_overlays FORCE-UNSET
                 # set -g @menus_show_key_hints FORCE-UNSET ##
                 set -g @menus_simple_style_border FORCE-UNSET
                 #set -g @menus_trigger FORCE-UNSET
-                #set -g @menus_use_cache FORCE-UNSET
+                set -g @menus_use_cache FORCE-UNSET
                 set -g @menus_without_prefix FORCE-UNSET
                 """)
+                if not mtc_utils.IS_ISH:
+                    w("""
+                set -g @menus_floating_pane_incr_horizontal FORCE-UNSET
+                set -g @menus_floating_pane_incr_vertical FORCE-UNSET
+                    """)
+
             if "tmux-packet-loss" in used_plugins:
                 w("""#
                 # tmux-packet-loss - overrides
