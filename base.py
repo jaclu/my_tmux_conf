@@ -875,8 +875,6 @@ class BaseConfig(TmuxConfig):
 
         if self.vers_ok("3.7z"):
             w(f"{self.opt_win} pane-scrollbars auto-hide")
-        # elif self.vers_ok(3.6):
-        #     w(f"{self.opt_win} pane-scrollbars modal")
 
         w()  # spacer
 
