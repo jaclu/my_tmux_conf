@@ -101,7 +101,7 @@ class T2(SB):  # type: ignore
                 """)
                 if self.vers_ok(3.4):
                     w("""# tmux >= 3.4
-                    set -g @menus_border_type  FORCE-UNSET
+                    #set -g @menus_border_type  FORCE-UNSET
                     ## set -g @menus_simple_style_selected FORCE-UNSET ##
                     ## set -g @menus_simple_style FORCE-UNSET ##
                     set -g @menus_simple_style_border FORCE-UNSET
