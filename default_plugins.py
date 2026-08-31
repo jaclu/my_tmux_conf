@@ -351,6 +351,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
 
     def plugin_mouse_swipe(self) -> list:  # 3.0
         """right-click & swipe switches Windows / Sessions"""
+        conf = ""
         mod = ""
         if not self.use_plugin_mouse_swipe or self.is_limited_host:
             min_vers = -1.0  # Don't use
@@ -364,17 +365,20 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
                 #
                 mod = "C-"
                 min_vers = 3.1  # MouseDragEnd didn't support modifiers prior to this
-        return [
-            "jaclu/tmux-mouse-swipe",
-            min_vers,
-            f"""
-            #
+            conf = f"""
             #  {mod}right-click & swipe switches Window / Session
             #
+            """
+            if not mod == "":
+                conf += """#  Inner tmux uses a modifier in order not to conflict with the outer tmux
+                #  in case this plugin is used there as well
+                """
+            conf += f"""
             set -g @mouse_swipe_start "{mod}MouseDrag3Pane"
             set -g @mouse_swipe_end   "{mod}MouseDragEnd3Pane"
-            """,
-        ]
+            """
+
+        return ["jaclu/tmux-mouse-swipe", min_vers, conf]
 
     def plugin_power_zoom(self) -> list:  # 2.0
         """Zooms to separate Window, to allow for adding support panes
