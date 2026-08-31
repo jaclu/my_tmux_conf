@@ -1,5 +1,9 @@
 # TODO
 
+## Clipboard
+
+current config works for 3.4 and up
+
 ## inner tmux navigation
 
 outer tmux pane zoomed
@@ -48,10 +52,10 @@ need to reconfigure vscode so that they work again
 Should be:
 get_reported() - as stated by -V
 get() - normalized to string, modified as
-  `next-` one subvers lower since all features might not be in
-  '-rc' simply stripped
+`next-` one subvers lower since all features might not be in
+'-rc' simply stripped
 get_actual() - should probably be replaced by get_reported
-  and self._vers_actial can then be gone
+and self.\_vers_actial can then be gone
 
 ## invesigate
 

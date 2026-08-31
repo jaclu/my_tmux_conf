@@ -540,7 +540,7 @@ class BaseConfig(TmuxConfig):
         {self.opt_server} history-limit 10000
         {self.opt_server} status-keys emacs""")
 
-        if os.getenv("TMUX_NO_CLIPBOARD"):
+        if os.getenv("TMUX_NO_CLIPBOARD"):  # or not self.vers_ok(3.4):
             # On ssh/mosh connections, when running an asdf tmux with local
             # version changed.
             # tmux instacraches when anything is selected in a tmux buffer
