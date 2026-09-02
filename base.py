@@ -1328,6 +1328,7 @@ class BaseConfig(TmuxConfig):
     def handle_hooks(self):
         w = self.write
 
+        v_min_hooks = 2.5  # actual min 2.4, for me 2.5 see below
         v_min_smart_hooks = 3.2
 
         if not self.vers_ok(1.0):
@@ -1345,15 +1346,17 @@ class BaseConfig(TmuxConfig):
         # potential option to handle it on all versions, via an inline script
         # set-hook -g window-layout-changed 'run-shell "$HOME/.tmux/layout-handler.sh"'
 
-        if not self.vers_ok(2.5):
+        if not self.vers_ok(v_min_hooks):
             if self.is_tmate():
                 w("# ===  Hooks not supported for tmate   ===")
             elif not self.vers_ok(2.4):
                 w("# ===  Hooks not supported for tmux < 2.4   ===")
             elif self.vers_ok(2.4):
                 w("""# On 2.4 activate_tpm() gets tangled on the hook lines somehow :(
-                  # Thus skipping hook handling
+                # and end up in an infinite loop - Thus skipping hook handling
                 """)
+
+            # w("set pane-border-status top")
             w("# Hardcoding no-prefix nav-keys according to no-zoom state")
             for s in self.pane_un_zoomed_noprefix_binds:
                 w(s)
