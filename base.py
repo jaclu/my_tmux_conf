@@ -1392,6 +1392,7 @@ class BaseConfig(TmuxConfig):
                 cmd_2 = "; select-pane -T '#D'"
             else:
                 cmd_2 = ""
+
             w(  # needed for 2.5 to avoid label on new ses & win
                 f"""# For first pane in first window
                 set-hook -g after-new-session{idx} "{borders_disable} {cmd_2}"
