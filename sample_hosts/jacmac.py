@@ -17,7 +17,7 @@
 #
 
 
-"""JacMac config"""
+"""host: JacMac config"""
 
 import os
 import sys
