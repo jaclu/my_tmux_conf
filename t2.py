@@ -86,6 +86,9 @@ class T2(SB):  # type: ignore
                 # set -g @menus_location_y FORCE-UNSET ##
                 set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log" ##
 
+                set -g @menus_validate_cache Yes
+                set -g @menus_use_timers Yes
+
                 # set -g @menus_main_menu "~/tmp/alt_menu/alt_main.sh" ##
                 # set -g @menus_main_menu "~/my_tmux_menus/main.sh" ##
                 # set -g @menus_main_menu "~/git_repos/mine/tmux-menus/custom_items/" ##

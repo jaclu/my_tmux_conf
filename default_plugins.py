@@ -319,6 +319,10 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             # set -g @menus_location_x C
             # set -g @menus_location_y C
             # set -g @menus_log_file "$HOME/tmp/tmux-menus.log"
+
+            # set g @menus_validate_cache Yes
+            # set -g @menus_use_timers No
+
             set -g @menus_nav_home '#[fg=colour84]<=='
             set -g @menus_nav_next '#[fg=colour220]-->'
             set -g @menus_nav_prev '#[fg=colour71]<--'
