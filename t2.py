@@ -110,7 +110,7 @@ class T2(SB):  # type: ignore
                     """)
                 else:
                     w("""set -g @menus_validate_cache No
-                    set -g @menus_log_file "" ##
+                    set -g @menus_log_file FORCE-UNSET
                     set -g @menus_use_timers No
                     set -g @menus_use_hint_overlays No
                     set -g @menus_show_key_hints No
