@@ -340,16 +340,10 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             set -g @menus_simple_style_border 'fg=green,bg=default'
             """
         if self.vers_ok("3.7z"):
-            if mtc_utils.IS_ISH:
-                conf += """# tmux >= 3.8 - iSH adopted
-                set -g @menus_floating_pane_incr_horizontal 10
-                set -g @menus_floating_pane_incr_vertical 5
-                """
-            else:
-                conf += """# tmux >= 3.8 - regular
-                set -g @menus_floating_pane_incr_horizontal 5
-                set -g @menus_floating_pane_incr_vertical 2
-                """
+	    conf += """# tmux >= 3.8 - regular
+            set -g @menus_floating_pane_incr_horizontal 5
+            set -g @menus_floating_pane_incr_vertical 2
+            """
 
         return ["jaclu/tmux-menus", min_vers, conf]
 
