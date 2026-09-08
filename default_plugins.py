@@ -340,7 +340,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             set -g @menus_simple_style_border 'fg=green,bg=default'
             """
         if self.vers_ok("3.7z"):
-	    conf += """# tmux >= 3.8 - regular
+            conf += """# tmux >= 3.8 - regular
             set -g @menus_floating_pane_incr_horizontal 5
             set -g @menus_floating_pane_incr_vertical 2
             """
