@@ -75,6 +75,11 @@ class T2(SB):  # type: ignore
                 w("set -g @claude_usage_color_low colour29")
 
             if "tmux-menus" in used_plugins:
+                if mtc_utils.HOSTNAME in ("JacMac",):
+                    aim = "Dbg"
+                else:
+                    aim = "Perf"
+
                 w("""#
                 # tmux-menus - overrides
                 #
@@ -84,10 +89,6 @@ class T2(SB):  # type: ignore
                 set -g @menus_format_title FORCE-UNSET
                 # set -g @menus_location_x FORCE-UNSET ##
                 # set -g @menus_location_y FORCE-UNSET ##
-                set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log" ##
-
-                set -g @menus_validate_cache Yes
-                set -g @menus_use_timers Yes
 
                 # set -g @menus_main_menu "~/tmp/alt_menu/alt_main.sh" ##
                 # set -g @menus_main_menu "~/my_tmux_menus/main.sh" ##
@@ -96,12 +97,25 @@ class T2(SB):  # type: ignore
                 set -g @menus_nav_home FORCE-UNSET
                 set -g @menus_nav_next FORCE-UNSET
                 set -g @menus_nav_prev FORCE-UNSET
-                set -g @menus_use_hint_overlays FORCE-UNSET
-                ## set -g @menus_show_key_hints FORCE-UNSET ##
                 #set -g @menus_trigger FORCE-UNSET
                 set -g @menus_use_cache FORCE-UNSET
                 set -g @menus_without_prefix FORCE-UNSET
                 """)
+                if aim == "Dbg":
+                    w("""set -g @menus_validate_cache Yes
+                    set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log" ##
+                    set -g @menus_use_timers Yes
+                    set -g @menus_use_hint_overlays FORCE-UNSET
+                    set -g @menus_show_key_hints FORCE-UNSET ##
+                    """)
+                else:
+                    w("""set -g @menus_validate_cache No
+                    set -g @menus_log_file "" ##
+                    set -g @menus_use_timers No
+                    set -g @menus_use_hint_overlays No
+                    set -g @menus_show_key_hints No
+                    """)
+
                 if self.vers_ok(3.4):
                     w("""# tmux >= 3.4
                     #set -g @menus_border_type  FORCE-UNSET
