@@ -123,7 +123,7 @@ class T2(SB):  # type: ignore
                     ## set -g @menus_simple_style FORCE-UNSET ##
                     set -g @menus_simple_style_border FORCE-UNSET
                     """)
-                if self.vers_ok("3.7z") and not mtc_utils.IS_ISH:
+                if self.vers_ok("3.7z"):
                     w("""# tmux >= 3.8 - non-iSH
                     set -g @menus_floating_pane_incr_horizontal FORCE-UNSET
                     set -g @menus_floating_pane_incr_vertical FORCE-UNSET
