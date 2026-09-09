@@ -70,6 +70,15 @@ class T2(SB):  # type: ignore
             w = self.write
             #  Display what class this override comes from
             w("# ---  T2.local_overrides()")
+            if self.vers_ok(3.4) and False:
+                w("""
+                # menu styling
+                # set -g menu-style "fg=green,bg=blue"
+                # set -g menu-selected-style "fg=red,bg=grey"
+                set -g menu-border-style "fg=green,bg=default"
+                set -g menu-border-lines rounded
+                """)
+
             used_plugins = self.plugins.installed(short_name=True)
             if "tmux-claude-usage" in used_plugins:
                 w("set -g @claude_usage_color_low colour29")
@@ -83,50 +92,71 @@ class T2(SB):  # type: ignore
                 w("""#
                 # tmux-menus - overrides
                 #
-                ## set -g @menus_config_file FORCE-UNSET ##
-                ## set -g @menus_display_cmds_cols FORCE-UNSET ##
-                ## set -g @menus_display_commands FORCE-UNSET ##
-                set -g @menus_format_title FORCE-UNSET
-                # set -g @menus_location_x FORCE-UNSET ##
-                # set -g @menus_location_y FORCE-UNSET ##
+                set -g  @menus_without_prefix  FORCE-UNSET
+                set -g       @menus_use_cache  FORCE-UNSET
 
-                # set -g @menus_main_menu "~/tmp/alt_menu/alt_main.sh" ##
-                # set -g @menus_main_menu "~/my_tmux_menus/main.sh" ##
-                # set -g @menus_main_menu "~/git_repos/mine/tmux-menus/custom_items/" ##
+                set -g  @menus_location_x  FORCE-UNSET ##
+                set -g  @menus_location_y  FORCE-UNSET ##
 
-                set -g @menus_nav_home FORCE-UNSET
-                set -g @menus_nav_next FORCE-UNSET
-                set -g @menus_nav_prev FORCE-UNSET
-                #set -g @menus_trigger FORCE-UNSET
-                set -g @menus_use_cache FORCE-UNSET
-                set -g @menus_without_prefix FORCE-UNSET
+                # set -g  @menus_display_cmds_cols  FORCE-UNSET ##
+                # set -g   @menus_display_commands  FORCE-UNSET ##
+
+                # set -g  @menus_config_file  FORCE-UNSET ##
+                # set -g    @menus_main_menu  "~/tmp/alt_menu/alt_main.sh" ##
                 """)
                 if aim == "Dbg":
-                    w("""set -g @menus_validate_cache Yes
-                    set -g @menus_log_file "$HOME/tmp/tmux-menus-t2.log" ##
-                    set -g @menus_use_timers Yes
-                    set -g @menus_use_hint_overlays FORCE-UNSET
-                    set -g @menus_show_key_hints FORCE-UNSET ##
+                    w("""# Performance related settings - Debugging
+                    set -g     @menus_validate_cache  Yes
+                    set -g           @menus_log_file  "$HOME/tmp/tmux-menus-t2.log" ##
+                    set -g         @menus_use_timers  Yes
+                    set -g  @menus_use_hint_overlays  No # FORCE-UNSET
+                    set -g     @menus_show_key_hints  FORCE-UNSET ##
                     """)
                 else:
-                    w("""set -g @menus_validate_cache No
-                    set -g @menus_log_file FORCE-UNSET
-                    set -g @menus_use_timers No
-                    set -g @menus_use_hint_overlays No
-                    set -g @menus_show_key_hints No
+                    w("""# Performanze optimized settings
+                    set -g     @menus_validate_cache  No
+                    set -g           @menus_log_file  FORCE-UNSET
+                    set -g         @menus_use_timers  No
+                    set -g  @menus_use_hint_overlays  No
+                    set -g     @menus_show_key_hints  No
+                    """)
+
+                # Pre 3.4 Styling
+                if True:
+                    w("""# Pre tmux 3.4 styling options - Clear all
+                    set -g   @menus_format_title  FORCE-UNSET
+                    set -g       @menus_nav_home  FORCE-UNSET
+                    set -g       @menus_nav_next  FORCE-UNSET
+                    set -g       @menus_nav_prev  FORCE-UNSET
+                    """)
+                elif False:
+                    w("""# Pre tmux 3.4 styling options
+                    #set -g  @menus_format_title  "#{@menu_name}"
+                    set -g       @menus_nav_home  FORCE-UNSET
+                    set -g       @menus_nav_next  FORCE-UNSET
+                    set -g       @menus_nav_next  "#[fg=colour202]>#[fg=colour220]>#[fg=colour227]>"
                     """)
 
                 if self.vers_ok(3.4):
-                    w("""# tmux >= 3.4
-                    #set -g @menus_border_type  FORCE-UNSET
-                    ## set -g @menus_simple_style_selected FORCE-UNSET ##
-                    ## set -g @menus_simple_style FORCE-UNSET ##
-                    set -g @menus_simple_style_border FORCE-UNSET
-                    """)
+                    if False:
+                        w("""# tmux >= 3.4
+                        set -g            @menus_border_type  rounded
+                        set -g  @menus_simple_style_selected  fg=blue,bg=yellow
+                        set -g           @menus_simple_style  fg=black,bg=grey
+                        set -g    @menus_simple_style_border  fg=green
+                        """)
+                    elif True:
+                        w("""# tmux >= 3.4
+                        # Disable all tmux-menus styling
+                        set -g            @menus_border_type  FORCE-UNSET
+                        set -g  @menus_simple_style_selected  FORCE-UNSET ##
+                        set -g           @menus_simple_style  FORCE-UNSET
+                        set -g    @menus_simple_style_border  FORCE-UNSET
+                        """)
                 if self.vers_ok("3.7z"):
                     w("""# tmux >= 3.8 - non-iSH
-                    set -g @menus_floating_pane_incr_horizontal FORCE-UNSET
-                    set -g @menus_floating_pane_incr_vertical FORCE-UNSET
+                    set -g  @menus_floating_pane_incr_horizontal  FORCE-UNSET
+                    set -g    @menus_floating_pane_incr_vertical  FORCE-UNSET
                     """)
 
             if "tmux-packet-loss" in used_plugins:
