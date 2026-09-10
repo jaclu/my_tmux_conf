@@ -525,8 +525,8 @@ class BaseConfig(TmuxConfig):
                 )
             w()  # spacer
 
-        if self.vers_ok("3.7z"):
-            w(f"{self.opt_server} theme terminal")
+        if self.vers_ok("3.8"):
+            w(f"# {self.opt_server} theme terminal")
 
         if self.vers_ok(1.0):
             w(f"""
@@ -854,7 +854,7 @@ class BaseConfig(TmuxConfig):
         #======================================================
 
         {self.opt_win} automatic-rename off
-        {self.opt_win} aggressive-resize on""")
+        # {self.opt_win} aggressive-resize on""")
 
         if self.vers_ok(2.9):
             # When multiple clients connect, use the smaller size

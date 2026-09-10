@@ -148,13 +148,15 @@ class T2(SB):  # type: ignore
                         set -g    @menus_simple_style_border  FORCE-UNSET
                         """)
 
-                    # w("""
+                    w(
+                        """
                     # # tmux menu styling
                     # # set -g menu-style "fg=green,bg=blue"
                     # # set -g menu-selected-style "fg=red,bg=grey"
                     # set -g menu-border-style "fg=green,bg=default"
-                    # set -g menu-border-lines rounded
-                    # """)
+                    set -g menu-border-lines rounded
+                    """
+                    )
                 if self.vers_ok("3.7z"):
                     w("""# tmux >= 3.8 - non-iSH
                     set -g  @menus_floating_pane_incr_horizontal  FORCE-UNSET
