@@ -76,7 +76,7 @@ class T2(SB):  # type: ignore
                 w("set -g @claude_usage_color_low colour29")
 
             if "tmux-menus" in used_plugins:
-                if mtc_utils.HOSTNAME in ("JacMac",):
+                if mtc_utils.HOSTNAME in ("JacMac", "kajsa", "hetz2"):
                     aim = "Dbg"
                 else:
                     aim = "Perf"
