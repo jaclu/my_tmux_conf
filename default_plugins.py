@@ -326,11 +326,14 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             set -g @menus_nav_home '#[fg=colour84]<=='
             set -g @menus_nav_next '#[fg=colour220]-->'
             set -g @menus_nav_prev '#[fg=colour71]<--'
-            set -g @menus_use_hint_overlays No
-            # set -g @menus_show_key_hints Yes
             set -g @menus_trigger Space
             # set -g @menus_use_cache no
             # set -g @menus_without_prefix No
+            """
+        if not self.vers_ok("3.7"):
+            conf += """# Obsoleted by 3.7
+            set -g @menus_use_hint_overlays No
+            # set -g @menus_show_key_hints Yes
             """
         if self.vers_ok("3.4"):
             conf += """# tmux >= 3.4

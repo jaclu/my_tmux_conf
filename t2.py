@@ -96,21 +96,18 @@ class T2(SB):  # type: ignore
                 # set -g  @menus_config_file  FORCE-UNSET ##
                 # set -g    @menus_main_menu  "~/tmp/alt_menu/alt_main.sh" ##
                 """)
-                if aim == "Dbg":
+
+                if aim == "Dqbg":
                     w("""# Performance related settings - Debugging
                     set -g     @menus_validate_cache  Yes
                     set -g           @menus_log_file  "$HOME/tmp/tmux-menus-t2.log" ##
                     set -g         @menus_use_timers  Yes
-                    set -g  @menus_use_hint_overlays  No # FORCE-UNSET
-                    set -g     @menus_show_key_hints  FORCE-UNSET ##
                     """)
                 else:
                     w("""# Performanze optimized settings
                     set -g     @menus_validate_cache  No
                     set -g           @menus_log_file  FORCE-UNSET
                     set -g         @menus_use_timers  No
-                    set -g  @menus_use_hint_overlays  No
-                    set -g     @menus_show_key_hints  No
                     """)
 
                 # Pre 3.4 Styling
@@ -148,15 +145,20 @@ class T2(SB):  # type: ignore
                         set -g    @menus_simple_style_border  FORCE-UNSET
                         """)
 
-                    w(
-                        """
-                    # # tmux menu styling
-                    # # set -g menu-style "fg=green,bg=blue"
-                    # # set -g menu-selected-style "fg=red,bg=grey"
-                    # set -g menu-border-style "fg=green,bg=default"
-                    set -g menu-border-lines rounded
-                    """
-                    )
+                if not self.vers_ok("3.7"):
+                    w("""# Obsoleted by 3.7
+                    set -g  @menus_use_hint_overlays  No
+                    set -g     @menus_show_key_hints  No
+                    """)
+
+                w("""
+                # # tmux menu styling
+                # # set -g menu-style "fg=green,bg=blue"
+                # # set -g menu-selected-style "fg=red,bg=grey"
+                # set -g menu-border-style "fg=green,bg=default"
+                set -g menu-border-lines rounded
+                """)
+
                 if self.vers_ok("3.7z"):
                     w("""# tmux >= 3.8 - non-iSH
                     set -g  @menus_floating_pane_incr_horizontal  FORCE-UNSET
