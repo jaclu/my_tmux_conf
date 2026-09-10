@@ -113,14 +113,14 @@ class T2(SB):  # type: ignore
                 # Pre 3.4 Styling
                 pre34_styling = False
                 if pre34_styling:
-                    w("""# Pre tmux 3.4 styling options
+                    w("""# Styling options available pre tmux 3.4
                     #set -g  @menus_format_title  "#{@menu_name}"
                     set -g       @menus_nav_home  FORCE-UNSET
                     set -g       @menus_nav_next  FORCE-UNSET
                     set -g       @menus_nav_next  "#[fg=colour202]>#[fg=colour220]>#[fg=colour227]>"
                     """)
                 else:
-                    w("""# Pre tmux 3.4 styling options - Clear all
+                    w("""# Styling options available pre tmux 3.4
                     set -g   @menus_format_title  FORCE-UNSET
                     set -g       @menus_nav_home  FORCE-UNSET
                     set -g       @menus_nav_next  FORCE-UNSET
@@ -128,16 +128,24 @@ class T2(SB):  # type: ignore
                     """)
 
                 if self.vers_ok(3.4):
+                    w("""
+                    # tmux menu styling available from 3.4
+                    # set -g menu-style "fg=green,bg=blue"
+                    # set -g menu-selected-style "fg=red,bg=grey"
+                    # set -g menu-border-style "fg=green,bg=default"
+                    set -g menu-border-lines rounded
+                    """)
+
                     post34_styling = False
                     if post34_styling:
-                        w("""# tmux >= 3.4
+                        w("""# Styling options available from tmux 3.4
                         set -g            @menus_border_type  rounded
                         set -g  @menus_simple_style_selected  fg=blue,bg=yellow
                         set -g           @menus_simple_style  fg=black,bg=grey
                         set -g    @menus_simple_style_border  fg=green
                         """)
                     else:
-                        w("""# tmux >= 3.4
+                        w("""# Styling options available from tmux 3.4
                         # Disable all tmux-menus styling
                         set -g            @menus_border_type  FORCE-UNSET
                         set -g  @menus_simple_style_selected  FORCE-UNSET ##
@@ -146,21 +154,13 @@ class T2(SB):  # type: ignore
                         """)
 
                 if not self.vers_ok("3.7"):
-                    w("""# Obsoleted by 3.7
-                    set -g  @menus_use_hint_overlays  No
-                    set -g     @menus_show_key_hints  No
+                    w("""# Obsoleted from 3.7
+                    set -g  @menus_use_hint_overlays  Yes
+                    set -g     @menus_show_key_hints  Yes
                     """)
 
-                w("""
-                # # tmux menu styling
-                # # set -g menu-style "fg=green,bg=blue"
-                # # set -g menu-selected-style "fg=red,bg=grey"
-                # set -g menu-border-style "fg=green,bg=default"
-                set -g menu-border-lines rounded
-                """)
-
                 if self.vers_ok("3.7z"):
-                    w("""# tmux >= 3.8 - non-iSH
+                    w("""# tmux >= 3.8
                     set -g  @menus_floating_pane_incr_horizontal  FORCE-UNSET
                     set -g    @menus_floating_pane_incr_vertical  FORCE-UNSET
                     """)
