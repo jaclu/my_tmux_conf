@@ -97,7 +97,7 @@ class T2(SB):  # type: ignore
                 # set -g    @menus_main_menu  "~/tmp/alt_menu/alt_main.sh" ##
                 """)
 
-                if aim == "Dqbg":
+                if aim == "Dbg":
                     w("""# Performance related settings - Debugging
                     set -g     @menus_validate_cache  Yes
                     set -g           @menus_log_file  "$HOME/tmp/tmux-menus-t2.log" ##
