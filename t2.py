@@ -85,7 +85,7 @@ class T2(SB):  # type: ignore
                 # tmux-menus - overrides
                 #
                 set -g  @menus_without_prefix  FORCE-UNSET
-                set -g       @menus_use_cache  FORCE-UNSET
+                set -g       @menus_use_cache FORCE-UNSET
 
                 set -g  @menus_location_x  FORCE-UNSET ##
                 set -g  @menus_location_y  FORCE-UNSET ##
@@ -94,14 +94,18 @@ class T2(SB):  # type: ignore
                 # set -g   @menus_display_commands  FORCE-UNSET ##
 
                 # set -g  @menus_config_file  FORCE-UNSET ##
-                # set -g    @menus_main_menu  "~/tmp/alt_menu/alt_main.sh" ##
+                # set -g    @menus_main_menu  FORCE-UNSET ##
                 """)
 
+                #
+                # Performance tweaks
+                #
                 if aim == "Dbg":
                     w("""# Performance related settings - Debugging
                     set -g     @menus_validate_cache  Yes
                     set -g           @menus_log_file  "$HOME/tmp/tmux-menus-t2.log" ##
                     set -g         @menus_use_timers  Yes
+                    # set -g        @menus_danger_zone  ""
                     """)
                 else:
                     w("""# Performanze optimized settings
