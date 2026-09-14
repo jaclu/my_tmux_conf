@@ -62,6 +62,38 @@ class T2(SB):  # type: ignore
         force_plugin_continuum = True
         use_plugin_resurrect = True
 
+    def not_plugin_menus(self) -> list:  # 1.5
+        #
+        # Replacement plugin definition for performance testing on ultra
+        # modest platforms, tweaked at minimal overhead
+        #
+        # when using it:
+        #  1 - rename this to plugin_menus
+        #  2 - rename local overrides below to something like _local_overrides
+        #      or simply remove the lines covering the tmux-menus plugin
+        #
+        # Once done, simply do a git restore
+        #
+        if self.use_plugin_menus:
+            min_vers = 1.5
+        else:
+            # it works on iSH, but soo slow it is of no practical usage
+            min_vers = -1.0  # Don't use
+
+        conf = """
+          set -g            @menus_trigger  Space
+          set -g        @menus_danger_zone  ''
+          set -g   @menus_display_commands  No
+          set -g           @menus_log_file  "$HOME/tmp/tmux-menus-t2.log"
+          set -g     @menus_show_key_hints  No
+          set -g  @menus_use_hint_overlays  No
+          set -g         @menus_use_timers  Yes
+          set -g     @menus_validate_cache  No
+
+          set -g  @use_bind_key_notes_in_plugins  No
+        """
+        return ["jaclu/tmux-menus", min_vers, conf]
+
     def local_overrides(self) -> None:
         super().local_overrides()
 
@@ -82,19 +114,19 @@ class T2(SB):  # type: ignore
                     aim = "Perf"
 
                 w("""#
-                # tmux-menus - overrides
-                #
-                set -g  @menus_without_prefix  FORCE-UNSET
-                set -g       @menus_use_cache FORCE-UNSET
+                  # tmux-menus - overrides
+                  #
+                  set -g  @menus_without_prefix  FORCE-UNSET
+                  set -g       @menus_use_cache FORCE-UNSET
 
-                set -g  @menus_location_x  FORCE-UNSET ##
-                set -g  @menus_location_y  FORCE-UNSET ##
+                  set -g  @menus_location_x  FORCE-UNSET ##
+                  set -g  @menus_location_y  FORCE-UNSET ##
 
-                # set -g  @menus_display_cmds_cols  FORCE-UNSET ##
-                # set -g   @menus_display_commands  FORCE-UNSET ##
+                  # set -g  @menus_display_cmds_cols  FORCE-UNSET ##
+                  # set -g   @menus_display_commands  FORCE-UNSET ##
 
-                # set -g  @menus_config_file  FORCE-UNSET ##
-                # set -g    @menus_main_menu  FORCE-UNSET ##
+                  # set -g  @menus_config_file  FORCE-UNSET ##
+                  # set -g    @menus_main_menu  FORCE-UNSET ##
                 """)
 
                 #
@@ -102,82 +134,82 @@ class T2(SB):  # type: ignore
                 #
                 if aim == "Dbg":
                     w("""# Performance related settings - Debugging
-                    set -g     @menus_validate_cache  Yes
-                    set -g           @menus_log_file  "$HOME/tmp/tmux-menus-t2.log" ##
-                    set -g         @menus_use_timers  Yes
-                    # set -g        @menus_danger_zone  ""
+                      set -g     @menus_validate_cache  Yes
+                      set -g           @menus_log_file  "$HOME/tmp/tmux-menus-t2.log" ##
+                      set -g         @menus_use_timers  Yes
+                      # set -g      @menus_danger_zone  ""
                     """)
                 else:
                     w("""# Performanze optimized settings
-                    set -g     @menus_validate_cache  No
-                    set -g           @menus_log_file  FORCE-UNSET
-                    set -g         @menus_use_timers  No
+                      set -g     @menus_validate_cache  No
+                      set -g           @menus_log_file  FORCE-UNSET
+                      set -g         @menus_use_timers  No
                     """)
 
                 # Pre 3.4 Styling
                 pre34_styling = False
                 if pre34_styling:
                     w("""# Styling options available pre tmux 3.4
-                    #set -g  @menus_format_title  "#{@menu_name}"
-                    set -g       @menus_nav_home  FORCE-UNSET
-                    set -g       @menus_nav_next  FORCE-UNSET
-                    set -g       @menus_nav_next  "#[fg=colour202]>#[fg=colour220]>#[fg=colour227]>"
+                      #set -g  @menus_format_title  "#{@menu_name}"
+                      set -g       @menus_nav_home  FORCE-UNSET
+                      set -g       @menus_nav_next  FORCE-UNSET
+                      set -g       @menus_nav_next  "#[fg=colour202]>#[fg=colour220]>#[fg=colour227]>"
                     """)
                 else:
                     w("""# Styling options available pre tmux 3.4
-                    set -g   @menus_format_title  FORCE-UNSET
-                    set -g       @menus_nav_home  FORCE-UNSET
-                    set -g       @menus_nav_next  FORCE-UNSET
-                    set -g       @menus_nav_prev  FORCE-UNSET
+                      set -g   @menus_format_title  FORCE-UNSET
+                      set -g       @menus_nav_home  FORCE-UNSET
+                      set -g       @menus_nav_next  FORCE-UNSET
+                      set -g       @menus_nav_prev  FORCE-UNSET
                     """)
 
                 if self.vers_ok(3.4):
                     w("""
-                    # tmux menu styling available from 3.4
-                    # set -g menu-style "fg=green,bg=blue"
-                    # set -g menu-selected-style "fg=red,bg=grey"
-                    # set -g menu-border-style "fg=green,bg=default"
-                    set -g menu-border-lines rounded
+                      # tmux menu styling available from 3.4
+                      # set -g           menu-style  "fg=green,bg=blue"
+                      # set -g  menu-selected-style  "fg=red,bg=grey"
+                      # set -g    menu-border-style  "fg=green,bg=default"
+                      set -g      menu-border-lines  rounded
                     """)
 
                     post34_styling = False
                     if post34_styling:
                         w("""# Styling options available from tmux 3.4
-                        set -g            @menus_border_type  rounded
-                        set -g  @menus_simple_style_selected  fg=blue,bg=yellow
-                        set -g           @menus_simple_style  fg=black,bg=grey
-                        set -g    @menus_simple_style_border  fg=green
+                          set -g            @menus_border_type  rounded
+                          set -g  @menus_simple_style_selected  fg=blue,bg=yellow
+                          set -g           @menus_simple_style  fg=black,bg=grey
+                          set -g    @menus_simple_style_border  fg=green
                         """)
                     else:
                         w("""# Styling options available from tmux 3.4
-                        # Disable all tmux-menus styling
-                        set -g            @menus_border_type  FORCE-UNSET
-                        set -g  @menus_simple_style_selected  FORCE-UNSET ##
-                        set -g           @menus_simple_style  FORCE-UNSET
-                        set -g    @menus_simple_style_border  FORCE-UNSET
+                          # Disable all tmux-menus styling
+                          set -g            @menus_border_type  FORCE-UNSET
+                          set -g  @menus_simple_style_selected  FORCE-UNSET ##
+                          set -g           @menus_simple_style  FORCE-UNSET
+                          set -g    @menus_simple_style_border  FORCE-UNSET
                         """)
 
                 if not self.vers_ok("3.7"):
                     w("""# Obsoleted from 3.7
-                    set -g  @menus_use_hint_overlays  Yes
-                    set -g     @menus_show_key_hints  Yes
+                      set -g  @menus_use_hint_overlays  Yes
+                      set -g     @menus_show_key_hints  Yes
                     """)
 
                 if self.vers_ok("3.7z"):
                     w("""# tmux >= 3.8
-                    set -g  @menus_floating_pane_incr_horizontal  FORCE-UNSET
-                    set -g    @menus_floating_pane_incr_vertical  FORCE-UNSET
+                      set -g  @menus_floating_pane_incr_horizontal  FORCE-UNSET
+                      set -g    @menus_floating_pane_incr_vertical  FORCE-UNSET
                     """)
 
             if "tmux-packet-loss" in used_plugins:
                 w("""#
-                # tmux-packet-loss - overrides
-                #
-                # Use a different host vs the outer tmux
-                set -g @packet-loss-ping_host "1.1.1.1"
+                  # tmux-packet-loss - overrides
+                  #
+                  # Use a different host vs the outer tmux
+                  set -g @packet-loss-ping_host  "1.1.1.1"
 
-                # set -g @packet-loss-log_file "" # Use this to disable logging
-                set -g @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
+                  ## set -g  @packet-loss-log_file  ""  # Use this to disable logging
+                  set -g  @packet-loss-log_file  $HOME/tmp/tmux-packet-loss-t2.log
                 """)
 
 
