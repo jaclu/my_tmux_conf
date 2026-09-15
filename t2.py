@@ -118,6 +118,7 @@ class T2(SB):  # type: ignore
                   #
                   set -g  @menus_without_prefix  FORCE-UNSET
                   set -g       @menus_use_cache  FORCE-UNSET
+                  # set -g       @menus_use_cache  No
 
                   set -g  @menus_location_x  FORCE-UNSET ##
                   set -g  @menus_location_y  FORCE-UNSET ##
