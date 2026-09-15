@@ -117,7 +117,7 @@ class T2(SB):  # type: ignore
                   # tmux-menus - overrides
                   #
                   set -g  @menus_without_prefix  FORCE-UNSET
-                  set -g       @menus_use_cache FORCE-UNSET
+                  set -g       @menus_use_cache  FORCE-UNSET
 
                   set -g  @menus_location_x  FORCE-UNSET ##
                   set -g  @menus_location_y  FORCE-UNSET ##
@@ -128,6 +128,11 @@ class T2(SB):  # type: ignore
                   # set -g  @menus_config_file  FORCE-UNSET ##
                   # set -g    @menus_main_menu  FORCE-UNSET ##
                 """)
+
+                #
+                #  When testing other menu locations
+                #
+                # w('set -g  @menus_main_menu  "$HOME/tmp/foo/items/main.sh"')
 
                 #
                 # Performance tweaks
