@@ -80,23 +80,105 @@ class T2(SB):  # type: ignore
             # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Don't use
 
-        conf = """
-          set -g            @menus_trigger  Space
-          set -g        @menus_danger_zone  ''
-          set -g   @menus_display_commands  No
-          # set -g           @menus_log_file  "$HOME/tmp/tmux-menus-t2.log"
-          set -g     @menus_show_key_hints  No
-          set -g  @menus_use_hint_overlays  No
-          set -g         @menus_use_timers  No
-          set -g     @menus_validate_cache  No
-          set -g  @use_bind_key_notes_in_plugins  No
+        if mtc_utils.HOSTNAME in ("JacMac", "kajsa", "hetz2"):
+            aim = "Dbg"
+            # aim = "Defaults"  # except for trigger
+        else:
+            aim = "Perf"
+            # aim = "Defaults"  # except for trigger
 
-          #set -g       @menus_use_cache  No
-          #
-          #  When testing other menu locations
-          #
-          # set -g  @menus_main_menu  "$HOME/tmp/foo/items/main.sh"
+        # General config
+        conf = """
+
+        #
+        #  Common basic config
+        #
+        set -g            @menus_trigger  Space
+
+        set -g     @menus_show_key_hints  No
+        set -g  @menus_use_hint_overlays  No
+
+        set -g  @menus_nav_home  '#[fg=colour84]<=='
+        set -g  @menus_nav_next  '#[fg=colour220]-->'
+        set -g  @menus_nav_prev  '#[fg=colour71]<--'
+
+        # set -g       @menus_use_cache  No
+
+        #  When testing other menu locations
+        # set -g  @menus_main_menu  "$HOME/tmp/foo/items/main.sh"
+
+        #
+        # No performance degradation once cached, but here is a quick way
+        # to disable for testing
+        #
+        # set -g   @menus_display_commands  No
+        # set -g        @menus_danger_zone  '' # disable feature
         """
+        if aim == "Defaults":
+            # Just unset all general settings that might have been defined
+            conf += """
+
+            #
+            #  Reset all tmux-menus related settings to defaults, except for trigger
+            #
+            set -g    @menus_show_key_hints  FORCE-UNSET
+            set -g @menus_use_hint_overlays  FORCE-UNSET
+
+            set -g          @menus_nav_home  FORCE-UNSET
+            set -g          @menus_nav_next  FORCE-UNSET
+            set -g          @menus_nav_prev  FORCE-UNSET
+
+            set -g         @menus_use_cache  FORCE-UNSET
+            set -g         @menus_main_menu  FORCE-UNSET
+            set -g  @menus_display_commands  FORCE-UNSET
+            set -g       @menus_danger_zone  FORCE-UNSET
+
+            set -g @use_bind_key_notes_in_plugins No
+            """
+        elif aim == "Dbg":
+            # Turn interesting things on to get logging, casche validation etc
+            conf += """
+
+            #
+            #  Debugging - Turn interesting things on to get logging,
+            #              casche validation etc
+            #
+            set -g           @menus_log_file  "$HOME/tmp/tmux-menus-t2.log"
+            set -g         @menus_use_timers  Yes
+            set -g     @menus_validate_cache  Yes
+            """
+        else:
+            # optimize for performance
+            conf += """
+            set -g     @menus_show_key_hints  No
+            set -g  @menus_use_hint_overlays  No
+
+            # not having a log_file shortcircuts processing, so saves
+            # performance, and is what most users would have set anyhow
+            set -g         @menus_use_timers  No
+            set -g     @menus_validate_cache  No
+            """
+
+        if self.vers_ok("3.7"):
+            conf += """
+            #
+            # Obsoleted from 3.7 - so unset
+            #
+            set -g  @menus_use_hint_overlays  FORCE-UNSET
+            set -g     @menus_show_key_hints  FORCE-UNSET
+            """
+
+        if self.vers_ok(3.4) and aim != "Defaults":
+            conf += """
+            #
+            # tmux menu styling available from 3.4
+            #
+            # set -g           menu-style  "fg=green,bg=blue"
+            # set -g  menu-selected-style  "fg=red,bg=grey"
+            # set -g    menu-border-style  "fg=green,bg=default"
+            set -g      menu-border-lines  rounded
+            """
+
         return ["jaclu/tmux-menus", min_vers, conf]
 
     def local_overrides(self) -> None:
@@ -111,106 +193,6 @@ class T2(SB):  # type: ignore
             used_plugins = self.plugins.installed(short_name=True)
             if "tmux-claude-usage" in used_plugins:
                 w("set -g @claude_usage_color_low colour29")
-
-            if "not-tmux-menus" in used_plugins:
-                if mtc_utils.HOSTNAME in ("JacMac", "kajsa", "hetz2"):
-                    aim = "Dbg"
-                else:
-                    aim = "Perf"
-
-                w("""#
-                  # tmux-menus - overrides
-                  #
-                  set -g  @menus_without_prefix  FORCE-UNSET
-                  set -g       @menus_use_cache  FORCE-UNSET
-                  # set -g       @menus_use_cache  No
-
-                  set -g  @menus_location_x  FORCE-UNSET ##
-                  set -g  @menus_location_y  FORCE-UNSET ##
-
-                  # set -g  @menus_display_cmds_cols  FORCE-UNSET ##
-                  # set -g   @menus_display_commands  FORCE-UNSET ##
-
-                  # set -g  @menus_config_file  FORCE-UNSET ##
-                  # set -g    @menus_main_menu  FORCE-UNSET ##
-                """)
-
-                #
-                #  When testing other menu locations
-                #
-                # w('set -g  @menus_main_menu  "$HOME/tmp/foo/items/main.sh"')
-
-                #
-                # Performance tweaks
-                #
-                if aim == "Dbg":
-                    w("""# Performance related settings - Debugging
-                      set -g     @menus_validate_cache  Yes
-                      set -g           @menus_log_file  "$HOME/tmp/tmux-menus-t2.log" ##
-                      set -g         @menus_use_timers  Yes
-                      # set -g      @menus_danger_zone  ""
-                    """)
-                else:
-                    w("""# Performanze optimized settings
-                      set -g     @menus_validate_cache  No
-                      set -g           @menus_log_file  FORCE-UNSET
-                      set -g         @menus_use_timers  No
-                    """)
-
-                # Pre 3.4 Styling
-                pre34_styling = False
-                if pre34_styling:
-                    w("""# Styling options available pre tmux 3.4
-                      #set -g  @menus_format_title  "#{@menu_name}"
-                      set -g       @menus_nav_home  FORCE-UNSET
-                      set -g       @menus_nav_next  FORCE-UNSET
-                      set -g       @menus_nav_next  "#[fg=colour202]>#[fg=colour220]>#[fg=colour227]>"
-                    """)
-                else:
-                    w("""# Styling options available pre tmux 3.4
-                      set -g   @menus_format_title  FORCE-UNSET
-                      set -g       @menus_nav_home  FORCE-UNSET
-                      set -g       @menus_nav_next  FORCE-UNSET
-                      set -g       @menus_nav_prev  FORCE-UNSET
-                    """)
-
-                if self.vers_ok(3.4):
-                    w("""
-                      # tmux menu styling available from 3.4
-                      # set -g           menu-style  "fg=green,bg=blue"
-                      # set -g  menu-selected-style  "fg=red,bg=grey"
-                      # set -g    menu-border-style  "fg=green,bg=default"
-                      set -g      menu-border-lines  rounded
-                    """)
-
-                    post34_styling = False
-                    if post34_styling:
-                        w("""# Styling options available from tmux 3.4
-                          set -g            @menus_border_type  rounded
-                          set -g  @menus_simple_style_selected  fg=blue,bg=yellow
-                          set -g           @menus_simple_style  fg=black,bg=grey
-                          set -g    @menus_simple_style_border  fg=green
-                        """)
-                    else:
-                        w("""# Styling options available from tmux 3.4
-                          # Disable all tmux-menus styling
-                          set -g            @menus_border_type  FORCE-UNSET
-                          set -g  @menus_simple_style_selected  FORCE-UNSET ##
-                          set -g           @menus_simple_style  FORCE-UNSET
-                          set -g    @menus_simple_style_border  FORCE-UNSET
-                        """)
-
-                if not self.vers_ok("3.7"):
-                    w("""# Obsoleted from 3.7
-                      set -g  @menus_use_hint_overlays  Yes
-                      set -g     @menus_show_key_hints  Yes
-                    """)
-
-                if self.vers_ok("3.7z"):
-                    w("""# tmux >= 3.8
-                      set -g  @menus_floating_pane_incr_horizontal  FORCE-UNSET
-                      set -g    @menus_floating_pane_incr_vertical  FORCE-UNSET
-                    """)
 
             if "tmux-packet-loss" in used_plugins:
                 w("""#
