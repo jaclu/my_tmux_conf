@@ -62,7 +62,7 @@ class T2(SB):  # type: ignore
         force_plugin_continuum = True
         use_plugin_resurrect = True
 
-    def not_plugin_menus(self) -> list:  # 1.5
+    def plugin_menus(self) -> list:  # 1.5
         #
         # Replacement plugin definition for performance testing on ultra
         # modest platforms, tweaked at minimal overhead
@@ -84,13 +84,18 @@ class T2(SB):  # type: ignore
           set -g            @menus_trigger  Space
           set -g        @menus_danger_zone  ''
           set -g   @menus_display_commands  No
-          set -g           @menus_log_file  "$HOME/tmp/tmux-menus-t2.log"
+          # set -g           @menus_log_file  "$HOME/tmp/tmux-menus-t2.log"
           set -g     @menus_show_key_hints  No
           set -g  @menus_use_hint_overlays  No
-          set -g         @menus_use_timers  Yes
+          set -g         @menus_use_timers  No
           set -g     @menus_validate_cache  No
-
           set -g  @use_bind_key_notes_in_plugins  No
+
+          #set -g       @menus_use_cache  No
+          #
+          #  When testing other menu locations
+          #
+          # set -g  @menus_main_menu  "$HOME/tmp/foo/items/main.sh"
         """
         return ["jaclu/tmux-menus", min_vers, conf]
 
@@ -107,7 +112,7 @@ class T2(SB):  # type: ignore
             if "tmux-claude-usage" in used_plugins:
                 w("set -g @claude_usage_color_low colour29")
 
-            if "tmux-menus" in used_plugins:
+            if "not-tmux-menus" in used_plugins:
                 if mtc_utils.HOSTNAME in ("JacMac", "kajsa", "hetz2"):
                     aim = "Dbg"
                 else:
