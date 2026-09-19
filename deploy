@@ -8,12 +8,12 @@
 #  Deploys tmux & rt to selected destination
 #
 
-CURRENT_DIR=$(cd -- "$(dirname -- "$0")" && pwd)
+PROJ_DIR=$(cd "${0%/*}" && pwd)
 
 mkdir -p "$HOME"/.config
-echo "$CURRENT_DIR" >"$HOME"/.config/my_tmux_conf_location
+echo "$PROJ_DIR" >"$HOME"/.config/my_tmux_conf_location
 
-f_destination="$(echo "$CURRENT_DIR/.destination" | sed 's#^\./##')"
+f_destination="$(echo "$PROJ_DIR/.destination" | sed 's#^\./##')"
 
 echo
 if [ ! -f "$f_destination" ]; then
@@ -42,11 +42,11 @@ update_if_changed() {
         echo "ERROR: update_changed() - no param"
         exit 1
     fi
-    if ! diff -q "$CURRENT_DIR"/tools/"$item" "$dest/$item" >/dev/null 2>&1; then
+    if ! diff -q "$PROJ_DIR"/tools/"$item" "$dest/$item" >/dev/null 2>&1; then
         if [ -n "$TERMUX_VERSION" ]; then
-            cp -av "$CURRENT_DIR"/tools/"$item" "$dest/$item"
+            cp -av "$PROJ_DIR"/tools/"$item" "$dest/$item"
         else
-            sudo cp -av "$CURRENT_DIR"/tools/"$item" "$dest/$item"
+            sudo cp -av "$PROJ_DIR"/tools/"$item" "$dest/$item"
         fi
         files_changed=true
     fi
