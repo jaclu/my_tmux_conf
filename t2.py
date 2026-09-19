@@ -80,9 +80,11 @@ class T2(SB):  # type: ignore
             # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Don't use
 
-        if mtc_utils.HOSTNAME in ("JacMac", "kajsa", "hetz2"):
+        if mtc_utils.HOSTNAME in ("JacMac", "kajsa", "hetz2", "Pad5"):
             aim = "Dbg"
             # aim = "Defaults"  # except for trigger
+        elif mtc_utils.HOSTNAME in ("Pad5"):
+            aim = "SemiDbg"
         else:
             aim = "Perf"
             # aim = "Defaults"  # except for trigger
@@ -135,7 +137,7 @@ class T2(SB):  # type: ignore
 
             set -g @use_bind_key_notes_in_plugins No
             """
-        elif aim == "Dbg":
+        elif aim in ("Dbg", "SemiDbg"):
             # Turn interesting things on to get logging, casche validation etc
             conf += """
 
@@ -156,6 +158,16 @@ class T2(SB):  # type: ignore
             # not having a log_file shortcircuts processing, so saves
             # performance, and is what most users would have set anyhow
             set -g         @menus_use_timers  No
+            set -g     @menus_validate_cache  No
+            """
+
+        if aim in ("SemiDbg"):
+            # Slightly reduce dbg state for limited hosts
+            conf += """
+
+            #
+            #  Semi Debugging - Slightly dial it down for limited hosts
+            #
             set -g     @menus_validate_cache  No
             """
 
