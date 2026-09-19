@@ -80,7 +80,7 @@ class T2(SB):  # type: ignore
             # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Don't use
 
-        if mtc_utils.HOSTNAME in ("JacMac", "kajsa", "hetz2", "Pad5"):
+        if mtc_utils.HOSTNAME in ("JacMac", "kajsa", "hetz2", "cc-dev-1"):
             aim = "Dbg"
             # aim = "Defaults"  # except for trigger
         elif mtc_utils.HOSTNAME in ("Pad5"):
