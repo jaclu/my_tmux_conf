@@ -83,7 +83,7 @@ class T2(SB):  # type: ignore
         if mtc_utils.HOSTNAME in ("JacMac", "kajsa", "hetz2", "cc-dev-1"):
             aim = "Dbg"
             # aim = "Defaults"  # except for trigger
-        elif mtc_utils.HOSTNAME in ("Pad5"):
+        elif mtc_utils.HOSTNAME in ("JacPad"):
             aim = "SemiDbg"
         else:
             aim = "Perf"
