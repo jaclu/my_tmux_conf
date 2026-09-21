@@ -687,6 +687,7 @@ class BaseConfig(TmuxConfig):
         min_vers_display_message = 1.0
         min_vers_popup = 3.2
         min_vers_popup_style = 3.3
+        max_vers_popup_style = "3.8y" # next "3.8z" doesnt support this
         min_vers_floating_pane = 3.7
         used_any_popups = False
         w = self.write
@@ -765,7 +766,7 @@ class BaseConfig(TmuxConfig):
                     f'display-message "yazi not available"'
                 )
 
-        if used_any_popups and self.vers_ok(min_vers_popup_style):
+        if used_any_popups and self.vers_ok(min_vers_popup_style) and not self.vers_ok(max_vers_popup_style):
             w(f"{self.opt_win} popup-border-lines rounded")
         w()  # spacer
 
