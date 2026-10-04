@@ -371,8 +371,8 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             #
             """
             if not mod == "":
-                conf += """#  Inner tmux uses a modifier in order not to conflict with the outer tmux
-                #  in case this plugin is used there as well
+                conf += """#  Inner tmux uses a modifier in order not to conflict with
+                #  the outer tmux in case this plugin is used there as well
                 """
             conf += f"""
             set -g @mouse_swipe_start "{mod}MouseDrag3Pane"
