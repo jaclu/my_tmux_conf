@@ -1,5 +1,7 @@
 # TODO
 
+myt -2 fails to do kill
+
 ## Clipboard
 
 current config works for 3.4 and up
