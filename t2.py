@@ -49,7 +49,10 @@ class T2(SB):  # type: ignore
     use_plugin_session_wizard = False
     use_plugin_suspend = False
 
-    if mtc_utils.HOSTNAME in ("JacMac",):
+    if mtc_utils.IS_ISH:
+        use_plugin_battery = False
+
+    if mtc_utils.HOSTNAME in ("JacMac"):
         use_plugin_battery = True
         use_plugin_claude = False
     elif mtc_utils.HOSTNAME in ("JacPad"):
