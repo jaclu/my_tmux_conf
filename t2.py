@@ -27,7 +27,7 @@
 #  out.
 import mtc_utils
 
-if mtc_utils.HOSTNAME == "chrooted-iSH":
+if mtc_utils.HOSTNAME == "chrooted-ish":
     from sb.sb_acceptance import SB
 else:
     from sb.sb_t2 import SB  # type: ignore
@@ -49,14 +49,14 @@ class T2(SB):  # type: ignore
     use_plugin_session_wizard = False
     use_plugin_suspend = False
 
-    if mtc_utils.HOSTNAME in ("JacMac"):
+    if mtc_utils.HOSTNAME in ("jacmac"):
         use_plugin_battery = True
         use_plugin_claude = False
-    elif mtc_utils.HOSTNAME in ("JacPad"):
+    elif mtc_utils.HOSTNAME in ("jacpad"):
         use_plugin_packet_loss = True
-    elif mtc_utils.HOSTNAME in ("JacMac-iSH"):
+    elif mtc_utils.HOSTNAME in ("jacmac-ish"):
         use_plugin_claude = False
-    elif mtc_utils.HOSTNAME in ("JacDroid",):
+    elif mtc_utils.HOSTNAME in ("jacdroid",):
         use_plugin_packet_loss = True
         # Can be used on Termux but NOT on iSH
         force_plugin_continuum = True

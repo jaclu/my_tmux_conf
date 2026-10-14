@@ -193,7 +193,7 @@ LC_ORIGIN = os.getenv("LC_ORIGIN") or ""
 
 HOSTNAME = os.getenv("HOSTNAME_SHORT") or _get_short_hostname()
 if HOSTNAME:
-    HOSTNAME.lower()
+    HOSTNAME = HOSTNAME.lower()
 else:
     HOSTNAME = "no_host_name"
 
