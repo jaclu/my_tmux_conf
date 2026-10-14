@@ -121,7 +121,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         super().pre_plugin_checks()
 
         # For now not use the battery plugin on Darwin/iSH
-        if mtc_utils.IS_DARWIN or mtc_utils.IS_ISH:
+        if mtc_utils.IS_TERMUX or mtc_utils.IS_ISH:
             self.use_plugin_battery = False
 
         # Claude env is a directory structure
