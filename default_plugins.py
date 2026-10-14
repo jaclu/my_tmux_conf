@@ -120,8 +120,8 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         """Disable plugins based on local env."""
         super().pre_plugin_checks()
 
-        # For now only use the battery plugin on MacOS
-        if not mtc_utils.IS_DARWIN:
+        # For now not use the battery plugin on Darwin/iSH
+        if mtc_utils.IS_DARWIN or mtc_utils.IS_ISH:
             self.use_plugin_battery = False
 
         # Claude env is a directory structure
@@ -559,7 +559,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         charging the percentage is displayed, and remaining time in
         colors indicating approximately how full the battery is.
         """
-        if self.use_plugin_battery and not mtc_utils.IS_ISH:
+        if self.use_plugin_battery:
             #  1.8 accd to orig devel, but i get issues below 2.2
             min_vers = 2.2
         else:
