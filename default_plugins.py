@@ -185,7 +185,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             # pylint: disable=W0201
             self.sb_right = "#{keyboard_type}" + self.sb_right
 
-        if "tmux-battery-old" in used_plugins:
+        if "tmux-battery" in used_plugins:
             # pylint: disable=W0201
             self.sb_right = "#{battery_smart}" + self.sb_right
 
@@ -566,7 +566,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
             min_vers = -1.0  # don't use this one
 
         return [
-            "jaclu/tmux-battery-old",
+            "jaclu/tmux-battery",
             min_vers,
             """
             set -g @batt_remain_short true
