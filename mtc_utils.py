@@ -138,7 +138,7 @@ def _get_short_hostname():
             # print(f"><> mtc_utils._get_short_hostname() using: {f_name} gpt: {h_name}")
             return h_name
 
-    # no custom hostname found, use the regulat one
+    # no custom hostname found, use the regular one
     # print("><> Using default hostname")
     return run_shell("hostname -s")
 
@@ -191,12 +191,8 @@ LC_KEYBOARD = os.getenv("LC_KEYBOARD") or ""
 #
 LC_ORIGIN = os.getenv("LC_ORIGIN") or ""
 
-HOSTNAME = os.getenv("HOSTNAME_SHORT") or _get_short_hostname()
-if HOSTNAME:
-    HOSTNAME = HOSTNAME.lower()
-else:
-    HOSTNAME = "no_host_name"
-
+HOSTNAME = os.getenv("HOSTNAME_SHORT") or _get_short_hostname() or "no_host_name"
+HNAME_LC = HOSTNAME.lower()
 
 IS_DARWIN = platform.system() == "Darwin"
 IS_ISH = os.path.isdir("/proc/ish")

@@ -32,8 +32,6 @@ if mtc_utils.HOSTNAME == "chrooted-ish":
 else:
     from sb.sb_t2 import SB  # type: ignore
 
-# print("><> t2.py ")
-
 
 # Pylance complains about the base class here, the above condition confuses it
 # pylint: disable=too-many-ancestors
@@ -49,14 +47,14 @@ class T2(SB):  # type: ignore
     use_plugin_session_wizard = False
     use_plugin_suspend = False
 
-    if mtc_utils.HOSTNAME in ("jacmac"):
+    if mtc_utils.HNAME_LC in ("jacmac"):
         use_plugin_battery = True
         use_plugin_claude = False
-    elif mtc_utils.HOSTNAME in ("jacpad"):
+    elif mtc_utils.HNAME_LC in ("jacpad"):
         use_plugin_packet_loss = True
-    elif mtc_utils.HOSTNAME in ("jacmac-ish"):
+    elif mtc_utils.HNAME_LC in ("jacmac-ish"):
         use_plugin_claude = False
-    elif mtc_utils.HOSTNAME in ("jacdroid",):
+    elif mtc_utils.HNAME_LC in ("jacdroid",):
         use_plugin_packet_loss = True
         # Can be used on Termux but NOT on iSH
         force_plugin_continuum = True
