@@ -559,7 +559,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         charging the percentage is displayed, and remaining time in
         colors indicating approximately how full the battery is.
         """
-        if self.use_plugin_battery:
+        if self.use_plugin_battery and not mtc_utils.IS_ISH:
             #  1.8 accd to orig devel, but i get issues below 2.2
             min_vers = 2.2
         else:
