@@ -560,7 +560,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         colors indicating approximately how full the battery is.
         """
         if self.use_plugin_battery:
-            #  1.8 accd to orig devel, but i get issues below 2.2
+            #  1.8 accd to orig devel, but then utf-8 icons fail
             min_vers = 2.2
         else:
             min_vers = -1.0  # don't use this one
