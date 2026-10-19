@@ -47,12 +47,12 @@ class T2(SB):  # type: ignore
     use_plugin_session_wizard = False
     use_plugin_suspend = False
 
-    if mtc_utils.HNAME_LC in ("jacmac"):
+    if mtc_utils.HNAME_LC in ("jacmac",):
         use_plugin_battery = True
         use_plugin_claude = False
-    elif mtc_utils.HNAME_LC in ("jacpad"):
+    elif mtc_utils.HNAME_LC in ("jacpad",):
         use_plugin_packet_loss = True
-    elif mtc_utils.HNAME_LC in ("jacmac-ish"):
+    elif mtc_utils.HNAME_LC in ("jacmac-ish",):
         use_plugin_claude = False
     elif mtc_utils.HNAME_LC in ("jacdroid",):
         use_plugin_packet_loss = True
@@ -159,7 +159,7 @@ class T2(SB):  # type: ignore
             set -g     @menus_validate_cache  No
             """
 
-        if aim in ("SemiDbg"):
+        if aim in ("SemiDbg",):
             # Slightly reduce dbg state for limited hosts
             conf += """
 
