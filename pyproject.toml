@@ -1,16 +1,6 @@
 [project]
 requires-python = ">=3.11"
 
-[tool.black]
-target-version = ["py311"]
-force-exclude = '/tools/dead-code/'
-
-[tool.isort]
-profile = "black"
-combine_as_imports = true
-extend_skip_glob = ["tools/dead-code/*"]
-filter_files = true
-
 [tool.mypy]
 python_version = "3.11"                       # Matches requires-python = ">=3.11"
 exclude = ['\.venv/', 'stuff/dead_code\.py$']
