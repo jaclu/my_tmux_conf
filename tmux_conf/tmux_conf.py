@@ -116,43 +116,27 @@ class TmuxConfig:
         self._write_enabled = False
         self.init_debug_log()
 
-        #  can't use self.is_tmate() at this point, since self.tmux_bin
-        #  is not yet set
-        if tmux_bin.find("tmate") > -1:
-            #  Set tmate defaults
-            if not tmux_version:
-                tmux_version = "2.4"
-            if conf_file == "~/.tmux.conf":
-                #  Override default config
-                conf_file = "~/.tmate.conf"
-                replace_config = True
-
-            if self.plugin_handler:
-                #  tmate only supports manual plugin handling
-                self.plugin_handler = "manual"
-
         self.conf_file = verify_conf_file_usable(conf_file)
 
         self.use_tmux_bin(tmux_bin, tmux_version)
         if tmux_version and (tmux_version != self.vers.get()):
             # self.define_tmux_vers(tmux_version)
-            if not self.is_tmate():
-                #
-                #  Only display off version info when bin is tmux
-                #
-                print()
-                print(
-                    "Config has been requested for another version of tmux,"
-                    + " than the one used to generate this.\n"
-                    + "Since the config file will point to the tmux used, "
-                    + "this might cause problems\n"
-                    + f"\ttmux vers is:    {self.vers.get_reported()}\n"
-                    + f"\trequested vers:  {self.vers.get()}"
-                )
-                print()
-                print("WARNING: Running this config with the current tmux")
-                print("         might give some errors!")
-                print()
+            #
+            #  Only display off version info when bin is tmux
+            #
+            print()
+            print(
+                "Config has been requested for another version of tmux,"
+                + " than the one used to generate this.\n"
+                + "Since the config file will point to the tmux used, "
+                + "this might cause problems\n"
+                + f"\ttmux vers is:    {self.vers.get_reported()}\n"
+                + f"\trequested vers:  {self.vers.get()}"
+            )
+            print()
+            print("WARNING: Running this config with the current tmux")
+            print("         might give some errors!")
+            print()
         self.replace_config = replace_config
         self.plugins_display = plugins_display
 
@@ -530,19 +514,16 @@ class TmuxConfig:
         #      Creation time: {datetime.datetime.now().strftime("%F %T")}
         #          tmux-conf: {self.lib_version}
         #         Created on: {run_shell("hostname").strip()}""")
-        if self.is_tmate():
-            w(f"#   For tmate version: {self.vers.get_reported()}")
+        if self.vers.get() == self.vers.get_reported():
+            s_vers = f"{self.vers.get()}"
         else:
-            if self.vers.get() == self.vers.get_reported():
-                s_vers = f"{self.vers.get()}"
-            else:
-                s_vers = (
-                    f"{self.vers.get_reported()} "
-                    f"- treated as: {self.vers.get()} "
-                    "for compatibility checks"
-                )
-            w(f"""#   For tmux version: {s_vers}
-            #""")
+            s_vers = (
+                f"{self.vers.get_reported()} "
+                f"- treated as: {self.vers.get()} "
+                "for compatibility checks"
+            )
+        w(f"""#   For tmux version: {s_vers}
+        #""")
         w("""
 
         #======================================================
@@ -650,7 +631,7 @@ class TmuxConfig:
             tmux_bin = self.find_tmux_bin()  # now a full path
 
         parts = run_shell(f"{tmux_bin} -V").split(" ")
-        if len(parts) != 2 or parts[0] not in ("tmux", "tmate"):
+        if len(parts) != 2 or parts[0] != "tmux":
             self.debug_log(f"[error] {tmux_bin} Doesn't seem to be a tmux binary")
             raise TmuxConfNotTmuxCommand(f"{tmux_bin} Doesn't seem to be a tmux binary")
 
@@ -674,9 +655,6 @@ class TmuxConfig:
             # Only print it once
             print(f"found {cmd} in PATH")
         return cmd
-
-    def is_tmate(self) -> bool:
-        return self.tmux_bin.find("tmate") > -1
 
     # ===============================================================
     #

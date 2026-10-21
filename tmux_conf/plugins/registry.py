@@ -108,12 +108,8 @@ class PluginRegistry:
             #
             #  If conf file is default, plugins have a non standard location
             #
-            if self._conf_file.find("tmate") > -1:
-                plugins_dir = os.path.expanduser("~/.tmate/plugins")
-                tpm_env = ""
-            else:
-                plugins_dir = os.path.expanduser("~/.tmux/plugins")
-                tpm_env = ""
+            plugins_dir = os.path.expanduser("~/.tmux/plugins")
+            tpm_env = ""
         else:
             xdg_home = os.getenv(XDG_CONFIG_HOME)
             if xdg_home:

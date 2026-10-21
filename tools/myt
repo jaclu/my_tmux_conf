@@ -41,7 +41,6 @@ Available options:
 -k       Kill running tmux, can be combined with -2
 -q       Dont generate config, start tmux directly
 -s       Share session
--t       Use tmate
 -2       Run in T2_ENV (inner tmux, other prefix)
            tmux env based in: $d_t2
 profile  Run using specific profile
@@ -122,25 +121,15 @@ define_socket() {
     }
 
     socket="$(id -u)"
-    $tmate_mode && socket="$socket-tmate"
     is_fs_chrooted && socket="${socket}-chr"
     if [ "$t2_env" = 1 ]; then
         [ -z "$d_t2" ] && error_msg "d_t2 undefined"
         socket="$socket-serv2"
-        if $tmate_mode; then
-            conf_file="$d_t2/tmate.conf"
-        else
-            conf_file="$d_t2/tmux/tmux.conf"
-        fi
+        conf_file="$d_t2/tmux/tmux.conf"
     else
         socket="$socket"-default
-        if $tmate_mode; then
-            conf_file="$HOME/.tmate.conf"
-        else
-            conf_file="$HOME/.tmux.conf"
-        fi
+        conf_file="$HOME/.tmux.conf"
     fi
-
 }
 
 asdf_tmux_find() {
@@ -239,14 +228,6 @@ select_tmux_bin() {
         # User defined tmux
         TMUX_BIN="$tmux_bin"
         return
-    fi
-    if $tmate_mode; then
-        if command -v tmate >/dev/null; then
-            TMUX_BIN="tmate"
-            return
-        else
-            error_msg "tmate not found"
-        fi
     fi
     asdf_scan && return
     [ -n "$asdf_version_requested" ] && {
@@ -579,10 +560,6 @@ create_tmux_conf() {
 
 find_host_profile() {
     # lbl_3 "find_host_profile()"
-    $tmate_mode && {
-        profile="${my_tmux_conf_location}/tmate.py"
-        return 0
-    }
     #
     #  Step 1 check hardcoded default profile
     #
@@ -654,7 +631,6 @@ f_myt_log="${TMPDIR:-/tmp}"/myt-"$USER".log #  Logs how the latest tmux env was 
 asdf_version_requested=""
 tmux_bin=""
 kill_tmux=false
-tmate_mode=false
 quick_mode=false
 single_session=true
 t2_env=0
@@ -709,7 +685,6 @@ while [ -n "$1" ]; do
             quick_mode=true
             ;;
         "-s") single_session=false ;;
-        "-t") tmate_mode=true ;;
         "-2") t2_env=1 ;;
         *)
             [ -n "$profile" ] && errror_msg "profile can only be defined once"

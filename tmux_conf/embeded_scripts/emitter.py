@@ -115,9 +115,6 @@ class ScriptEmitter:
         if tilde_home_dir(self._builder.cfg.conf_file) == "~/.tmux.conf":
             return os.path.expanduser("~/.tmux/scripts")
 
-        if tilde_home_dir(self._builder.cfg.conf_file) == "~/.tmate.conf":
-            return os.path.expanduser("~/.tmate/scripts")
-
         conf_file = os.path.expanduser(self._builder.cfg.conf_file)
 
         xdg = os.getenv("XDG_CONFIG_HOME")

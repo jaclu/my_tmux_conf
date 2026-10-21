@@ -60,7 +60,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
     """
 
     #
-    #  Override all other env settings like is_limited_host or is_tmate
+    #  Override all other env settings like is_limited_host
     #  and ensure plugin is used or not
     #
     force_plugin_continuum = False
@@ -214,7 +214,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         Can scroll in non-active 'mouse over-ed' panes.
         Can adjust scroll-sensitivity."""
 
-        if not self.use_plugin_better_mouse_mode or self.is_tmate():
+        if not self.use_plugin_better_mouse_mode:
             # Is needed also in an inner tmux!
             vers_min = -1.0  # Don't use
         else:
@@ -242,7 +242,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         enter to copy instakills asdf local tmux
         Default trigger: <prefix> Tab
         """
-        if not self.use_plugin_extrakto or mtc_utils.IS_ISH or self.is_tmate():
+        if not self.use_plugin_extrakto or mtc_utils.IS_ISH:
             # the popup gets stuck on iSH
             vers_min = -1.0
         else:
@@ -276,12 +276,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         without having to use the mouse.
         Default trigger: <prefix> u
         """
-        if (
-            not self.use_plugin_jump
-            or mtc_utils.IS_ISH
-            or mtc_utils.IS_TERMUX
-            or self.is_tmate()
-        ):
+        if not self.use_plugin_jump or mtc_utils.IS_ISH or mtc_utils.IS_TERMUX:
             # it seems Termux fails to handle ttys
             # it works on iSH, but soo slow it is of no practical usage
             min_vers = -1.0  # Don't use
@@ -383,10 +378,8 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         """Zooms to separate Window, to allow for adding support panes
         Default trigger: <prefix> Z
         """
-        if (
-            not self.use_plugin_power_zoom
-            or self.is_tmate()
-            or (self.vers_ok(3.7) and not self.vers_ok("3.7a"))
+        if not self.use_plugin_power_zoom or (
+            self.vers_ok(3.7) and not self.vers_ok("3.7a")
         ):
             # on 3.7 using break-pane crashes tmux...
             vers_min = -1.0  # Don't use
@@ -422,7 +415,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         This plugins fails to restore sessions in iSH, at least on my
         devices. so no point enabling tmux-resurrect & tmux-continuum
         on iSH"""
-        if not self.use_plugin_resurrect or mtc_utils.IS_ISH or self.is_tmate():
+        if not self.use_plugin_resurrect or mtc_utils.IS_ISH:
             min_vers = -1.0  # Don't use
         else:
             min_vers = 1.9
@@ -485,7 +478,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         manually add a placeholder
         Default Trigger: -n M-Z
         """
-        if self.use_plugin_suspend and not self.is_tmate():
+        if self.use_plugin_suspend:
             min_vers = 2.4
         else:
             # it works on iSH, but soo slow it is of no practical usage
@@ -518,8 +511,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
         """
 
         if not self.use_plugin_continuum or (
-            not self.force_plugin_continuum
-            and (self.is_limited_host or self.t2_env or self.is_tmate())
+            not self.force_plugin_continuum and (self.is_limited_host or self.t2_env)
         ):
             vers_min = -1.0  # Don't use
         else:
@@ -763,7 +755,7 @@ class DefaultPlugins(BaseConfig):  # pylint: disable=R0904
 
     def plugin_claude_usage(self) -> list:
         """plugin displaying claude usage"""
-        if self.use_plugin_claude and not self.is_tmate():
+        if self.use_plugin_claude:
             min_vers = 1.8
         else:
             min_vers = -1.0  # Don't use

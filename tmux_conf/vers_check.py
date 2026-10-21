@@ -44,12 +44,6 @@ class VersionCheck:
         #
         #  For performance, the version parts are pre-calculated
         #
-
-        #
-        #  tmux derivative tmate uses versions like 2.4.0
-        #  for compatibility checks only the first two are needed
-        #  This syntax handles both normal tmux and tmate
-        #
         parts = self._vers.split(".")
         v_maj = parts[0]
         v_min = parts[1]

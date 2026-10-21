@@ -219,10 +219,6 @@ class BaseConfig(TmuxConfig):
         #
         self.tpm_working_incicator = "@tpm-is-active"
 
-        if self.is_tmate() and (self.show_pane_label or self.show_pane_size):
-            print("show_pane_label & show_pane_size disabled for tmate")
-            self.show_pane_size = self.show_pane_label = False
-
         if self.t2_env:
             if self.conf_file == os.path.expanduser("~/.tmux.conf"):
                 print()
@@ -948,11 +944,7 @@ class BaseConfig(TmuxConfig):
         #
         #  Splitting the entire window
         #
-        if self.vers_ok(2.3) and not self.is_tmate():
-            #
-            #  tmate does not support split-window -f  despite they claim
-            #  to be 2.4 compatible and this is a 2.3 feature...
-            #
+        if self.vers_ok(2.3):
             cp = self.current_path_directive
             pref = "bind -N 'Split window"
             w(f"""
@@ -1093,7 +1085,7 @@ class BaseConfig(TmuxConfig):
         #
         #  Display custom pane borders and label
         #
-        if self.vers_ok(2.3) and not self.is_tmate():
+        if self.vers_ok(2.3):
             pane_label = ""
             if self.vers_ok(2.6) and self.show_pane_label:
                 pane_label += " #{?pane_active,#[reverse],}#T#[default] "
@@ -1117,7 +1109,7 @@ class BaseConfig(TmuxConfig):
                     'bind -N "Set pane label"  P  command-prompt -I "#T" -p '
                     '"Pane label: " "select-pane -T \\"%%\\""'
                 )
-            elif self.vers_ok(2.3) and not self.is_tmate():
+            elif self.vers_ok(2.3):
                 w(
                     "bind -N 'Pane label unavailable'  P  display-message "
                     "'Pane label setting needs 2.6'"
@@ -1352,14 +1344,12 @@ class BaseConfig(TmuxConfig):
         # set-hook -g window-layout-changed 'run-shell "$HOME/.tmux/layout-handler.sh"'
 
         if not self.vers_ok(v_min_hooks):
-            if self.is_tmate():
-                w("# ===  Hooks not supported for tmate   ===")
-            elif not self.vers_ok(2.4):
-                w("# ===  Hooks not supported for tmux < 2.4   ===")
-            elif self.vers_ok(2.4):
+            if self.vers_ok(2.4):
                 w("""# On 2.4 activate_tpm() gets tangled on the hook lines somehow :(
                 # and end up in an infinite loop - Thus skipping hook handling
                 """)
+            else:
+                w("# ===  Hooks not supported for tmux < 2.4   ===")
 
             # w("set pane-border-status top")
             w("# Hardcoding no-prefix nav-keys according to no-zoom state")
@@ -1383,9 +1373,8 @@ class BaseConfig(TmuxConfig):
             binds_s, unbinds_s = self.generate_old_style_binds()
         borders_enable = f"set -w pane-border-status top{binds_s}"
         borders_disable = f"set -w pane-border-status off{unbinds_s}"
-        if self.vers_ok(2.4) and not self.is_tmate():
+        if self.vers_ok(2.4):
             # pane-border-status not available < 2.4
-            # tmate doesn't support -w options in hooks - "no current session"
             #  Display pane border lines when more than one pane is present
             idx = self.get_next_hook_array_idx()
 
@@ -1464,7 +1453,7 @@ class BaseConfig(TmuxConfig):
             self.hook_action_zoom_state()
         else:
             # hooks exist in 2.3, but this check requires 2.4
-            if self.vers_ok(2.4) and not self.is_tmate():
+            if self.vers_ok(2.4):
                 idx = self.get_next_hook_array_idx()
                 is_zoomed = "if-shell -F '#{==:#{window_zoomed_flag},1}' \\"
                 single_pane = """ 'if-shell -F \\"#{==:#{window_panes},1}\\" """
@@ -1480,7 +1469,7 @@ class BaseConfig(TmuxConfig):
 
             # w(
             #     """
-            #         # tmux < 3.2 (and tmate) does not support nested if-shell with logical
+            #         # tmux < 3.2 does not support nested if-shell with logical
             #         # operators to check zoom state and pane count.
             #         # Hardcoding no-prefix nav-keys according to no-zoom state"""
             # )
@@ -1607,7 +1596,7 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
         #
         #  Zooms pane by right double click
         #
-        if self.vers_ok(2.4) and not self.is_tmate():
+        if self.vers_ok(2.4):
             if mtc_utils.IS_INNER_TMUX:
                 mod = "C-"
                 w("# IS_INNER_TMUX C-")
@@ -1631,10 +1620,7 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
         """)
         w(f"{self.opt_ses} status-interval {self.status_interval}")
 
-        if self.is_tmate():
-            w(f"{self.opt_ses} display-time 2000")
-        else:
-            w(f"{self.opt_ses} display-time 4000")
+        w(f"{self.opt_ses} display-time 4000")
         if self.vers_ok(1.0):
             w(f"{self.opt_ses} status-justify centre")
         if self.vers_ok(1.0) and self.monitor_activity:
@@ -1731,10 +1717,7 @@ if-shell -F '#{||:#{==:#{window_panes},1},#{!=:#{window_zoomed_flag},#{@zoom-sta
                 #  max length of vers is 6 chars, in order to
                 #  not flood status line if running a devel tmux
                 #
-                if self.is_tmate():
-                    vers = "tmate"
-                else:
-                    vers = f"{self.vers.get_reported()}"
+                vers = f"{self.vers.get_reported()}"
                 if env_tag:
                     env_tag = f"{env_tag}{vers} "
                 else:

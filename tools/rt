@@ -36,7 +36,6 @@ class Host:
     use_2nd = False
     use_asdf_version = ""
     use_share = False
-    use_tmate = False
     use_quick = False
     use_mosh = False
     mosh_client = "mosh"  # local mosh command
@@ -53,7 +52,6 @@ class Host:
         use_2nd=False,
         use_asdf_version="",
         use_share=False,
-        use_tmate=False,
         use_quick=False,
         use_mosh=False,
         mosh_client="mosh",
@@ -80,9 +78,6 @@ class Host:
         if use_share:
             self.use_share = True
             myt_cmd += " -s"
-        if use_tmate:
-            self.use_tmate = True
-            myt_cmd += " -m"
         if use_quick:
             self.use_quick = True
             myt_cmd += " -q"
@@ -128,8 +123,6 @@ class Host:
             rt_cmd += f" -a {self.use_asdf_version}"
         if self.use_share:
             rt_cmd += " -s"
-        if self.use_tmate:
-            rt_cmd += " -m"
         if self.use_quick:
             rt_cmd += " -q"
         if self.use_mosh:
@@ -181,7 +174,6 @@ def get_host_class(
     use_2nd=False,
     asdf_version="",
     use_share=False,
-    use_tmate=False,
     use_quick=False,
     use_mosh=False,
     mosh_client="",
@@ -207,7 +199,6 @@ def get_host_class(
             use_2nd=use_2nd,
             asdf_version=asdf_version,
             use_share=use_share,
-            use_tmate=use_tmate,
             use_quick=use_quick,
             use_mosh=use_mosh,
             mosh_client=mosh_client,
@@ -232,7 +223,6 @@ def get_host_class(
                 use_2nd=use_2nd,
                 use_asdf_version=asdf_version,
                 use_share=use_share,
-                use_tmate=use_tmate,
                 use_quick=use_quick,
                 use_mosh=use_mosh,
                 mosh_client=mosh_client,
@@ -252,7 +242,6 @@ def get_host_class(
             use_2nd=use_2nd,
             use_asdf_version=asdf_version,
             use_share=use_share,
-            use_tmate=use_tmate,
             use_quick=use_quick,
             use_mosh=use_mosh,
             mosh_client=mosh_client,
@@ -342,12 +331,6 @@ def parse_cmd_line():
         help="share session with other clients",
     )
     parser.add_argument(
-        "-t",
-        "--use_tmate",
-        action="store_true",
-        help="use tmate on remote\n",
-    )
-    parser.add_argument(
         "-q",
         "--quick",
         action="store_true",
@@ -382,7 +365,6 @@ def main():  # pylint: disable=too-many-branches
         use_2nd=args.use_2nd,
         asdf_version=args.asdf_version,
         use_share=args.share,
-        use_tmate=args.use_tmate,
         use_quick=args.quick,
         use_mosh=args.use_mosh,
         mosh_client=args.mosh_client,
@@ -398,13 +380,7 @@ def main():  # pylint: disable=too-many-branches
         else:
             msg += "ssh"
 
-        if (
-            hc.use_2nd
-            or hc.use_asdf_version
-            or hc.use_share
-            or hc.use_tmate
-            or hc.use_quick
-        ):
+        if hc.use_2nd or hc.use_asdf_version or hc.use_share or hc.use_quick:
             msg += " - myt Options:"
             if hc.use_2nd:
                 msg += " -2"
@@ -412,8 +388,6 @@ def main():  # pylint: disable=too-many-branches
                 msg += f" -a {hc.use_asdf_version}"
             if hc.use_share:
                 msg += " -s"
-            if hc.use_tmate:
-                msg += " -m"
             if hc.use_quick:
                 msg += " -q"
         print(msg + " ...")
