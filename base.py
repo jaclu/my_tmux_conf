@@ -2176,7 +2176,9 @@ timer_end() {{
         ]
         self.es.create(self._fnc_tpm_indicator, clear_tpm_init_sh)
 
-    def incompatible_tmux_conf(self, lib_vers_found: str, reason: str, details: str = ""):
+    def incompatible_tmux_conf(
+        self, lib_vers_found: str, reason: str, details: str = ""
+    ):
         print()
         print("ERROR: Incompatible tmux-conf package")
         print()
@@ -2197,7 +2199,9 @@ timer_end() {{
 
         if sequence[:1] != "\\":
             print()
-            print(f"ERROR: alternate_key_euro({sequence}) must be given in octal notation")
+            print(
+                f"ERROR: alternate_key_euro({sequence}) must be given in octal notation"
+            )
             sys.exit(mtc_utils.ERROR_USER_KEY_NOT_OCTAL)
 
         currency = mtc_utils.get_currency()

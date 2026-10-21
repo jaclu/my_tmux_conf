@@ -112,7 +112,9 @@ class PluginDisplay:
     ) -> None:
         """Display plugin information in verbose mode."""
         inner_name = self._registry.name_sans_prefix(name)
-        suffix = self._remove_if_found(plugin_items, inner_name, " *** Not installed ***")
+        suffix = self._remove_if_found(
+            plugin_items, inner_name, " *** Not installed ***"
+        )
         print("".ljust(len(inner_name) + 2, "-"))
         print(f"> {inner_name:<{max_l_name - 2}} - {info[PLUGIN_VERS_MIN]} {suffix}")
         # print(f"><> {type(info[PLUGIN_MTHD])}")
@@ -131,7 +133,9 @@ class PluginDisplay:
     ) -> None:
         """Display plugin information in brief mode."""
         inner_name = self._registry.name_sans_prefix(name)
-        suffix = self._remove_if_found(plugin_items, inner_name, " *** Not installed ***")
+        suffix = self._remove_if_found(
+            plugin_items, inner_name, " *** Not installed ***"
+        )
         print(f"{inner_name:<{max_l_name}} - {info[PLUGIN_VERS_MIN]} {suffix}")
 
     def _display_unused_plugins(
