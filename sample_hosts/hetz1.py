@@ -64,10 +64,10 @@ class Hetz1(DefaultPlugins):
                 w = self.write
                 #  Display what class this override comes from
                 w("# ---  Hetz1.local_overrides() - to adjust for the t2 styling")
-                log_file = "~/.dotFiles/latest_statuses/tmux-packet-loss-hetz1.log"
+                f_log_file = "$HOME/.dotFiles/latest_statuses/tmux-packet-loss-hetz1.log"
                 self.write(f"""
                     set -g @packet-loss-run_disconnected  yes
-                    set -g @packet-loss-log_file  "{log_file}"
+                    set -g @packet-loss-log_file  "{f_log_file}"
                     """)
 
 
