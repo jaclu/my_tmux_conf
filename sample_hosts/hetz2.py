@@ -23,8 +23,8 @@ from default_plugins import DefaultPlugins  # noqa: E402 # can't be at top
 
 
 # pylint: disable=R0903
-class Hetz2(DefaultPlugins):
-    """hetz2 config"""
+class Hetz1(DefaultPlugins):
+    """hetz1 config"""
 
     # optionals selected
     use_plugin_packet_loss = True
@@ -63,8 +63,8 @@ class Hetz2(DefaultPlugins):
             if "tmux-packet-loss" in used_plugins:
                 w = self.write
                 #  Display what class this override comes from
-                w("# ---  Hetz2.local_overrides() - to adjust for the t2 styling")
-                log_file = "~/.dotFiles/latest_statuses/tmux-packet-loss-hetz2.log"
+                w("# ---  Hetz1.local_overrides() - to adjust for the t2 styling")
+                log_file = "~/.dotFiles/latest_statuses/tmux-packet-loss-hetz1.log"
                 self.write(f"""
                     set -g @packet-loss-run_disconnected  yes
                     set -g @packet-loss-log_file  "{log_file}"
@@ -72,4 +72,4 @@ class Hetz2(DefaultPlugins):
 
 
 if __name__ == "__main__":
-    Hetz2().run()
+    Hetz1().run()
