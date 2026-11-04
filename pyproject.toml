@@ -8,11 +8,6 @@ show_error_codes = true
 warn_unused_configs = true
 no_implicit_reexport = true
 
-[tool.pymarkdown]
-plugins.line-length.line_length = 92
-plugins.line-length.code_block_line_length = 92
-plugins.md033.allowed_elements = "nbsp,prefix"
-
 [tool.pyright]
 exclude = [".venv", "**/__pycache__"]
 reportMissingImports = "error"
